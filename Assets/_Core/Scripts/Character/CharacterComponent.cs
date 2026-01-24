@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,9 @@ public class CharacterComponent : MonoBehaviour
     bool m_isMain;
     [SerializeField]
     FactionType m_faction;
+
+    [SerializeField]
+    CharacterAnimationClipData m_animationClipData;
 
     public Transform panel { get; private set; }
     public Rigidbody2D rig { get; private set; }
@@ -42,7 +46,7 @@ public class CharacterComponent : MonoBehaviour
         m_sortingGroup = transform.GetComponent<SortingGroup>();
         panel = rig.transform.Find("Character/Panel");
 
-        anim = new(this);
+        anim = new(this, m_animationClipData); m_animationClipData = default;
         move = new(this);
         attack = new(this);
 
@@ -62,6 +66,14 @@ public class CharacterComponent : MonoBehaviour
         {
             m_prevPosY = transform.position.y;
             m_sortingGroup.sortingOrder = (int)(transform.position.y * -10f);
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            anim.PlayAnimation(CharacterAnimType.Attack);
         }
     }
 
@@ -106,4 +118,16 @@ public class CharacterComponent : MonoBehaviour
         m_state = m_dbState.ContainsKey(_stateType) ? m_dbState[_stateType] : null;
         m_state?.Start();
     }
+}
+
+[Serializable]
+public struct CharacterAnimationClipData
+{
+    public AnimationClip attack;
+
+    public AnimationClip GetClip(CharacterAnimType _animType) => _animType switch
+    {
+        CharacterAnimType.Attack => attack,
+        _ => null,
+    };
 }

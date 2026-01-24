@@ -9,8 +9,14 @@ public enum FactionType
 
 public enum CharacterAnimType
 {
+    NONE = -1,
+
     Idle,
     Walk,
+
+    Attack,
+
+    MAX
 }
 
 public enum CharacterClassType
