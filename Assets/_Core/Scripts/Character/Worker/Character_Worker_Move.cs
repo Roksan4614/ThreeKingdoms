@@ -13,17 +13,17 @@ public class Character_Woker_Move : Character_Worker
         m_owner.anim.PlayAnimation(CharacterAnimType.Idle);
     }
 
-    public void OnMoveUpdate(Vector2 _lookAt)
+    public void OnMoveUpdate(Vector2 _velocity)
     {
-        if (_lookAt == Vector2.zero)
+        if (_velocity == Vector2.zero)
             return;
 
         if (m_owner.anim.playingAnimType != CharacterAnimType.Walk)
             m_owner.anim.PlayAnimation(CharacterAnimType.Walk);
 
-        m_owner.rig.linearVelocity = _lookAt.normalized * m_owner.data.moveSpeed;
+        m_owner.rig.linearVelocity = _velocity;
 
-        SetFlip(_lookAt.x > 0);
+        SetFlip(_velocity.x > 0);
     }
 
     public void SetFlip(bool _isFlip)

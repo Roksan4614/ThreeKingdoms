@@ -10,6 +10,8 @@ public class StageManager : MonoSingleton<StageManager>
 
     LoadData_Stage m_loadData;
 
+    List<CharacterComponent> m_enemieList = new();
+
     protected override void OnAwake()
     {
         m_chapter = transform.Find("Chapter");
@@ -49,12 +51,12 @@ public class StageManager : MonoSingleton<StageManager>
 
                 phase.gameObject.SetActive(true);
 
-                List<CharacterComponent> enemies = new();
+                m_enemieList.Clear();
                 for (int i = 0; i < phase.childCount; i++)
                 {
                     var e = phase.GetChild(i).GetComponent<CharacterComponent>();
                     if (e != null)
-                        enemies.Add(e);
+                        m_enemieList.Add(e);
                 }
 
                 // 위치 세팅한다
@@ -76,9 +78,9 @@ public class StageManager : MonoSingleton<StageManager>
                     }
                 }
 
-                var prevPosition = enemies.Select(x => x.transform.position).ToList();
+                var prevPosition = m_enemieList.Select(x => x.transform.position).ToList();
 
-                foreach (var e in enemies)
+                foreach (var e in m_enemieList)
                 {
                     e.SetFaction(FactionType.Enemy);
                     e.transform.SetParent(MapManager.instance.parentEnemy);
@@ -94,12 +96,15 @@ public class StageManager : MonoSingleton<StageManager>
                     e.SetState(CharacterStateType.Wait);
                 }
 
+                // START PHASE
+                TeamManager.instance.SetState(CharacterStateType.SearchEnemy);
+
                 // 클리어 할 때까지 대기
                 bool isClear = false;
                 while (isClear == false)
                 {
                     isClear = true;
-                    foreach (var e in enemies)
+                    foreach (var e in m_enemieList)
                     {
                         if (e.isLive)
                         {
@@ -111,8 +116,8 @@ public class StageManager : MonoSingleton<StageManager>
                 }
 
                 // 클리어하면 원상 복구 시킨다.
-                for (int i = 0; i < enemies.Count; i++)
-                    enemies[i].transform.position = prevPosition[i];
+                for (int i = 0; i < m_enemieList.Count; i++)
+                    m_enemieList[i].transform.position = prevPosition[i];
 
                 phase.gameObject.SetActive(false);
 
@@ -125,6 +130,13 @@ public class StageManager : MonoSingleton<StageManager>
             yield return null;
         }
     }
+    public IReadOnlyList<CharacterComponent> enemyList => m_enemieList;
+
+    public CharacterComponent nearestEnemy =>
+        m_enemieList.Where(_x => _x.isLive == true)
+        .OrderBy(x => (x.transform.position - TeamManager.instance.mainCharacter.transform.position).sqrMagnitude)
+        .FirstOrDefault();
+
 }
 
 public struct LoadData_Stage

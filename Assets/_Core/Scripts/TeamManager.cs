@@ -11,11 +11,14 @@ public class TeamManager : MonoSingleton<TeamManager>
 
     Dictionary<TeamPositionType, CharacterComponent> m_member = new();
 
+    public IReadOnlyDictionary<TeamPositionType, CharacterComponent> members => m_member;
+
     protected override void OnAwake()
     {
         for (int i = 0; i < transform.childCount; i++)
             m_dbPostion.Add(TeamPositionType.None + i + 1, transform.GetChild(i).position);
     }
+
 
     public void SetTeamPosition(List<CharacterComponent> _members)
     {
@@ -107,4 +110,12 @@ public class TeamManager : MonoSingleton<TeamManager>
     {
 
     }
+
+
+    public CharacterComponent GetNearestHeroFromPositon(Vector3 _position) =>
+        m_member.Values.Where(x=>x.isLive)
+        .OrderBy(x => (x.transform.position - _position).sqrMagnitude)
+        .FirstOrDefault();
+
+
 }

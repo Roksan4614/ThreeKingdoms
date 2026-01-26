@@ -5,7 +5,7 @@ public enum CharacterStateType
     None = -1,
 
     Wait, //대기
-    Moving, // 적에게 접근
+    SearchEnemy, // 적에게 접근
     Battle, // 전투중
 
     Following, // 주장 따라가기

@@ -22,20 +22,6 @@ public class MapManager : MonoSingleton<MapManager>
     public Transform parentHero => transform.Find("Heros/Team");
     public Transform parentEnemy => transform.Find("Heros/Enemy");
 
-    public List<CharacterComponent> GetEnemyList()
-    {
-        List<CharacterComponent> result = new();
-        var pEnemy = parentEnemy;
-        for ( int i = 0; i < pEnemy.childCount; i++)
-        {
-            var character = pEnemy.GetChild(i).GetComponent<CharacterComponent>();
-            if (character != null)
-                result.Add(character);
-        }
-
-        return result;
-    }
-
     public Vector3 GetBounceHorizontalPos(Vector3 _targetPos)
     {
         var edgeLB = m_camera.ViewportToWorldPoint(new Vector3(0, 0, -m_camera.transform.position.z));

@@ -15,6 +15,9 @@ public class CharacterComponent : MonoBehaviour
     [SerializeField]
     FactionType m_faction;
 
+    [SerializeField]
+    CharacterComponent m_target;
+
     public Transform panel { get; private set; }
     public Rigidbody2D rig { get; private set; }
 
@@ -32,6 +35,7 @@ public class CharacterComponent : MonoBehaviour
     public bool isMain => m_isMain;
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; }
+    public CharacterComponent target => m_target;
 
     public void SetMain(bool _isMain) => m_isMain = _isMain;
 
@@ -48,6 +52,7 @@ public class CharacterComponent : MonoBehaviour
 
         m_dbState.Add(CharacterStateType.Wait, new CharacterState_Wait(this));
         m_dbState.Add(CharacterStateType.Battle, new CharacterState_Battle(this));
+        m_dbState.Add(CharacterStateType.SearchEnemy, new CharacterState_SearchEnemy(this));
 
         SetState(CharacterStateType.Wait);
 
@@ -97,7 +102,7 @@ public class CharacterComponent : MonoBehaviour
     {
         if (m_state != null)
             SetState(CharacterStateType.None);
-        move.OnMoveUpdate(_lookAt);
+        move.OnMoveUpdate(_lookAt.normalized * m_data.moveSpeed);
     }
 
     public void SetState(CharacterStateType _stateType)
