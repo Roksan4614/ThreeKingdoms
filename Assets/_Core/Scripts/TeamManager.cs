@@ -111,7 +111,6 @@ public class TeamManager : MonoSingleton<TeamManager>
 
     }
 
-
     public CharacterComponent GetNearestHeroFromPositon(Vector3 _position) =>
         m_member.Values.Where(x=>x.isLive)
         .OrderBy(x => (x.transform.position - _position).sqrMagnitude)

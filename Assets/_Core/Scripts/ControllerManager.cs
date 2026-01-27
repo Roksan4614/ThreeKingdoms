@@ -17,6 +17,8 @@ public class ControllerManager : MonoSingleton<ControllerManager>, IPointerDownH
     [SerializeField]
     float m_speed = 10;
 
+    public bool isActive => m_pad.gameObject.activeSelf;
+
     private void Start()
     {
         m_pad = (RectTransform)transform.Find("Pad");

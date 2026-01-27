@@ -59,8 +59,16 @@ public class CharacterComponent : MonoBehaviour
 
         SetState(CharacterStateType.Wait);
 
-        m_data.SetDefault();
         m_sortingGroup.sortingOrder = 0;
+
+        // TEST
+        m_data.SetDefault();
+
+        if (m_faction == FactionType.Enemy)
+        {
+            m_data.attackPower /= 2;
+            m_data.healthMax = m_data.health /= 2;
+        }
     }
 
     float m_prevPosY;
