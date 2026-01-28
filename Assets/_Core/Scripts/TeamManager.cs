@@ -8,9 +8,9 @@ using static UnityEditor.PlayerSettings;
 public class TeamManager : MonoSingleton<TeamManager>
 {
     Dictionary<TeamPositionType, Vector3> m_dbPostion = new();
-
     Dictionary<TeamPositionType, CharacterComponent> m_member = new();
 
+    public CharacterStateType teamState { get; private set; } = CharacterStateType.Wait;
     public IReadOnlyDictionary<TeamPositionType, CharacterComponent> members => m_member;
 
     protected override void OnAwake()
@@ -89,13 +89,15 @@ public class TeamManager : MonoSingleton<TeamManager>
         }
     }
 
-    public float teamMoveSpeed => mainCharacter.data.moveSpeed;
-    public CharacterComponent mainCharacter => m_member.Values.First();
+    public float teamMoveSpeed => mainHero.data.moveSpeed;
+    public CharacterComponent mainHero => m_member.Values.First();
 
     public void SetState(CharacterStateType _stateType)
     {
         foreach (var member in m_member.Values)
             member.SetState(_stateType);
+
+        teamState = _stateType;
     }
 
     public Vector3 GetPositionByType(TeamPositionType _teamPosition)
@@ -112,7 +114,7 @@ public class TeamManager : MonoSingleton<TeamManager>
     }
 
     public CharacterComponent GetNearestHeroFromPositon(Vector3 _position) =>
-        m_member.Values.Where(x=>x.isLive)
+        m_member.Values.Where(x => x.isLive)
         .OrderBy(x => (x.transform.position - _position).sqrMagnitude)
         .FirstOrDefault();
 

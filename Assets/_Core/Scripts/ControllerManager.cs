@@ -46,7 +46,7 @@ public class ControllerManager : MonoSingleton<ControllerManager>, IPointerDownH
 
     public void OnPointerUp(PointerEventData _eventData)
     {
-        m_character.SetState(CharacterStateType.Wait);
+        m_character.SetState(TeamManager.instance.teamState);
         m_pad.gameObject.SetActive(false);
     }
 

@@ -62,7 +62,7 @@ public class StageManager : MonoSingleton<StageManager>
                 // 위치 세팅한다
                 bool isFlip = false;
                 {
-                    var posMainHero = TeamManager.instance.mainCharacter.transform.position;
+                    var posMainHero = TeamManager.instance.mainHero.transform.position;
                     var pos = phase.position;
                     pos.x = posMainHero.x;
                     phase.position = pos;
@@ -132,9 +132,11 @@ public class StageManager : MonoSingleton<StageManager>
     }
     public IReadOnlyList<CharacterComponent> enemyList => m_enemieList;
 
+
+
     public CharacterComponent nearestEnemy =>
         m_enemieList.Where(_x => _x.isLive == true)
-        .OrderBy(x => (x.transform.position - TeamManager.instance.mainCharacter.transform.position).sqrMagnitude)
+        .OrderBy(x => (x.transform.position - TeamManager.instance.mainHero.transform.position).sqrMagnitude)
         .FirstOrDefault();
 
 }
