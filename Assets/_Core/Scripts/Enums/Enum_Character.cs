@@ -5,6 +5,8 @@ public enum FactionType
 
     Alliance,
     Enemy,
+
+    ETC,
 }
 
 public enum CharacterAnimType
@@ -15,6 +17,9 @@ public enum CharacterAnimType
     Walk,
 
     Attack,
+
+    Die_1,
+    Die_2,
 
     MAX
 }

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -16,7 +17,8 @@ public class TeamManager : MonoSingleton<TeamManager>
     protected override void OnAwake()
     {
         for (int i = 0; i < transform.childCount; i++)
-            m_dbPostion.Add(TeamPositionType.None + i + 1, transform.GetChild(i).position);
+            m_dbPostion.Add(TeamPositionType.None + i + 1,
+                transform.GetChild(i).position - transform.GetChild(0).position);
     }
 
 
@@ -108,9 +110,31 @@ public class TeamManager : MonoSingleton<TeamManager>
         return m_member.Values.First().transform.position - m_dbPostion[_teamPosition];
     }
 
-    public void RepositionToMain()
+    public void RepositionToMain(float _duration)
     {
+        var main = mainHero;
+        bool isFlip = main.move.isFlip;
 
+        foreach (var member in m_member)
+        {
+            var hero = member.Value;
+
+            if (hero.isLive == false || hero.isMain == true)
+                continue;
+
+            hero.move.SetFlip(isFlip);
+
+            var targetPos = m_dbPostion[member.Key];
+            if (isFlip == false)
+                targetPos.x *= -1;
+            targetPos += main.transform.position;
+            var sqr = Vector3.SqrMagnitude(targetPos - hero.transform.position);
+            if (sqr > 1)
+            {
+                hero.anim.Play(CharacterAnimType.Idle);
+                hero.transform.DOLocalMove(targetPos, _duration);
+            }
+        }
     }
 
     public CharacterComponent GetNearestHeroFromPositon(Vector3 _position) =>

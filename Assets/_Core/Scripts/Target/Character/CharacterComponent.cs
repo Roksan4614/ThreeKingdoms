@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 
-public class CharacterComponent : MonoBehaviour
+public class CharacterComponent : TargetComponent
 {
     [SerializeField]
     Data_Character m_data;
@@ -15,30 +14,26 @@ public class CharacterComponent : MonoBehaviour
     bool m_isMain;
     [SerializeField]
     FactionType m_faction;
-
     [SerializeField]
-    CharacterComponent m_target;
-
     CharacterAnimationClipData m_animationClipData;
 
-    public Transform panel { get; private set; }
-    public Rigidbody2D rig { get; private set; }
+
+    SortingGroup m_sortingGroup;
+    CharacterState m_state;
+
+    Dictionary<CharacterStateType, CharacterState> m_dbState = new();
 
     public Character_Woker_Anim anim { get; private set; }
     public Character_Woker_Move move { get; private set; }
     public Character_Worker_Attack attack { get; private set; }
-
-    Dictionary<CharacterStateType, CharacterState_> m_dbState = new();
-    CharacterState_ m_state;
-
-    SortingGroup m_sortingGroup;
-
+    public Character_Worker_Target target { get; private set; }
+    public Transform panel { get; private set; }
+    public Rigidbody2D rig { get; private set; }
     public Data_Character data => m_data;
-    public bool isLive => data.health > 0;
+    public override bool isLive => data.health > 0;
     public bool isMain => m_isMain;
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; }
-    public CharacterComponent target => m_target;
 
     public void SetMain(bool _isMain) => m_isMain = _isMain;
 
@@ -52,10 +47,11 @@ public class CharacterComponent : MonoBehaviour
         anim = new(this, m_animationClipData); m_animationClipData = default;
         move = new(this);
         attack = new(this);
+        target = new(this);
 
         m_dbState.Add(CharacterStateType.Wait, new CharacterState_Wait(this));
-        m_dbState.Add(CharacterStateType.Battle, new CharacterState_Battle(this));
         m_dbState.Add(CharacterStateType.SearchEnemy, new CharacterState_SearchEnemy(this));
+        m_dbState.Add(CharacterStateType.Battle, new CharacterState_Battle(this));
 
         SetState(CharacterStateType.Wait);
 
@@ -85,13 +81,12 @@ public class CharacterComponent : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            anim.PlayAnimation(CharacterAnimType.Attack);
+            anim.Play(CharacterAnimType.Attack);
         }
     }
 
     private void LateUpdate()
     {
-        m_state?.LateUpdate();
         UpdateSortingOreder();
     }
 
@@ -100,7 +95,7 @@ public class CharacterComponent : MonoBehaviour
     public void SetTeamPosition(TeamPositionType _teamPosition, Vector3 _position)
     {
         teamPosition = _teamPosition;
-        anim.PlayAnimation(CharacterAnimType.Idle);
+        anim.Play(CharacterAnimType.Idle);
         transform.position = _position;
     }
 
@@ -108,12 +103,17 @@ public class CharacterComponent : MonoBehaviour
     {
         if (_collision.CompareTag("CharacterBody"))
         {
-            var character = _collision.transform.parent.GetComponent<CharacterComponent>();
+            var hero = _collision.transform.parent.GetComponent<CharacterComponent>();
+            target.AddTarget(hero);
+        }
+    }
 
-            bool isEnemy = m_faction != character.factionType;
-            if (isEnemy)
-            {
-            }
+    private void OnTriggerExit2D(Collider2D _collision)
+    {
+        if (_collision.CompareTag("CharacterBody"))
+        {
+            var hero = _collision.transform.parent.GetComponent<CharacterComponent>();
+            target.RemoveTarget(hero);
         }
     }
 
@@ -130,16 +130,19 @@ public class CharacterComponent : MonoBehaviour
         m_state = m_dbState.ContainsKey(_stateType) ? m_dbState[_stateType] : null;
         m_state?.Start();
     }
-}
 
-[Serializable]
-public struct CharacterAnimationClipData
-{
-    public AnimationClip attack;
-
-    public AnimationClip GetClip(CharacterAnimType _animType) => _animType switch
+    public bool OnDamage(int _damage)
     {
-        CharacterAnimType.Attack => attack,
-        _ => null,
-    };
+        m_data.health -= _damage;
+        if (m_data.health <= 0)
+        {
+            m_data.health = 0;
+            m_state?.Stop();
+            anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
+
+            transform.GetComponent<Collider2D>("Character").enabled = false;
+            return true;
+        }
+        return false;
+    }
 }
