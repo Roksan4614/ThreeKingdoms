@@ -2,6 +2,7 @@ using NUnit.Framework.Constraints;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -101,10 +102,12 @@ public class StageManager : MonoSingleton<StageManager>
 
                 TeamManager.instance.mainHero.move.SetFlip(isFlip == false);
 
-                TeamManager.instance.RepositionToMain(.5f);
+                TeamManager.instance.RepositionToMain();
 
                 // START PHASE
                 TeamManager.instance.SetState(CharacterStateType.SearchEnemy);
+
+                SetState(CharacterStateType.Wait);
 
                 // 클리어 할 때까지 대기
                 bool isClear = false;
@@ -135,12 +138,16 @@ public class StageManager : MonoSingleton<StageManager>
                 }
             }
 
+            TeamManager.instance.mainHero.move.SetFlip(true);
+            TeamManager.instance.RepositionToMain();
             TeamManager.instance.SetState(CharacterStateType.Wait);
 
             // CLEAR STAGE
             yield return null;
         }
     }
+
+
     public IReadOnlyList<CharacterComponent> enemyList => m_enemieList.Where(_x => _x.isLive).ToList();
 
     public Vector3 centerPosition
@@ -157,7 +164,7 @@ public class StageManager : MonoSingleton<StageManager>
         }
     }
 
-    public CharacterComponent GetNearestHero(Vector3 _position)
+    public CharacterComponent GetNearestEnemy(Vector3 _position)
     {
         CharacterComponent result = null;
         float minDist = float.MaxValue;
@@ -178,6 +185,12 @@ public class StageManager : MonoSingleton<StageManager>
         }
 
         return result;
+    }
+
+    public void SetState(CharacterStateType _stateType)
+    {
+        foreach (var enemy in m_enemieList)
+            enemy.SetState(_stateType);
     }
 }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -17,8 +18,6 @@ public class CharacterComponent : TargetComponent
     [SerializeField]
     CharacterAnimationClipData m_animationClipData;
 
-
-    SortingGroup m_sortingGroup;
     CharacterState m_state;
 
     Dictionary<CharacterStateType, CharacterState> m_dbState = new();
@@ -39,9 +38,9 @@ public class CharacterComponent : TargetComponent
 
     private void Awake()
     {
+        base.Awake();
         rig = transform.GetComponent<Rigidbody2D>();
 
-        m_sortingGroup = transform.GetComponent<SortingGroup>();
         panel = rig.transform.Find("Character/Panel");
 
         anim = new(this, m_animationClipData); m_animationClipData = default;
@@ -55,8 +54,6 @@ public class CharacterComponent : TargetComponent
 
         SetState(CharacterStateType.Wait);
 
-        m_sortingGroup.sortingOrder = 0;
-
         // TEST
         m_data.SetDefault();
 
@@ -67,27 +64,12 @@ public class CharacterComponent : TargetComponent
         }
     }
 
-    float m_prevPosY;
-    public void UpdateSortingOreder()
-    {
-        if (m_prevPosY != transform.position.y)
-        {
-            m_prevPosY = transform.position.y;
-            m_sortingGroup.sortingOrder = (int)(transform.position.y * -10f);
-        }
-    }
-
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             anim.Play(CharacterAnimType.Attack);
         }
-    }
-
-    private void LateUpdate()
-    {
-        UpdateSortingOreder();
     }
 
     public void SetFaction(FactionType _factionType) => m_faction = _factionType;

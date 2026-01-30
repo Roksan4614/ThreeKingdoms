@@ -8,7 +8,7 @@ public class CharacterState_Battle : CharacterState
 
     public override IEnumerator DoUpdate()
     {
-        var target = StageManager.instance.GetNearestHero(m_owner.transform.position);
+        var target = GetNearestHero();
 
         while (target != null)
         {
@@ -17,9 +17,17 @@ public class CharacterState_Battle : CharacterState
             while (target.isLive == true)
                 yield return null;
 
-            target = StageManager.instance.GetNearestHero(m_owner.transform.position);
+            target = GetNearestHero();
         }
 
         m_owner.anim.Play(CharacterAnimType.Idle);
+    }
+
+    CharacterComponent GetNearestHero()
+    {
+        if( m_owner.factionType == FactionType.Alliance)
+            return StageManager.instance.GetNearestEnemy(m_owner.transform.position);
+        else
+            return TeamManager.instance.GetNearestHero(m_owner.transform.position);
     }
 }

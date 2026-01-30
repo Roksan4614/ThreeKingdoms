@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor.U2D.Animation;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class TeamManager : MonoSingleton<TeamManager>
 {
@@ -111,7 +112,7 @@ public class TeamManager : MonoSingleton<TeamManager>
         return m_member.Values.First().transform.position - m_dbPostion[_teamPosition];
     }
 
-    public void RepositionToMain(float _duration)
+    public void RepositionToMain(float _duration = .5f)
     {
         var main = mainHero;
         var startPosMain = main.transform.position;
@@ -155,10 +156,26 @@ public class TeamManager : MonoSingleton<TeamManager>
         }
     }
 
-    public CharacterComponent GetNearestHeroFromPositon(Vector3 _position) =>
-        m_member.Values.Where(x => x.isLive)
-        .OrderBy(x => (x.transform.position - _position).sqrMagnitude)
-        .FirstOrDefault();
+    public CharacterComponent GetNearestHero(Vector3 _position)
+    {
+        CharacterComponent result = null;
+        float minDist = float.MaxValue;
 
+        foreach (var hero in m_member.Values)
+        {
+            if (hero.isLive == false)
+                continue;
+
+
+            float sqrDist = (hero.transform.position - _position).sqrMagnitude;
+            if (sqrDist < minDist)
+            {
+                minDist = sqrDist;
+                result = hero;
+            }
+        }
+
+        return result;
+    }
 
 }

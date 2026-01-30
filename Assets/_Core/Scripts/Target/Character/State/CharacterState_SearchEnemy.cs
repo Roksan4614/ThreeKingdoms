@@ -11,7 +11,7 @@ public class CharacterState_SearchEnemy : CharacterState
     {
         var mainHero = TeamManager.instance.mainHero;
         var posTarget = StageManager.instance.centerPosition;
-        var posNearestEnemy = StageManager.instance.GetNearestHero(mainHero.transform.position).transform.position;
+        var posNearestEnemy = StageManager.instance.GetNearestEnemy(mainHero.transform.position).transform.position;
 
         var teamSpeed = TeamManager.instance.teamMoveSpeed;
 
@@ -25,6 +25,7 @@ public class CharacterState_SearchEnemy : CharacterState
             var distance = Vector3.Distance(m_owner.transform.position, posNearestEnemy);
             if (distance < 5f)
             {
+                StageManager.instance.SetState(CharacterStateType.Battle);
                 TeamManager.instance.SetState(CharacterStateType.Battle);
                 break;
             }
