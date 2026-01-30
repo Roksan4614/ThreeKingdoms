@@ -8,7 +8,7 @@ public class CharacterState_Wait : CharacterState
 
     public override void Start()
     {
+        m_owner.target.SetTarget(null);
         m_owner.move.MoveStop();
-        m_owner.anim.Play(CharacterAnimType.Idle);
     }
 }

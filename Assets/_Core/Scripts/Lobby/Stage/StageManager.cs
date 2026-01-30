@@ -24,7 +24,7 @@ public class StageManager : MonoSingleton<StageManager>
 
     public void StartStage()
     {
-        StartCoroutine(DoStartStage());
+        //StartCoroutine(DoStartStage());
     }
 
     IEnumerator DoStartStage()
@@ -103,8 +103,6 @@ public class StageManager : MonoSingleton<StageManager>
 
                 TeamManager.instance.RepositionToMain(.5f);
 
-                yield return new WaitForSecondsRealtime(2f);
-
                 // START PHASE
                 TeamManager.instance.SetState(CharacterStateType.SearchEnemy);
 
@@ -123,10 +121,6 @@ public class StageManager : MonoSingleton<StageManager>
                     }
                     yield return null;
                 }
-
-                yield return new WaitForSeconds(0.2f);
-
-                TeamManager.instance.RepositionToMain(.5f);
 
                 yield return new WaitForSecondsRealtime(1f);
 

@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -85,7 +86,7 @@ public class TeamManager : MonoSingleton<TeamManager>
         int index = 0;
         foreach (var member in m_member)
         {
-            member.Value.SetTeamPosition(member.Key, m_dbPostion[member.Key]);
+            member.Value.SetTeamPosition(member.Key, mainHero.transform.position + m_dbPostion[member.Key]);
             member.Value.SetMain(0 == index++);
             member.Value.SetFaction(FactionType.Alliance);
         }
@@ -113,6 +114,8 @@ public class TeamManager : MonoSingleton<TeamManager>
     public void RepositionToMain(float _duration)
     {
         var main = mainHero;
+        var startPosMain = main.transform.position;
+
         bool isFlip = main.move.isFlip;
 
         foreach (var member in m_member)
@@ -128,11 +131,26 @@ public class TeamManager : MonoSingleton<TeamManager>
             if (isFlip == false)
                 targetPos.x *= -1;
             targetPos += main.transform.position;
+
             var sqr = Vector3.SqrMagnitude(targetPos - hero.transform.position);
             if (sqr > 1)
             {
                 hero.anim.Play(CharacterAnimType.Idle);
-                hero.transform.DOLocalMove(targetPos, _duration);
+                var tween = hero.transform.DOLocalMove(targetPos, _duration);
+
+                DateTime dt = DateTime.Now;
+                tween.OnUpdate(() =>
+                {
+                    if (startPosMain != main.transform.position)
+                    {
+                        var targetPos = m_dbPostion[member.Key];
+                        if (isFlip == false)
+                            targetPos.x *= -1;
+                        targetPos += main.transform.position;
+
+                        tween.ChangeValues(hero.transform.position, targetPos, _duration - (float)(DateTime.Now - dt).TotalSeconds);
+                    }
+                });
             }
         }
     }
