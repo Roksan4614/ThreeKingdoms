@@ -36,7 +36,7 @@ public class CharacterComponent : TargetComponent
 
     public void SetMain(bool _isMain) => m_isMain = _isMain;
 
-    private void Awake()
+    protected override void Awake()
     {
         base.Awake();
         rig = transform.GetComponent<Rigidbody2D>();

@@ -29,12 +29,15 @@ public class ControllerManager : MonoSingleton<ControllerManager>, IPointerDownH
 
     private void Update()
     {
-        if (m_pad.gameObject.activeSelf == true)
+        if (isActive == true)
             m_character.OnConrollerMove(m_padBar.position - m_pad.position);
     }
 
     public void OnPointerDown(PointerEventData _eventData)
     {
+        if (TeamManager.instance.mainHero.isLive == false)
+            return;
+
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 startPos);
 
         m_pad.anchoredPosition = startPos;
@@ -46,12 +49,18 @@ public class ControllerManager : MonoSingleton<ControllerManager>, IPointerDownH
 
     public void OnPointerUp(PointerEventData _eventData)
     {
+        if (isActive == false)
+            return;
+
         m_character.SetState(TeamManager.instance.teamState);
         m_pad.gameObject.SetActive(false);
     }
 
     public void OnDrag(PointerEventData _eventData)
     {
+        if (isActive == false)
+            return;
+
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 targetPos);
 
         m_padBar.anchoredPosition = Vector2.ClampMagnitude(targetPos - m_pad.anchoredPosition, m_maxRadiusBar);

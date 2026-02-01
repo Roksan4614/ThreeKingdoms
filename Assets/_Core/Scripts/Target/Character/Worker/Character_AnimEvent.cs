@@ -9,8 +9,8 @@ public class Character_AnimEvent : MonoBehaviour
         m_owner = transform.parent.parent.parent.GetComponent<CharacterComponent>();
     }
 
-    public void EventAttack()
+    public void EventAttackHit()
     {
-        m_owner.attack.EventAttack();
+        m_owner.attack.EventAttackHit();
     }
 }

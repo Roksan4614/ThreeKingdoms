@@ -44,7 +44,7 @@ public class MapManager : MonoSingleton<MapManager>
                 _targetPos.x = collider.transform.position.x - distCameraHori;
         }
 
-        if (_targetPos.x > 0)
+        if (_targetPos.y > 0)
         {
             // »ó
             collider = Physics2D.Raycast(_targetPos, Vector2.up, distCameraVert, m_bounceLayer).collider;

@@ -34,7 +34,7 @@ public enum CharacterClassType
     Champion,
     // 선봉장
     Vanguard,
-    // 감시자
+    // 추격자
     Sentinel,
     // 궁장
     Archer,

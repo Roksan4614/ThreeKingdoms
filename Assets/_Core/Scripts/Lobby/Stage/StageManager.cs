@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class StageManager : MonoSingleton<StageManager>
 {
@@ -12,7 +13,7 @@ public class StageManager : MonoSingleton<StageManager>
 
     LoadData_Stage m_loadData;
 
-    List<CharacterComponent> m_enemieList = new();
+    List<CharacterComponent> m_enemyList = new();
 
     int m_indexLayerEnemy;
     protected override void OnAwake()
@@ -25,7 +26,7 @@ public class StageManager : MonoSingleton<StageManager>
 
     public void StartStage()
     {
-        //StartCoroutine(DoStartStage());
+        StartCoroutine(DoStartStage());
     }
 
     IEnumerator DoStartStage()
@@ -33,6 +34,8 @@ public class StageManager : MonoSingleton<StageManager>
 #if UNITY_EDITOR
         m_chapter.name = $"Chapter_{m_loadData.chapterId}";
 #endif
+        while (Input.GetKey(KeyCode.A) == false)
+            yield return null;
 
         // TODO: 어드레서블에서 가져오는 건 후에 하자. 일단 구현만. 26.01.23
         var stage = m_chapter.GetChild(0); // 임시
@@ -55,15 +58,12 @@ public class StageManager : MonoSingleton<StageManager>
 
                 phase.gameObject.SetActive(true);
 
-                m_enemieList.Clear();
+                m_enemyList.Clear();
                 for (int i = 0; i < phase.childCount; i++)
                 {
                     var e = phase.GetChild(i).GetComponent<CharacterComponent>();
-                    if (e != null)
-                    {
-                        e.gameObject.layer = m_indexLayerEnemy;
-                        m_enemieList.Add(e);
-                    }
+                    e.gameObject.layer = m_indexLayerEnemy;
+                    m_enemyList.Add(e);
                 }
 
                 // 위치 세팅한다
@@ -82,9 +82,9 @@ public class StageManager : MonoSingleton<StageManager>
                 // 위치 세팅한다
 
 
-                var prevPosition = m_enemieList.Select(x => x.transform.position).ToList();
+                var prevPosition = m_enemyList.Select(x => x.transform.position).ToList();
 
-                foreach (var e in m_enemieList)
+                foreach (var e in m_enemyList)
                 {
                     e.SetFaction(FactionType.Enemy);
                     e.transform.SetParent(MapManager.instance.parentEnemy);
@@ -114,7 +114,7 @@ public class StageManager : MonoSingleton<StageManager>
                 while (isClear == false)
                 {
                     isClear = true;
-                    foreach (var e in m_enemieList)
+                    foreach (var e in m_enemyList)
                     {
                         if (e.isLive)
                         {
@@ -127,15 +127,23 @@ public class StageManager : MonoSingleton<StageManager>
 
                 yield return new WaitForSecondsRealtime(1f);
 
-                phase.gameObject.SetActive(false);
-
                 // 클리어하면 원상 복구 시킨다.
-                for (int i = 0; i < m_enemieList.Count; i++)
+                for (int i = 0; i < m_enemyList.Count; i++)
+                    m_enemyList[i].transform.SetParent(phase);
+
+                Utils.AfterCoroutine(() =>
                 {
-                    var e = m_enemieList[i].transform;
-                    e.SetParent(phase);
-                    e.position = prevPosition[i];
-                }
+                    for (int i = 0; i < phase.childCount; i++)
+                    {
+                        var e = phase.GetChild(i);
+                        e.position = prevPosition[i];
+                        var parts = e.Find("Character/Panel/Parts");
+                        parts.Find("Sub").gameObject.SetActive(true);
+                        parts.Find("Weapon").gameObject.SetActive(true);
+                    }
+
+                    phase.gameObject.SetActive(false);
+                }, 5f);
             }
 
             TeamManager.instance.mainHero.move.SetFlip(true);
@@ -147,8 +155,7 @@ public class StageManager : MonoSingleton<StageManager>
         }
     }
 
-
-    public IReadOnlyList<CharacterComponent> enemyList => m_enemieList.Where(_x => _x.isLive).ToList();
+    public IReadOnlyList<CharacterComponent> enemyList => m_enemyList.Where(_x => _x.isLive).ToList();
 
     public Vector3 centerPosition
     {
@@ -169,9 +176,9 @@ public class StageManager : MonoSingleton<StageManager>
         CharacterComponent result = null;
         float minDist = float.MaxValue;
 
-        for (int i = 0; i < m_enemieList.Count; i++)
+        for (int i = 0; i < m_enemyList.Count; i++)
         {
-            var enemy = m_enemieList[i];
+            var enemy = m_enemyList[i];
 
             if (enemy.isLive == false)
                 continue;
@@ -189,7 +196,7 @@ public class StageManager : MonoSingleton<StageManager>
 
     public void SetState(CharacterStateType _stateType)
     {
-        foreach (var enemy in m_enemieList)
+        foreach (var enemy in m_enemyList)
             enemy.SetState(_stateType);
     }
 }
