@@ -34,6 +34,7 @@ public class StageManager : MonoSingleton<StageManager>
 #if UNITY_EDITOR
         m_chapter.name = $"Chapter_{m_loadData.chapterId}";
 #endif
+
         while (Input.GetKey(KeyCode.A) == false)
             yield return null;
 

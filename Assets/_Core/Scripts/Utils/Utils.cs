@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public static class Utils
 {
@@ -50,5 +52,39 @@ public static class Utils
         }
 
         return false;
+    }
+
+    public static MaskableGraphic SetObjectAlpha(GameObject _object, float _alpha, bool _isChild = true)
+    {
+        return SetObjectAlpha(_object.transform, _alpha, _isChild);
+    }
+
+    public static MaskableGraphic SetObjectAlpha(Transform _trns, float _alpha, bool _isChild = true)
+    {
+        MaskableGraphic mg = null;
+
+        if (_trns.GetComponent<Image>() != null)
+            mg = _trns.GetComponent<Image>();
+        else if (_trns.GetComponent<Text>() != null)
+            mg = _trns.GetComponent<Text>();
+        else if (_trns.GetComponent<TextMeshProUGUI>() != null)
+            mg = _trns.GetComponent<TextMeshProUGUI>();
+
+        if (mg != null)
+        {
+            Color clr = mg.color;
+            clr.a = _alpha;
+            mg.color = clr;
+        }
+
+        if (_isChild == true)
+        {
+            for (int i = 0; i < _trns.childCount; i++)
+            {
+                SetObjectAlpha(_trns.GetChild(i), _alpha, _isChild);
+            }
+        }
+
+        return mg;
     }
 }

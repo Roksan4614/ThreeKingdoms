@@ -69,6 +69,11 @@ public class CharacterComponent : TargetComponent
         if (Input.GetKeyDown(KeyCode.Space))
         {
             anim.Play(CharacterAnimType.Attack);
+
+            if(isMain)
+            {
+                EffectWorker.instance.SlotDamageTakenEffect(new() { attacker = transform, target = StageManager.instance.GetNearestEnemy(transform.position).transform });
+            }
         }
     }
 

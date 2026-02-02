@@ -17,6 +17,8 @@ public class Character_Weapon : MonoBehaviour
         if (target == null || target.isLive == false)
             return;
 
+        EffectWorker.instance.SlotDamageTakenEffect(new() { attacker = _owner.transform, target = target.transform, });
+
         if (target.OnDamage(_owner.data.attackPower))
             _owner.target.SetTarget(null);
     }
