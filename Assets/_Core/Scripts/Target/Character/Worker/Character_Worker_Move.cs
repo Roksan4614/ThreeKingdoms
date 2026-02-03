@@ -59,6 +59,9 @@ public class Character_Woker_Move : Character_Worker
             {
                 m_owner.target.SetTarget(_target);
                 yield return m_owner.attack.DoAttack(_target);
+
+                if (m_owner.target.Contains(_target) == false)
+                    yield break;
             }
 
             yield return null;

@@ -29,6 +29,8 @@ public class SpriteAnimaion : MonoBehaviour
     Image m_imgEffect;
     SpriteRenderer m_sprEffect;
 
+    Action m_onCompleted;
+
     private void Awake()
     {
         Sprite baseSprite = null;
@@ -56,8 +58,9 @@ public class SpriteAnimaion : MonoBehaviour
         StartCoroutine(DoPlayAnimation());
     }
 
-    public void Play()
+    public void Play(Action _onCompleted)
     {
+        m_onCompleted = _onCompleted;
         gameObject.SetActive(true);
     }
 
@@ -123,6 +126,7 @@ public class SpriteAnimaion : MonoBehaviour
             }
         }
 
+        m_onCompleted?.Invoke();
         ResetScaleRot(effect);
         gameObject.SetActive(false);
     }

@@ -21,6 +21,6 @@ public struct Data_Character
         attackSpeed = 1;
         moveSpeed = 10;
 
-        health = healthMax = 1000;
+        health = healthMax = 2000;
     }
 }

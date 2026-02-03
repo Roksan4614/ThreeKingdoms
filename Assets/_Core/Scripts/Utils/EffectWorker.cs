@@ -4,28 +4,24 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EffectWorker : MonoSingleton<EffectWorker>
 {
     enum EffectType
     {
-        //damage,
+        damage,
         //bounty,
         hit,
         //die,
     }
 
-    [SerializeField]
-    AnimationData m_configureDamage;
+    Transform m_parentRenderer;
+    Transform m_parentCanvas;
 
-    TextMeshProUGUI m_baseDamage;
-    TextMeshProUGUI m_baseBounty;
-    SpriteAnimaion m_baseEffectHit;
-    SpriteAnimaion m_baseEffectDie;
-
-    Dictionary<EffectType, List<TextMeshProUGUI>> m_fx_text = new()
+    Dictionary<EffectType, List<Text>> m_fx_text = new()
     {
-        //{ EffectType.damage, new List<TextMeshProUGUI>() },
+        { EffectType.damage, new List<Text>() },
         //{ EffectType.bounty, new List<TextMeshProUGUI>() },
     };
 
@@ -37,81 +33,104 @@ public class EffectWorker : MonoSingleton<EffectWorker>
 
     protected override void OnAwake()
     {
-        //m_baseDamage = transform.GetComponent<TextMeshProUGUI>("Panel/txt_damage");
-        //m_baseDamage.gameObject.SetActive(false);
+        m_parentCanvas = transform.Find("Canvas");
+        {
+            var baseDamage = m_parentCanvas.GetComponent<Text>("Damage");
+            baseDamage.gameObject.SetActive(false);
+            m_fx_text[EffectType.damage].Add(baseDamage);
+        }
 
-        //m_baseBounty = transform.GetComponent<TextMeshProUGUI>("Panel/txt_bounty");
-        //m_baseBounty.gameObject.SetActive(false);
-
-        m_baseEffectHit = transform.GetComponent<SpriteAnimaion>("Renderer/DamageHit");
-        m_baseEffectHit.gameObject.SetActive(false);
+        m_parentRenderer = transform.Find("Renderer");
+        {
+            var baseHit = m_parentRenderer.GetComponent<SpriteAnimaion>("DamageHit");
+            baseHit.gameObject.SetActive(false);
+            m_fx_animation[EffectType.hit].Add(baseHit);
+        }
 
         //m_baseEffectDie = transform.GetComponent<SpriteAnimaion>("Panel/effect_die");
         //m_baseEffectDie.gameObject.SetActive(false);
     }
 
-    public void SlotDamageTakenEffect(EffectData _damageData)
+    public void SlotDamageTakenEffect(HitData _hitData)
     {
         //if (m_fx_text[EffectType.damage] == null)
         //    return;
 
-        
-
         // 데미지 표시해주자
+        //if (_hitData.value != 0)
         //{
-        //    TextMeshProUGUI txtDamage = m_fx_text[EffectType.damage].Find(x => x.gameObject.activeSelf == false);
+        //    var targetParent = _hitData.target.Find("Character/Canvas/Effect");
 
-        //    if (txtDamage == null)
+        //    Text txtdamage = m_fx_text[EffectType.damage].Find(x => x.gameObject.activeSelf == false);
+
+        //    if (txtdamage == null)
         //    {
-        //        txtDamage = Instantiate(m_baseDamage, transform).GetComponent<TextMeshProUGUI>();
-        //        m_fx_text[EffectType.damage].Add(txtDamage);
+        //        txtdamage = Instantiate(m_fx_text[EffectType.damage][0], m_parentCanvas)
+        //            .GetComponent<Text>();
+        //        txtdamage.name = $"Damage_{m_fx_text[EffectType.damage].Count}";
+        //        txtdamage.transform.localScale = new Vector3(1f, 0.9f, 1f);
+        //        m_fx_text[EffectType.damage].Add(txtdamage);
         //    }
 
-        //    txtDamage.text = $"<size={txtDamage.fontSize * (_damageData.isCritical ? 1.3 : 1)}><color=#{(_damageData.value > 0 ? "00A909>+" : _damageData.isCritical ? "DDD800>" : "960000>")}{_damageData.value}</color></size>";
-        //    txtDamage.transform.SetParent(parent);
-        //    //txtDamage.transform.SetAsLastSibling();
+        //    txtdamage.text = $"<size={txtdamage.fontSize * (_hitData.isCritical ? 1.3 : 1)}><color=#{(_hitData.value > 0 ? "A5FFAB>+" : _hitData.isCritical ? "D98500>" : _hitData.isAlliance ? "063BA9>" : "9F2625>")}{_hitData.value}</color></size>";
+        //    txtdamage.transform.SetParent(targetParent);
+        //    txtdamage.transform.SetAsLastSibling();
 
-        //    StartCoroutine(DoShowEffectValue(txtDamage.gameObject, _damageData.target.position));
+        //    StartCoroutine(DoShowEffectValue(txtdamage.gameObject, _hitData.target.position,
+        //        () => txtdamage.transform.SetParent(m_parentCanvas)));
         //}
 
         // effect 연출해주자
-        //if (_damageData.value < 0)
+        //if (_hitData.value < 0)
         {
-            var parent = _damageData.target.Find("Character/Effect_Renderer");
+            var targetParent = _hitData.target.Find("Character/Effect_Renderer");
 
             SpriteAnimaion animation = m_fx_animation[EffectType.hit].Find(x => x.gameObject.activeSelf == false);
             if (animation == null)
             {
-                animation = Instantiate(m_baseEffectHit, transform).GetComponent<SpriteAnimaion>();
+                animation = Instantiate(m_fx_animation[EffectType.hit][0], m_parentRenderer)
+                    .GetComponent<SpriteAnimaion>();
+                animation.name = $"DamageHit_{m_fx_animation[EffectType.hit].Count}";
                 m_fx_animation[EffectType.hit].Add(animation);
             }
 
-            var angle = Vector3.Angle(Vector3.right, _damageData.target.position - _damageData.attacker.position);
-            if (_damageData.target.position.y < _damageData.attacker.position.y)
+            var angle = Vector3.Angle(Vector3.right, _hitData.target.position - _hitData.attacker.position);
+            if (_hitData.target.position.y < _hitData.attacker.position.y)
                 angle = 360 - angle;
             animation.transform.localEulerAngles = new Vector3(0, 0, angle - 90);
 
-            //var localScale = animation.rt.localScale;
-            //localScale.x *= -1;
-            //animation.rt.localScale = localScale;
-
-            animation.transform.SetParent(parent);
-            //animation.transform.SetAsLastSibling();
-            animation.transform.position = parent.position;// + new Vector3(0, -0.3f);
-            animation.Play();
+            animation.transform.SetParent(targetParent);
+            animation.transform.SetAsLastSibling();
+            animation.transform.position = targetParent.position;
+            animation.Play(() => animation.transform.SetParent(m_parentRenderer));
         }
     }
 
-    IEnumerator DoShowEffectValue(GameObject _damageObject, Vector3 _posTarget)
+    [SerializeField]
+    float fPosY = 20f;
+    IEnumerator DoShowEffectValue(GameObject _damageObject, Vector3 _posTarget, Action _onCompleted)
     {
         _damageObject.SetActive(true);
         Utils.SetObjectAlpha(_damageObject, 1f);
-        _damageObject.transform.position = _posTarget + new Vector3(0, m_configureDamage.posY);
+        _damageObject.transform.position =
+            _posTarget + new Vector3(UnityEngine.Random.Range(-.5f, .5f), fPosY);
 
         var rt = _damageObject.GetComponent<RectTransform>();
-        yield return rt.DOAnchorPos(rt.anchoredPosition + new Vector2(0, 30f), 0.2f).SetEase(Ease.OutCubic).WaitForCompletion();
+
+
+        var cg = _damageObject.GetComponent<CanvasGroup>();
+        if (cg != null)
+            cg.alpha = 1;
+
+        yield return rt.DOAnchorPos(
+            rt.anchoredPosition + new Vector2(0, UnityEngine.Random.Range(20, 50f))
+            , 0.5f).SetEase(Ease.OutCubic).WaitForCompletion();
+
+        if (cg != null)
+            yield return cg.DOFade(0f, 0.2f).SetEase(Ease.OutCubic).WaitForCompletion();
 
         _damageObject.SetActive(false);
+        _onCompleted?.Invoke();
     }
 
     //void SlotBountyEffect(EffectData _effectData)
@@ -132,16 +151,16 @@ public class EffectWorker : MonoSingleton<EffectWorker>
     //    StartCoroutine(DoShowEffectValue(txtBounty.gameObject, _effectData.target.position));
     //}
 
-    IEnumerator DoInstantiateEffect(EffectData _effectData)
-    {
-        var effect = _effectData.attacker;
-        effect.SetParent(transform.Find("World"));
-        effect.rotation = Quaternion.identity;
+    //IEnumerator DoInstantiateEffect(EffectData _effectData)
+    //{
+    //    var effect = _effectData.attacker;
+    //    effect.SetParent(transform.Find("World"));
+    //    effect.rotation = Quaternion.identity;
 
-        yield return new WaitUntil(() => effect.gameObject.activeSelf == false);
+    //    yield return new WaitUntil(() => effect.gameObject.activeSelf == false);
 
-        effect.SetParent(_effectData.target);
-    }
+    //    effect.SetParent(_effectData.target);
+    //}
 
     public void SlotDeleteBrokenEffect()
     {
@@ -170,21 +189,12 @@ public class EffectWorker : MonoSingleton<EffectWorker>
         }
     }
 
-    public struct EffectData
+    public struct HitData
     {
         public Transform attacker;
         public Transform target;
         public int value;
         public bool isCritical;
-        public bool isDie;
-    }
-
-    [Serializable]
-    struct AnimationData
-    {
-        public AnimationCurve curve;
-        public AnimationCurve curve_alpha;
-        public float duration;
-        public float posY;
+        public bool isAlliance;
     }
 }

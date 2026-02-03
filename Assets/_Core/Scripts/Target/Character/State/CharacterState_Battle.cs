@@ -14,9 +14,6 @@ public class CharacterState_Battle : CharacterState
         {
             yield return m_owner.move.DoMoveTarget(target, true);
 
-            while (target.isLive == true)
-                yield return null;
-
             target = GetNearestHero();
         }
 

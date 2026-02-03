@@ -17,9 +17,18 @@ public class Character_Weapon : MonoBehaviour
         if (target == null || target.isLive == false)
             return;
 
-        EffectWorker.instance.SlotDamageTakenEffect(new() { attacker = _owner.transform, target = target.transform, });
+        var damage = _owner.data.attackPower;
 
-        if (target.OnDamage(_owner.data.attackPower))
+        EffectWorker.instance.SlotDamageTakenEffect(new()
+        {
+            attacker = _owner.transform,
+            target = target.transform,
+            value = -damage,
+            isCritical = UnityEngine.Random.Range(0, 100) < 30,
+            isAlliance = target.factionType == FactionType.Alliance
+        });
+
+        if (target.OnDamage(damage))
             _owner.target.SetTarget(null);
     }
 }

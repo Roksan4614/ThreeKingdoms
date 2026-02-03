@@ -24,7 +24,8 @@ public abstract class TargetComponent : MonoBehaviour
         if (m_prevPosY != transform.position.y)
         {
             m_prevPosY = transform.position.y;
-            m_canvas.sortingOrder = m_sortingGroup.sortingOrder = (int)(transform.position.y * -10f);
+            m_sortingGroup.sortingOrder = (int)(transform.position.y * -10f);
+            m_canvas.sortingOrder = m_sortingGroup.sortingOrder + 1;
         }
     }
 }
