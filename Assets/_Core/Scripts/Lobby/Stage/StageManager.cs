@@ -35,9 +35,6 @@ public class StageManager : MonoSingleton<StageManager>
         m_chapter.name = $"Chapter_{m_loadData.chapterId}";
 #endif
 
-        while (Input.GetKey(KeyCode.A) == false)
-            yield return null;
-
         // TODO: 어드레서블에서 가져오는 건 후에 하자. 일단 구현만. 26.01.23
         var stage = m_chapter.GetChild(0); // 임시
 
@@ -82,7 +79,6 @@ public class StageManager : MonoSingleton<StageManager>
                 }
                 // 위치 세팅한다
 
-
                 var prevPosition = m_enemyList.Select(x => x.transform.position).ToList();
 
                 foreach (var e in m_enemyList)
@@ -100,6 +96,9 @@ public class StageManager : MonoSingleton<StageManager>
                     e.move.SetFlip(isFlip);
                     e.SetState(CharacterStateType.Wait);
                 }
+
+                while (Input.GetKey(KeyCode.A) == false)
+                    yield return null;
 
                 TeamManager.instance.mainHero.move.SetFlip(isFlip == false);
 

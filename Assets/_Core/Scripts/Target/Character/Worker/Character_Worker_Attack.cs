@@ -18,7 +18,8 @@ public class Character_Worker_Attack : Character_Worker
     {
         while (_target.isLive && m_owner.target.Contains(_target))
         {
-            yield return m_weapon.DoAttack(m_owner);
+            while (m_weapon.isUseSkill)
+                yield return null;
 
             m_owner.anim.Play(CharacterAnimType.Attack);
 

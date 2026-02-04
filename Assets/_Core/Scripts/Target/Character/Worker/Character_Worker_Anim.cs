@@ -41,6 +41,14 @@ public class Character_Woker_Anim : Character_Worker
         m_animator.Play(animType.ToString(), _layerIndex, 0);
         m_animator.Update(0);
     }
+
+    public void AttackMotionStart()
+    {
+        m_animator.speed = 0;
+        Play(CharacterAnimType.Attack);
+    }
+
+    public void AttackMotionEnd() => m_animator.speed = 1;
 }
 
 

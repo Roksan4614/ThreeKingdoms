@@ -27,7 +27,7 @@ public class SpriteAnimaion : MonoBehaviour
     List<Sprite> m_sprites = new();
 
     Image m_imgEffect;
-    SpriteRenderer m_sprEffect;
+    SpriteRenderer m_rendererEffect;
 
     Action m_onCompleted;
 
@@ -37,8 +37,8 @@ public class SpriteAnimaion : MonoBehaviour
         m_imgEffect = transform.GetComponent<Image>("Panel");
         if (m_imgEffect == null)
         {
-            m_sprEffect = transform.GetComponent<SpriteRenderer>("Panel");
-            baseSprite = m_sprEffect.sprite;
+            m_rendererEffect = transform.GetComponent<SpriteRenderer>("Panel");
+            baseSprite = m_rendererEffect.sprite;
         }
         else
             baseSprite = m_imgEffect.sprite;
@@ -55,18 +55,28 @@ public class SpriteAnimaion : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(DoPlayAnimation());
+        m_coPlay = StartCoroutine(DoPlayAnimation());
     }
 
-    public void Play(Action _onCompleted)
+    public void Play(Action _onCompleted = null)
     {
         m_onCompleted = _onCompleted;
-        gameObject.SetActive(true);
+
+        if (gameObject.activeSelf == true)
+        {
+            if (m_coPlay != null)
+                StopCoroutine(m_coPlay);
+
+            m_coPlay = StartCoroutine(DoPlayAnimation());
+        }
+        else
+            gameObject.SetActive(true);
     }
 
+    Coroutine m_coPlay;
     IEnumerator DoPlayAnimation()
     {
-        Transform effect = m_imgEffect?.transform ?? m_sprEffect.transform;
+        Transform effect = m_imgEffect?.transform ?? m_rendererEffect.transform;
 
         if (m_sprites.Count == 0)
         {
@@ -88,7 +98,7 @@ public class SpriteAnimaion : MonoBehaviour
             if (m_imgEffect)
                 m_imgEffect.sprite = m_sprites[indexSprite];
             else
-                m_sprEffect.sprite = m_sprites[indexSprite];
+                m_rendererEffect.sprite = m_sprites[indexSprite];
 
             while ((DateTime.Now - dtTimer).TotalSeconds < m_effectData.duration)
                 yield return null;
@@ -129,6 +139,8 @@ public class SpriteAnimaion : MonoBehaviour
         m_onCompleted?.Invoke();
         ResetScaleRot(effect);
         gameObject.SetActive(false);
+
+        m_coPlay = null;
     }
 
     void ResetScaleRot(Transform _trns)
@@ -144,6 +156,20 @@ public class SpriteAnimaion : MonoBehaviour
             _trns.rotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
 
     }
+
+    public void SetColor(Color _color)
+    {
+        if (m_imgEffect)
+            m_imgEffect.color = _color;
+        else if (m_rendererEffect)
+            m_rendererEffect.color = _color;
+    }
+
+    public Color GetColor()
+    {
+        return m_imgEffect != null ? m_imgEffect.color : m_rendererEffect != null ? m_rendererEffect.color : Color.white;
+    }
+
 
     UnityAction m_callbackForceStop;
     bool m_isForceStop = false;

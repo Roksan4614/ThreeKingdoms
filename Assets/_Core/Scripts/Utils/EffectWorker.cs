@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,10 @@ public class EffectWorker : MonoSingleton<EffectWorker>
     Transform m_parentRenderer;
     Transform m_parentCanvas;
 
+    [SerializeField]
+    Color m_colorCritical;
+    Color m_colorHit;
+
     Dictionary<EffectType, List<Text>> m_fx_text = new()
     {
         { EffectType.damage, new List<Text>() },
@@ -31,20 +36,22 @@ public class EffectWorker : MonoSingleton<EffectWorker>
         //{ EffectType.die, new List<SpriteAnimaion>() },
     };
 
-    protected override void OnAwake()
+    private void Start()
     {
         m_parentCanvas = transform.Find("Canvas");
         {
             var baseDamage = m_parentCanvas.GetComponent<Text>("Damage");
-            baseDamage.gameObject.SetActive(false);
             m_fx_text[EffectType.damage].Add(baseDamage);
+            baseDamage.gameObject.SetActive(false);
         }
 
         m_parentRenderer = transform.Find("Renderer");
         {
             var baseHit = m_parentRenderer.GetComponent<SpriteAnimaion>("DamageHit");
-            baseHit.gameObject.SetActive(false);
             m_fx_animation[EffectType.hit].Add(baseHit);
+
+            m_colorHit = baseHit.GetColor();
+            baseHit.gameObject.SetActive(false);
         }
 
         //m_baseEffectDie = transform.GetComponent<SpriteAnimaion>("Panel/effect_die");
@@ -57,28 +64,33 @@ public class EffectWorker : MonoSingleton<EffectWorker>
         //    return;
 
         // 데미지 표시해주자
-        //if (_hitData.value != 0)
-        //{
-        //    var targetParent = _hitData.target.Find("Character/Canvas/Effect");
+        if (_hitData.value != 0)
+        {
+            var targetParent = _hitData.target.Find("Character/Canvas/Effect");
 
-        //    Text txtdamage = m_fx_text[EffectType.damage].Find(x => x.gameObject.activeSelf == false);
+            Text txtdamage = m_fx_text[EffectType.damage].Find(x => x.gameObject.activeSelf == false);
 
-        //    if (txtdamage == null)
-        //    {
-        //        txtdamage = Instantiate(m_fx_text[EffectType.damage][0], m_parentCanvas)
-        //            .GetComponent<Text>();
-        //        txtdamage.name = $"Damage_{m_fx_text[EffectType.damage].Count}";
-        //        txtdamage.transform.localScale = new Vector3(1f, 0.9f, 1f);
-        //        m_fx_text[EffectType.damage].Add(txtdamage);
-        //    }
+            if (txtdamage == null)
+            {
+                txtdamage = Instantiate(m_fx_text[EffectType.damage][0], m_parentCanvas)
+                    .GetComponent<Text>();
+                txtdamage.name = $"Damage_{m_fx_text[EffectType.damage].Count}";
+                txtdamage.transform.localScale = new Vector3(1f, 0.9f, 1f);
+                m_fx_text[EffectType.damage].Add(txtdamage);
+            }
 
-        //    txtdamage.text = $"<size={txtdamage.fontSize * (_hitData.isCritical ? 1.3 : 1)}><color=#{(_hitData.value > 0 ? "A5FFAB>+" : _hitData.isCritical ? "D98500>" : _hitData.isAlliance ? "063BA9>" : "9F2625>")}{_hitData.value}</color></size>";
-        //    txtdamage.transform.SetParent(targetParent);
-        //    txtdamage.transform.SetAsLastSibling();
+            var trns = txtdamage.transform;
 
-        //    StartCoroutine(DoShowEffectValue(txtdamage.gameObject, _hitData.target.position,
-        //        () => txtdamage.transform.SetParent(m_parentCanvas)));
-        //}
+            txtdamage.text = $"<size={txtdamage.fontSize * (_hitData.isCritical ? 1.5 : 1)}><color=#{(_hitData.value > 0 ? "A5FFAB>+" : _hitData.isCritical ? $"E58B00>" : _hitData.isAlliance ? "0B7FC6>" : "9F2625>")}{_hitData.value}</color></size>";
+            trns.SetParent(targetParent);
+            trns.SetAsLastSibling();
+
+            if (_hitData.isCritical)
+                trns.DOPunchScale(Vector3.one * 1.2f, 0.2f);
+
+            StartCoroutine(DoShowEffectValue(txtdamage.gameObject, _hitData.target.position,
+                () => trns.SetParent(m_parentCanvas)));
+        }
 
         // effect 연출해주자
         //if (_hitData.value < 0)
@@ -97,12 +109,18 @@ public class EffectWorker : MonoSingleton<EffectWorker>
             var angle = Vector3.Angle(Vector3.right, _hitData.target.position - _hitData.attacker.position);
             if (_hitData.target.position.y < _hitData.attacker.position.y)
                 angle = 360 - angle;
-            animation.transform.localEulerAngles = new Vector3(0, 0, angle - 90);
 
-            animation.transform.SetParent(targetParent);
-            animation.transform.SetAsLastSibling();
-            animation.transform.position = targetParent.position;
-            animation.Play(() => animation.transform.SetParent(m_parentRenderer));
+            animation.SetColor(_hitData.isCritical ? m_colorCritical : m_colorHit);
+
+            var trns = animation.transform;
+
+            trns.localEulerAngles = new Vector3(0, 0, angle - 90);
+            trns.localScale = _hitData.isCritical ? new Vector3(1.2f, 1.2f) : Vector3.one;
+
+            trns.SetParent(targetParent);
+            trns.SetAsLastSibling();
+            trns.position = targetParent.position;
+            animation.Play(() => trns.SetParent(m_parentRenderer));
         }
     }
 
