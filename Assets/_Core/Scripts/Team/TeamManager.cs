@@ -13,6 +13,8 @@ public class TeamManager : MonoSingleton<TeamManager>
     Dictionary<TeamPositionType, Vector3> m_dbPostion = new();
     Dictionary<TeamPositionType, CharacterComponent> m_member = new();
 
+    public Team_HeroInfo heroInfo { get; private set; }
+
     public CharacterStateType teamState { get; private set; } = CharacterStateType.Wait;
     public IReadOnlyDictionary<TeamPositionType, CharacterComponent> members => m_member;
 
@@ -21,8 +23,9 @@ public class TeamManager : MonoSingleton<TeamManager>
         for (int i = 0; i < transform.childCount; i++)
             m_dbPostion.Add(TeamPositionType.None + i + 1,
                 transform.GetChild(i).position - transform.GetChild(0).position);
-    }
 
+        heroInfo = new(ControllerManager.instance.transform.parent.Find("HeroInfo"));
+    }
 
     public void SetTeamPosition(List<CharacterComponent> _members)
     {
@@ -91,6 +94,8 @@ public class TeamManager : MonoSingleton<TeamManager>
             member.Value.SetMain(0 == index++);
             member.Value.SetFaction(FactionType.Alliance);
         }
+
+        heroInfo.SetTeamPosition();
     }
 
     public float teamMoveSpeed => mainHero.data.moveSpeed;

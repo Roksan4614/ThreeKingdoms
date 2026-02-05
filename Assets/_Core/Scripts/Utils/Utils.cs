@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -86,5 +87,19 @@ public static class Utils
         }
 
         return mg;
+    }
+
+    public static string FileSize(long _size)
+    {
+        List<string> strFileSize = new() { "B", "KB", "MB", "GB" };
+
+        int count = 0;
+        while (_size >= 1024 && count < strFileSize.Count - 1)
+        {
+            _size /= 1024;
+            count++;
+        }
+
+        return $"{_size:0.##} {strFileSize[count]}";
     }
 }

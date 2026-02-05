@@ -66,4 +66,7 @@ public static class Extenssions
 
         return path;
     }
+
+    public static bool IsNullOrEmpty(this string _string)
+        => string.IsNullOrEmpty(_string);
 }

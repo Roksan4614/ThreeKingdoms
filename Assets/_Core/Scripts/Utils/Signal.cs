@@ -106,9 +106,8 @@ public class Signal
 
                     IngameLog.AddError($"SignalError: " + err);
                     //Api.SendExceptionError("SignalError: " + err);
-
-                    m_func.RemoveAt(i);
-                    i--;
+                    //m_func.RemoveAt(i);
+                    //i--;
                 }
             }
         }
@@ -209,8 +208,8 @@ public class Signal
 
                     IngameLog.AddError($"SignalError: " + err);
 
-                    m_func.RemoveAt(i);
-                    i--;
+                    //m_func.RemoveAt(i);
+                    //i--;
                 }
             }
         }
