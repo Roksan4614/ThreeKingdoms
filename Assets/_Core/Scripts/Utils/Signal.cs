@@ -269,5 +269,7 @@ public class Signal
 
     public SignalObject<LobbyScreenType> CloseLobbyScreen = new();
 
+    public SignalObject<CharacterComponent> UpdateHP = new();
+
     #endregion
 }

@@ -14,6 +14,8 @@ public struct Data_Character
     public float moveSpeed;
     public float attackSpeed;
 
+    public float duration_respawn;
+
     public void SetDefault() {
 
         attackPower = 100;
@@ -22,5 +24,7 @@ public struct Data_Character
         moveSpeed = 10;
 
         health = healthMax = 2000;
+
+        duration_respawn = 15;
     }
 }

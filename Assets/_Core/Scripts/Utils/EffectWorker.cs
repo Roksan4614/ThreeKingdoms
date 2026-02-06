@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EffectWorker : MonoSingleton<EffectWorker>
+public class EffectWorker : Singleton<EffectWorker>
 {
     enum EffectType
     {

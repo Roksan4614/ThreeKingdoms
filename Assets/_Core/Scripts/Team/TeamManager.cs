@@ -8,7 +8,7 @@ using UnityEngine;
 using static UnityEditor.PlayerSettings;
 using static UnityEngine.EventSystems.EventTrigger;
 
-public class TeamManager : MonoSingleton<TeamManager>
+public class TeamManager : Singleton<TeamManager>
 {
     Dictionary<TeamPositionType, Vector3> m_dbPostion = new();
     Dictionary<TeamPositionType, CharacterComponent> m_member = new();
@@ -24,7 +24,7 @@ public class TeamManager : MonoSingleton<TeamManager>
             m_dbPostion.Add(TeamPositionType.None + i + 1,
                 transform.GetChild(i).position - transform.GetChild(0).position);
 
-        heroInfo = new(ControllerManager.instance.transform.parent.Find("HeroInfo"));
+        heroInfo = new(GameObject.Find("Canvas/HeroInfo").transform);
     }
 
     public void SetTeamPosition(List<CharacterComponent> _members)
@@ -101,6 +101,18 @@ public class TeamManager : MonoSingleton<TeamManager>
     public float teamMoveSpeed => mainHero.data.moveSpeed;
     public CharacterComponent mainHero => m_member.Values.First();
 
+    public void PhaseStart()
+    {
+        RepositionToMain();
+
+        teamState = CharacterStateType.SearchEnemy;
+        foreach (var member in m_member.Values)
+        {
+            member.Respawn();
+            heroInfo.SlotUpdateHP(member);
+        }
+    }
+
     public void SetState(CharacterStateType _stateType)
     {
         foreach (var member in m_member.Values)
@@ -159,6 +171,11 @@ public class TeamManager : MonoSingleton<TeamManager>
                 });
             }
         }
+    }
+
+    public void SetRespawn(TeamPositionType _position)
+    {
+        m_member[_position].Respawn();
     }
 
     public CharacterComponent GetNearestHero(Vector3 _position)

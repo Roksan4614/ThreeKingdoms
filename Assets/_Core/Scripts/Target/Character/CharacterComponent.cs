@@ -32,7 +32,7 @@ public class CharacterComponent : TargetComponent
     public override bool isLive => data.health > 0;
     public bool isMain => m_isMain;
     public FactionType factionType => m_faction;
-    public TeamPositionType teamPosition { get; private set; }
+    public TeamPositionType teamPosition { get; private set; } = TeamPositionType.None;
 
     public void SetMain(bool _isMain) => m_isMain = _isMain;
 
@@ -113,6 +113,7 @@ public class CharacterComponent : TargetComponent
     {
         if (m_state != null)
             SetState(CharacterStateType.None);
+
         move.OnMoveUpdate(_lookAt.normalized * m_data.moveSpeed);
     }
 
@@ -133,8 +134,19 @@ public class CharacterComponent : TargetComponent
             anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
 
             transform.GetComponent<Collider2D>("Character").enabled = false;
-            return true;
         }
-        return false;
+
+        Signal.instance.UpdateHP.Emit(this);
+
+        return m_data.health == 0;
+    }
+
+    public void Respawn(bool _isSetState = true)
+    {
+        if (_isSetState)
+            SetState(TeamManager.instance.teamState);
+
+        m_data.health = m_data.healthMax;
+        transform.GetComponent<Collider2D>("Character").enabled = true;
     }
 }

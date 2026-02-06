@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class MapManager : MonoSingleton<MapManager>
+public class MapManager : Singleton<MapManager>
 {
     Camera m_camera;
 

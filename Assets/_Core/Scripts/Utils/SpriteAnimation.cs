@@ -38,6 +38,12 @@ public class SpriteAnimaion : MonoBehaviour
         if (m_imgEffect == null)
         {
             m_rendererEffect = transform.GetComponent<SpriteRenderer>("Panel");
+            if (m_rendererEffect == null)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
             baseSprite = m_rendererEffect.sprite;
         }
         else
@@ -55,6 +61,9 @@ public class SpriteAnimaion : MonoBehaviour
 
     private void OnEnable()
     {
+        if (m_sprites.Count == 0)
+            return;
+
         m_coPlay = StartCoroutine(DoPlayAnimation());
     }
 

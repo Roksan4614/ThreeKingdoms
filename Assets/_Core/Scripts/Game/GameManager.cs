@@ -2,7 +2,7 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-public class GameManager : MonoSingleton<GameManager>
+public class GameManager : Singleton<GameManager>
 {
     IEnumerator Start()
     {

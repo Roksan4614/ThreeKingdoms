@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 
@@ -11,22 +12,13 @@ public enum AddressableLabelType
 {
     L_Core,
     L_SpriteAtlas,
+    L_HeroIcon,
 
     MAX
 }
 
-public class AddressableManager
+public partial class AddressableManager : MonoSingleton<AddressableManager>
 {
-    static AddressableManager m_instance;
-    public static AddressableManager instance
-    {
-        get
-        {
-            if (m_instance == null)
-                m_instance = new AddressableManager(); return m_instance;
-        }
-    }
-
     public string bundleUrl { get; set; }
 
     public IEnumerator DoInitialize()
@@ -96,9 +88,59 @@ public class AddressableManager
     public IEnumerator DoLoadAsset<T>(
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         UnityAction<float> _onPercent,
-        params string[] _key)
+        params AddressableLabelType[] _labels)
     {
-        yield return null;
+        yield return DoLoadAsset<T>(_onComplete, _onPercent, _labels.Select(_x => _x.ToString()).ToArray());
+    }
+
+    public IEnumerator DoLoadAsset<T>(
+        UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
+        UnityAction<float> _onPercent,
+        params string[] _keys)
+    {
+        Dictionary<string, AsyncOperationHandle<T>> resultData = _onComplete == null ? null : new();
+        DownloadData downloadData = new();
+
+        yield return DoLoad_DownloadSize(_size => downloadData.totalFileSize = _size, _keys);
+
+        var handle = Addressables.LoadResourceLocationsAsync(_keys.Select(x => x.ToString()).ToList(), Addressables.MergeMode.Intersection);
+        yield return handle;
+
+        if (handle.Result != null)
+        {
+            foreach (var result in handle.Result)
+            {
+                downloadData.fileSize = Addressables.GetDownloadSizeAsync(result).Result;
+
+                var h = Addressables.LoadAssetAsync<T>(result.PrimaryKey);
+
+                while (h.IsDone == false)
+                {
+                    if (downloadData.totalFileSize > 0)
+                    {
+                        downloadData.downloadSize = (long)(downloadData.fileSize * h.PercentComplete);
+                        _onPercent?.Invoke((downloadData.totalDownloadSize + downloadData.downloadSize) / downloadData.totalFileSize);
+                    }
+                    yield return null;
+                }
+
+                downloadData.totalDownloadSize += downloadData.fileSize;
+
+                if (h.Status == AsyncOperationStatus.Succeeded)
+                {
+                    if (resultData?.ContainsKey(result.PrimaryKey) == false)
+                        resultData.Add(result.PrimaryKey.Split("/").Last().Split(".").First(), h);
+                }
+                else
+                    h.Release();
+            }
+        }
+
+        if (downloadData.totalFileSize > 0)
+            _onPercent?.Invoke(1f);
+
+        handle.Release();
+        _onComplete?.Invoke(resultData);
     }
 
     public struct DownloadData

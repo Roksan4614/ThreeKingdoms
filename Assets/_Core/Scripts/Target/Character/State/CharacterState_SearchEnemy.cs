@@ -15,8 +15,6 @@ public class CharacterState_SearchEnemy : CharacterState
 
         var teamSpeed = TeamManager.instance.teamMoveSpeed;
 
-        m_owner.anim.Play(CharacterAnimType.Walk);
-
         while (true)
         {
             var lookAt = posTarget - mainHero.transform.position;

@@ -16,7 +16,7 @@ public enum LobbyScreenType
 
     MAX
 }
-public class LobbyScreenManager : MonoSingleton<LobbyScreenManager>
+public class LobbyScreenManager : Singleton<LobbyScreenManager>
 {
     Dictionary<LobbyScreenType, LobbyScreen_Base> m_dicScreen = new();
 
