@@ -27,7 +27,7 @@ public class CharacterState
 
     protected Coroutine m_coUpdate;
 
-    public virtual void Start()
+    public virtual void Start(params object[] _data)
     {
         if (m_coUpdate != null)
             m_owner.StopCoroutine(m_coUpdate);

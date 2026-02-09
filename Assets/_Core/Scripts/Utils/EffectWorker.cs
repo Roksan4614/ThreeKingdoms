@@ -119,7 +119,7 @@ public class EffectWorker : Singleton<EffectWorker>
 
             trns.SetParent(targetParent);
             trns.SetAsLastSibling();
-            trns.position = targetParent.position;
+            trns.position = targetParent.position + new Vector3(0, .5f);
             animation.Play(() => trns.SetParent(m_parentRenderer));
         }
     }

@@ -101,6 +101,11 @@ public class TeamManager : Singleton<TeamManager>
     public float teamMoveSpeed => mainHero.data.moveSpeed;
     public CharacterComponent mainHero => m_member.Values.First();
 
+    public void ChapterStart()
+    {
+        heroInfo.ChapterStart();
+    }
+
     public void PhaseStart()
     {
         RepositionToMain();
@@ -128,6 +133,9 @@ public class TeamManager : Singleton<TeamManager>
 
         return m_member.Values.First().transform.position - m_dbPostion[_teamPosition];
     }
+
+    public CharacterComponent GetHero(TeamPositionType _teamPosition)
+     => m_member.ContainsKey(_teamPosition) == false ? null : m_member[_teamPosition];
 
     public void RepositionToMain(float _duration = .5f)
     {

@@ -7,10 +7,10 @@ using UnityEngine.UI;
 
 public class HeroInfoComponent : MonoBehaviour
 {
-    TeamPositionType m_positionType;
+    CharacterComponent m_hero;
 
-    float m_startTime;
-    float m_endTime;
+    CooltimeData m_cooltime_Revive;
+    CooltimeData m_cooltime_Skill;
 
     private void Awake()
     {
@@ -19,27 +19,16 @@ public class HeroInfoComponent : MonoBehaviour
 
     void OnButton_UseSkill()
     {
-        if (m_endTime > Time.realtimeSinceStartup)
+        if (m_statusSkill == StatusType.Valid &&
+            m_hero.attack.IsValidUseSkill())
         {
-            ApplyReviceReduction(0.5f);
-            return;
+            m_statusSkill = StatusType.Success;
         }
-        else
-        {
-            UpdateHP(new Data_Character()
-            {
-                health = 0,
-                healthMax = 1000,
-                duration_respawn = 15,
-            });
-        }
-
     }
-
 
     public void SetHeroInfo(CharacterComponent _hero)
     {
-        m_positionType = _hero.teamPosition;
+        m_hero = _hero;
 
         var panel = transform.Find("Panel");
 
@@ -59,7 +48,7 @@ public class HeroInfoComponent : MonoBehaviour
             Instantiate(_icon, icon).name = _icon.name;
         });
 
-        UpdateHP(_hero.data);
+        UpdateHP();
     }
 
     public void Disable()
@@ -71,31 +60,35 @@ public class HeroInfoComponent : MonoBehaviour
 
         transform.Find("HP").gameObject.SetActive(false);
         transform.Find("Cooltime").gameObject.SetActive(false);
+
+        m_hero = null;
     }
 
 
     Tween m_tweenHP;
-    public void UpdateHP(Data_Character _data)
+    public void UpdateHP()
     {
+        var data = m_hero.data;
+
         var hp = transform.Find("HP");
         hp.gameObject.SetActive(true);
 
         var bar = hp.GetComponent<RectTransform>("img_bar");
-        float progress = _data.health / (float)_data.healthMax;
+        float progress = data.health / (float)data.healthMax;
         var targetX = bar.rect.width * progress - bar.rect.width;
 
         m_tweenHP?.Kill();
 
-        if (_data.health == 0)
-            StartCoroutine(DoRespawn(bar, _data.duration_respawn));
+        if (data.health == 0)
+            StartCoroutine(DoRespawn(bar, data.duration_respawn));
         else
             m_tweenHP = bar.DOAnchorPosX(targetX, 0.1f);
     }
 
     public IEnumerator DoRespawn(RectTransform _bar, float _duration)
     {
-        m_startTime = Time.realtimeSinceStartup;
-        m_endTime = m_startTime + _duration;
+        m_cooltime_Revive.startTime = Time.realtimeSinceStartup;
+        m_cooltime_Revive.endTime = m_cooltime_Revive.startTime + _duration;
 
         var imgRespawn = transform.GetComponent<Image>("Panel/img_respawn");
         imgRespawn.gameObject.SetActive(true);
@@ -107,16 +100,16 @@ public class HeroInfoComponent : MonoBehaviour
         var pos = Vector2.zero;
         pos.x = -width;
 
-        while (Time.realtimeSinceStartup < m_endTime)
+        while (Time.realtimeSinceStartup < m_cooltime_Revive.endTime)
         {
-            float progress = (Time.realtimeSinceStartup - m_startTime) / (m_endTime - m_startTime);
+            float progress = (Time.realtimeSinceStartup - m_cooltime_Revive.startTime) / (m_cooltime_Revive.endTime - m_cooltime_Revive.startTime);
 
             pos.x = width * progress - width;
             _bar.anchoredPosition = pos;
 
             imgRespawn.fillAmount = progress;
 
-            var remainTime = m_endTime - Time.realtimeSinceStartup;
+            var remainTime = m_cooltime_Revive.endTime - Time.realtimeSinceStartup;
             txtTimer.text = remainTime.ToString(remainTime > 10 ? "#0" : "0.0");
 
             yield return null;
@@ -135,11 +128,76 @@ public class HeroInfoComponent : MonoBehaviour
         });
 
         _bar.anchoredPosition = Vector2.zero;
-        TeamManager.instance.SetRespawn(m_positionType);
+        TeamManager.instance.SetRespawn(m_hero.teamPosition);
     }
 
-    public void ApplyReviceReduction(float _percent)
+    public void ApplyRespawnReduction(float _percent)
     {
-        m_endTime -= (m_endTime - Time.realtimeSinceStartup) * _percent;
+        m_cooltime_Revive.endTime -= (m_cooltime_Revive.endTime - Time.realtimeSinceStartup) * _percent;
+    }
+
+    public void StartCooltimeSkill()
+    {
+        if (m_coCooltimeSkill != null)
+            StopCoroutine(m_coCooltimeSkill);
+
+        m_coCooltimeSkill = StartCoroutine(DoCooltimeSkill());
+    }
+
+    Coroutine m_coCooltimeSkill;
+    StatusType m_statusSkill = StatusType.Wait;
+
+    public IEnumerator DoCooltimeSkill()
+    {
+        var data = m_hero.data;
+
+        m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
+        m_cooltime_Skill.endTime = data.cooltime_skill + m_cooltime_Skill.startTime;
+
+        var addTime = data.percent_startCooltime * data.cooltime_skill;
+        var bar = transform.GetComponent<RectTransform>("Cooltime/img_bar");
+        var width = bar.rect.width;
+
+        m_statusSkill = StatusType.Wait;
+        while (true)
+        {
+            float progress = (Time.realtimeSinceStartup - m_cooltime_Skill.startTime + addTime) / (m_cooltime_Skill.endTime - m_cooltime_Skill.startTime);
+
+            var pos = bar.anchoredPosition;
+            pos.x = width * progress;
+
+            bar.anchoredPosition = pos;
+
+            if (progress > 1f)
+            {
+                m_statusSkill = StatusType.Valid;
+
+                pos.x = width;
+                bar.anchoredPosition = pos;
+
+                var onSkill = transform.Find("Panel/OnSkill").gameObject;
+                onSkill.SetActive(true);
+
+                while (m_statusSkill != StatusType.Success)
+                    yield return null;
+
+                onSkill.SetActive(false);
+
+                yield return m_hero.attack.DoUseSkill();
+
+                m_statusSkill = StatusType.Wait;
+                m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
+                m_cooltime_Skill.endTime = data.cooltime_skill + m_cooltime_Skill.startTime;
+                addTime = 0;
+            }
+
+            yield return null;
+        }
+    }
+
+    struct CooltimeData
+    {
+        public float startTime;
+        public float endTime;
     }
 }

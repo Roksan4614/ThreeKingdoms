@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Team_HeroInfo
@@ -35,9 +36,15 @@ public class Team_HeroInfo
             m_lstHeroInfo[i].Disable();
     }
 
+    public void ChapterStart()
+    {
+        foreach (var hero in TeamManager.instance.members.Values)
+            m_lstHeroInfo[(int)hero.teamPosition].StartCooltimeSkill();
+    }
+
     public void SlotUpdateHP(CharacterComponent _hero)
     {
         if (_hero.teamPosition > TeamPositionType.None)
-            m_lstHeroInfo[(int)_hero.teamPosition].UpdateHP(_hero.data);
+            m_lstHeroInfo[(int)_hero.teamPosition].UpdateHP();
     }
 }

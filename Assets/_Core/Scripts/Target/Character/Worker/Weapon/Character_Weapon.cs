@@ -2,15 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Character_Weapon : MonoBehaviour
 {
-    protected List<SpriteAnimaion> m_animSkill = new();
+    protected List<SpriteAnimaion> m_animSlash = new();
     protected CharacterComponent m_owner;
 
-    protected float m_durationSkill;
-    protected DateTime m_dtOpenSkill;
-
+    bool m_isCritial;
     public bool isUseSkill { get; protected set; }
 
     private void Awake()
@@ -20,50 +19,43 @@ public class Character_Weapon : MonoBehaviour
         var fxAttack = transform.GetComponent<SpriteAnimaion>("Panel/FxAttack");
         if (fxAttack.transform.childCount > 0)
         {
-            m_animSkill.Add(fxAttack);
+            m_animSlash.Add(fxAttack);
 
             for (int i = 1; i < fxAttack.transform.childCount; i++)
             {
                 var sub = fxAttack.transform.GetChild(i).GetComponent<SpriteAnimaion>();
                 if (sub != null)
-                    m_animSkill.Add(sub);
+                    m_animSlash.Add(sub);
             }
         }
 
-        for (int i = 0; i < m_animSkill.Count; i++)
-            m_animSkill[i].gameObject.SetActive(false);
+        for (int i = 0; i < m_animSlash.Count; i++)
+            m_animSlash[i].gameObject.SetActive(false);
     }
 
-    private void Update()
+    public void Attack(bool _isCritical)
     {
-        if (Input.GetKeyDown(KeyCode.S) && m_animSkill.Count > 0)
-            UseSkill(true);
-    }
+        m_isCritial = _isCritical;
 
-    Coroutine m_coEndSkill;
-    public virtual bool UseSkill(bool _isForce = false)
-    {
-        if (DateTime.Now < m_dtOpenSkill && _isForce == false)
-            return false;
+        //if (m_isCritial)
+        //    ShowSlashEffect();
 
-        for (int i = 0; i < m_animSkill.Count; i++)
-            m_animSkill[i].Play();
-
-        m_dtOpenSkill = DateTime.Now.AddSeconds(m_durationSkill);
-
-        isUseSkill = true;
         m_owner.anim.Play(CharacterAnimType.Attack);
+    }
 
-        if (m_coEndSkill != null)
-            StopCoroutine(m_coEndSkill);
+    public virtual bool IsValidUseSkill() => m_owner.target.target != null;
 
-        m_coEndSkill = StartCoroutine(Utils.DoAfterCoroutine(() =>
-        {
-            isUseSkill = false;
-            m_coEndSkill = null;
-        }, 0.5f));
+    public virtual IEnumerator DoUseSkill()
+    {
+        m_isCritial = false;
+        isUseSkill = true;
 
-        return true;
+        m_owner.anim.Play(CharacterAnimType.Attack);
+        ShowSlashEffect();
+
+        yield return new WaitForSeconds(1f);
+
+        isUseSkill = false;
     }
 
     public virtual void EventAttackHit(CharacterComponent _owner)
@@ -77,36 +69,23 @@ public class Character_Weapon : MonoBehaviour
 
         var damage = _owner.data.attackPower;
 
-        bool isCritical =
-            _owner.factionType == FactionType.Alliance && UnityEngine.Random.Range(0, 100) < 30;
-
         EffectWorker.instance.SlotDamageTakenEffect(new()
         {
             attacker = _owner.transform,
             target = target.transform,
             value = -damage,
-            isCritical = isCritical,
+            isCritical = m_isCritial,
             isAlliance = target.factionType == FactionType.Alliance
         });
-
-        if (isCritical)
-            for (int i = 0; i < m_animSkill.Count; i++)
-                m_animSkill[i].Play();
+        m_isCritial = false;
 
         if (target.OnDamage(damage))
             _owner.target.SetTarget(null);
     }
 
-    IEnumerator DoAutoUseSKill()
+    public void ShowSlashEffect()
     {
-        bool isAuto = false;
-
-        while (true)
-        {
-            yield return null;
-
-            while (isAuto == true)
-                continue;
-        }
+        for (int i = 0; i < m_animSlash.Count; i++)
+            m_animSlash[i].Play();
     }
 }

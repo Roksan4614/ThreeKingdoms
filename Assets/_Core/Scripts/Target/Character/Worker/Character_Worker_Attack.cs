@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Character_Worker_Attack : Character_Worker
 {
@@ -21,7 +22,7 @@ public class Character_Worker_Attack : Character_Worker
             while (m_weapon.isUseSkill)
                 yield return null;
 
-            m_owner.anim.Play(CharacterAnimType.Attack);
+            m_weapon.Attack(UnityEngine.Random.Range(0, 100) > 50f);
 
             yield return new WaitForSeconds(m_owner.data.attackSpeed);
         }
@@ -31,4 +32,10 @@ public class Character_Worker_Attack : Character_Worker
     {
         m_weapon.EventAttackHit(m_owner);
     }
+
+    public bool IsValidUseSkill()
+        => m_weapon.IsValidUseSkill();
+
+    public IEnumerator DoUseSkill()
+    { yield return m_weapon.DoUseSkill(); }
 }
