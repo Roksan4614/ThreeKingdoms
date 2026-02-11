@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public class CameraManager : MonoBehaviour
+public class CameraManager : MonoSingleton<CameraManager>
 {
-    public static CameraManager instance;
 
     Camera m_camera;
 
@@ -11,14 +10,6 @@ public class CameraManager : MonoBehaviour
     [SerializeField] float m_posCameraY = 3f;
 
     [SerializeField] Transform m_playerCameraPos;
-
-    void Awake()
-    {
-        if (instance != null)
-            Destroy(instance.gameObject);
-
-        instance = this;
-    }
 
     private void LateUpdate()
     {

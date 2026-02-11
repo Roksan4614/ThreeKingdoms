@@ -1,7 +1,6 @@
 using DG.Tweening;
 using System;
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +10,9 @@ public class HeroInfoComponent : MonoBehaviour
 
     CooltimeData m_cooltime_Revive;
     CooltimeData m_cooltime_Skill;
+
+    [SerializeField]
+    ElementData m_element;
 
     private void Awake()
     {
@@ -26,34 +28,51 @@ public class HeroInfoComponent : MonoBehaviour
         }
     }
 
-    public void SetHeroInfo(CharacterComponent _hero)
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        m_element.icon = transform.Find("Panel/Icon");
+        m_element.objOnSkill = transform.Find("Panel/OnSkill").gameObject;
+        m_element.rtBar_HP = transform.GetComponent<RectTransform>("HP/img_bar");
+        m_element.rtBar_Cooltime = transform.GetComponent<RectTransform>("Cooltime/img_bar");
+
+        UnityEditor.EditorUtility.SetDirty(this);
+    }
+#endif
+
+    public async void SetHeroInfo(CharacterComponent _hero)
     {
         m_hero = _hero;
 
-        var panel = transform.Find("Panel");
+        var key = _hero.name;
 
-        var icon = panel.Find("Icon");
-        icon.gameObject.SetActive(false);
-
-        AddressableManager.instance.Load_HeroIcon(_hero.name, _icon =>
+        int countDestroy = 0;
+        for (int i = 0; i < m_element.icon.childCount; i++)
         {
-            icon.gameObject.SetActive(true);
-
-            for (int i = 0; i < icon.childCount; i++)
+            if (m_element.icon.GetChild(i).name.Contains(key) == false)
             {
-                if (icon.GetChild(i).name != _icon.name)
-                    Destroy(icon.GetChild(i).gameObject);
+                Destroy(m_element.icon.GetChild(i).gameObject);
+                countDestroy++;
             }
+        }
 
-            Instantiate(_icon, icon).name = _icon.name;
-        });
+        if (m_element.icon.childCount == countDestroy)
+        {
+            m_element.icon.gameObject.SetActive(false);
+            var prefab = await AddressableManager.instance.GetHeroIcon(key);
+
+            if (prefab != null)
+                Instantiate(prefab, m_element.icon).name = key;
+        }
+
+        m_element.icon.gameObject.SetActive(true);
 
         UpdateHP();
     }
 
     public void Disable()
     {
-        var panel = transform.Find("Panel");
+        var panel = m_element.icon.parent;
 
         for (int i = 0; i < panel.childCount; i++)
             panel.GetChild(i).gameObject.SetActive(false);
@@ -70,10 +89,7 @@ public class HeroInfoComponent : MonoBehaviour
     {
         var data = m_hero.data;
 
-        var hp = transform.Find("HP");
-        hp.gameObject.SetActive(true);
-
-        var bar = hp.GetComponent<RectTransform>("img_bar");
+        var bar = m_element.rtBar_HP;
         float progress = data.health / (float)data.healthMax;
         var targetX = bar.rect.width * progress - bar.rect.width;
 
@@ -155,7 +171,7 @@ public class HeroInfoComponent : MonoBehaviour
         m_cooltime_Skill.endTime = data.cooltime_skill + m_cooltime_Skill.startTime;
 
         var addTime = data.percent_startCooltime * data.cooltime_skill;
-        var bar = transform.GetComponent<RectTransform>("Cooltime/img_bar");
+        var bar = m_element.rtBar_Cooltime;
         var width = bar.rect.width;
 
         m_statusSkill = StatusType.Wait;
@@ -175,13 +191,12 @@ public class HeroInfoComponent : MonoBehaviour
                 pos.x = width;
                 bar.anchoredPosition = pos;
 
-                var onSkill = transform.Find("Panel/OnSkill").gameObject;
-                onSkill.SetActive(true);
+                m_element.objOnSkill.SetActive(true);
 
                 while (m_statusSkill != StatusType.Success)
                     yield return null;
 
-                onSkill.SetActive(false);
+                m_element.objOnSkill.SetActive(false);
 
                 yield return m_hero.attack.DoUseSkill();
 
@@ -199,5 +214,16 @@ public class HeroInfoComponent : MonoBehaviour
     {
         public float startTime;
         public float endTime;
+    }
+
+    [Serializable]
+    struct ElementData
+    {
+        public Transform icon;
+        public GameObject objOnSkill;
+        public RectTransform rtBar_Cooltime;
+        public RectTransform rtBar_HP;
+
+        public Transform panel => icon.parent;
     }
 }

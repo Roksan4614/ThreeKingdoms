@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,26 +8,22 @@ public partial class AddressableManager
 {
     Dictionary<string, AsyncOperationHandle<GameObject>> m_heroIcon = new();
 
-    public void Load_HeroIcon(string _heroName, UnityAction<GameObject> _callback)
+    public async UniTask<GameObject> GetHeroIcon(string _heroName)
     {
         string key = $"Icon_{_heroName}";
         if (m_heroIcon.ContainsKey(key))
-        {
-            _callback(m_heroIcon[key].Result);
-            return;
-        }
+            return m_heroIcon[key].Result;
 
-        StartCoroutine(DoLoadAsset<GameObject>(_result =>
+        await LoadAsset<GameObject>(_result =>
         {
             foreach (var data in _result)
             {
                 if (m_heroIcon.ContainsKey(data.Key) == false)
                     m_heroIcon.Add(data.Key, data.Value);
             }
+        }, null, $"Hero_Icon/{key}.prefab");
 
-            if (m_heroIcon.ContainsKey(key))
-                _callback(m_heroIcon[key].Result);
+        return m_heroIcon[key].Result ?? null;
 
-        }, null, $"Hero_Icon/{key}.prefab"));
     }
 }

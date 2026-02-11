@@ -2,21 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 
 public class CharacterComponent : TargetComponent
 {
     [SerializeField]
+    ElementData m_element;
+    public ElementData element => m_element;
+
+    [SerializeField]
     Data_Character m_data;
     [SerializeField]
-    bool m_isMain;
-    [SerializeField]
     FactionType m_faction;
-    [SerializeField]
-    CharacterAnimationClipData m_animationClipData;
 
     CharacterState m_state;
 
@@ -26,24 +24,20 @@ public class CharacterComponent : TargetComponent
     public Character_Woker_Move move { get; private set; }
     public Character_Worker_Attack attack { get; private set; }
     public Character_Worker_Target target { get; private set; }
-    public Transform panel { get; private set; }
-    public Rigidbody2D rig { get; private set; }
+    public Transform panel => m_element.panel;
+    public Rigidbody2D rig => m_element.rig;
     public Data_Character data => m_data;
     public override bool isLive => data.health > 0;
-    public bool isMain => m_isMain;
+    public bool isMain => m_element.isMain;
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; } = TeamPositionType.None;
 
-    public void SetMain(bool _isMain) => m_isMain = _isMain;
+    public void SetMain(bool _isMain) => m_element.isMain = _isMain;
 
-    protected override void Awake()
+    void Awake()
     {
-        base.Awake();
-        rig = transform.GetComponent<Rigidbody2D>();
 
-        panel = rig.transform.Find("Character/Panel");
-
-        anim = new(this, m_animationClipData); m_animationClipData = default;
+        anim = new(this); m_element.animator = default;
         move = new(this);
         attack = new(this);
         target = new(this);
@@ -64,22 +58,25 @@ public class CharacterComponent : TargetComponent
         }
     }
 
+#if UNITY_EDITOR
+    protected override void OnValidate()
+    {
+        m_element.rig = transform.GetComponent<Rigidbody2D>();
+        m_element.panel = transform.Find("Character/Panel");
+        m_element.animator = transform.GetComponent<Animator>("Character/Panel/Parts");
+        m_element.effect_canvas = transform.Find("Character/Canvas/Effect");
+        m_element.effect_renderer = transform.Find("Character/Effect_Renderer");
+
+        base.OnValidate();
+    }
+#endif
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            anim.Play(CharacterAnimType.Attack);
-
-            if (isMain)
-            {
-                EffectWorker.instance.SlotDamageTakenEffect(new()
-                {
-                    attacker = transform,
-                    value = -10,
-                    target = StageManager.instance.GetNearestEnemy(transform.position).transform
-                });
-            }
-        }
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    anim.Play(CharacterAnimType.Attack);
+        //}
     }
 
     public void SetFaction(FactionType _factionType) => m_faction = _factionType;
@@ -148,5 +145,20 @@ public class CharacterComponent : TargetComponent
 
         m_data.health = m_data.healthMax;
         transform.GetComponent<Collider2D>("Character").enabled = true;
+    }
+
+    [Serializable]
+    public struct ElementData
+    {
+        public bool isMain;
+
+        public Transform panel;
+        public Rigidbody2D rig;
+        public Animator animator;
+
+        public Transform effect_canvas;
+        public Transform effect_renderer;
+
+        public CharacterAnimationClipData animationClipData;
     }
 }

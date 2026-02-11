@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +23,16 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 {
     public string bundleUrl { get; set; }
 
-    public IEnumerator DoInitialize()
+    protected override void OnAwake()
+    {
+        Initialize();
+    }
+
+    public async void Initialize()
     {
         Addressables.InternalIdTransformFunc = CustomTransform;
 
-        yield return DoDownload(null, AddressableLabelType.L_Core, AddressableLabelType.L_SpriteAtlas);
+        await DoDownloadAsync(null, AddressableLabelType.L_Core, AddressableLabelType.L_SpriteAtlas);
     }
 
     string CustomTransform(IResourceLocation _location)
@@ -38,53 +45,178 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         return internalId;
     }
 
-    public IEnumerator DoDownload(UnityAction<float> _onPercent, params AddressableLabelType[] _labels)
+    public async UniTask DoDownloadAsync(IProgress<float> _onProgress, params AddressableLabelType[] _labels)
     {
-        yield return DoDownload(_onPercent, _labels.Select(_x => _x.ToString()).ToArray());
+        await DoDownloadAsync(_onProgress, _labels.Select(_x => _x.ToString()).ToArray());
     }
 
-    public IEnumerator DoDownload(UnityAction<float> _onPercent, params string[] _keys)
+    public async UniTask DoDownloadAsync(IProgress<float> _onProgress, params string[] _keys)
     {
         string logKey = string.Join(",", _keys);
-        IngameLog.Add("DoDownload_Scene: Start: " + logKey);
-        var handle = Addressables.DownloadDependenciesAsync(_keys, true);
 
-        while (handle.IsDone == false)
+        var handle = Addressables.DownloadDependenciesAsync(_keys, Addressables.MergeMode.Union);
+        try
         {
-            _onPercent?.Invoke(handle.PercentComplete);
-            yield return null;
+            await handle.ToUniTask(progress: _onProgress);
         }
-
-        IngameLog.Add("DoDownload_Scene: Finished: " + logKey);
+        finally
+        {
+            handle.Release();
+        }
     }
 
-    public IEnumerator DoLoad_DownloadSize(UnityAction<long> _onComplete, params AddressableLabelType[] _labels)
+    public async UniTask<long> GetDownloadSizeAsync(params AddressableLabelType[] _keys)
     {
-        yield return DoLoad_DownloadSize(_onComplete, _labels.Select(_x => _x.ToString()).ToArray());
+        return await GetDownloadSizeAsync(_keys.Select(_x => _x.ToString()).ToArray());
     }
 
-    public IEnumerator DoLoad_DownloadSize(UnityAction<long> _onComplete, params string[] _keys)
+    public async UniTask<long> GetDownloadSizeAsync(params string[] _keys)
     {
         long totalSize = 0;
 
         var handle = Addressables.LoadResourceLocationsAsync(_keys, Addressables.MergeMode.Intersection);
-        yield return handle;
-
-        if (handle.Result == null)
-            IngameLog.Add("Addressable: GetDownloadSize: Failed: " + string.Join(", ", _keys));
-        else
+        try
         {
-            foreach (var result in handle.Result)
+            var locations = await handle.ToUniTask();
+
+            if (locations == null)
+                IngameLog.Add("Addressable: GetDownloadSize: Failed: " + string.Join(", ", _keys));
+            else if (locations.Count > 0)
             {
-                if (result.PrimaryKey != _keys[0].ToString())
-                    totalSize += Addressables.GetDownloadSizeAsync(result).Result;
+                var tasks = new UniTask<long>[locations.Count];
+
+                for (var i = 0; i < tasks.Length; i++)
+                    tasks[i] = Addressables.GetDownloadSizeAsync(locations[i]).ToUniTask();
+
+                long[] sizes = await UniTask.WhenAll(tasks);
+
+                foreach (var size in sizes)
+                    totalSize += size;
+            }
+        }
+        finally
+        {
+            handle.Release();
+        }
+
+        return totalSize;
+    }
+
+    //public IEnumerator DoDownload(UnityAction<float> _onPercent, params AddressableLabelType[] _labels)
+    //{
+    //    yield return DoDownload(_onPercent, _labels.Select(_x => _x.ToString()).ToArray());
+    //}
+
+    //public IEnumerator DoDownload(UnityAction<float> _onPercent, params string[] _keys)
+    //{
+    //    string logKey = string.Join(",", _keys);
+    //    IngameLog.Add("DoDownload_Scene: Start: " + logKey);
+    //    var handle = Addressables.DownloadDependenciesAsync(_keys, true);
+
+    //    while (handle.IsDone == false)
+    //    {
+    //        _onPercent?.Invoke(handle.PercentComplete);
+    //        yield return null;
+    //    }
+
+    //    IngameLog.Add("DoDownload_Scene: Finished: " + logKey);
+    //}
+
+    //public IEnumerator DoLoad_DownloadSize(UnityAction<long> _onComplete, params AddressableLabelType[] _labels)
+    //{
+    //    yield return DoLoad_DownloadSize(_onComplete, _labels.Select(_x => _x.ToString()).ToArray());
+    //}
+
+    //public IEnumerator DoLoad_DownloadSize(UnityAction<long> _onComplete, params string[] _keys)
+    //{
+    //    long totalSize = 0;
+
+    //    var handle = Addressables.LoadResourceLocationsAsync(_keys, Addressables.MergeMode.Intersection);
+    //    yield return handle;
+
+    //    if (handle.Result == null)
+    //        IngameLog.Add("Addressable: GetDownloadSize: Failed: " + string.Join(", ", _keys));
+    //    else
+    //    {
+    //        foreach (var result in handle.Result)
+    //        {
+    //            if (result.PrimaryKey != _keys[0].ToString())
+    //                totalSize += Addressables.GetDownloadSizeAsync(result).Result;
+    //        }
+    //    }
+
+    //    handle.Release();
+    //    _onComplete(totalSize);
+    //}
+
+    public async UniTask LoadAsset<T>(
+        UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
+        IProgress<float> _onProgress,
+        params AddressableLabelType[] _labels)
+    {
+        await LoadAsset<T>(_onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
+    }
+
+    public async UniTask LoadAsset<T>(
+        UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
+        IProgress<float> _onProgress,
+        params string[] _keys)
+    {
+        Dictionary<string, AsyncOperationHandle<T>> resultData = _onComplete == null ? null : new();
+        DownloadData downloadData = new();
+
+        downloadData.totalFileSize = await GetDownloadSizeAsync(_keys);
+
+        var handle = Addressables.LoadResourceLocationsAsync(_keys.Select(x => x.ToString()).ToList(), Addressables.MergeMode.Intersection);
+
+        var locations = await handle.ToUniTask();
+
+        if (locations == null)
+            IngameLog.Add("Addressable: LoadAsset: Failed: " + string.Join(", ", _keys));
+        else if (locations.Count > 0)
+        {
+            for (int i = 0; i < locations.Count; i++)
+            {
+                downloadData.fileSize = await Addressables.GetDownloadSizeAsync(locations[i]).ToUniTask();
+
+                var h = Addressables.LoadAssetAsync<T>(locations[i].PrimaryKey);
+
+                try
+                {
+                    var result = await h.ToUniTask(progress: Progress.Create<float>(_p =>
+                    {
+                        if (downloadData.totalFileSize > 0)
+                        {
+                            downloadData.downloadSize = (long)(downloadData.fileSize * h.PercentComplete);
+                            _onProgress?.Report((downloadData.totalDownloadSize + downloadData.downloadSize) / (float)downloadData.totalFileSize);
+                        }
+                    }));
+
+                    downloadData.totalDownloadSize += downloadData.fileSize;
+
+                    if (h.Status == AsyncOperationStatus.Succeeded)
+                    {
+                        if (resultData?.ContainsKey(locations[i].PrimaryKey) == false)
+                            resultData.Add(locations[i].PrimaryKey.Split("/").Last().Split(".").First(), h);
+                    }
+                    else
+                        h.Release();
+                }
+                catch
+                {
+                    h.Release();
+                }
             }
         }
 
+        if (downloadData.totalFileSize > 0)
+            _onProgress?.Report(1f);
+
         handle.Release();
-        _onComplete(totalSize);
+        _onComplete?.Invoke(resultData);
     }
 
+    /*
     public IEnumerator DoLoadAsset<T>(
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         UnityAction<float> _onPercent,
@@ -142,6 +274,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         handle.Release();
         _onComplete?.Invoke(resultData);
     }
+    */
 
     public struct DownloadData
     {

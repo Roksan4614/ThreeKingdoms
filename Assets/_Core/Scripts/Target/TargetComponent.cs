@@ -5,14 +5,21 @@ public abstract class TargetComponent : MonoBehaviour
 {
     public virtual bool isLive => true;
 
+    [SerializeField]
     protected SortingGroup m_sortingGroup;
+    [SerializeField]
     protected Canvas m_canvas;
 
-    protected virtual void Awake()
+#if UNITY_EDITOR
+    protected virtual void OnValidate()
     {
-        m_sortingGroup = transform.GetComponent<SortingGroup>();
         m_canvas = transform.GetComponent<Canvas>("Character/Canvas");
+        m_sortingGroup = transform.GetComponent<SortingGroup>();
+
+        UnityEditor.EditorUtility.SetDirty(this);
     }
+#endif
+
     private void LateUpdate()
     {
         UpdateSortingOreder();

@@ -1,7 +1,26 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+
+#if UNITY_EDITOR
+using UnityEditor;
+
+[CustomEditor(typeof(AutoOrderInLayer))]
+public class AutoOrderInLayerButton : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        AutoOrderInLayer generator = target as AutoOrderInLayer;
+
+        if (GUILayout.Button("Save"))
+            generator.OnButton_Reset();
+        if (GUILayout.Button("Recover"))
+            generator.OnButton_Repeat();
+
+        EditorUtility.SetDirty(generator);
+    }
+}
+#endif
 
 public enum OrderLayerType
 {
@@ -90,23 +109,3 @@ public class AutoOrderInLayer : MonoBehaviour
         Utils.SetOrderInLayer(transform, m_orderLayer);
     }
 }
-
-#if UNITY_EDITOR
-
-[CustomEditor(typeof(AutoOrderInLayer))]
-public class AutoOrderInLayerButton : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-        AutoOrderInLayer generator = target as AutoOrderInLayer;
-
-        if (GUILayout.Button("Save"))
-            generator.OnButton_Reset();
-        if (GUILayout.Button("Recover"))
-            generator.OnButton_Repeat();
-
-        EditorUtility.SetDirty(generator);
-    }
-}
-#endif

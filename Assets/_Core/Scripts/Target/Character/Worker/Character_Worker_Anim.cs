@@ -9,9 +9,9 @@ public class Character_Woker_Anim : Character_Worker
 
     public CharacterAnimType animType { get; private set; }
 
-    public Character_Woker_Anim(CharacterComponent _owner, CharacterAnimationClipData _clipData) : base(_owner)
+    public Character_Woker_Anim(CharacterComponent _owner) : base(_owner)
     {
-        m_animator = m_owner.rig.transform.GetComponent<Animator>("Character/Panel/Parts");
+        m_animator = m_owner.element.animator;
 
         var overrideAnimator = new AnimatorOverrideController(m_animator.runtimeAnimatorController);
 
@@ -23,7 +23,7 @@ public class Character_Woker_Anim : Character_Worker
             if (prevAc == null)
                 continue;
 
-            overrideAnimator[key] = _clipData.GetClip(i) ?? prevAc;
+            overrideAnimator[key] = m_owner.element.animationClipData.GetClip(i) ?? prevAc;
         }
 
         m_animator.runtimeAnimatorController = overrideAnimator;

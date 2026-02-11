@@ -1,15 +1,28 @@
-using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class SpriteAnimaion : MonoBehaviour
 {
+    [Serializable]
+    struct ElementData
+    {
+        public Image image;
+        public SpriteRenderer renderer;
+        public bool isAddEmptySprite;
+        public Sprite[] sprite;
+
+        public EffectData effectData;
+    }
+
+    [SerializeField]
+    ElementData m_element;
+
     public enum LoopType
     {
         none,
@@ -18,52 +31,51 @@ public class SpriteAnimaion : MonoBehaviour
         pingpong_loop,
     }
 
-    [SerializeField]
-    EffectData m_effectData;
-
-    [SerializeField]
-    bool m_isAddEmptySprite = true;
-
-    List<Sprite> m_sprites = new();
-
-    Image m_imgEffect;
-    SpriteRenderer m_rendererEffect;
 
     Action m_onCompleted;
 
-    private void Awake()
+#if UNITY_EDITOR
+    private void OnValidate()
     {
-        Sprite baseSprite = null;
-        m_imgEffect = transform.GetComponent<Image>("Panel");
-        if (m_imgEffect == null)
-        {
-            m_rendererEffect = transform.GetComponent<SpriteRenderer>("Panel");
-            if (m_rendererEffect == null)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
+        m_element.image = transform.GetComponent<Image>("Panel");
+        m_element.renderer = transform.GetComponent<SpriteRenderer>("Panel");
 
-            baseSprite = m_rendererEffect.sprite;
+        Sprite baseSprite =
+            m_element.image ? m_element.image.sprite :
+            m_element.renderer ? m_element.renderer.sprite : null;
+
+        if (baseSprite != null)
+        {
+            string spriteSheetPath = UnityEditor.AssetDatabase.GetAssetPath(baseSprite);
+
+            var sprites = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(spriteSheetPath)
+                .OfType<Sprite>()
+                .ToList();
+
+
+            if (m_element.isAddEmptySprite)
+                sprites.Add(AssetLoader.Load<Sprite>("Icon/empty"));
+
+            m_element.sprite = sprites.ToArray();
         }
         else
-            baseSprite = m_imgEffect.sprite;
+            m_element.sprite = null;
 
-        string spriteSheetPath = AssetDatabase.GetAssetPath(baseSprite);
-        m_sprites = AssetDatabase.LoadAllAssetRepresentationsAtPath(spriteSheetPath)
-            .OfType<Sprite>()
-            .ToList();
+            UnityEditor.EditorUtility.SetDirty(this);
+    }
+#endif
 
-        if (m_isAddEmptySprite)
-            m_sprites.Add(AssetLoader.Load<Sprite>("Icon/empty"));
-
+    private void Awake()
+    {
+        if (m_element.sprite == null)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
     }
 
     private void OnEnable()
     {
-        if (m_sprites.Count == 0)
-            return;
-
         m_coPlay = StartCoroutine(DoPlayAnimation());
     }
 
@@ -78,16 +90,16 @@ public class SpriteAnimaion : MonoBehaviour
 
             m_coPlay = StartCoroutine(DoPlayAnimation());
         }
-        else
+        else if (m_element.sprite.Length > 0)
             gameObject.SetActive(true);
     }
 
     Coroutine m_coPlay;
     IEnumerator DoPlayAnimation()
     {
-        Transform effect = m_imgEffect?.transform ?? m_rendererEffect.transform;
+        Transform effect = m_element.image?.transform ?? m_element.renderer.transform;
 
-        if (m_sprites.Count == 0)
+        if (m_element.sprite.Length == 0)
         {
             effect.gameObject.SetActive(false);
             yield break;
@@ -102,36 +114,38 @@ public class SpriteAnimaion : MonoBehaviour
 
         DateTime dtTimer = DateTime.Now;
 
+        var effectData = m_element.effectData;
+
         while (true)
         {
-            if (m_imgEffect)
-                m_imgEffect.sprite = m_sprites[indexSprite];
+            if (m_element.image)
+                m_element.image.sprite = m_element.sprite[indexSprite];
             else
-                m_rendererEffect.sprite = m_sprites[indexSprite];
+                m_element.renderer.sprite = m_element.sprite[indexSprite];
 
-            while ((DateTime.Now - dtTimer).TotalSeconds < m_effectData.duration)
+            while ((DateTime.Now - dtTimer).TotalSeconds < effectData.duration)
                 yield return null;
 
             dtTimer = DateTime.Now;
             indexSprite += increaseValue;
 
-            if (m_sprites.Count == indexSprite)
+            if (m_element.sprite.Length == indexSprite)
             {
-                if (m_effectData.loopType == LoopType.none)
+                if (effectData.loopType == LoopType.none)
                     break;
-                else if (m_effectData.loopType == LoopType.loop)
+                else if (effectData.loopType == LoopType.loop)
                 {
                     indexSprite = 0;
-                    yield return new WaitForSeconds(m_effectData.delay);
+                    yield return new WaitForSeconds(effectData.delay);
                 }
                 else
                 {
                     increaseValue *= -1;
-                    if (m_effectData.loopType == LoopType.pingpong && increaseValue < 0 && indexSprite == 0)
+                    if (effectData.loopType == LoopType.pingpong && increaseValue < 0 && indexSprite == 0)
                         break;
 
                     if (increaseValue > 0)
-                        yield return new WaitForSeconds(m_effectData.delay);
+                        yield return new WaitForSeconds(effectData.delay);
                 }
 
                 if (m_isForceStop == true)
@@ -154,29 +168,29 @@ public class SpriteAnimaion : MonoBehaviour
 
     void ResetScaleRot(Transform _trns)
     {
-        if (m_effectData.isFlipLoop)
+        if (m_element.effectData.isFlipLoop)
         {
             var scale = _trns.localScale;
             scale.x *= -1;
             _trns.localScale = scale;
         }
 
-        if (m_effectData.isRotateLoop)
+        if (m_element.effectData.isRotateLoop)
             _trns.rotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
 
     }
 
     public void SetColor(Color _color)
     {
-        if (m_imgEffect)
-            m_imgEffect.color = _color;
-        else if (m_rendererEffect)
-            m_rendererEffect.color = _color;
+        if (m_element.image)
+            m_element.image.color = _color;
+        else if (m_element.renderer)
+            m_element.renderer.color = _color;
     }
 
     public Color GetColor()
     {
-        return m_imgEffect != null ? m_imgEffect.color : m_rendererEffect != null ? m_rendererEffect.color : Color.white;
+        return m_element.image?.color ?? m_element.renderer?.color ?? Color.white;
     }
 
 

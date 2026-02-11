@@ -3,12 +3,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class EffectWorker : Singleton<EffectWorker>
 {
+    [Serializable]
+    struct ElementData
+    {
+        public Transform renderer;
+        public Transform canvas;
+
+        public Text baseDamage;
+        public SpriteAnimaion baseDamageHit;
+    }
+
+    [SerializeField]
+    ElementData m_element;
+
     enum EffectType
     {
         damage,
@@ -16,9 +28,6 @@ public class EffectWorker : Singleton<EffectWorker>
         hit,
         //die,
     }
-
-    Transform m_parentRenderer;
-    Transform m_parentCanvas;
 
     [SerializeField]
     Color m_colorCritical;
@@ -36,26 +45,28 @@ public class EffectWorker : Singleton<EffectWorker>
         //{ EffectType.die, new List<SpriteAnimaion>() },
     };
 
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        m_element.canvas = transform.Find("Canvas");
+        m_element.renderer = transform.Find("Renderer");
+
+        m_element.baseDamage = transform.GetComponent<Text>("Canvas/Damage");
+        m_element.baseDamageHit = transform.GetComponent<SpriteAnimaion>("Renderer/DamageHit");
+
+        UnityEditor.EditorUtility.SetDirty(this);
+    }
+#endif
+
     private void Start()
     {
-        m_parentCanvas = transform.Find("Canvas");
-        {
-            var baseDamage = m_parentCanvas.GetComponent<Text>("Damage");
-            m_fx_text[EffectType.damage].Add(baseDamage);
-            baseDamage.gameObject.SetActive(false);
-        }
+        m_element.baseDamage.gameObject.SetActive(false);
+        m_element.baseDamageHit.gameObject.SetActive(false);
 
-        m_parentRenderer = transform.Find("Renderer");
-        {
-            var baseHit = m_parentRenderer.GetComponent<SpriteAnimaion>("DamageHit");
-            m_fx_animation[EffectType.hit].Add(baseHit);
+        m_fx_text[EffectType.damage].Add(m_element.baseDamage);
+        m_fx_animation[EffectType.hit].Add(m_element.baseDamageHit);
 
-            m_colorHit = baseHit.GetColor();
-            baseHit.gameObject.SetActive(false);
-        }
-
-        //m_baseEffectDie = transform.GetComponent<SpriteAnimaion>("Panel/effect_die");
-        //m_baseEffectDie.gameObject.SetActive(false);
+        m_colorHit = m_element.baseDamageHit.GetColor();
     }
 
     public void SlotDamageTakenEffect(HitData _hitData)
@@ -66,13 +77,13 @@ public class EffectWorker : Singleton<EffectWorker>
         // 데미지 표시해주자
         if (_hitData.value != 0)
         {
-            var targetParent = _hitData.target.Find("Character/Canvas/Effect");
+            var targetParent = _hitData.target.element.effect_canvas;
 
             Text txtdamage = m_fx_text[EffectType.damage].Find(x => x.gameObject.activeSelf == false);
 
             if (txtdamage == null)
             {
-                txtdamage = Instantiate(m_fx_text[EffectType.damage][0], m_parentCanvas)
+                txtdamage = Instantiate(m_fx_text[EffectType.damage][0], m_element.canvas)
                     .GetComponent<Text>();
                 txtdamage.name = $"Damage_{m_fx_text[EffectType.damage].Count}";
                 txtdamage.transform.localScale = new Vector3(1f, 0.9f, 1f);
@@ -88,26 +99,26 @@ public class EffectWorker : Singleton<EffectWorker>
             if (_hitData.isCritical)
                 trns.DOPunchScale(Vector3.one * 1.2f, 0.2f);
 
-            StartCoroutine(DoShowEffectValue(txtdamage.gameObject, _hitData.target.position,
-                () => trns.SetParent(m_parentCanvas)));
+            StartCoroutine(DoShowEffectValue(txtdamage.gameObject, _hitData.target.transform.position,
+                () => trns.SetParent(m_element.canvas)));
         }
 
         // effect 연출해주자
         //if (_hitData.value < 0)
         {
-            var targetParent = _hitData.target.Find("Character/Effect_Renderer");
+            var targetParent = _hitData.target.element.effect_renderer;
 
             SpriteAnimaion animation = m_fx_animation[EffectType.hit].Find(x => x.gameObject.activeSelf == false);
             if (animation == null)
             {
-                animation = Instantiate(m_fx_animation[EffectType.hit][0], m_parentRenderer)
+                animation = Instantiate(m_fx_animation[EffectType.hit][0], m_element.renderer)
                     .GetComponent<SpriteAnimaion>();
                 animation.name = $"DamageHit_{m_fx_animation[EffectType.hit].Count}";
                 m_fx_animation[EffectType.hit].Add(animation);
             }
 
-            var angle = Vector3.Angle(Vector3.right, _hitData.target.position - _hitData.attacker.position);
-            if (_hitData.target.position.y < _hitData.attacker.position.y)
+            var angle = Vector3.Angle(Vector3.right, _hitData.target.transform.position - _hitData.attacker.position);
+            if (_hitData.target.transform.position.y < _hitData.attacker.position.y)
                 angle = 360 - angle;
 
             animation.SetColor(_hitData.isCritical ? m_colorCritical : m_colorHit);
@@ -120,7 +131,7 @@ public class EffectWorker : Singleton<EffectWorker>
             trns.SetParent(targetParent);
             trns.SetAsLastSibling();
             trns.position = targetParent.position + new Vector3(0, .5f);
-            animation.Play(() => trns.SetParent(m_parentRenderer));
+            animation.Play(() => trns.SetParent(m_element.renderer));
         }
     }
 
@@ -210,7 +221,7 @@ public class EffectWorker : Singleton<EffectWorker>
     public struct HitData
     {
         public Transform attacker;
-        public Transform target;
+        public CharacterComponent target;
         public int value;
         public bool isCritical;
         public bool isAlliance;

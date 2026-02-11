@@ -1,9 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class MapManager : Singleton<MapManager>
 {
+    [Serializable]
+    struct ElementData
+    {
+        public LayerMask bounceLayer;
+        public Transform hero;
+        public Transform enemy;
+    }
+
     Camera m_camera;
 
     public LayerMask m_bounceLayer;
@@ -13,6 +22,14 @@ public class MapManager : Singleton<MapManager>
         m_bounceLayer = LayerMask.GetMask("BounceCamera");
         m_camera = Camera.main;
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        //UnityEditor.EditorUtility.SetDirty(this);
+    }
+#endif
+
 
     public Transform parentHero => transform.Find("Heros/Team");
     public Transform parentEnemy => transform.Find("Heros/Enemy");

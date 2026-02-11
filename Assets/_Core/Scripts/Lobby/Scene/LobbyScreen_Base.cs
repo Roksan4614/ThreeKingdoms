@@ -6,15 +6,32 @@ using UnityEngine.UI;
 
 public abstract class LobbyScreen_Base : MonoBehaviour
 {
+    [SerializeField]
+    Button m_btnBack;
+
+    [SerializeField]
+    RectTransform m_panel;
+
     bool m_isDoing = false;
 
     LobbyScreenType m_screenType;
 
     private void Awake()
     {
-        transform.GetComponent<Button>("Panel/Top/btn_back").onClick.AddListener(
+        m_btnBack.onClick.AddListener(
             () => Signal.instance.CloseLobbyScreen.Emit(m_screenType));
+        m_btnBack = null;
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        m_btnBack = transform.GetComponent<Button>("Panel/Top/btn_back");
+        m_panel = transform.GetComponent<RectTransform>("Panel");
+
+        UnityEditor.EditorUtility.SetDirty(this);
+    }
+#endif
 
     public bool isOpenned => gameObject.activeSelf && m_isDoing == false;
 
@@ -47,8 +64,6 @@ public abstract class LobbyScreen_Base : MonoBehaviour
         if (_isOpen == true)
             gameObject.SetActive(true);
 
-        RectTransform panel = transform.GetComponent<RectTransform>("Panel");
-
         var targetScale = Vector3.one * (_isOpen ? 1 : 0.5f);
 
         TweenCallback callbackFinished = () =>
@@ -61,15 +76,15 @@ public abstract class LobbyScreen_Base : MonoBehaviour
 
         if (_isTween)
         {
-            panel.localScale = Vector3.one * (_isOpen ? 0.5f : 1);
+            m_panel.localScale = Vector3.one * (_isOpen ? 0.5f : 1);
             var duration = 0.15f;
 
-            panel.DOScale(targetScale, duration).SetEase(_isOpen ? Ease.OutBack : Ease.InBack)
+            m_panel.DOScale(targetScale, duration).SetEase(_isOpen ? Ease.OutBack : Ease.InBack)
                 .OnComplete(callbackFinished);
         }
         else
         {
-            panel.localScale = targetScale;
+            m_panel.localScale = targetScale;
             callbackFinished();
         }
     }

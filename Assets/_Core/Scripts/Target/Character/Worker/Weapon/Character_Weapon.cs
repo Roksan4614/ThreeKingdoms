@@ -2,22 +2,31 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class Character_Weapon : MonoBehaviour
 {
-    protected List<SpriteAnimaion> m_animSlash = new();
-    protected CharacterComponent m_owner;
+    [SerializeField]
+    public CharacterComponent m_owner;
+    [SerializeField]
+    public List<SpriteAnimaion> m_animSlash = new();
 
     bool m_isCritial;
     public bool isUseSkill { get; protected set; }
 
     private void Awake()
     {
-        m_owner = transform.parent.GetComponent<CharacterComponent>();
+        for (int i = 0; i < m_animSlash.Count; i++)
+            m_animSlash[i].gameObject.SetActive(false);
+    }
 
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        m_owner = transform.parent?.GetComponent<CharacterComponent>();
+
+        m_animSlash.Clear();
         var fxAttack = transform.GetComponent<SpriteAnimaion>("Panel/FxAttack");
-        if (fxAttack.transform.childCount > 0)
+        if (fxAttack != null && fxAttack.transform.childCount > 0)
         {
             m_animSlash.Add(fxAttack);
 
@@ -29,16 +38,16 @@ public class Character_Weapon : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < m_animSlash.Count; i++)
-            m_animSlash[i].gameObject.SetActive(false);
+        UnityEditor.EditorUtility.SetDirty(this);
     }
+#endif
 
     public void Attack(bool _isCritical)
     {
         m_isCritial = _isCritical;
 
-        //if (m_isCritial)
-        //    ShowSlashEffect();
+        if (m_isCritial)
+            ShowSlashEffect();
 
         m_owner.anim.Play(CharacterAnimType.Attack);
     }
@@ -72,7 +81,7 @@ public class Character_Weapon : MonoBehaviour
         EffectWorker.instance.SlotDamageTakenEffect(new()
         {
             attacker = _owner.transform,
-            target = target.transform,
+            target = target,
             value = -damage,
             isCritical = m_isCritial,
             isAlliance = target.factionType == FactionType.Alliance
