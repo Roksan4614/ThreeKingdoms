@@ -6,21 +6,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EffectWorker : Singleton<EffectWorker>
+public class EffectWorker : Singleton<EffectWorker>, IValidatable
 {
-    [Serializable]
-    struct ElementData
-    {
-        public Transform renderer;
-        public Transform canvas;
-
-        public Text baseDamage;
-        public SpriteAnimaion baseDamageHit;
-    }
-
-    [SerializeField]
-    ElementData m_element;
-
     enum EffectType
     {
         damage,
@@ -46,15 +33,9 @@ public class EffectWorker : Singleton<EffectWorker>
     };
 
 #if UNITY_EDITOR
-    private void OnValidate()
+    public void OnManualValidate()
     {
-        m_element.canvas = transform.Find("Canvas");
-        m_element.renderer = transform.Find("Renderer");
-
-        m_element.baseDamage = transform.GetComponent<Text>("Canvas/Damage");
-        m_element.baseDamageHit = transform.GetComponent<SpriteAnimaion>("Renderer/DamageHit");
-
-        UnityEditor.EditorUtility.SetDirty(this);
+        m_element.Initialize(transform);
     }
 #endif
 
@@ -225,5 +206,27 @@ public class EffectWorker : Singleton<EffectWorker>
         public int value;
         public bool isCritical;
         public bool isAlliance;
+    }
+
+    [SerializeField, HideInInspector]
+    ElementData m_element;
+
+    [Serializable]
+    struct ElementData
+    {
+        public Transform renderer;
+        public Transform canvas;
+
+        public Text baseDamage;
+        public SpriteAnimaion baseDamageHit;
+
+        public void Initialize(Transform _transform)
+        {
+            canvas = _transform.Find("Canvas");
+            renderer = _transform.Find("Renderer");
+
+            baseDamage = _transform.GetComponent<Text>("Canvas/Damage");
+            baseDamageHit = _transform.GetComponent<SpriteAnimaion>("Renderer/DamageHit");
+        }
     }
 }

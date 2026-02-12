@@ -4,15 +4,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HeroInfoComponent : MonoBehaviour
+public class HeroInfoComponent : MonoBehaviour, IValidatable
 {
     CharacterComponent m_hero;
 
     CooltimeData m_cooltime_Revive;
     CooltimeData m_cooltime_Skill;
-
-    [SerializeField]
-    ElementData m_element;
 
     private void Awake()
     {
@@ -29,14 +26,9 @@ public class HeroInfoComponent : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    private void OnValidate()
+    public void OnManualValidate()
     {
-        m_element.icon = transform.Find("Panel/Icon");
-        m_element.objOnSkill = transform.Find("Panel/OnSkill").gameObject;
-        m_element.rtBar_HP = transform.GetComponent<RectTransform>("HP/img_bar");
-        m_element.rtBar_Cooltime = transform.GetComponent<RectTransform>("Cooltime/img_bar");
-
-        UnityEditor.EditorUtility.SetDirty(this);
+        m_element.Initialize(transform);
     }
 #endif
 
@@ -44,7 +36,7 @@ public class HeroInfoComponent : MonoBehaviour
     {
         m_hero = _hero;
 
-        var key = _hero.name;
+        var key = _hero.data.key;
 
         int countDestroy = 0;
         for (int i = 0; i < m_element.icon.childCount; i++)
@@ -116,6 +108,8 @@ public class HeroInfoComponent : MonoBehaviour
         var pos = Vector2.zero;
         pos.x = -width;
 
+        m_element.objOnSkill.SetActive(false);
+
         while (Time.realtimeSinceStartup < m_cooltime_Revive.endTime)
         {
             float progress = (Time.realtimeSinceStartup - m_cooltime_Revive.startTime) / (m_cooltime_Revive.endTime - m_cooltime_Revive.startTime);
@@ -123,18 +117,21 @@ public class HeroInfoComponent : MonoBehaviour
             pos.x = width * progress - width;
             _bar.anchoredPosition = pos;
 
-            imgRespawn.fillAmount = progress;
+            imgRespawn.fillAmount = 1 - progress;
 
             var remainTime = m_cooltime_Revive.endTime - Time.realtimeSinceStartup;
-            txtTimer.text = remainTime.ToString(remainTime > 10 ? "#0" : "0.0");
+            txtTimer.text = remainTime >= 10 ? Math.Truncate(remainTime).ToString() :
+                    (Math.Truncate(remainTime * 10) / 10).ToString("0.0");
 
             yield return null;
         }
 
         transform.GetComponent<ParticleSystem>("Panel/Effect_Respawn").Play();
 
+        m_element.objOnSkill.SetActive(m_statusSkill == StatusType.Valid);
+
         txtTimer.text = "";
-        imgRespawn.fillAmount = 1;
+        imgRespawn.fillAmount = 0;
         imgRespawn.transform.DOScale(Vector3.one * 3, 0.1f);
         imgRespawn.DOFade(0f, 0.1f).SetEase(Ease.OutCubic).OnComplete(() =>
         {
@@ -174,14 +171,35 @@ public class HeroInfoComponent : MonoBehaviour
         var bar = m_element.rtBar_Cooltime;
         var width = bar.rect.width;
 
+        float dieTime = -1;
         m_statusSkill = StatusType.Wait;
         while (true)
         {
+            if (m_hero.isLive == false)
+            {
+                if (dieTime < 0)
+                {
+                    bar.gameObject.SetActive(false);
+                    dieTime = Time.realtimeSinceStartup;
+                }
+                yield return null;
+                continue;
+            }
+            else if (dieTime > 0)
+            {
+                bar.gameObject.SetActive(true);
+                m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
+                m_cooltime_Skill.endTime = data.cooltime_skill + m_cooltime_Skill.startTime;
+                addTime = 0;
+                dieTime = -1;
+            }
+
+            // 퍼센트 구하기!!
             float progress = (Time.realtimeSinceStartup - m_cooltime_Skill.startTime + addTime) / (m_cooltime_Skill.endTime - m_cooltime_Skill.startTime);
 
+            // 바 이동하기!!
             var pos = bar.anchoredPosition;
             pos.x = width * progress;
-
             bar.anchoredPosition = pos;
 
             if (progress > 1f)
@@ -193,12 +211,24 @@ public class HeroInfoComponent : MonoBehaviour
 
                 m_element.objOnSkill.SetActive(true);
 
+                // 버튼 누를 때까지 기다리기!!
                 while (m_statusSkill != StatusType.Success)
-                    yield return null;
+                {
+                    //죽으면 끄기
+                    if (m_hero.isLive == false)
+                    {
+                        m_statusSkill = StatusType.Failed;
+                        break;
+                    }
 
+                    yield return null;
+                }
+
+                // 스킬 사용하기!!
                 m_element.objOnSkill.SetActive(false);
 
-                yield return m_hero.attack.DoUseSkill();
+                if (m_statusSkill == StatusType.Success)
+                    yield return m_hero.attack.DoUseSkill();
 
                 m_statusSkill = StatusType.Wait;
                 m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
@@ -216,6 +246,9 @@ public class HeroInfoComponent : MonoBehaviour
         public float endTime;
     }
 
+    [SerializeField, HideInInspector]
+    ElementData m_element;
+
     [Serializable]
     struct ElementData
     {
@@ -225,5 +258,13 @@ public class HeroInfoComponent : MonoBehaviour
         public RectTransform rtBar_HP;
 
         public Transform panel => icon.parent;
+
+        public void Initialize(Transform _transform)
+        {
+            icon = _transform.Find("Panel/Icon");
+            objOnSkill = _transform.Find("Panel/OnSkill").gameObject;
+            rtBar_HP = _transform.GetComponent<RectTransform>("HP/img_bar");
+            rtBar_Cooltime = _transform.GetComponent<RectTransform>("Cooltime/img_bar");
+        }
     }
 }

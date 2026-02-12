@@ -11,8 +11,19 @@ public class CameraManager : MonoSingleton<CameraManager>
 
     [SerializeField] Transform m_playerCameraPos;
 
+    private void Start()
+    {
+        Signal.instance.ConnectMainHero.connectLambda =
+            new(this, _ => m_playerCameraPos = _.element.cameraPos);
+    }
+
     private void LateUpdate()
     {
+#if UNITY_EDITOR
+        if (MapManager.instance == null || m_playerCameraPos == null)
+            return;
+#endif
+
         CameraMove();
     }
 

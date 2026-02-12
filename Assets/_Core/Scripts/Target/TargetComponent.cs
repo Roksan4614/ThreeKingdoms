@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public abstract class TargetComponent : MonoBehaviour
+public abstract class TargetComponent : MonoBehaviour, IValidatable
 {
     public virtual bool isLive => true;
 
@@ -11,12 +11,10 @@ public abstract class TargetComponent : MonoBehaviour
     protected Canvas m_canvas;
 
 #if UNITY_EDITOR
-    protected virtual void OnValidate()
+    public virtual void OnManualValidate()
     {
         m_canvas = transform.GetComponent<Canvas>("Character/Canvas");
         m_sortingGroup = transform.GetComponent<SortingGroup>();
-
-        UnityEditor.EditorUtility.SetDirty(this);
     }
 #endif
 

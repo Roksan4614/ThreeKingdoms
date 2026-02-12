@@ -1,16 +1,16 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    IEnumerator Start()
+    async void Start()
     {
-        // TODO: 현재 등록된 장수들 로드해야 함
-        var heros = MapManager.instance.parentHero.GetComponentsInChildren<CharacterComponent>();
-        TeamManager.instance.SetTeamPosition(heros.ToList());
-        StageManager.instance.StartStage();
+        await TableManager.instance.Initialize();
+        await DataManager.userInfo.LoadData();
+        await TeamManager.instance.SpawnUpdate();
 
-        yield return null;
+        StageManager.instance.StartStage();
     }
 }

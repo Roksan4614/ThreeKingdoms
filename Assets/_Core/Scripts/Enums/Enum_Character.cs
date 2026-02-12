@@ -25,9 +25,20 @@ public enum CharacterAnimType
     MAX
 }
 
-public enum CharacterClassType
+public enum HeroGradeType
 {
-    None = -1,
+    NONE = -1,
+
+    Normal,
+    Elite,
+    General,
+    Hero,
+    Legend,
+}
+
+public enum HeroClassType
+{
+    NONE = -1,
 
     // ÁöÈÖ°ü
     Commander,
@@ -45,7 +56,7 @@ public enum CharacterClassType
 
 public enum TeamPositionType
 {
-    None = -1,
+    NONE = -1,
 
     Front,
     Top,

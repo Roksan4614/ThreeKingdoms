@@ -20,8 +20,8 @@ public class CharacterState_SearchEnemy : CharacterState
             var lookAt = posTarget - mainHero.transform.position;
             m_owner.move.OnMoveUpdate(lookAt.normalized * teamSpeed);
 
-            var distance = Vector3.Distance(m_owner.transform.position, posNearestEnemy);
-            if (distance < 5f)
+            var distance = (m_owner.transform.position - posNearestEnemy).sqrMagnitude;
+            if (distance < 25f)
             {
                 StageManager.instance.SetState(CharacterStateType.Battle);
                 TeamManager.instance.SetState(CharacterStateType.Battle);

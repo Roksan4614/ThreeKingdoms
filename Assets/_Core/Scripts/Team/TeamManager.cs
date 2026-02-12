@@ -1,46 +1,85 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.U2D.Animation;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using static UnityEngine.EventSystems.EventTrigger;
 
-public class TeamManager : Singleton<TeamManager>
+public class TeamManager : Singleton<TeamManager>, IValidatable
 {
-    Dictionary<TeamPositionType, Vector3> m_dbPostion = new();
     Dictionary<TeamPositionType, CharacterComponent> m_member = new();
-
-    public Team_HeroInfo heroInfo { get; private set; }
 
     public CharacterStateType teamState { get; private set; } = CharacterStateType.Wait;
     public IReadOnlyDictionary<TeamPositionType, CharacterComponent> members => m_member;
+    public TeamPositionType teamPositionType { get; private set; } = TeamPositionType.Front;
+
+    public Team_HeroInfo m_heroInfo;
+    public Dictionary<TeamPositionType, Vector3> m_dbPostion = new();
 
     protected override void OnAwake()
     {
         for (int i = 0; i < transform.childCount; i++)
-            m_dbPostion.Add(TeamPositionType.None + i + 1,
-                transform.GetChild(i).position - transform.GetChild(0).position);
+            Destroy(transform.GetChild(i).gameObject);
 
-        heroInfo = new(GameObject.Find("Canvas/HeroInfo").transform);
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            m_dbPostion.Add(TeamPositionType.NONE + i + 1,
+                transform.GetChild(i).position - m_element.startPos);
+        }
+    }
+
+    private void Start()
+    {
+        m_heroInfo = new(m_element.heroInfo);
+        Signal.instance.UpdateHP.connect = m_heroInfo.UpdateHP;
+    }
+
+#if UNITY_EDITOR
+    public void OnManualValidate()
+    {
+        m_element.Initialize(transform);
+    }
+#endif
+
+    public async UniTask SpawnUpdate()
+    {
+        var dbHero = DataManager.userInfo.dbHero.Where(x => x.isBatch).ToList();
+
+        var remove = m_member
+            .Where(x => dbHero.Any(y => y.key == x.Value.data.key) == false)
+            .Select(x => x.Key).ToList();
+
+        for (int i = 0; i < remove.Count; i++)
+        {
+            Destroy(m_member[remove[i]].gameObject);
+            m_member.Remove(remove[i]);
+        }
+
+        for (int i = 0; i < dbHero.Count; i++)
+        {
+            if (m_member.Values.Any(x => x.data.key.Equals(dbHero[i].key)))
+                continue;
+
+            var heroCharacter = (await AddressableManager.instance.GetHeroCharacter(dbHero[i].skin)).GetComponent<CharacterComponent>();
+
+            var hero = Instantiate(heroCharacter, MapManager.instance.element.hero);
+            hero.SetHeroData(dbHero[i].key);
+            hero.name = dbHero[i].skin;
+            hero.transform.position = m_element.startPos;
+            hero.move.SetFlip(true);
+
+            m_member.Add(TeamPositionType.MAX + i, hero);
+        }
+
+        SetTeamPosition(m_member.Values.ToList());
     }
 
     public void SetTeamPosition(List<CharacterComponent> _members)
     {
         m_member.Clear();
 
-        // 주장이 책사, 궁장이면 후방위치한다
-        //m_member.Add(_members[0].data.classType switch
-        //{
-        //    CharacterClassType.Archer => TeamPositionType.Back,
-        //    CharacterClassType.Strategist => TeamPositionType.Back,
-        //    _ => TeamPositionType.Front
-        //}, _members[0]);
-
         // 일단 주장은 무조건 전방으로 해보자
-        m_member.Add(TeamPositionType.Front, _members[0]);
+        m_member.Add(teamPositionType, _members[0]);
         _members.RemoveAt(0);
 
         // 세명이면 전방이후방을 정해야 한다.
@@ -48,37 +87,31 @@ public class TeamManager : Singleton<TeamManager>
         {
             CharacterComponent character = null;
             // 주장이 전방일 경우 궁장,책사 중 공격력이 가장 강한 영웅이 뒤로 간다
-            //if (m_member.ContainsKey(TeamPositionType.Front) == true)
+            if (teamPositionType == TeamPositionType.Front)
             {
-                var backs = _members.Where(x => x.data.classType == CharacterClassType.Strategist).ToList();
+                var backs = _members.Where(x => x.data.classType == HeroClassType.Strategist).ToList();
 
                 if (backs.Count == 0)
-                {
-                    backs = _members.Where(x => x.data.classType == CharacterClassType.Archer).ToList();
+                    backs = _members.Where(x => x.data.classType == HeroClassType.Archer).ToList();
 
-                    // 두 클래스 다 없으면 나머지 중에서 고르자
-                    if (backs.Count == 0)
-                        backs = _members;
-                }
-
-                character = backs.OrderByDescending(x => x.data.attackPower).First();
+                character = backs.Count > 0
+                    ? backs.OrderByDescending(x => x.data.attackPower).First()
+                    : _members.OrderBy(x => x.data.healthMax).First();
 
                 m_member.Add(TeamPositionType.Back, character);
             }
             // 주장이 후방일 경우 용장이거나 체력이 가장 높은 영웅을 앞으로 보낸다
-            //else
-            //{
-            //    var fronts = _members.Where(x => x.data.classType == CharacterClassType.Champion).ToList();
+            else
+            {
+                var fronts = _members.Where(x => x.data.classType == HeroClassType.Champion).ToList();
 
-            //    if (fronts.Count == 0)
-            //    {
-            //        fronts = _members;
-            //    }
+                if (fronts.Count == 0)
+                    fronts = _members;
 
-            //    character = fronts.OrderByDescending(x => x.data.health).First();
+                character = fronts.OrderByDescending(x => x.data.health).First();
 
-            //    m_member.Add(TeamPositionType.Front, character);
-            //}
+                m_member.Add(TeamPositionType.Front, character);
+            }
 
             _members.Remove(character);
         }
@@ -95,7 +128,8 @@ public class TeamManager : Singleton<TeamManager>
             member.Value.SetFaction(FactionType.Alliance);
         }
 
-        heroInfo.SetTeamPosition();
+        Signal.instance.ConnectMainHero.Emit(mainHero);
+        m_heroInfo.SetTeamPosition();
     }
 
     public float teamMoveSpeed => mainHero.data.moveSpeed;
@@ -103,7 +137,7 @@ public class TeamManager : Singleton<TeamManager>
 
     public void ChapterStart()
     {
-        heroInfo.ChapterStart();
+        m_heroInfo.ChapterStart();
     }
 
     public void PhaseStart()
@@ -114,7 +148,7 @@ public class TeamManager : Singleton<TeamManager>
         foreach (var member in m_member.Values)
         {
             member.Respawn();
-            heroInfo.SlotUpdateHP(member);
+            m_heroInfo.UpdateHP(member);
         }
     }
 
@@ -196,7 +230,6 @@ public class TeamManager : Singleton<TeamManager>
             if (hero.isLive == false)
                 continue;
 
-
             float sqrDist = (hero.transform.position - _position).sqrMagnitude;
             if (sqrDist < minDist)
             {
@@ -208,4 +241,21 @@ public class TeamManager : Singleton<TeamManager>
         return result;
     }
 
+    [SerializeField]
+    //[SerializeField, HideInInspector]
+    ElementData m_element;
+    public ElementData element => m_element;
+    [Serializable]
+    public struct ElementData
+    {
+        public Vector3 startPos;
+
+        public Transform heroInfo;
+
+        public void Initialize(Transform _transform)
+        {
+            startPos = _transform.GetChild(0).position;
+            heroInfo = GameObject.Find("Canvas/HeroInfo").transform;
+        }
+    }
 }

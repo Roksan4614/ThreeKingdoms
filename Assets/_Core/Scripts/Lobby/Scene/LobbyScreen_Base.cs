@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class LobbyScreen_Base : MonoBehaviour
+public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 {
     [SerializeField]
     Button m_btnBack;
@@ -16,7 +16,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour
 
     LobbyScreenType m_screenType;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         m_btnBack.onClick.AddListener(
             () => Signal.instance.CloseLobbyScreen.Emit(m_screenType));
@@ -24,12 +24,10 @@ public abstract class LobbyScreen_Base : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    private void OnValidate()
+    public virtual void OnManualValidate()
     {
         m_btnBack = transform.GetComponent<Button>("Panel/Top/btn_back");
         m_panel = transform.GetComponent<RectTransform>("Panel");
-
-        UnityEditor.EditorUtility.SetDirty(this);
     }
 #endif
 

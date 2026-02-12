@@ -13,7 +13,7 @@ public class StageManager : Singleton<StageManager>
 
     LoadData_Stage m_loadData;
 
-    List<CharacterComponent> m_enemyList = new();
+    List<Character_Enemy> m_enemyList = new();
 
     int m_indexLayerEnemy;
     protected override void OnAwake()
@@ -60,14 +60,6 @@ public class StageManager : Singleton<StageManager>
 
                 phase.gameObject.SetActive(true);
 
-                m_enemyList.Clear();
-                for (int i = 0; i < phase.childCount; i++)
-                {
-                    var e = phase.GetChild(i).GetComponent<CharacterComponent>();
-                    e.gameObject.layer = m_indexLayerEnemy;
-                    m_enemyList.Add(e);
-                }
-
                 // 위치 세팅한다
                 var posMainHero = TeamManager.instance.mainHero.transform.position;
                 var pos = phase.position;
@@ -83,12 +75,19 @@ public class StageManager : Singleton<StageManager>
                 }
                 // 위치 세팅한다
 
+                m_enemyList.Clear();
+                for (int i = 0; i < phase.childCount; i++)
+                {
+                    var e = phase.GetChild(i).GetComponent<Character_Enemy>();
+                    e.gameObject.layer = m_indexLayerEnemy;
+                    m_enemyList.Add(e);
+                }
+
                 var prevPosition = m_enemyList.Select(x => x.transform.position).ToList();
 
                 foreach (var e in m_enemyList)
                 {
-                    e.SetFaction(FactionType.Enemy);
-                    e.transform.SetParent(MapManager.instance.parentEnemy);
+                    e.SetHeroData(e.name);
 
                     if (e.transform.localScale.x < 0)
                     {

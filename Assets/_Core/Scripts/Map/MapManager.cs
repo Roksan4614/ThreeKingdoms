@@ -3,16 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class MapManager : Singleton<MapManager>
+public class MapManager : Singleton<MapManager>, IValidatable
 {
-    [Serializable]
-    struct ElementData
-    {
-        public LayerMask bounceLayer;
-        public Transform hero;
-        public Transform enemy;
-    }
-
     Camera m_camera;
 
     public LayerMask m_bounceLayer;
@@ -24,15 +16,11 @@ public class MapManager : Singleton<MapManager>
     }
 
 #if UNITY_EDITOR
-    private void OnValidate()
+    public void OnManualValidate()
     {
-        //UnityEditor.EditorUtility.SetDirty(this);
+        m_element.Initialize(transform);
     }
 #endif
-
-
-    public Transform parentHero => transform.Find("Heros/Team");
-    public Transform parentEnemy => transform.Find("Heros/Enemy");
 
     public Vector3 GetBounceHorizontalPos(Vector3 _targetPos)
     {
@@ -79,5 +67,24 @@ public class MapManager : Singleton<MapManager>
         }
 
         return _targetPos;
+    }
+
+    [SerializeField, HideInInspector]
+    ElementData m_element;
+    public ElementData element => m_element;
+
+    [Serializable]
+    public struct ElementData
+    {
+        public LayerMask bounceLayer;
+        public Transform hero;
+        public Transform enemy;
+
+        public void Initialize(Transform _transform)
+        {
+            bounceLayer = LayerMask.GetMask("BouceCamera");
+            hero = _transform.Find("Heros/Team");
+            enemy = _transform.Find("Heros/Enemy");
+        }
     }
 }

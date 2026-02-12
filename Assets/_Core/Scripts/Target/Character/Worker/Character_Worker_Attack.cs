@@ -9,8 +9,13 @@ public class Character_Worker_Attack : Character_Worker
 {
     public Character_Worker_Attack(CharacterComponent _owner) : base(_owner)
     {
-        m_weapon = _owner.transform.GetComponent<Character_Weapon>("Character")
-            ?? _owner.transform.Find("Character").AddComponent<Character_Weapon>();
+        m_weapon = _owner.transform.GetComponent<Character_Weapon>("Character");
+
+        if (m_weapon == null)
+        {
+            m_weapon = _owner.transform.Find("Character").AddComponent<Character_Weapon>();
+            m_weapon.OnManualValidate();
+        }
     }
 
     Character_Weapon m_weapon;
@@ -34,7 +39,7 @@ public class Character_Worker_Attack : Character_Worker
     }
 
     public bool IsValidUseSkill()
-        => m_weapon.IsValidUseSkill();
+        => m_owner.isLive && m_weapon.IsValidUseSkill();
 
     public IEnumerator DoUseSkill()
     { yield return m_weapon.DoUseSkill(); }

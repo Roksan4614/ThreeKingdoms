@@ -13,11 +13,7 @@ public class Team_HeroInfo
         {
             m_lstHeroInfo.Add(_heroInfo.GetChild(i).GetComponent<HeroInfoComponent>());
         }
-
-        Signal.instance.UpdateHP.connect = SlotUpdateHP;
     }
-
-
 
     public void SetTeamPosition()
     {
@@ -42,9 +38,9 @@ public class Team_HeroInfo
             m_lstHeroInfo[(int)hero.teamPosition].StartCooltimeSkill();
     }
 
-    public void SlotUpdateHP(CharacterComponent _hero)
+    public void UpdateHP(CharacterComponent _hero)
     {
-        if (_hero.teamPosition > TeamPositionType.None)
+        if (_hero.teamPosition > TeamPositionType.NONE)
             m_lstHeroInfo[(int)_hero.teamPosition].UpdateHP();
     }
 }

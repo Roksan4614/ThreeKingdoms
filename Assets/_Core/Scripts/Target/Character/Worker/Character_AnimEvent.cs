@@ -1,16 +1,14 @@
 using UnityEngine;
 
-public class Character_AnimEvent : MonoBehaviour
+public class Character_AnimEvent : MonoBehaviour, IValidatable
 {
     [SerializeField]
     CharacterComponent m_owner;
 
 #if UNITY_EDITOR
-    private void OnValidate()
+    public void OnManualValidate()
     {
         m_owner = transform.parent.parent.parent?.GetComponent<CharacterComponent>();
-
-        UnityEditor.EditorUtility.SetDirty(this);
     }
 #endif
 

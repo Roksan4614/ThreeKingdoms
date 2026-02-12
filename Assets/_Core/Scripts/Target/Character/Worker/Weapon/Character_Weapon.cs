@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character_Weapon : MonoBehaviour
+public class Character_Weapon : MonoBehaviour, IValidatable
 {
     [SerializeField]
     public CharacterComponent m_owner;
@@ -20,7 +20,7 @@ public class Character_Weapon : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    private void OnValidate()
+    public void OnManualValidate()
     {
         m_owner = transform.parent?.GetComponent<CharacterComponent>();
 
@@ -37,8 +37,6 @@ public class Character_Weapon : MonoBehaviour
                     m_animSlash.Add(sub);
             }
         }
-
-        UnityEditor.EditorUtility.SetDirty(this);
     }
 #endif
 
@@ -62,7 +60,7 @@ public class Character_Weapon : MonoBehaviour
         m_owner.anim.Play(CharacterAnimType.Attack);
         ShowSlashEffect();
 
-        yield return new WaitForSeconds(1f);
+        yield return null;
 
         isUseSkill = false;
     }

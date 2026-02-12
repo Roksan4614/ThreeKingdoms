@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -5,66 +6,82 @@ using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
-public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandler, IPointerUpHandler, IDragHandler
+public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandler, IPointerUpHandler, IDragHandler, IValidatable
 {
-	RectTransform m_pad;
-	RectTransform m_padBar;
+    [SerializeField] float m_maxRadiusBar = 150;
+    [SerializeField]
+    float m_speed = 10;
 
-	[SerializeField] float m_maxRadiusBar = 150;
+    CharacterComponent m_character;
 
-	[SerializeField]
-	CharacterComponent m_character;
-	[SerializeField]
-	float m_speed = 10;
+    public bool isActive => m_element.pad.gameObject.activeSelf;
 
-	public bool isActive => m_pad.gameObject.activeSelf;
+    private void Start()
+    {
+        m_element.pad.gameObject.SetActive(false);
 
-	private void Start()
-	{
-		m_pad = (RectTransform)transform.Find("Pad");
-		m_pad.gameObject.SetActive(false);
+        Signal.instance.ConnectMainHero.connectLambda = new(this, _ => m_character = _);
 
-		m_padBar = (RectTransform)m_pad.Find("Bar");
-	}
+    }
 
-	private void Update()
-	{
-		if (isActive == true && m_character.isLive == true)
-			m_character.OnConrollerMove(m_padBar.position - m_pad.position);
-	}
+#if UNITY_EDITOR
+    public void OnManualValidate()
+    {
+        m_element.Initialize(transform);
+    }
+#endif
 
-	public void OnPointerDown(PointerEventData _eventData)
-	{
-		if (TeamManager.instance.mainHero.isLive == false)
-			return;
+    private void Update()
+    {
+        if (isActive == true && m_character?.isLive == true)
+            m_character.OnConrollerMove(m_element.padBar.position - m_element.pad.position);
+    }
 
-		RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 startPos);
+    public void OnPointerDown(PointerEventData _eventData)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 startPos);
 
-		m_pad.anchoredPosition = startPos;
-		m_pad.gameObject.SetActive(true);
-		m_padBar.localPosition = Vector3.zero;
+        m_element.pad.anchoredPosition = startPos;
+        m_element.pad.gameObject.SetActive(true);
+        m_element.padBar.localPosition = Vector3.zero;
 
-		OnDrag(_eventData);
-	}
+        OnDrag(_eventData);
+    }
 
-	public void OnPointerUp(PointerEventData _eventData)
-	{
-		if (isActive == false)
-			return;
+    public void OnPointerUp(PointerEventData _eventData)
+    {
+        if (isActive == false)
+            return;
 
-		if (m_character.isLive)
-			m_character.SetState(TeamManager.instance.teamState);
+        if (m_character?.isLive == true)
+            m_character.SetState(TeamManager.instance.teamState);
 
-		m_pad.gameObject.SetActive(false);
-	}
+        m_element.pad.gameObject.SetActive(false);
+    }
 
-	public void OnDrag(PointerEventData _eventData)
-	{
-		if (isActive == false)
-			return;
+    public void OnDrag(PointerEventData _eventData)
+    {
+        if (isActive == false)
+            return;
 
-		RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 targetPos);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 targetPos);
 
-		m_padBar.anchoredPosition = Vector2.ClampMagnitude(targetPos - m_pad.anchoredPosition, m_maxRadiusBar);
-	}
+        m_element.padBar.anchoredPosition = Vector2.ClampMagnitude(targetPos - m_element.pad.anchoredPosition, m_maxRadiusBar);
+    }
+
+    [SerializeField, HideInInspector]
+    ElementData m_element;
+    public ElementData element => m_element;
+    [Serializable]
+    public struct ElementData
+    {
+        public RectTransform pad;
+        public RectTransform padBar;
+
+        public void Initialize(Transform _transform)
+        {
+            pad = (RectTransform)_transform.Find("Pad");
+            padBar = (RectTransform)pad.Find("Bar");
+        }
+    }
 }

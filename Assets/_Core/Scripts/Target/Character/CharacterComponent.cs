@@ -3,18 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 public class CharacterComponent : TargetComponent
 {
     [SerializeField]
-    ElementData m_element;
-    public ElementData element => m_element;
-
-    [SerializeField]
-    Data_Character m_data;
+    protected TableHeroData m_data;
     [SerializeField]
     FactionType m_faction;
+
+    [SerializeField]
+    CharacterStateType m_stateType;
 
     CharacterState m_state;
 
@@ -26,18 +26,17 @@ public class CharacterComponent : TargetComponent
     public Character_Worker_Target target { get; private set; }
     public Transform panel => m_element.panel;
     public Rigidbody2D rig => m_element.rig;
-    public Data_Character data => m_data;
+    public TableHeroData data => m_data;
     public override bool isLive => data.health > 0;
     public bool isMain => m_element.isMain;
     public FactionType factionType => m_faction;
-    public TeamPositionType teamPosition { get; private set; } = TeamPositionType.None;
+    public TeamPositionType teamPosition { get; private set; } = TeamPositionType.NONE;
 
     public void SetMain(bool _isMain) => m_element.isMain = _isMain;
 
     void Awake()
     {
-
-        anim = new(this); m_element.animator = default;
+        anim = new(this);// m_element.animator = default;
         move = new(this);
         attack = new(this);
         target = new(this);
@@ -48,9 +47,6 @@ public class CharacterComponent : TargetComponent
 
         SetState(CharacterStateType.Wait);
 
-        // TEST
-        m_data.SetDefault();
-
         if (m_faction == FactionType.Enemy)
         {
             m_data.attackPower /= 2;
@@ -59,24 +55,17 @@ public class CharacterComponent : TargetComponent
     }
 
 #if UNITY_EDITOR
-    protected override void OnValidate()
+    public override void OnManualValidate() 
     {
-        m_element.rig = transform.GetComponent<Rigidbody2D>();
-        m_element.panel = transform.Find("Character/Panel");
-        m_element.animator = transform.GetComponent<Animator>("Character/Panel/Parts");
-        m_element.effect_canvas = transform.Find("Character/Canvas/Effect");
-        m_element.effect_renderer = transform.Find("Character/Effect_Renderer");
+        m_element.Initialize(transform);
 
-        base.OnValidate();
+        base.OnManualValidate();
     }
 #endif
 
-    private void Update()
+    public virtual void SetHeroData(string _key)
     {
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    anim.Play(CharacterAnimType.Attack);
-        //}
+        m_data = TableManager.hero.GetHeroData(_key);
     }
 
     public void SetFaction(FactionType _factionType) => m_faction = _factionType;
@@ -102,6 +91,8 @@ public class CharacterComponent : TargetComponent
         if (_collision.CompareTag("CharacterBody"))
         {
             var hero = _collision.transform.parent.GetComponent<CharacterComponent>();
+            if (hero == null || target == null)
+                return;
             target.RemoveTarget(hero);
         }
     }
@@ -119,6 +110,8 @@ public class CharacterComponent : TargetComponent
         m_state?.Stop();
         m_state = m_dbState.ContainsKey(_stateType) ? m_dbState[_stateType] : null;
         m_state?.Start();
+
+        m_stateType = _stateType;
     }
 
     public bool OnDamage(int _damage)
@@ -147,6 +140,10 @@ public class CharacterComponent : TargetComponent
         transform.GetComponent<Collider2D>("Character").enabled = true;
     }
 
+    //[SerializeField, HideInInspector]
+    [SerializeField]
+    ElementData m_element;
+    public ElementData element => m_element;
     [Serializable]
     public struct ElementData
     {
@@ -159,6 +156,18 @@ public class CharacterComponent : TargetComponent
         public Transform effect_canvas;
         public Transform effect_renderer;
 
+        public Transform cameraPos;
+
         public CharacterAnimationClipData animationClipData;
+
+        public void Initialize(Transform _transform)
+        {
+            rig = _transform.GetComponent<Rigidbody2D>();
+            panel = _transform.Find("Character/Panel");
+            animator = _transform.GetComponent<Animator>("Character/Panel/Parts");
+            effect_canvas = _transform.Find("Character/Canvas/Effect");
+            effect_renderer = _transform.Find("Character/Effect_Renderer");
+            cameraPos = panel.Find("CameraPos");
+        }
     }
 }

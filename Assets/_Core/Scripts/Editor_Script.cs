@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Weapon_Ranged_Zhegulaing : Weapon_Ranged
+public class Editor_Script : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

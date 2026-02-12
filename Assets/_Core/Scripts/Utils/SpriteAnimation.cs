@@ -7,22 +7,8 @@ using UnityEngine.Events;
 using UnityEngine.U2D;
 using UnityEngine.UI;
 
-public class SpriteAnimaion : MonoBehaviour
+public class SpriteAnimaion : MonoBehaviour, IValidatable
 {
-    [Serializable]
-    struct ElementData
-    {
-        public Image image;
-        public SpriteRenderer renderer;
-        public bool isAddEmptySprite;
-        public Sprite[] sprite;
-
-        public EffectData effectData;
-    }
-
-    [SerializeField]
-    ElementData m_element;
-
     public enum LoopType
     {
         none,
@@ -35,33 +21,9 @@ public class SpriteAnimaion : MonoBehaviour
     Action m_onCompleted;
 
 #if UNITY_EDITOR
-    private void OnValidate()
+    public void OnManualValidate()
     {
-        m_element.image = transform.GetComponent<Image>("Panel");
-        m_element.renderer = transform.GetComponent<SpriteRenderer>("Panel");
-
-        Sprite baseSprite =
-            m_element.image ? m_element.image.sprite :
-            m_element.renderer ? m_element.renderer.sprite : null;
-
-        if (baseSprite != null)
-        {
-            string spriteSheetPath = UnityEditor.AssetDatabase.GetAssetPath(baseSprite);
-
-            var sprites = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(spriteSheetPath)
-                .OfType<Sprite>()
-                .ToList();
-
-
-            if (m_element.isAddEmptySprite)
-                sprites.Add(AssetLoader.Load<Sprite>("Icon/empty"));
-
-            m_element.sprite = sprites.ToArray();
-        }
-        else
-            m_element.sprite = null;
-
-            UnityEditor.EditorUtility.SetDirty(this);
+        m_element.Initialize(transform);
     }
 #endif
 
@@ -76,7 +38,10 @@ public class SpriteAnimaion : MonoBehaviour
 
     private void OnEnable()
     {
-        m_coPlay = StartCoroutine(DoPlayAnimation());
+        if (m_element.sprite.Length > 0)
+            m_coPlay = StartCoroutine(DoPlayAnimation());
+        else
+            gameObject.SetActive(false);
     }
 
     public void Play(Action _onCompleted = null)
@@ -202,7 +167,6 @@ public class SpriteAnimaion : MonoBehaviour
         m_isForceStop = true;
     }
 
-
     [Serializable]
     public struct EffectData
     {
@@ -211,5 +175,45 @@ public class SpriteAnimaion : MonoBehaviour
         public LoopType loopType;
         public bool isFlipLoop;
         public bool isRotateLoop;
+    }
+
+    [SerializeField, HideInInspector]
+    ElementData m_element;
+
+    [Serializable]
+    struct ElementData
+    {
+        public Image image;
+        public SpriteRenderer renderer;
+        public bool isAddEmptySprite;
+        public Sprite[] sprite;
+
+        public EffectData effectData;
+
+        public void Initialize(Transform _transform)
+        {
+            image = _transform.GetComponent<Image>("Panel");
+            renderer = _transform.GetComponent<SpriteRenderer>("Panel");
+
+            Sprite baseSprite =
+                image ? image.sprite :
+                renderer ? renderer.sprite : null;
+
+            if (baseSprite != null)
+            {
+                string spriteSheetPath = UnityEditor.AssetDatabase.GetAssetPath(baseSprite);
+
+                var sprites = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(spriteSheetPath)
+                    .OfType<Sprite>()
+                    .OrderBy(_x => int.Parse(_x.name.Split("_").Last())).ToList();
+
+                if (isAddEmptySprite)
+                    sprites.Add(AssetLoader.Load<Sprite>("Icon/empty"));
+
+                sprite = sprites.ToArray();
+            }
+            else
+                sprite = null;
+        }
     }
 }

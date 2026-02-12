@@ -20,6 +20,14 @@ public class PopupManager : MonoSingleton<PopupManager>
 {
     private Dictionary<PopupType, AsyncOperationHandle<GameObject>> m_dicPopup = new();
 
+    protected override void OnDestroy()
+    {
+        foreach (var h in m_dicPopup)
+            h.Value.Release();
+
+        base.OnDestroy();
+    }
+
     public async UniTask<GameObject> LoadAsset(PopupType _popupType)
     {
         if (m_dicPopup.ContainsKey(_popupType))

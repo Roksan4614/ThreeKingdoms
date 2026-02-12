@@ -15,6 +15,7 @@ public enum AddressableLabelType
     L_Core,
     L_SpriteAtlas,
     L_HeroIcon,
+    L_TableData,
 
     MAX
 }
@@ -32,7 +33,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     {
         Addressables.InternalIdTransformFunc = CustomTransform;
 
-        await DoDownloadAsync(null, AddressableLabelType.L_Core, AddressableLabelType.L_SpriteAtlas);
+        //await DoDownloadAsync(null, AddressableLabelType.L_Core, AddressableLabelType.L_SpriteAtlas);
     }
 
     string CustomTransform(IResourceLocation _location)
@@ -54,7 +55,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     {
         string logKey = string.Join(",", _keys);
 
-        var handle = Addressables.DownloadDependenciesAsync(_keys, Addressables.MergeMode.Union);
+        var handle = Addressables.DownloadDependenciesAsync(_keys, Addressables.MergeMode.Intersection);
         try
         {
             await handle.ToUniTask(progress: _onProgress);
@@ -175,11 +176,17 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
             IngameLog.Add("Addressable: LoadAsset: Failed: " + string.Join(", ", _keys));
         else if (locations.Count > 0)
         {
+            var tasks = new List<UniTask>();
             for (int i = 0; i < locations.Count; i++)
-            {
-                downloadData.fileSize = await Addressables.GetDownloadSizeAsync(locations[i]).ToUniTask();
+                tasks.Add(LoadAssetParallel(locations[i]));
 
-                var h = Addressables.LoadAssetAsync<T>(locations[i].PrimaryKey);
+            await UniTask.WhenAll(tasks);
+
+            async UniTask LoadAssetParallel(IResourceLocation _location)
+            {
+                downloadData.fileSize = await Addressables.GetDownloadSizeAsync(_location).ToUniTask();
+
+                var h = Addressables.LoadAssetAsync<T>(_location.PrimaryKey);
 
                 try
                 {
@@ -196,11 +203,14 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
                     if (h.Status == AsyncOperationStatus.Succeeded)
                     {
-                        if (resultData?.ContainsKey(locations[i].PrimaryKey) == false)
-                            resultData.Add(locations[i].PrimaryKey.Split("/").Last().Split(".").First(), h);
+                        if (resultData?.ContainsKey(_location.PrimaryKey) == false)
+                            resultData.Add(_location.PrimaryKey.Split("/").Last().Split(".").First(), h);
                     }
                     else
+                    {
+                        IngameLog.Add("Addressable: LoadAsset: Failed: " + _location.PrimaryKey);
                         h.Release();
+                    }
                 }
                 catch
                 {
