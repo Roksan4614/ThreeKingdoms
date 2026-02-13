@@ -12,6 +12,8 @@ public class CharacterComponent : TargetComponent
     protected TableHeroData m_data;
     [SerializeField]
     FactionType m_faction;
+    [SerializeField]
+    HeroInfoData m_info;
 
     [SerializeField]
     CharacterStateType m_stateType;
@@ -27,6 +29,7 @@ public class CharacterComponent : TargetComponent
     public Transform panel => m_element.panel;
     public Rigidbody2D rig => m_element.rig;
     public TableHeroData data => m_data;
+    public HeroInfoData info => m_info;
     public override bool isLive => data.health > 0;
     public bool isMain => m_element.isMain;
     public FactionType factionType => m_faction;
@@ -66,6 +69,7 @@ public class CharacterComponent : TargetComponent
     public virtual void SetHeroData(string _key)
     {
         m_data = TableManager.hero.GetHeroData(_key);
+        m_info = DataManager.userInfo.GetHeroInfoData(_key);
     }
 
     public void SetFaction(FactionType _factionType) => m_faction = _factionType;

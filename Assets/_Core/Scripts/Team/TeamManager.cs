@@ -16,6 +16,9 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     public Team_HeroInfo m_heroInfo;
     public Dictionary<TeamPositionType, Vector3> m_dbPostion = new();
 
+    public IReadOnlyList<CharacterComponent> myHero
+        => m_member.Values.ToList();
+
     protected override void OnAwake()
     {
         for (int i = 0; i < transform.childCount; i++)
@@ -43,10 +46,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public async UniTask SpawnUpdate()
     {
-        var dbHero = DataManager.userInfo.dbHero.Where(x => x.isBatch).ToList();
+        var myHero = DataManager.userInfo.myHero.Where(x => x.isBatch).ToList();
 
         var remove = m_member
-            .Where(x => dbHero.Any(y => y.key == x.Value.data.key) == false)
+            .Where(x => myHero.Any(y => y.key == x.Value.data.key) == false)
             .Select(x => x.Key).ToList();
 
         for (int i = 0; i < remove.Count; i++)
@@ -55,16 +58,16 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             m_member.Remove(remove[i]);
         }
 
-        for (int i = 0; i < dbHero.Count; i++)
+        for (int i = 0; i < myHero.Count; i++)
         {
-            if (m_member.Values.Any(x => x.data.key.Equals(dbHero[i].key)))
+            if (m_member.Values.Any(x => x.data.key.Equals(myHero[i].key)))
                 continue;
 
-            var heroCharacter = (await AddressableManager.instance.GetHeroCharacter(dbHero[i].skin)).GetComponent<CharacterComponent>();
+            var heroCharacter = (await AddressableManager.instance.GetHeroCharacter(myHero[i].skin)).GetComponent<CharacterComponent>();
 
             var hero = Instantiate(heroCharacter, MapManager.instance.element.hero);
-            hero.SetHeroData(dbHero[i].key);
-            hero.name = dbHero[i].skin;
+            hero.SetHeroData(myHero[i].key);
+            hero.name = myHero[i].skin;
             hero.transform.position = m_element.startPos;
             hero.move.SetFlip(true);
 
@@ -119,6 +122,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         //나머진 위에서 부터 채워주자
         for (int i = 0; i < _members.Count; i++)
             m_member.Add(TeamPositionType.Top + i, _members[i]);
+
+        m_member = m_member.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
 
         int index = 0;
         foreach (var member in m_member)

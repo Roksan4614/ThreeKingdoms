@@ -126,8 +126,9 @@ public struct HeroInfoData
     public int enchantLevel;
     public bool isBatch;
     public bool isMain;
+    public bool isMine;
 
-    public HeroInfoData(string _key, HeroGradeType _grade = HeroGradeType.Normal, string _skin = null, int _enchantLevel = 0, bool _isBatch = false, bool _isMain = false)
+    public HeroInfoData(string _key, HeroGradeType _grade = HeroGradeType.Normal, string _skin = null, int _enchantLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
     {
 
         key = _key;
@@ -136,5 +137,12 @@ public struct HeroInfoData
         enchantLevel = _enchantLevel;
         isBatch = _isBatch;
         isMain = _isMain;
+        isMine = _isMine;
     }
+
+    public bool isActive => key.IsNullOrEmpty() == false;
+    // TODO
+    public string name
+        => key;
+
 }

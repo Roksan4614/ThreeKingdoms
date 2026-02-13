@@ -1,6 +1,9 @@
+using Cysharp.Threading.Tasks;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 public interface IValidatable
 {
     void OnManualValidate();
@@ -12,6 +15,9 @@ public static class ValidateWorker
     [MenuItem("Rev9/Validate/RUN")]
     static void Run()
     {
+        Utils.ClearDebugLog();
+        float startTime = Time.realtimeSinceStartup;
+
         // 1. 현재 씬에 있는 객체들 처리
         var sceneTargets = GameObject.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
                                      .OfType<IValidatable>();
@@ -48,7 +54,14 @@ public static class ValidateWorker
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("VALIDATE WORKER RUN FINISHED!!");
+        Debug.Log($"VALIDATE FINISHED: {(Time.realtimeSinceStartup - startTime):0.#0}s");
+    }
+
+    [MenuItem("Rev9/Restart UNITY")]
+    static void RestartUnity()
+    {
+        if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            EditorApplication.OpenProject(System.IO.Directory.GetCurrentDirectory());
     }
 }
 

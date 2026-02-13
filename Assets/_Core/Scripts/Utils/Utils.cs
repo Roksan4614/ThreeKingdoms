@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -8,6 +9,15 @@ using UnityEngine.UI;
 
 public static class Utils
 {
+    public static void ClearDebugLog()
+    {
+#if UNITY_EDITOR
+        var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
+        var type = assembly.GetType("UnityEditor.LogEntries");
+        type.GetMethod("Clear").Invoke(new object(), null);
+#endif
+    }
+
     public static void AfterCoroutine(Action _callback, float _duration = 0)
     {
         PopupManager.instance.StartCoroutine(DoAfterCoroutine(_callback, _duration));

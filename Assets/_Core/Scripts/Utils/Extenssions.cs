@@ -27,6 +27,54 @@ public static class Extenssions
         }
     }
 
+    public static GameObject AutoResizeParent(this Transform _obj, bool _isFull = false)
+        => AutoResizeParent(_obj.gameObject, _isFull);
+
+    public static GameObject AutoResizeParent(this GameObject _obj, bool _isFull = false)
+    {
+        var rt = _obj.transform as RectTransform;
+
+        if (rt == null || rt.parent == null)
+            return null;
+
+        var rtParent = (RectTransform)rt.parent;
+
+        if (_isFull)
+        {
+            var w = rt.rect.width * rt.localScale.x;
+            var h = rt.rect.height * rt.localScale.y;
+
+            //가로가 더 클경우
+            if (w > h)
+            {
+                var pw = rtParent.rect.width * rtParent.localScale.x;
+                if (w < pw)
+                    rt.localScale *= pw / w;
+            }
+            else
+            {
+                var ph = rtParent.rect.height * rtParent.localScale.y;
+                if (h < ph)
+                    rt.localScale *= ph / h;
+            }
+        }
+
+        {
+            // 일단 가로부터 줄여주자
+            var w = rt.rect.width * rt.localScale.x;
+            var pw = rtParent.rect.width * rtParent.localScale.x;
+            if (w > pw)
+                rt.localScale *= (pw / w);
+
+            // 다음은 세로
+            var h = rt.rect.height * rt.localScale.y;
+            var ph = rtParent.rect.height * rtParent.localScale.y;
+            if (h > ph)
+                rt.localScale *= (ph / h);
+        }
+        return _obj;
+    }
+
     public static Transform SetText(this Transform _trns, string _path, object _text, string _default = "", bool _isEnableError = true)
     {
         Transform trns = string.IsNullOrEmpty(_path) == false ? _trns.Find(_path) : _trns;

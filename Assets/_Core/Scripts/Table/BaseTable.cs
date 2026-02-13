@@ -27,6 +27,9 @@ public abstract class BaseTable<T,V> : MonoBehaviour
         //     en.Current.Value.Sort((a, b) => a.slotType > b.slotType);
         // }
     }
+
+    public IReadOnlyList<V> list => m_list;
+
     public bool Exists(T _id)
     {
         return m_dictionary != null && m_dictionary.ContainsKey(_id);

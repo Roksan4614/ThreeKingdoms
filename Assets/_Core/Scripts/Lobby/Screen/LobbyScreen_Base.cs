@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,12 +46,17 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
         ActivePanel(true, _prevScreen == LobbyScreenType.None);
     }
 
-    public virtual void Close(bool _isTween = true)
+    public async UniTask Close(bool _isTween = true)
     {
         if (_isTween == false)
-            gameObject.SetActive(false);
+            await CloseAsync();
         else
             ActivePanel(false, _isTween);
+    }
+
+    protected virtual async UniTask CloseAsync()
+    {
+        gameObject.SetActive(false);
     }
 
     void ActivePanel(bool _isOpen, bool _isTween)
@@ -69,7 +76,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
             m_isDoing = false;
 
             if (_isOpen == false)
-                gameObject.SetActive(false);
+                CloseAsync().Forget();
         };
 
         if (_isTween)

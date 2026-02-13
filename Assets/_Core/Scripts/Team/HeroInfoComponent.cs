@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
@@ -36,12 +37,14 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
     {
         m_hero = _hero;
 
-        var key = _hero.data.key;
+        var key = DataManager.userInfo.GetHeroInfoData(_hero.data.key).skin;
 
         int countDestroy = 0;
         for (int i = 0; i < m_element.icon.childCount; i++)
         {
-            if (m_element.icon.GetChild(i).name.Contains(key) == false)
+            if (m_element.icon.GetChild(i).name.Contains(key))
+                m_element.icon.GetChild(i).AutoResizeParent(true);
+            else
             {
                 Destroy(m_element.icon.GetChild(i).gameObject);
                 countDestroy++;
@@ -51,10 +54,15 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         if (m_element.icon.childCount == countDestroy)
         {
             m_element.icon.gameObject.SetActive(false);
-            var prefab = await AddressableManager.instance.GetHeroIcon(key);
+            var prefab = await AddressableManager.instance.GetHeroIcon(key)
+                .AttachExternalCancellation(destroyCancellationToken);
 
             if (prefab != null)
-                Instantiate(prefab, m_element.icon).name = key;
+            {
+                Instantiate(prefab, m_element.icon)
+                    .AutoResizeParent()
+                    .name = key;
+            }
         }
 
         m_element.icon.gameObject.SetActive(true);

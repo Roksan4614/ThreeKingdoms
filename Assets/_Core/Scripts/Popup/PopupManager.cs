@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -87,4 +88,18 @@ public class PopupManager : MonoSingleton<PopupManager>
         return popup;
     }
 
+    public void ShowDimm(bool _isShow, bool _isFade = true)
+    {
+        var cg = transform.Find("MAX_Dimm").GetComponent<CanvasGroup>();
+
+        if (_isFade)
+        {
+            if(_isShow)
+                cg.gameObject.SetActive(true);
+
+            cg.DOFade(_isShow ? 1f : 0f, 0.2f).OnComplete(() => cg.gameObject.SetActive(_isShow));
+        }
+        else
+            cg.gameObject.SetActive(_isShow);
+    }
 }
