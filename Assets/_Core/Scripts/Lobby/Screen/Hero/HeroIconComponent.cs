@@ -21,7 +21,7 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
         m_element.btnAction?.onClick.AddListener(() => m_onClickAction(this));
     }
 
-    public async UniTask SetHeroData(HeroInfoData _data
+    public void SetHeroData(HeroInfoData _data
         , UnityAction<HeroIconComponent> _onClick
         , UnityAction<HeroIconComponent> _onClickAction)
     {
@@ -33,17 +33,33 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
 
         m_element.icon.parent.gameObject.SetActive(true);
         m_element.btnAction.gameObject.SetActive(false);
+        
+        m_element.btnHero.interactable = true;
+
+        UpdateHeroInfo(_data);
+    }
+    public void UpdateHeroInfo(HeroInfoData _data)
+    {
+        UpdateHeroInfoAsync(_data).Forget();
+    }
+
+    public async UniTask UpdateHeroInfoAsync(HeroInfoData _data)
+    {
+        var prevData = data;
+        data = _data;
+
+        m_element.batch.SetActive(_data.isBatch);
+
         m_element.txtLevel.text = _data.enchantLevel.ToString();
         m_element.txtName.text = _data.name;
 
         m_element.dimm.SetActive(_data.isMine == false);
         m_element.outline.color = _data.isMine ? Color.black : Color.gray;
-        //m_element.btnHero.interactable = _data.isMine;
 
         bool isFinded = false;
         for (int i = 0; i < m_element.icon.childCount; i++)
         {
-            bool isValid = data.isActive && data.skin.Equals(_data.skin);
+            bool isValid = prevData.isActive && prevData.skin.Equals(_data.skin);
             m_element.icon.GetChild(i).gameObject.SetActive(isValid);
 
             if (isFinded == false && isValid == true)
@@ -62,14 +78,6 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
                     .name = _data.skin;
             }
         }
-
-        UpdateHeroInfo(_data);
-    }
-
-    public void UpdateHeroInfo(HeroInfoData _data)
-    {
-        data = _data;
-        m_element.batch.SetActive(_data.isBatch);
     }
 
     public void Disable()
