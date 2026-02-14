@@ -13,10 +13,10 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
     List<HeroIconComponent> m_itemBatch = new();
     List<HeroIconComponent> m_itemList = new();
 
-    List<CharacterComponent> m_member = new();
     List<HeroInfoData> m_myHero = new();
 
-    int m_curBatchIndex = -1;
+    int m_curIndex_Batch = -1;
+    int m_curIndex_List = -1;
 
     protected override void Awake()
     {
@@ -42,22 +42,30 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
 
     private void Start()
     {
-        m_member.AddRange(TeamManager.instance.members.Values);
+        m_myHero.AddRange(DataManager.userInfo.myHero);
         SetHero_Batch();
 
         // 리스트 아이콘 미리 생성
         {
-            m_myHero.AddRange(DataManager.userInfo.myHero);
             var scroll = m_element.list.layout.GetComponent<ScrollRect>();
             var baseItem = scroll.content.GetChild(0).GetComponent<HeroIconComponent>();
             baseItem.transform.SetParent(scroll.viewport);
             while (baseItem.element.icon.childCount > 0)
                 DestroyImmediate(baseItem.element.icon.GetChild(0).gameObject);
 
-            var dbList = TableManager.hero.list;
+            var dbHero = TableManager.hero.list;
             int i = 0;
-            for (; i < dbList.Count; i++)
+            for (; i < dbHero.Count; i++)
+            {
                 m_itemList.Add(Instantiate(baseItem, scroll.content));
+                var heroInfo = DataManager.userInfo.GetHeroInfoData(dbHero[i].key);
+
+                if (heroInfo.isActive == false)
+                    heroInfo = new(dbHero[i].key, _isMine: false);
+
+                m_itemList[i].name = dbHero[i].key;
+                m_itemList[i].SetHeroData(heroInfo, OnButton_ListHero, OnButton_ListHeroRemove).Forget();
+            }
 
             if (i < 20)
             {
@@ -69,6 +77,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
                 DestroyImmediate(e.txtName.gameObject);
                 DestroyImmediate(e.icon.parent.gameObject);
                 DestroyImmediate(e.btnAction.gameObject);
+                DestroyImmediate(e.batch);
                 e.btnHero.interactable = false;
 
                 // 20개 미리 생성은 해두자
@@ -80,13 +89,16 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
 
             baseItem.gameObject.SetActive(false);
             Destroy(baseItem.gameObject);
-
-            SetHero_List();
         }
     }
 
     protected override async UniTask CloseAsync()
     {
+        ResetActiveButton_List();
+        for (int i = 0; i < m_itemBatch.Count; i++)
+            m_itemBatch[i].SetActiveButton(false);
+        m_curIndex_Batch = -1;
+
         await base.CloseAsync();
     }
 
@@ -94,59 +106,118 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
     void SetHero_Batch()
     {
         int i = 0;
-        for (; i < m_member.Count; i++)
+        for (; i < m_myHero.Count; i++)
             m_itemBatch[i]
-                .SetHeroData(m_member[i].info, OnButton_BatchHero, OnButton_BatchHeroRemove).Forget();
+                .SetHeroData(m_myHero[i], OnButton_BatchHero, OnButton_BatchHeroRemove).Forget();
 
         for (; i < m_itemBatch.Count; i++)
             m_itemBatch[i].Disable();
     }
 
-    void OnButton_BatchHero(HeroIconComponent _hero)
+    void OnButton_BatchHero(HeroIconComponent _item)
     {
-        var index = m_member.FindIndex(x => x.data.key == _hero.data.key);
-
-        if (m_curBatchIndex == index)
+        if (m_myHero.Count == 1)
             return;
 
-        if (m_curBatchIndex != index && m_curBatchIndex > -1)
-            m_itemBatch[m_curBatchIndex].SetActiveButton(false);
+        var index = m_myHero.FindIndex(x => x.key == _item.data.key);
 
-        m_itemBatch[index].SetActiveButton(true);
-        m_curBatchIndex = index;
+        if (m_curIndex_Batch == index)
+        {
+            m_itemBatch[m_curIndex_Batch].SetActiveButton(false);
+            m_curIndex_Batch = -1;
+            return;
+        }
+
+        if (m_curIndex_Batch != index && m_curIndex_Batch > -1)
+            m_itemBatch[m_curIndex_Batch].SetActiveButton(false);
+
+        m_curIndex_Batch = index;
+
+        if (m_curIndex_List > -1)
+        {
+            for (int i = 0; i < m_itemBatch.Count; i++)
+                m_itemBatch[i].SetActiveButton(index == i);
+
+            ResetActiveButton_List();
+        }
+        else
+            m_itemBatch[index].SetActiveButton(true);
     }
 
-    void OnButton_BatchHeroRemove(HeroIconComponent _hero)
+    void OnButton_BatchHeroRemove(HeroIconComponent _item)
     {
-        var index = m_member.FindIndex(x => x.data.key == _hero.data.key);
+        var index = m_myHero.FindIndex(x => x.key == _item.data.key);
 
-        m_member.RemoveAt(index);
+        m_myHero.RemoveAt(index);
         SetHero_Batch();
-        m_curBatchIndex = -1;
+        m_curIndex_Batch = -1;
 
-        index = m_myHero.FindIndex(x => x.key == _hero.data.key);
-        var db = m_myHero[index];
-        db.isBatch = false;
-        m_myHero[index] = db;
+        var heroInfo = m_itemList[index].data;
+        heroInfo.isBatch = false;
+        m_itemList[index].UpdateHeroInfo(heroInfo);
+
+        ResetActiveButton_List();
+        SetHero_List();
     }
     #endregion BATCH
 
-    void SetHero_List(bool _isAll = true)
+    void SetHero_List()
     {
-        var dbHero = TableManager.hero.list;
+        m_itemList = m_itemList
+            .OrderByDescending(x => x.data.isMine)
+            .ThenByDescending(x => x.data.isBatch).ToList();
 
-        int i = 0;
-        for (; i < dbHero.Count; i++)
+        for (int i = m_itemList.Count - 1; i > -1; i--)
         {
-            var heroInfo = DataManager.userInfo.GetHeroInfoData(dbHero[i].key);
-
-            if (heroInfo.isActive == false)
-                heroInfo = new(dbHero[i].key, _isMine: false);
-
-            m_itemList[i].SetHeroData(heroInfo, OnButton_BatchHero, OnButton_BatchHeroRemove).Forget();
+            m_itemList[i].transform.SetAsFirstSibling();
         }
     }
 
+    void ResetActiveButton_List()
+    {
+        if (m_curIndex_List > -1)
+        {
+            m_itemList[m_curIndex_List].SetActiveButton(false);
+            m_curIndex_List = -1;
+        }
+    }
+
+    void OnButton_ListHero(HeroIconComponent _item)
+    {
+        var index = _item.transform.GetSiblingIndex();
+
+        if (m_curIndex_List != index && _item.data.isMine == true)
+        {
+            if (m_curIndex_List != index && m_curIndex_List > -1)
+                m_itemList[m_curIndex_List].SetActiveButton(false);
+
+            m_itemList[index].SetActiveButton(true);
+            m_curIndex_List = index;
+
+            m_itemList[index].element.btnAction.transform.SetText("Text",
+                _item.data.isBatch ? "<size=150><color=#9A0A00>-</color></size>" : "+");
+        }
+        else if (m_curIndex_List == index)
+        {
+            m_itemList[index].SetActiveButton(false);
+            m_curIndex_List = -1;
+        }
+
+        for (int i = 0; i < m_myHero.Count; i++)
+            m_itemBatch[i].SetActiveButton(m_curIndex_List > -1 && _item.data.isBatch == false);
+
+        m_curIndex_Batch = -1;
+    }
+
+    void OnButton_ListHeroRemove(HeroIconComponent _item)
+    {
+        var index = _item.transform.GetSiblingIndex();
+
+        if (_item.data.isBatch)
+        {
+            OnButton_BatchHeroRemove(_item);
+        }
+    }
 
 #if UNITY_EDITOR
     public override void OnManualValidate()

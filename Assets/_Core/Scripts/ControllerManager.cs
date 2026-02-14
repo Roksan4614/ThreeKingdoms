@@ -37,6 +37,13 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
             m_character.OnConrollerMove(m_element.padBar.position - m_element.pad.position);
     }
 
+    public bool isLeftClick => Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Z);
+    public bool isRightClick => Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.X);
+    public bool isLeftClick_Push => Input.GetMouseButton(0) || Input.GetKey(KeyCode.Z);
+    public bool isRightClick_Push => Input.GetMouseButton(1) || Input.GetKey(KeyCode.X);
+    public bool isTouch => Input.touchCount > 0;
+    public static bool isClick => instance.isLeftClick || instance.isTouch;
+
     public void OnPointerDown(PointerEventData _eventData)
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 startPos);

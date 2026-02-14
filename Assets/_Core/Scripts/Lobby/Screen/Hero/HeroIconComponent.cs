@@ -13,6 +13,8 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
     UnityAction<HeroIconComponent> m_onClick;
     UnityAction<HeroIconComponent> m_onClickAction;
 
+    bool m_isActiveBtnAction;
+
     private void Start()
     {
         m_element.btnHero.onClick.AddListener(() => m_onClick(this));
@@ -36,7 +38,7 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
 
         m_element.dimm.SetActive(_data.isMine == false);
         m_element.outline.color = _data.isMine ? Color.black : Color.gray;
-        m_element.btnHero.interactable = _data.isMine;
+        //m_element.btnHero.interactable = _data.isMine;
 
         bool isFinded = false;
         for (int i = 0; i < m_element.icon.childCount; i++)
@@ -61,7 +63,13 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
             }
         }
 
+        UpdateHeroInfo(_data);
+    }
+
+    public void UpdateHeroInfo(HeroInfoData _data)
+    {
         data = _data;
+        m_element.batch.SetActive(_data.isBatch);
     }
 
     public void Disable()
@@ -71,11 +79,15 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
         m_element.icon.parent.gameObject.SetActive(false);
         m_element.btnAction.gameObject.SetActive(false);
         m_element.btnHero.interactable = false;
+        m_element.batch.SetActive(false);
         data = default;
     }
 
     public void SetActiveButton(bool _isActive)
-        => m_element.btnAction.gameObject.SetActive(_isActive);
+    {
+        m_element.btnAction.gameObject.SetActive(_isActive);
+        m_isActiveBtnAction = _isActive;
+    }
 
     public void IsValide(string _keyHero)
         => data.key.Equals(_keyHero);
@@ -99,19 +111,23 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
         public Button btnAction;
 
         public GameObject dimm;
+        public GameObject batch;
         public Image outline;
 
         public void Initialize(Transform _transform)
         {
-            icon = _transform.Find("Panel/Icon/Panel");
-            txtName = _transform.Find("txt_name").GetComponent<Text>();
-            txtLevel = _transform.Find("txt_level").GetComponent<Text>();
+            var panel = _transform.Find("Panel");
+            icon = panel.Find("Icon/Panel");
+            txtName = panel.Find("txt_name").GetComponent<Text>();
+            txtLevel = panel.Find("txt_level").GetComponent<Text>();
 
             btnHero = _transform.GetComponent<Button>();
-            btnAction = _transform.GetComponent<Button>("Panel/btn_action");
+            btnAction = panel.GetComponent<Button>("btn_action");
 
-            dimm = icon.parent.Find("Dimm").gameObject;
-            outline = icon.parent.GetComponent<Image>("Outline");
+            dimm = panel.Find("Icon/Dimm").gameObject;
+            outline = panel.GetComponent<Image>("Icon/Outline");
+
+            batch = panel.Find("Batch").gameObject;
         }
     }
 }
