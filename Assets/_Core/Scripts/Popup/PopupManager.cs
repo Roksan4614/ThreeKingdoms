@@ -11,6 +11,7 @@ public enum PopupType
     NONE = -1,
 
     Hero_Filter,
+    Hero_HeroInfo,
 
     Modal_Start,
 

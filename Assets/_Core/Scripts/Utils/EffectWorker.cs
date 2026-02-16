@@ -20,9 +20,9 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
     Color m_colorCritical;
     Color m_colorHit;
 
-    Dictionary<EffectType, List<Text>> m_fx_text = new()
+    Dictionary<EffectType, List<TextMeshProUGUI>> m_fx_text = new()
     {
-        { EffectType.damage, new List<Text>() },
+        { EffectType.damage, new List<TextMeshProUGUI>() },
         //{ EffectType.bounty, new List<TextMeshProUGUI>() },
     };
 
@@ -60,12 +60,12 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
         {
             var targetParent = _hitData.target.element.effect_canvas;
 
-            Text txtdamage = m_fx_text[EffectType.damage].Find(x => x.gameObject.activeSelf == false);
+            var txtdamage = m_fx_text[EffectType.damage].Find(x => x.gameObject.activeSelf == false);
 
             if (txtdamage == null)
             {
                 txtdamage = Instantiate(m_fx_text[EffectType.damage][0], m_element.canvas)
-                    .GetComponent<Text>();
+                    .GetComponent<TextMeshProUGUI>();
                 txtdamage.name = $"Damage_{m_fx_text[EffectType.damage].Count}";
                 txtdamage.transform.localScale = new Vector3(1f, 0.9f, 1f);
                 m_fx_text[EffectType.damage].Add(txtdamage);
@@ -217,7 +217,7 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
         public Transform renderer;
         public Transform canvas;
 
-        public Text baseDamage;
+        public TextMeshProUGUI baseDamage;
         public SpriteAnimaion baseDamageHit;
 
         public void Initialize(Transform _transform)
@@ -225,7 +225,7 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
             canvas = _transform.Find("Canvas");
             renderer = _transform.Find("Renderer");
 
-            baseDamage = _transform.GetComponent<Text>("Canvas/Damage");
+            baseDamage = _transform.GetComponent<TextMeshProUGUI>("Canvas/Damage");
             baseDamageHit = _transform.GetComponent<SpriteAnimaion>("Renderer/DamageHit");
         }
     }

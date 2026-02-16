@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -358,12 +359,12 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         public Transform panel;
         public Transform layout;
 
-        public Text title;
+        public TextMeshProUGUI title;
 
         public void Initialize(Transform _transform, string _name)
         {
             panel = _transform.Find("Panel/" + _name);
-            title = panel.GetComponent<Text>("txt_title");
+            title = panel.GetComponent<TextMeshProUGUI>("txt_title");
             layout = panel.Find("Layout");
         }
     }

@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,8 @@ public class BottomComponent : MonoBehaviour
 
     Dictionary<LobbyScreenType, RectTransform> m_dicScreen = new();
 
-    List<Text> texts = new List<Text>();
+    List<TextMeshProUGUI> m_texts = new List<TextMeshProUGUI>();
+
     IEnumerator Start()
     {
         m_panel = transform.Find("Panel");
@@ -24,7 +26,7 @@ public class BottomComponent : MonoBehaviour
                 .AddListener(() => OnButton(type));
 
             button.name = type.ToString().ToUpper();
-            texts.Add(button.transform.SetText("Panel/txt_name", button.name).GetComponent<Text>());
+            m_texts.Add(button.transform.SetText("Panel/txt_name", button.name).GetComponent<TextMeshProUGUI>());
 
             m_dicScreen.Add(type, (RectTransform)button.transform.Find("Panel"));
         }
@@ -36,13 +38,12 @@ public class BottomComponent : MonoBehaviour
 
         // Text 크기 맞추기
         {
-            int minSize = (int)texts.Min(x => x.preferredHeight);
-            if (minSize < texts[0].fontSize)
+            int minSize = (int)m_texts.Min(x => x.preferredHeight);
+            if (minSize < m_texts[0].fontSize)
             {
-                foreach (var t in texts)
+                foreach (var t in m_texts)
                 {
-                    t.resizeTextForBestFit = false;
-                    t.fontSize = minSize;
+                    t.fontSizeMax = minSize;
                 }
             }
         }

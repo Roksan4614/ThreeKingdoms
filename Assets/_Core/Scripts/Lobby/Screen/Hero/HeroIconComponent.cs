@@ -1,11 +1,16 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
 
-public class HeroIconComponent : MonoBehaviour, IValidatable
+public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IValidatable
 {
     [SerializeField]
     public HeroInfoData data { get; private set; }
@@ -13,13 +18,19 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
     UnityAction<HeroIconComponent> m_onClick;
     UnityAction<HeroIconComponent> m_onClickAction;
 
-    bool m_isActiveBtnAction;
+    bool m_isOpenPopup;
+    Coroutine m_coPushHold;
 
     private void Start()
     {
         m_element.btnHero.onClick.AddListener(() => m_onClick(this));
-        m_element.btnAction?.onClick.AddListener(() => m_onClickAction(this));
+        m_element.btnAction?.onClick.AddListener(() =>
+        {
+            if (m_isOpenPopup == false)
+                m_onClickAction(this);
+        });
     }
+
 
     public void SetHeroData(HeroInfoData _data
         , UnityAction<HeroIconComponent> _onClick
@@ -33,7 +44,7 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
 
         m_element.icon.parent.gameObject.SetActive(true);
         m_element.btnAction.gameObject.SetActive(false);
-        
+
         m_element.btnHero.interactable = true;
 
         UpdateHeroInfo(_data);
@@ -94,7 +105,6 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
     public void SetActiveButton(bool _isActive)
     {
         m_element.btnAction.gameObject.SetActive(_isActive);
-        m_isActiveBtnAction = _isActive;
     }
 
     public void IsValide(string _keyHero)
@@ -105,6 +115,45 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
         m_element.Initialize(transform);
     }
 
+    private CancellationTokenSource m_cts;
+    public async void OnPointerDown(PointerEventData eventData)
+    {
+        RelaseCTS();
+        m_cts = new CancellationTokenSource();
+
+        bool isCanceled = await UniTask.Delay(500, cancellationToken: m_cts.Token).SuppressCancellationThrow();
+
+        RelaseCTS();
+        if (isCanceled == true)
+            return;
+
+        OpenHeroInfoPopup().Forget();
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        RelaseCTS();
+    }
+
+    void RelaseCTS()
+    {
+        if (m_cts != null)
+        {
+            m_cts.Cancel();
+            m_cts.Dispose();
+            m_cts = null;
+        }
+    }
+
+    async UniTask OpenHeroInfoPopup()
+    {
+        m_isOpenPopup = true;
+        await PopupManager.instance.OpenPopupAndWait(PopupType.Hero_HeroInfo);
+
+        m_isOpenPopup = false;
+    }
+
+
     [SerializeField]
     //[SerializeField, HideInInspector]
     ElementData m_element;
@@ -113,8 +162,8 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
     public struct ElementData
     {
         public Transform icon;
-        public Text txtName;
-        public Text txtLevel;
+        public TextMeshProUGUI txtName;
+        public TextMeshProUGUI txtLevel;
         public Button btnHero;
         public Button btnAction;
 
@@ -126,8 +175,8 @@ public class HeroIconComponent : MonoBehaviour, IValidatable
         {
             var panel = _transform.Find("Panel");
             icon = panel.Find("Icon/Panel");
-            txtName = panel.Find("txt_name").GetComponent<Text>();
-            txtLevel = panel.Find("txt_level").GetComponent<Text>();
+            txtName = panel.Find("txt_name").GetComponent<TextMeshProUGUI>();
+            txtLevel = panel.Find("txt_level").GetComponent<TextMeshProUGUI>();
 
             btnHero = _transform.GetComponent<Button>();
             btnAction = panel.GetComponent<Button>("btn_action");

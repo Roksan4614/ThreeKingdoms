@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -110,7 +111,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         imgRespawn.gameObject.SetActive(true);
         var prevAlpha = imgRespawn.color.a;
 
-        var txtTimer = imgRespawn.transform.GetComponent<Text>("txt_cooltime");
+        var txtTimer = transform.GetComponent<TextMeshProUGUI>("Panel/txt_cooltime");
 
         var width = _bar.rect.width;
         var pos = Vector2.zero;
