@@ -59,7 +59,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
                 }
 
 
-            }, null, _tag).Forget();
+            }, null, key).Forget();
 
             //Addressables.LoadAssetAsync<SpriteAtlas>(_tag).Completed += handle =>
             //{
