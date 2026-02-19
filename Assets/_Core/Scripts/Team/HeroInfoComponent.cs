@@ -174,9 +174,9 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         var data = m_hero.data;
 
         m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
-        m_cooltime_Skill.endTime = data.cooltime_skill + m_cooltime_Skill.startTime;
+        m_cooltime_Skill.endTime = data.skillCooltime + m_cooltime_Skill.startTime;
 
-        var addTime = data.percent_startCooltime * data.cooltime_skill;
+        var addTime = data.percent_startCooltime * data.skillCooltime;
         var bar = m_element.rtBar_Cooltime;
         var width = bar.rect.width;
 
@@ -198,7 +198,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
             {
                 bar.gameObject.SetActive(true);
                 m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
-                m_cooltime_Skill.endTime = data.cooltime_skill + m_cooltime_Skill.startTime;
+                m_cooltime_Skill.endTime = data.skillCooltime + m_cooltime_Skill.startTime;
                 addTime = 0;
                 dieTime = -1;
             }
@@ -241,7 +241,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
 
                 m_statusSkill = StatusType.Wait;
                 m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
-                m_cooltime_Skill.endTime = data.cooltime_skill + m_cooltime_Skill.startTime;
+                m_cooltime_Skill.endTime = data.skillCooltime + m_cooltime_Skill.startTime;
                 addTime = 0;
             }
 

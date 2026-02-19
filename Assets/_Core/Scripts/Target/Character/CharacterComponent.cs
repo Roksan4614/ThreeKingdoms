@@ -58,7 +58,7 @@ public class CharacterComponent : TargetComponent
     }
 
 #if UNITY_EDITOR
-    public override void OnManualValidate() 
+    public override void OnManualValidate()
     {
         m_element.Initialize(transform);
 
@@ -142,6 +142,12 @@ public class CharacterComponent : TargetComponent
 
         m_data.health = m_data.healthMax;
         transform.GetComponent<Collider2D>("Character").enabled = true;
+    }
+
+    public void DeleteElement()
+    {
+        Destroy(m_element.effect_renderer.gameObject);
+        m_element.effect_canvas.parent.gameObject.SetActive(false);
     }
 
     //[SerializeField, HideInInspector]

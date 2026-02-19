@@ -1,13 +1,19 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BasePopupComponent : MonoBehaviour
 {
     public PopupType popupType { get; private set; }
     protected BasePopupComponent(PopupType _popupType) => popupType = _popupType;
 
+    protected virtual void Awake()
+    {
+        transform.GetComponent<Button>("Panel/btn_close")?.onClick.AddListener(OnClose);
+    }
+
     public virtual void OpenPopup(params object[] _args) { }
 
-    public void OnClose()
+    public virtual void OnClose()
     {
         OnClosePopup();
         Destroy(gameObject);

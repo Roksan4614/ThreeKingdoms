@@ -9,6 +9,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.U2D;
 
 public enum AddressableLabelType
 {
@@ -24,6 +25,8 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 {
     public string bundleUrl { get; set; }
 
+    Dictionary<string, AsyncOperationHandle<SpriteAtlas>> m_loadedAtlas = new();
+
     protected override void OnAwake()
     {
         Initialize();
@@ -33,7 +36,37 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     {
         Addressables.InternalIdTransformFunc = CustomTransform;
 
-        //await DoDownloadAsync(null, AddressableLabelType.L_Core, AddressableLabelType.L_SpriteAtlas);
+        await DoDownloadAsync(null, AddressableLabelType.L_Core, AddressableLabelType.L_SpriteAtlas);
+
+        SpriteAtlasManager.atlasRequested += (string _tag, Action<SpriteAtlas> _callback) =>
+        {
+            IngameLog.Add("atlasRequested: " + _tag);
+
+            if (m_loadedAtlas.ContainsKey(_tag))
+            {
+                _callback?.Invoke(m_loadedAtlas[_tag].Result);
+                return;
+            }
+
+            string key = $"Atlas/{_tag}.spriteatlasv2";
+            LoadAssetAsync<SpriteAtlas>(_result =>
+            {
+                foreach (var s in _result)
+                {
+                    if (m_loadedAtlas.ContainsKey(_tag) == false)
+                        m_loadedAtlas.Add(_tag, s.Value);
+                    _callback?.Invoke(s.Value.Result);
+                }
+
+
+            }, null, _tag).Forget();
+
+            //Addressables.LoadAssetAsync<SpriteAtlas>(_tag).Completed += handle =>
+            //{
+            //    if (handle.Status == AsyncOperationStatus.Succeeded)
+            //        _callback?.Invoke(handle.Result);
+            //};
+        };
     }
 
     string CustomTransform(IResourceLocation _location)
@@ -150,15 +183,15 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     //    _onComplete(totalSize);
     //}
 
-    public async UniTask LoadAsset<T>(
+    public async UniTask LoadAssetAsync<T>(
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         IProgress<float> _onProgress,
         params AddressableLabelType[] _labels)
     {
-        await LoadAsset<T>(_onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
+        await LoadAssetAsync<T>(_onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
     }
 
-    public async UniTask LoadAsset<T>(
+    public async UniTask LoadAssetAsync<T>(
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         IProgress<float> _onProgress,
         params string[] _keys)

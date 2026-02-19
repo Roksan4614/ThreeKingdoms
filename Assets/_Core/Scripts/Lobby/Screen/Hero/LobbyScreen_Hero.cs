@@ -8,7 +8,8 @@ using UnityEngine.UI;
 
 public partial class LobbyScreen_Hero : LobbyScreen_Base
 {
-    PopupHeroFilter m_popup;
+    PopupHeroFilter m_popupFilter;
+    PopupHeroInfo m_popupHeroInfo;
 
     List<HeroIconComponent> m_itemBatch = new();
     List<HeroIconComponent> m_itemList = new();
@@ -25,7 +26,10 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         m_element.btn_filter.onClick.AddListener(
             async () =>
             {
-                m_popup = await PopupManager.instance.OpenPopupAndWait<PopupHeroFilter>(PopupType.Hero_Filter);
+                if (m_popupFilter == null)
+                    m_popupFilter = await PopupManager.instance.OpenPopup<PopupHeroFilter>(PopupType.Hero_Filter);
+                else
+                    m_popupFilter.OpenPopup();
             });
 
         // 출정 중 히어로 세팅
@@ -119,6 +123,16 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             m_myHero[indexDB] = _data;
 
         m_itemList.Find(x => x.data.key == _data.key).UpdateHeroInfo(_data);
+    }
+
+    public async UniTask OpenHeroInfoPopup(HeroInfoData _data)
+    {
+        if (m_popupHeroInfo == null)
+            m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo);
+
+        await m_popupHeroInfo.SetHeroInfoDataAsync(_data);
+
+        await UniTask.WaitUntil(() => m_popupHeroInfo.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
     }
 
     #region BATCH

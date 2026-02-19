@@ -5,16 +5,13 @@ public class PopupHeroFilter : BasePopupComponent
 {
     PopupHeroFilter() : base(PopupType.Hero_Filter) { }
 
-    public int aa = 0;
-
-    private void Awake()
+    public override void OpenPopup(params object[] _args)
     {
-        transform.GetComponent<Button>("Panel/btn_close").onClick.AddListener(OnClose);
+        gameObject.SetActive(true);
     }
 
-    private void Update()
+    public override void OnClose()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-            aa++;
+        gameObject.SetActive(false);
     }
 }

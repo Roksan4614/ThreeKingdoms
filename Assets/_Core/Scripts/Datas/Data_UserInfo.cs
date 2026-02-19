@@ -18,10 +18,10 @@ public class Data_UserInfo
         else
         {
             //유비가 가장 첫번째임
-            m_myHero.Add(new("Liubei", _isBatch: true, _isMain: true));
-            m_myHero.Add(new("Guanyu", _isBatch: true));
-            m_myHero.Add(new("Zhangfei", _isBatch: true));
-            m_myHero.Add(new("Zhayun", _isBatch: true));
+            m_myHero.Add(new("LiuBei", _isBatch: true, _isMain: true));
+            m_myHero.Add(new("GuanYu", _isBatch: true));
+            m_myHero.Add(new("ZhangFei", _isBatch: true));
+            m_myHero.Add(new("ZhaYun", _isBatch: true));
             //m_myHero.Add(new("Zhugeliang"));
             SaveHero();
         }

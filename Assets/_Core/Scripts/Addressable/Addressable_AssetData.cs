@@ -13,7 +13,8 @@ public partial class AddressableManager
             h.Value.Release();
         foreach (var h in m_heroIcon)
             h.Value.Release();
-
+        foreach (var h in m_loadedAtlas)
+            h.Value.Release();
         base.OnDestroy();
     }
 
@@ -32,7 +33,7 @@ public partial class AddressableManager
                 keys.Add($"Hero_Icon/{key}.prefab");
         }
 
-        await LoadAsset<GameObject>(_result =>
+        await LoadAssetAsync<GameObject>(_result =>
         {
             foreach (var data in _result)
             {
@@ -63,7 +64,7 @@ public partial class AddressableManager
                 keys.Add($"Hero_Character/{_key[i]}.prefab");
         }
 
-        await LoadAsset<GameObject>(_result =>
+        await LoadAssetAsync<GameObject>(_result =>
         {
             foreach (var data in _result)
             {

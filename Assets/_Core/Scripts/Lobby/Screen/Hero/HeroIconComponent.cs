@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -17,6 +18,8 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     UnityAction<HeroIconComponent> m_onClick;
     UnityAction<HeroIconComponent> m_onClickAction;
+
+    LobbyScreen_Hero m_screenHero;
 
     bool m_isOpenPopup;
     Coroutine m_coPushHold;
@@ -34,10 +37,13 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void SetHeroData(HeroInfoData _data
         , UnityAction<HeroIconComponent> _onClick
-        , UnityAction<HeroIconComponent> _onClickAction)
+        , UnityAction<HeroIconComponent> _onClickAction
+        )
     {
         if (_data.skin.Equals(data.skin))
             return;
+
+        m_screenHero = _onClick.Target as LobbyScreen_Hero;
 
         m_onClick = _onClick;
         m_onClickAction = _onClickAction;
@@ -56,7 +62,6 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public async UniTask UpdateHeroInfoAsync(HeroInfoData _data)
     {
-        var prevData = data;
         data = _data;
 
         m_element.batch.SetActive(_data.isBatch);
@@ -70,11 +75,11 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         bool isFinded = false;
         for (int i = 0; i < m_element.icon.childCount; i++)
         {
-            bool isValid = prevData.isActive && prevData.skin.Equals(_data.skin);
-            m_element.icon.GetChild(i).gameObject.SetActive(isValid);
+            var obj = m_element.icon.GetChild(i).gameObject;
+            obj.SetActive(obj.name.Contains(_data.skin));
 
-            if (isFinded == false && isValid == true)
-                isFinded = isValid;
+            if (isFinded == false && obj.activeSelf == true)
+                isFinded = true;
         }
 
         if (isFinded == false)
@@ -84,9 +89,12 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
             if (prefab != null)
             {
-                Instantiate(prefab, m_element.icon)
-                    .AutoResizeParent()
-                    .name = _data.skin;
+                var icon = Instantiate(prefab, m_element.icon);
+
+                var rtParent = icon.transform.parent as RectTransform;
+                await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0);
+
+                icon.AutoResizeParent().name = _data.skin;
             }
         }
     }
@@ -127,7 +135,10 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         if (isCanceled == true)
             return;
 
-        OpenHeroInfoPopup().Forget();
+        m_isOpenPopup = true;
+        await m_screenHero.OpenHeroInfoPopup(data);
+        m_isOpenPopup = false;
+        SetActiveButton(false);
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -143,14 +154,6 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
             m_cts.Dispose();
             m_cts = null;
         }
-    }
-
-    async UniTask OpenHeroInfoPopup()
-    {
-        m_isOpenPopup = true;
-        await PopupManager.instance.OpenPopupAndWait(PopupType.Hero_HeroInfo);
-
-        m_isOpenPopup = false;
     }
 
 

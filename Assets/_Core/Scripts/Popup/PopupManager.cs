@@ -35,7 +35,7 @@ public class PopupManager : MonoSingleton<PopupManager>
         if (m_dicPopup.ContainsKey(_popupType))
             return m_dicPopup[_popupType].Result;
 
-        await AddressableManager.instance.LoadAsset<GameObject>(_result =>
+        await AddressableManager.instance.LoadAssetAsync<GameObject>(_result =>
         {
             foreach (var data in _result)
             {
@@ -83,7 +83,7 @@ public class PopupManager : MonoSingleton<PopupManager>
     {
         var popup = await OpenPopup<T>(_popupType, _data);
 
-        await UniTask.WaitUntil(() => popup == null, cancellationToken: destroyCancellationToken)
+        await UniTask.WaitUntil(() => popup == null || popup.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken)
             .SuppressCancellationThrow();
 
         return popup;
@@ -95,7 +95,7 @@ public class PopupManager : MonoSingleton<PopupManager>
 
         if (_isFade)
         {
-            if(_isShow)
+            if (_isShow)
                 cg.gameObject.SetActive(true);
 
             cg.DOFade(_isShow ? 1f : 0f, 0.2f).OnComplete(() => cg.gameObject.SetActive(_isShow));

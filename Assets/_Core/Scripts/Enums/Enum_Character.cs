@@ -1,4 +1,7 @@
-
+public enum RegionType
+{
+    Wei, Shu, Wu, Etc
+}
 
 public enum FactionType
 {

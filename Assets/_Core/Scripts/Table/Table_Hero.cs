@@ -6,65 +6,15 @@ public class Table_Hero : BaseTable<string, TableHeroData>
 {
     public Table_Hero(List<TableHeroData> _table) : base(_table)
     {
-        // TODO
-        TableHeroData d = new()
+        m_list.RemoveAt(0);
+        for (int i = 0; i < m_list.Count; i++)
         {
-            key = "Liubei",
-            classType = HeroClassType.Commander
-        };
-        d.SetDefault();
-        m_list.Add(d);
-
-        d = new()
-        {
-            key = "Guanyu",
-            classType = HeroClassType.Champion
-        }; d.SetDefault();
-        m_list.Add(d);
-
-        d = new()
-        {
-            key = "Zhangfei",
-            classType = HeroClassType.Vanguard
-        }; d.SetDefault();
-        m_list.Add(d);
-        d = new()
-        {
-            key = "Zhayun",
-            classType = HeroClassType.Sentinel
-        }; d.SetDefault();
-        m_list.Add(d);
-        d = new()
-        {
-            key = "Zhugeliang",
-            classType = HeroClassType.Strategist
-        }; d.SetDefault();
-        m_list.Add(d);
+            var data = m_list[i];
+            data.SetDefault();
+            m_list[i] = data;
+        }
 
         SetDictionary(x => x.key);
-
-        string key = "Zhugeliang";
-        var data = m_dictionary[key];
-        data.attackPower += 50;
-        data.health = data.healthMax = 800;
-        data.attackSpeed = 1.3f;
-        m_dictionary[key] = data;
-
-        key = "Guanyu";
-        data = m_dictionary[key];
-        data.health = data.healthMax = 3000;
-        m_dictionary[key] = data;
-
-        key = "Zhayun";
-        data = m_dictionary[key];
-        data.attackSpeed = 0.8f;
-        m_dictionary[key] = data;
-
-        key = "Zhangfei";
-        data = m_dictionary[key];
-        data.attackPower += 10;
-        data.health = data.healthMax = 2500;
-        m_dictionary[key] = data;
     }
 
     public TableHeroData GetHeroData(string _key)
@@ -88,6 +38,7 @@ public struct TableHeroData
     public string key;
 
     public HeroClassType classType;
+    public RegionType regionType;
 
     public int attackPower;
 
@@ -97,24 +48,37 @@ public struct TableHeroData
     public float moveSpeed;
     public float attackSpeed;
 
-    public float cooltime_skill;
+    public float skillCooltime;
+    public float cooldown;
 
     public float duration_respawn; //사망 후 부활까지 시간
 
     public float percent_startCooltime; //챕터 시작하면 쿨타임 몇퍼부터 시작할지 여부
 
+    public int LEA;
+    public int POW;
+    public int INT;
+    public int POL;
+    public int CHA;
+
+    private List<int> m_stat;
+    public List<int> stat
+    {
+        get
+        {
+            if (m_stat == null)
+                m_stat = new() { LEA, POW, INT, POL, CHA };
+            return m_stat;
+        }
+    }
+
     public void SetDefault()
     {
-        attackPower = 100;
+        moveSpeed = moveSpeed == 0 ? 10 : moveSpeed;
+        attackSpeed = attackSpeed == 0 ? 1 : attackSpeed;
+        percent_startCooltime = percent_startCooltime == 0 ? 1f : percent_startCooltime;
 
-        attackSpeed = 1;
-        moveSpeed = 10;
-
-        health = healthMax = 2000;
-        cooltime_skill = 10f;
-
-        duration_respawn = 15;
-        percent_startCooltime = 0.8f;
+        health = healthMax;
     }
 }
 
