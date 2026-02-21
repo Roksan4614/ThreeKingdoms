@@ -30,7 +30,7 @@ public class CharacterComponent : TargetComponent
     public Rigidbody2D rig => m_element.rig;
     public TableHeroData data => m_data;
     public HeroInfoData info => m_info;
-    public override bool isLive => data.health > 0;
+    public override bool isLive => gameObject != null && data.health > 0;
     public bool isMain => m_element.isMain;
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; } = TeamPositionType.NONE;

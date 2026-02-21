@@ -57,6 +57,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
     protected virtual async UniTask CloseAsync()
     {
         gameObject.SetActive(false);
+        await UniTask.WaitForEndOfFrame();
     }
 
     void ActivePanel(bool _isOpen, bool _isTween)

@@ -68,7 +68,6 @@ public class PopupHeroInfo : BasePopupComponent, IValidatable
                 var heroCharacter = (await AddressableManager.instance.GetHeroCharacter(_data.skin)).GetComponent<CharacterComponent>();
 
                 m_character = Instantiate(heroCharacter, parent);
-                m_character.SetHeroData(_data.key);
                 m_character.name = _data.skin;
                 m_character.transform.localPosition = Vector3.zero;
 

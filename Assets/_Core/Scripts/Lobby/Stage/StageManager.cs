@@ -1,53 +1,103 @@
-using NUnit.Framework.Constraints;
+using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Triggers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using Unity.VisualScripting;
+using System.Threading;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class StageManager : Singleton<StageManager>
+public class StageManager : Singleton<StageManager>, IValidatable
 {
-    Transform m_chapter;
-
     LoadData_Stage m_loadData;
-
     List<Character_Enemy> m_enemyList = new();
 
-    int m_indexLayerEnemy;
+    StageComponent m_stage;
+
+    const int c_maxChapter = 2;
+    const int c_maxStage = 2;
+
+    long m_tickStart;
+    CancellationTokenSource m_cts;
+
+    public bool isStageFailed { get; set; }
+
     protected override void OnAwake()
     {
-        m_chapter = transform.Find("Chapter");
-        m_indexLayerEnemy = LayerMask.NameToLayer("Enemy");
-
-        m_loadData = PPWorker.Get<LoadData_Stage>(PlayerPrefsType.CHAPTER_STAGE_INFO);
-    }
-
-    public void StartStage()
-    {
-        StartCoroutine(DoStartStage());
-    }
-
-    IEnumerator DoStartStage()
-    {
-#if UNITY_EDITOR
-        m_chapter.name = $"Chapter_{m_loadData.chapterId}";
-#endif
-
-        while (Input.GetKey(KeyCode.A) == false)
-            yield return null;
-
-        // TODO: 어드레서블에서 가져오는 건 후에 하자. 일단 구현만. 26.01.23
-        var stage = m_chapter.GetChild(0); // 임시
-        TeamManager.instance.ChapterStart();
-
-        //while (true)
+        if (PPWorker.HasKey(PlayerPrefsType.CHAPTER_STAGE_INFO))
+            m_loadData = PPWorker.Get<LoadData_Stage>(PlayerPrefsType.CHAPTER_STAGE_INFO);
+        else
         {
-            var phases = new Queue<Transform>(stage.Find("Phase").Cast<Transform>());
+            m_loadData = new()
+            {
+                level = 1,
+                chapterIdx = 1,
+                stageIdx = 1,
+            };
+            SaveData();
+        }
+    }
+
+    void SaveData()
+        => PPWorker.Set(PlayerPrefsType.CHAPTER_STAGE_INFO, m_loadData);
+
+    public async UniTask<bool> LoadStageAsync()
+    {
+        // 챕터 초기화
+        for (int i = 0; i < m_element.chapter.childCount; i++)
+            Destroy(m_element.chapter.GetChild(i).gameObject);
+
+        m_stage = null;
+        string key = $"Stage/{m_loadData.chapterIdx}_{m_loadData.stageIdx}.prefab";
+
+        long tickStart = m_tickStart;
+        await AddressableManager.instance.LoadAssetAsync<GameObject>(_result =>
+        {
+            if (tickStart != m_tickStart)
+                return;
+
+            foreach (var s in _result)
+            {
+                m_stage = Instantiate(s.Value.Result, m_element.chapter).GetComponent<StageComponent>();
+                m_stage.SetData(m_loadData);
+                m_stage.name = s.Key;
+                s.Value.Release();
+            }
+        }, null, key);
+
+        return m_stage == null;
+    }
+
+    public async UniTask StartStageAsync()
+    {
+        if (m_cts != null)
+        {
+            m_cts.Cancel();
+            m_cts.Dispose();
+        }
+        m_cts = new();
+
+        if (m_stage == null || m_stage.IsNow(m_loadData) == false)
+            await LoadStageAsync();
+
+        var tickStart = m_tickStart = DateTime.Now.Ticks;
+        while (true)
+        {
+#if UNITY_EDITOR
+            m_element.chapter.name = $"Chapter_{m_loadData.chapterIdx}";
+#endif
+            TeamManager.instance.StartStage();
+
+            var phases = new Queue<Transform>(m_stage.element.phase.Cast<Transform>());
 
             foreach (var p in phases)
                 p.gameObject.SetActive(false);
+
+            MapManager.instance.FadeDimm(false).Forget();
+
+
+            while (Input.GetKey(KeyCode.A) == false)
+                await UniTask.WaitForEndOfFrame(cancellationToken: m_cts.Token);
 
             while (phases.Count > 0)
             {
@@ -73,13 +123,12 @@ public class StageManager : Singleton<StageManager>
                     scale.x *= -1;
                     phase.localScale = scale;
                 }
-                // 위치 세팅한다
 
                 m_enemyList.Clear();
                 for (int i = 0; i < phase.childCount; i++)
                 {
                     var e = phase.GetChild(i).GetComponent<Character_Enemy>();
-                    e.gameObject.layer = m_indexLayerEnemy;
+                    e.gameObject.layer = m_element.indexLayerEnemy;
                     m_enemyList.Add(e);
                 }
 
@@ -100,38 +149,36 @@ public class StageManager : Singleton<StageManager>
                     e.SetState(CharacterStateType.Wait);
                 }
 
-                TeamManager.instance.SetState(CharacterStateType.Wait);
-
-                TeamManager.instance.mainHero.move.SetFlip(isFlip == false);
-
-                // START PHASE
-                TeamManager.instance.PhaseStart();
-
+                TeamManager.instance.PhaseStart(isFlip);
                 SetState(CharacterStateType.Wait);
 
                 // 클리어 할 때까지 대기
                 bool isClear = false;
-                while (isClear == false)
+                isStageFailed = false;
+                while (isClear == false && isStageFailed == false)
                 {
                     isClear = true;
-                    foreach (var e in m_enemyList)
+                    for (int i = 0; i < m_enemyList.Count; i++)
                     {
-                        if (e.isLive)
+                        if (m_enemyList[i].isLive)
                         {
                             isClear = false;
                             break;
                         }
                     }
-                    yield return null;
+                    await UniTask.WaitForEndOfFrame(cancellationToken: m_cts.Token);
                 }
 
-                yield return new WaitForSecondsRealtime(1f);
+                if (m_loadData.isBossWait == false)
+                    m_loadData.isBossWait = isStageFailed;
+
+                await UniTask.WaitForSeconds(0.5f, cancellationToken: m_cts.Token);
 
                 // 클리어하면 원상 복구 시킨다.
                 for (int i = 0; i < m_enemyList.Count; i++)
                     m_enemyList[i].transform.SetParent(phase);
 
-                Utils.AfterCoroutine(() =>
+                Utils.AfterSecond(() =>
                 {
                     for (int i = 0; i < phase.childCount; i++)
                     {
@@ -144,15 +191,66 @@ public class StageManager : Singleton<StageManager>
 
                     phase.gameObject.SetActive(false);
                 }, 5f);
+
+                TeamManager.instance.PhaseFinished();
             }
 
-            TeamManager.instance.mainHero.move.SetFlip(true);
-            TeamManager.instance.RepositionToMain();
-            TeamManager.instance.SetState(CharacterStateType.Wait);
+            MapManager.instance.FadeDimm(true).Forget();
 
+            await UniTask.WaitForSeconds(0.2f, cancellationToken: m_cts.Token);
+
+            // 보스까지 다 깻으면
+            if (m_loadData.isBossWait == false)
+            {
+                m_loadData.stageIdx++;
+                await LoadStageAsync();
+
+                if (m_stage == null)
+                {
+                    m_loadData.chapterIdx++;
+                    m_loadData.stageIdx = 1;
+
+                    await LoadStageAsync();
+                }
+
+                if (m_stage == null)
+                {
+                    m_loadData.chapterIdx = 1;
+                    await LoadStageAsync();
+                    m_loadData.level++;
+                }
+
+                SaveData();
+            }
+
+            if (tickStart != m_tickStart)
+                break;
             // CLEAR STAGE
-            yield return null;
+
         }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            RestartStageAsync().Forget();
+        }
+    }
+
+    async UniTask RestartStageAsync()
+    {
+        MapManager.instance.FadeDimm(true, 0f).Forget();
+
+        for (var i = 0; i < m_enemyList.Count; i++)
+            Destroy(m_enemyList[i].gameObject);
+        m_enemyList.Clear();
+
+        EffectWorker.instance.ResetEffect();
+
+        TeamManager.instance.RestartStage();
+        m_stage = null;
+        StartStageAsync().Forget();
     }
 
     public IReadOnlyList<CharacterComponent> enemyList => m_enemyList.Where(_x => _x.isLive).ToList();
@@ -201,12 +299,33 @@ public class StageManager : Singleton<StageManager>
         foreach (var enemy in m_enemyList)
             enemy.SetState(_stateType);
     }
+
+    public void OnManualValidate()
+    {
+        m_element.Initialize(transform);
+    }
+
+    [SerializeField]
+    ElementData m_element;
+
+    [Serializable]
+    struct ElementData
+    {
+        public Transform chapter;
+        public int indexLayerEnemy;
+
+        public void Initialize(Transform _transform)
+        {
+            chapter = _transform.Find("Chapter");
+            indexLayerEnemy = LayerMask.NameToLayer("Enemy");
+        }
+    }
 }
 
 public struct LoadData_Stage
 {
     public int level;
-    public int chapterId;
-    public int stageId;
+    public int chapterIdx;
+    public int stageIdx;
     public bool isBossWait;
 }

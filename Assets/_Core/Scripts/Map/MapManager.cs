@@ -1,19 +1,22 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MapManager : Singleton<MapManager>, IValidatable
 {
     Camera m_camera;
 
-    public LayerMask m_bounceLayer;
-
     private void Start()
     {
-        m_bounceLayer = LayerMask.GetMask("BounceCamera");
         m_camera = Camera.main;
     }
+
+    public async UniTask FadeDimm(bool _isActive, float _duration = 0.2f)
+        => await m_element.dimm.DOFade(_isActive ? 1 : 0, _duration).AsyncWaitForCompletion();
 
 #if UNITY_EDITOR
     public void OnManualValidate()
@@ -35,7 +38,7 @@ public class MapManager : Singleton<MapManager>, IValidatable
         if (_targetPos.x < 0)
         {
             // аб
-            collider = Physics2D.Raycast(_targetPos, Vector2.left, distCameraHori, m_bounceLayer).collider;
+            collider = Physics2D.Raycast(_targetPos, Vector2.left, distCameraHori, m_element.bounceLayer).collider;
 
             if (collider != null)
                 _targetPos.x = collider.transform.position.x + distCameraHori;
@@ -43,7 +46,7 @@ public class MapManager : Singleton<MapManager>, IValidatable
         else
         {
             // ©Л
-            collider = Physics2D.Raycast(_targetPos, Vector2.right, distCameraHori, m_bounceLayer).collider;
+            collider = Physics2D.Raycast(_targetPos, Vector2.right, distCameraHori, m_element.bounceLayer).collider;
 
             if (collider != null)
                 _targetPos.x = collider.transform.position.x - distCameraHori;
@@ -52,7 +55,7 @@ public class MapManager : Singleton<MapManager>, IValidatable
         if (_targetPos.y > 0)
         {
             // ╩С
-            collider = Physics2D.Raycast(_targetPos, Vector2.up, distCameraVert, m_bounceLayer).collider;
+            collider = Physics2D.Raycast(_targetPos, Vector2.up, distCameraVert, m_element.bounceLayer).collider;
 
             if (collider != null)
                 _targetPos.y = collider.transform.position.y - distCameraVert;
@@ -60,7 +63,7 @@ public class MapManager : Singleton<MapManager>, IValidatable
         else
         {
             // го
-            collider = Physics2D.Raycast(_targetPos, Vector2.down, distCameraVert, m_bounceLayer).collider;
+            collider = Physics2D.Raycast(_targetPos, Vector2.down, distCameraVert, m_element.bounceLayer).collider;
 
             if (collider != null)
                 _targetPos.y = collider.transform.position.y + distCameraVert;
@@ -80,11 +83,18 @@ public class MapManager : Singleton<MapManager>, IValidatable
         public Transform hero;
         public Transform enemy;
 
+        public Image dimm;
+
         public void Initialize(Transform _transform)
         {
             bounceLayer = LayerMask.GetMask("BouceCamera");
             hero = _transform.Find("Heros/Team");
             enemy = _transform.Find("Heros/Enemy");
+
+            dimm = GameObject.Find("Canvas/DimmMap").GetComponent<Image>();
         }
+
+        public Transform pEnemy => enemy;
+        public Transform pHero => hero;
     }
 }

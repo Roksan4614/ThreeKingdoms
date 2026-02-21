@@ -9,8 +9,7 @@ using UnityEngine.UIElements;
 public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandler, IPointerUpHandler, IDragHandler, IValidatable
 {
     [SerializeField] float m_maxRadiusBar = 150;
-    [SerializeField]
-    float m_speed = 10;
+    //[SerializeField]    float m_speed = 10;
 
     CharacterComponent m_character;
 

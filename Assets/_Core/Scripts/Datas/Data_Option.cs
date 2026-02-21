@@ -15,7 +15,7 @@ public enum LanguegeType
 public class Data_Option
 {
     public OptionData data { get; private set; }
-    public async UniTask LoadData()
+    public void Initialize()
     {
         data = PPWorker.Get<OptionData>(PlayerPrefsType.OPTION, false);
     }

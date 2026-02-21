@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,8 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
 {
     CharacterComponent m_hero;
 
+    public string key => m_hero.data.key;
+
     CooltimeData m_cooltime_Revive;
     CooltimeData m_cooltime_Skill;
 
@@ -17,6 +20,8 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
     {
         transform.GetComponent<Button>("Panel").onClick.AddListener(OnButton_UseSkill);
     }
+
+    public bool isActive => m_hero != null;
 
     void OnButton_UseSkill()
     {
@@ -84,8 +89,30 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         m_hero = null;
     }
 
+    public void StartStage()
+    {
+        if (isActive)
+        {
+            UpdateHP();
+            StopRespawn();
+            StartCooltimeSkill();
+        }
+    }
 
+    CancellationTokenSource m_ctsRespawn;
     Tween m_tweenHP;
+
+    public void StopRespawn()
+    {
+        if (m_ctsRespawn != null)
+        {
+            m_ctsRespawn.Cancel();
+
+            m_element.txtRespawnTimer.text = "";
+            m_element.imgRespawn.gameObject.SetActive(false);
+        }
+    }
+
     public void UpdateHP()
     {
         var data = m_hero.data;
@@ -97,21 +124,32 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         m_tweenHP?.Kill();
 
         if (data.health == 0)
-            StartCoroutine(DoRespawn(bar, data.duration_respawn));
+        {
+            if (TeamManager.instance.IsAllDie() == false)
+            {
+                bar.DOAnchorPosX(targetX, 0.1f);
+                if (m_ctsRespawn != null)
+                {
+                    m_ctsRespawn.Cancel();
+                    m_ctsRespawn.Dispose();
+                }
+                m_ctsRespawn = new();
+                RespawnAsync(bar, 30).Forget();
+            }
+        }
         else
             m_tweenHP = bar.DOAnchorPosX(targetX, 0.1f);
     }
 
-    public IEnumerator DoRespawn(RectTransform _bar, float _duration)
+    public async UniTask RespawnAsync(RectTransform _bar, float _duration)
     {
         m_cooltime_Revive.startTime = Time.realtimeSinceStartup;
         m_cooltime_Revive.endTime = m_cooltime_Revive.startTime + _duration;
 
-        var imgRespawn = transform.GetComponent<Image>("Panel/img_respawn");
-        imgRespawn.gameObject.SetActive(true);
-        var prevAlpha = imgRespawn.color.a;
+        m_element.imgRespawn.gameObject.SetActive(true);
+        var prevAlpha = m_element.imgRespawn.color.a;
 
-        var txtTimer = transform.GetComponent<TextMeshProUGUI>("Panel/txt_cooltime");
+        m_element.txtRespawnTimer = transform.GetComponent<TextMeshProUGUI>("Panel/txt_cooltime");
 
         var width = _bar.rect.width;
         var pos = Vector2.zero;
@@ -126,31 +164,34 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
             pos.x = width * progress - width;
             _bar.anchoredPosition = pos;
 
-            imgRespawn.fillAmount = 1 - progress;
+            m_element.imgRespawn.fillAmount = 1 - progress;
 
             var remainTime = m_cooltime_Revive.endTime - Time.realtimeSinceStartup;
-            txtTimer.text = remainTime >= 10 ? Math.Truncate(remainTime).ToString() :
+            m_element.txtRespawnTimer.text = remainTime >= 10 ? Math.Truncate(remainTime).ToString() :
                     (Math.Truncate(remainTime * 10) / 10).ToString("0.0");
 
-            yield return null;
+            await UniTask.WaitForEndOfFrame(this, m_ctsRespawn.Token);
         }
 
         transform.GetComponent<ParticleSystem>("Panel/Effect_Respawn").Play();
 
         m_element.objOnSkill.SetActive(m_statusSkill == StatusType.Valid);
 
-        txtTimer.text = "";
-        imgRespawn.fillAmount = 0;
-        imgRespawn.transform.DOScale(Vector3.one * 3, 0.1f);
-        imgRespawn.DOFade(0f, 0.1f).SetEase(Ease.OutCubic).OnComplete(() =>
+        m_element.txtRespawnTimer.text = "";
+        m_element.imgRespawn.fillAmount = 0;
+        m_element.imgRespawn.transform.DOScale(Vector3.one * 3, 0.1f);
+        m_element.imgRespawn.DOFade(0f, 0.1f).SetEase(Ease.OutCubic).OnComplete(() =>
         {
-            imgRespawn.transform.localScale = Vector3.one;
-            Utils.SetObjectAlpha(imgRespawn.gameObject, prevAlpha, false);
-            imgRespawn.gameObject.SetActive(false);
+            m_element.imgRespawn.transform.localScale = Vector3.one;
+            Utils.SetObjectAlpha(m_element.imgRespawn.gameObject, prevAlpha, false);
+            m_element.imgRespawn.gameObject.SetActive(false);
         });
 
         _bar.anchoredPosition = Vector2.zero;
         TeamManager.instance.SetRespawn(m_hero.teamPosition);
+
+        m_ctsRespawn.Dispose();
+        m_ctsRespawn = null;
     }
 
     public void ApplyRespawnReduction(float _percent)
@@ -171,13 +212,15 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public IEnumerator DoCooltimeSkill()
     {
-        var data = m_hero.data;
+        m_element.objOnSkill.SetActive(false);
 
+        var data = m_hero.data;
         m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
         m_cooltime_Skill.endTime = data.skillCooltime + m_cooltime_Skill.startTime;
 
         var addTime = data.percent_startCooltime * data.skillCooltime;
         var bar = m_element.rtBar_Cooltime;
+        bar.gameObject.SetActive(true);
         var width = bar.rect.width;
 
         float dieTime = -1;
@@ -266,6 +309,9 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         public RectTransform rtBar_Cooltime;
         public RectTransform rtBar_HP;
 
+        public Image imgRespawn;
+        public TextMeshProUGUI txtRespawnTimer;
+
         public Transform panel => icon.parent;
 
         public void Initialize(Transform _transform)
@@ -274,6 +320,10 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
             objOnSkill = _transform.Find("Panel/OnSkill").gameObject;
             rtBar_HP = _transform.GetComponent<RectTransform>("HP/img_bar");
             rtBar_Cooltime = _transform.GetComponent<RectTransform>("Cooltime/img_bar");
+
+
+            imgRespawn = _transform.GetComponent<Image>("Panel/img_respawn");
+            txtRespawnTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_cooltime");
         }
     }
 }

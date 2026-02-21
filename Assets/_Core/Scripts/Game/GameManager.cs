@@ -12,10 +12,10 @@ public class GameManager : Singleton<GameManager>
         await UniTask.WaitForEndOfFrame();
 
         await TableManager.instance.Initialize();
-        await DataManager.userInfo.LoadData();
-        await TeamManager.instance.SpawnUpdate();
+        await DataManager.Initialize();
+        await TeamManager.instance.SpawnUpdateAsync();
 
         PopupManager.instance.ShowDimm(false);
-        StageManager.instance.StartStage();
+        StageManager.instance.StartStageAsync().Forget();
     }
 }

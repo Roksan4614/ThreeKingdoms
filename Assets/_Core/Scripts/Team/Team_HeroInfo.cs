@@ -32,15 +32,21 @@ public class Team_HeroInfo
             m_lstHeroInfo[i].Disable();
     }
 
-    public void ChapterStart()
+    public void StartStage()
     {
-        foreach (var hero in TeamManager.instance.members.Values)
-            m_lstHeroInfo[(int)hero.teamPosition].StartCooltimeSkill();
+        for (int i = 0; i < m_lstHeroInfo.Count; i++)
+            m_lstHeroInfo[i].StartStage();
     }
 
     public void UpdateHP(CharacterComponent _hero)
     {
         if (_hero.teamPosition > TeamPositionType.NONE)
-            m_lstHeroInfo[(int)_hero.teamPosition].UpdateHP();
+            m_lstHeroInfo.Find(x => x.key == _hero.data.key).UpdateHP();
+    }
+
+    public void StopRespawn()
+    {
+        for (int i = 0; i < m_lstHeroInfo.Count; i++)
+            m_lstHeroInfo[i].StopRespawn();
     }
 }

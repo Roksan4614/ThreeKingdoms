@@ -6,8 +6,8 @@ public class CameraManager : MonoSingleton<CameraManager>
     Camera m_camera;
 
     [SerializeField] float m_smoothFactor = 5f;
-    [SerializeField] float m_distMax = 1f;
-    [SerializeField] float m_posCameraY = 3f;
+    //[SerializeField] float m_distMax = 1f;
+    //[SerializeField] float m_posCameraY = 3f;
 
     [SerializeField] Transform m_playerCameraPos;
 
@@ -27,12 +27,14 @@ public class CameraManager : MonoSingleton<CameraManager>
         CameraMove();
     }
 
-    public void CameraMove()
+    public void SetCameraPosTarget()
+        => CameraMove(true);
+
+    public void CameraMove(bool _isForce = false)
     {
         if (m_camera == null)
             m_camera = Camera.main;
 
-        var cameraPos = m_camera.transform.position;
 
         // 땅에 있고, 아래를 눌르면 카메라를 아래로 내려서 보여주자
         {
@@ -48,9 +50,10 @@ public class CameraManager : MonoSingleton<CameraManager>
         if (Vector2.Distance(targetPos, m_camera.transform.position) < 0.01f)
             return;
 
+        var cameraPos = m_camera.transform.position;
         targetPos.z = cameraPos.z;
 
-        Vector3 posCamera = Vector3.Lerp(
+        Vector3 posCamera = _isForce ? targetPos : Vector3.Lerp(
             cameraPos,
             targetPos,
             m_smoothFactor * Time.deltaTime

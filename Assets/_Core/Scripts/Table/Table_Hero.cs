@@ -19,17 +19,7 @@ public class Table_Hero : BaseTable<string, TableHeroData>
 
     public TableHeroData GetHeroData(string _key)
     {
-        if (Exists(_key))
-            return m_dictionary[_key];
-
-        // TODO: test
-        TableHeroData newData = new();
-        newData.SetDefault();
-        newData.key = _key;
-
-        m_dictionary.Add(_key, newData);
-
-        return GetHeroData(_key);
+        return Exists(_key) ? m_dictionary[_key] : default;
     }
 }
 
@@ -50,8 +40,6 @@ public struct TableHeroData
 
     public float skillCooltime;
     public float cooldown;
-
-    public float duration_respawn; //사망 후 부활까지 시간
 
     public float percent_startCooltime; //챕터 시작하면 쿨타임 몇퍼부터 시작할지 여부
 
@@ -76,10 +64,13 @@ public struct TableHeroData
     {
         moveSpeed = moveSpeed == 0 ? 10 : moveSpeed;
         attackSpeed = attackSpeed == 0 ? 1 : attackSpeed;
-        percent_startCooltime = percent_startCooltime == 0 ? 1f : percent_startCooltime;
+        percent_startCooltime = percent_startCooltime == 0 ? .8f : percent_startCooltime;
+        skillCooltime = skillCooltime == 0 ? 15 : skillCooltime;
 
         health = healthMax;
     }
+
+    public bool isActive => key.IsNullOrEmpty() == false;
 }
 
 public struct HeroInfoData

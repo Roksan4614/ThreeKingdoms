@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TeamManager : Singleton<TeamManager>, IValidatable
@@ -44,7 +45,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     }
 #endif
 
-    public async UniTask SpawnUpdate()
+    public async UniTask SpawnUpdateAsync()
     {
         var myHero = DataManager.userInfo.myHero.Where(x => x.isBatch).ToList();
 
@@ -65,7 +66,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
             var heroCharacter = (await AddressableManager.instance.GetHeroCharacter(myHero[i].skin)).GetComponent<CharacterComponent>();
 
-            var hero = Instantiate(heroCharacter, MapManager.instance.element.hero);
+            var hero = Instantiate(heroCharacter, MapManager.instance.element.pHero);
             hero.SetHeroData(myHero[i].key);
             hero.name = myHero[i].skin;
             hero.transform.position = m_element.startPos;
@@ -134,19 +135,40 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         }
 
         Signal.instance.ConnectMainHero.Emit(mainHero);
+        CameraManager.instance.SetCameraPosTarget();
         m_heroInfo.SetTeamPosition();
     }
 
     public float teamMoveSpeed => mainHero.data.moveSpeed;
     public CharacterComponent mainHero => m_member.Values.First();
 
-    public void ChapterStart()
+
+    public void RestartStage()
     {
-        m_heroInfo.ChapterStart();
+        StartStage();
+
+        RepositionToMain(0);
+
+        teamState = CharacterStateType.Wait;
+        foreach (var member in m_member.Values)
+            member.Respawn();
+        m_heroInfo.StartStage();
     }
 
-    public void PhaseStart()
+    public void StartStage()
     {
+        mainHero.transform.position = m_element.startPos;
+        mainHero.move.SetFlip(true);
+        m_heroInfo.StartStage();
+
+        CameraManager.instance.SetCameraPosTarget();
+    }
+
+    public void PhaseStart(bool _isFlip)
+    {
+        SetState(CharacterStateType.Wait);
+        mainHero.move.SetFlip(_isFlip == false);
+
         RepositionToMain();
 
         teamState = CharacterStateType.SearchEnemy;
@@ -155,6 +177,13 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             member.Respawn();
             m_heroInfo.UpdateHP(member);
         }
+    }
+
+    public void PhaseFinished()
+    {
+        mainHero.move.SetFlip(true);
+        RepositionToMain();
+        SetState(CharacterStateType.Wait);
     }
 
     public void SetState(CharacterStateType _stateType)
@@ -244,6 +273,21 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         }
 
         return result;
+    }
+
+    public bool IsAllDie()
+    {
+        var members = m_member.Values.ToList();
+        for (int i = 0; i < members.Count; i++)
+        {
+            if (members[i].isLive == true)
+                return false;
+        }
+
+        m_heroInfo.StopRespawn();
+
+        //StageManager.instance.isStageFailed = true;
+        return true;
     }
 
     [SerializeField]

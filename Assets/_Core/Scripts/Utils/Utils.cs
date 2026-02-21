@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,19 +19,15 @@ public static class Utils
 #endif
     }
 
-    public static void AfterCoroutine(Action _callback, float _duration = 0)
+    public static void AfterSecond(Action _callback, float _duration = 0)
     {
-        PopupManager.instance.StartCoroutine(DoAfterCoroutine(_callback, _duration));
+        AfterSecondAsync(_callback, _duration).Forget();
     }
 
-    public static IEnumerator DoAfterCoroutine(Action _callback, float _duration = 0)
+    public static async UniTask AfterSecondAsync(Action _callback, float _duration = 0)
     {
-        if (_duration == 0)
-            yield return null;
-        else
-            yield return new WaitForSeconds(_duration);
-
-        _callback.Invoke();
+        await UniTask.WaitForSeconds(_duration);
+        _callback();
     }
 
     public static bool SetOrderInLayer(Transform _trns, OrderLayerType _orderLayer)

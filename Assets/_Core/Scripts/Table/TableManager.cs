@@ -11,6 +11,7 @@ public class TableManager
     public static TableManager instance { get; private set; } = new();
 
     public static Table_Hero hero { get; private set; }
+    public static Table_Hero enemy { get; private set; }
     public static Table_StringHero stringHero { get; private set; }
 
     public async UniTask Initialize()
@@ -18,6 +19,7 @@ public class TableManager
         await AddressableManager.instance.LoadAssetAsync<TextAsset>(_result =>
         {
             hero = new(LoadList<TableHeroData>(_result, "HeroData"));
+            enemy = new(LoadList<TableHeroData>(_result, "EnemyData"));
             stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
 
             foreach (var h in _result)

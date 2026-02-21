@@ -139,8 +139,37 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
         if (cg != null)
             yield return cg.DOFade(0f, 0.2f).SetEase(Ease.OutCubic).WaitForCompletion();
 
-        _damageObject.SetActive(false);
-        _onCompleted?.Invoke();
+        if (_damageObject != null)
+        {
+            _damageObject.SetActive(false);
+            _onCompleted?.Invoke();
+        }
+        else
+        {
+
+        }
+    }
+
+    public void ResetEffect()
+    {
+        StopAllCoroutines();
+        foreach (var fx in m_fx_text)
+        {
+            for (int i = 0; i < fx.Value.Count; i++)
+            {
+                fx.Value[i].transform.SetParent(m_element.canvas);
+                fx.Value[i].gameObject.SetActive(false);
+            }
+        }
+
+        foreach (var fx in m_fx_animation)
+        {
+            for (int i = 0; i < fx.Value.Count; i++)
+            {
+                fx.Value[i].transform.SetParent(m_element.renderer);
+                fx.Value[i].gameObject.SetActive(false);
+            }
+        }
     }
 
     //void SlotBountyEffect(EffectData _effectData)
