@@ -46,7 +46,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
         ActivePanel(true, _prevScreen == LobbyScreenType.None);
     }
 
-    public async UniTask Close(bool _isTween = true)
+    public virtual async UniTask Close(bool _isTween = true)
     {
         if (_isTween == false)
             await CloseAsync();

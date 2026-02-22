@@ -19,6 +19,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
     int m_curIndex_Batch = -1;
     int m_curIndex_List = -1;
 
+    List<string> m_openHeroSkins = new();
+
     protected override void Awake()
     {
         base.Awake();
@@ -43,6 +45,16 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             }
         }
     }
+
+    void OnEnable()
+    {
+        if (GameManager.instance.isActive == false)
+            return;
+
+        m_openHeroSkins = DataManager.userInfo.myHero.Where(x => x.isBatch).Select(x => x.skin).ToList();
+    }
+
+
 
     private void Start()
     {
@@ -106,6 +118,37 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         m_curIndex_Batch = -1;
 
         await base.CloseAsync();
+    }
+
+    public override async UniTask Close(bool _isTween = true)
+    {
+        // SaveData
+        SaveDataAsync().Forget();
+        await base.Close(_isTween);
+    }
+
+    async UniTask SaveDataAsync()
+    {
+        List<string> resultSkins = m_itemBatch.Where(x => x.data.isActive).Select(x => x.data.skin).ToList();
+        bool isNeedSave = false;
+        for (int i = 0; i < m_openHeroSkins.Count; i++)
+        {
+            if (resultSkins.Contains(m_openHeroSkins[i]) == false)
+            {
+                isNeedSave = true;
+                break;
+            }
+        }
+
+        if (isNeedSave)
+        {
+            MapManager.instance.FadeDimm(true, 0f);
+
+            DataManager.userInfo.UpdateAll(m_itemList.Select(x => x.data).ToList());
+
+            await TeamManager.instance.SpawnUpdateAsync();
+            StageManager.instance.RestartStage();
+        }
     }
 
     void UpdateHeroData(HeroInfoData _data, bool _isLast = false)

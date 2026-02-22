@@ -40,4 +40,10 @@ public class Data_UserInfo
 
     public HeroInfoData GetHeroInfoData(string _key)
         => m_myHero.Where(x => x.key.Equals(_key)).FirstOrDefault();
+
+    public void UpdateAll(List<HeroInfoData> _heroList)
+    {
+        m_myHero = _heroList;
+        SaveHero();
+    }
 }

@@ -94,7 +94,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
             foreach (var p in phases)
                 p.gameObject.SetActive(false);
 
-            MapManager.instance.FadeDimm(false).Forget();
+            MapManager.instance.FadeDimm(false);
 
             while (phases.Count > 0)
             {
@@ -148,7 +148,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     e.SetState(CharacterStateType.Wait);
                 }
 
-                TeamManager.instance.PhaseStart(isFlip);
+                TeamManager.instance.StartPhase(isFlip);
                 SetState(CharacterStateType.Wait);
 
                 // 클리어 할 때까지 대기
@@ -215,7 +215,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
             // 보스까지 다 깻으면
             if (m_loadData.isBossWait == false)
             {
-                MapManager.instance.FadeDimm(true, _token: m_cts).Forget();
+                MapManager.instance.FadeDimm(true, _token: m_cts);
                 await UniTask.WaitForSeconds(0.2f, cancellationToken: m_cts.Token);
 
                 m_loadData.stageIdx++;
@@ -243,7 +243,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
             }
             else if (isStageFailed == true)
             {
-                await MapManager.instance.FadeDimm(true, 2f, _token: m_cts);
+                await MapManager.instance.FadeDimmAsync(true, 2f, _token: m_cts);
                 RestartStage();
                 SaveData();
                 return;
@@ -256,16 +256,9 @@ public class StageManager : Singleton<StageManager>, IValidatable
         }
     }
 
-    private void Update()
+    public void RestartStage()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-        }
-    }
-
-    void RestartStage()
-    {
-        MapManager.instance.FadeDimm(true, 0f).Forget();
+        MapManager.instance.FadeDimm(true, 0f);
 
         for (var i = 0; i < m_enemyList.Count; i++)
             Destroy(m_enemyList[i].gameObject);

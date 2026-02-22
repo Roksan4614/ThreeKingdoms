@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
+    public bool isActive { get; private set; }
+
     async void Start()
     {
         PopupManager.instance.ShowDimm(true, true);
@@ -17,5 +19,7 @@ public class GameManager : Singleton<GameManager>
 
         PopupManager.instance.ShowDimm(false);
         StageManager.instance.StartStageAsync().Forget();
+
+        isActive = true;
     }
 }

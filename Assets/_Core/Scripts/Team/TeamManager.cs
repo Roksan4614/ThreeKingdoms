@@ -164,7 +164,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         CameraManager.instance.SetCameraPosTarget();
     }
 
-    public void PhaseStart(bool _isFlip)
+    public void StartPhase(bool _isFlip)
     {
         SetState(CharacterStateType.Wait);
         mainHero.move.SetFlip(_isFlip == false);
@@ -174,6 +174,9 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         teamState = CharacterStateType.SearchEnemy;
         foreach (var member in m_member.Values)
         {
+            if( member.isLive == false)
+                m_heroInfo.StopRespawn(member);
+
             member.Respawn();
             m_heroInfo.UpdateHP(member);
         }

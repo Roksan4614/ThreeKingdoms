@@ -16,8 +16,15 @@ public class MapManager : Singleton<MapManager>, IValidatable
         m_camera = Camera.main;
     }
 
-    public async UniTask FadeDimm(bool _isActive, float _duration = 0.2f, CancellationTokenSource _token = null)
-        => await m_element.dimm.DOFade(_isActive ? 1 : 0, _duration).AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(_token == null ? destroyCancellationToken : _token.Token);
+    public void FadeDimm(bool _isActive, float _duration = 0.2f, CancellationTokenSource _token = null)
+        => FadeDimmAsync(_isActive, _duration, _token).Forget();
+    public async UniTask FadeDimmAsync(bool _isActive, float _duration = 0.2f, CancellationTokenSource _token = null)
+    {
+        if (_isActive == true && m_element.dimm.color.a == 1)
+            return;
+
+        await m_element.dimm.DOFade(_isActive ? 1 : 0, _duration).AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(_token == null ? destroyCancellationToken : _token.Token);
+    }
 
 #if UNITY_EDITOR
     public void OnManualValidate()

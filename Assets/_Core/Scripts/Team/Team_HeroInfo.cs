@@ -44,6 +44,12 @@ public class Team_HeroInfo
             m_lstHeroInfo.Find(x => x.key == _hero.data.key).UpdateHP();
     }
 
+    public void StopRespawn(CharacterComponent _hero)
+    {
+        if (_hero.teamPosition > TeamPositionType.NONE)
+            m_lstHeroInfo.Find(x => x.key == _hero.data.key).StopRespawn();
+    }
+
     public void StopRespawn()
     {
         for (int i = 0; i < m_lstHeroInfo.Count; i++)
