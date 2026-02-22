@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,8 +16,8 @@ public class MapManager : Singleton<MapManager>, IValidatable
         m_camera = Camera.main;
     }
 
-    public async UniTask FadeDimm(bool _isActive, float _duration = 0.2f)
-        => await m_element.dimm.DOFade(_isActive ? 1 : 0, _duration).AsyncWaitForCompletion();
+    public async UniTask FadeDimm(bool _isActive, float _duration = 0.2f, CancellationTokenSource _token = null)
+        => await m_element.dimm.DOFade(_isActive ? 1 : 0, _duration).AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(_token == null ? destroyCancellationToken : _token.Token);
 
 #if UNITY_EDITOR
     public void OnManualValidate()

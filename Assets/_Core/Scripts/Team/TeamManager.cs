@@ -17,8 +17,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     public Team_HeroInfo m_heroInfo;
     public Dictionary<TeamPositionType, Vector3> m_dbPostion = new();
 
-    public IReadOnlyList<CharacterComponent> myHero
-        => m_member.Values.ToList();
+    //public IReadOnlyList<CharacterComponent> myHero
+    //    => m_member.Values.ToList();
 
     protected override void OnAwake()
     {
@@ -47,7 +47,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public async UniTask SpawnUpdateAsync()
     {
-        var myHero = DataManager.userInfo.myHero.Where(x => x.isBatch).ToList();
+        List<HeroInfoData> myHero = DataManager.userInfo.myHero.Where(x => x.isBatch).ToList();
 
         var remove = m_member
             .Where(x => myHero.Any(y => y.key == x.Value.data.key) == false)
@@ -147,7 +147,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         StartStage();
 
-        RepositionToMain(0);
+        RepositionToMain(0, true);
 
         teamState = CharacterStateType.Wait;
         foreach (var member in m_member.Values)
@@ -181,8 +181,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public void PhaseFinished()
     {
-        mainHero.move.SetFlip(true);
-        RepositionToMain();
+        //mainHero.move.SetFlip(true);
+        //RepositionToMain();
         SetState(CharacterStateType.Wait);
     }
 
@@ -205,7 +205,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     public CharacterComponent GetHero(TeamPositionType _teamPosition)
      => m_member.ContainsKey(_teamPosition) == false ? null : m_member[_teamPosition];
 
-    public void RepositionToMain(float _duration = .5f)
+    public void RepositionToMain(float _duration = .5f, bool _isForce = false)
     {
         var main = mainHero;
         var startPosMain = main.transform.position;
@@ -216,7 +216,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         {
             var hero = member.Value;
 
-            if (hero.isLive == false || hero.isMain == true)
+            if ((hero.isLive == false || hero.isMain == true) && _isForce == false)
                 continue;
 
             hero.move.SetFlip(isFlip);
@@ -226,25 +226,32 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
                 targetPos.x *= -1;
             targetPos += main.transform.position;
 
-            var sqr = Vector3.SqrMagnitude(targetPos - hero.transform.position);
-            if (sqr > 1)
+            if (_duration == 0)
             {
-                hero.anim.Play(CharacterAnimType.Idle);
-                var tween = hero.transform.DOLocalMove(targetPos, _duration);
-
-                DateTime dt = DateTime.Now;
-                tween.OnUpdate(() =>
+                hero.transform.position = targetPos;
+            }
+            else
+            {
+                var sqr = Vector3.SqrMagnitude(targetPos - hero.transform.position);
+                if (sqr > 1)
                 {
-                    if (startPosMain != main.transform.position)
-                    {
-                        var targetPos = m_dbPostion[member.Key];
-                        if (isFlip == false)
-                            targetPos.x *= -1;
-                        targetPos += main.transform.position;
+                    hero.anim.Play(CharacterAnimType.Idle);
+                    var tween = hero.transform.DOLocalMove(targetPos, _duration);
 
-                        tween.ChangeValues(hero.transform.position, targetPos, _duration - (float)(DateTime.Now - dt).TotalSeconds);
-                    }
-                });
+                    DateTime dt = DateTime.Now;
+                    tween.OnUpdate(() =>
+                    {
+                        if (startPosMain != main.transform.position)
+                        {
+                            var targetPos = m_dbPostion[member.Key];
+                            if (isFlip == false)
+                                targetPos.x *= -1;
+                            targetPos += main.transform.position;
+
+                            tween.ChangeValues(hero.transform.position, targetPos, _duration - (float)(DateTime.Now - dt).TotalSeconds);
+                        }
+                    });
+                }
             }
         }
     }
@@ -286,7 +293,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         m_heroInfo.StopRespawn();
 
-        //StageManager.instance.isStageFailed = true;
+        StageManager.instance.isStageFailed = true;
         return true;
     }
 

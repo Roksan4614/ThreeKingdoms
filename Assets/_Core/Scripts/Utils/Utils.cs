@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -19,14 +20,14 @@ public static class Utils
 #endif
     }
 
-    public static void AfterSecond(Action _callback, float _duration = 0)
+    public static void AfterSecond(Action _callback, float _duration = 0, CancellationTokenSource _token = null)
     {
-        AfterSecondAsync(_callback, _duration).Forget();
+        AfterSecondAsync(_callback, _duration, _token).Forget();
     }
 
-    public static async UniTask AfterSecondAsync(Action _callback, float _duration = 0)
+    public static async UniTask AfterSecondAsync(Action _callback, float _duration = 0, CancellationTokenSource _token = null)
     {
-        await UniTask.WaitForSeconds(_duration);
+        await UniTask.WaitForSeconds(_duration, cancellationToken: _token == null ? default : _token.Token);
         _callback();
     }
 

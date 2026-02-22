@@ -20,9 +20,9 @@ public class Data_UserInfo
             //유비가 가장 첫번째임
             m_myHero.Add(new("LiuBei", _isBatch: true, _isMain: true));
             m_myHero.Add(new("GuanYu", _isBatch: true));
-            m_myHero.Add(new("ZhangFei", _isBatch: false));
-            m_myHero.Add(new("ZhaYun", _isBatch: false));
-            //m_myHero.Add(new("Zhugeliang"));
+            m_myHero.Add(new("ZhugeLiang", _isBatch: true));
+            m_myHero.Add(new("ZhangFei", _isBatch: true));
+            m_myHero.Add(new("ZhaYun"));
             SaveHero();
         }
 
