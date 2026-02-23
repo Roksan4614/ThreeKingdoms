@@ -18,8 +18,8 @@ public class Table_StringHero : BaseTable<string, TableStringData>
         if (db.isActive == false)
             return _key;
 
-        return DataManager.option.data.languge switch {
-            LanguegeType.English => db.en,
+        return DataManager.option.language switch {
+            LanguageType.English => db.en,
             _ => db.kr };
     }
 

@@ -17,7 +17,7 @@ public enum PlayerPrefsType
 public class PPWorker
 {
     static string PPKey(PlayerPrefsType _type, bool _isUserData = true)
-        => $"{_type}" + (_isUserData ? $"_{DataManager.userInfo.uid}" : "");
+        => $"PP_{_type}" + (_isUserData ? $"_{DataManager.userInfo.uid}" : "");
     public static bool HasKey(PlayerPrefsType _type, bool _isUserData = true)
         => HasKey(PPKey(_type, _isUserData));
     public static bool HasKey(string _key)

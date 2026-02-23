@@ -13,7 +13,6 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public CharacterStateType teamState { get; private set; } = CharacterStateType.Wait;
     public IReadOnlyDictionary<TeamPositionType, CharacterComponent> members => m_member;
-    public TeamPositionType teamPositionType { get; private set; } = TeamPositionType.Front;
 
     public Team_HeroInfo m_heroInfo;
     public Dictionary<TeamPositionType, Vector3> m_dbPostion = new();
@@ -85,7 +84,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         var mainIndex = _members.FindIndex(x => x.data.key.Equals(DataManager.userInfo.myHero[0].key));
         // 일단 주장은 무조건 전방으로 해보자
-        m_member.Add(teamPositionType, _members[mainIndex]);
+        m_member.Add(DataManager.option.mainTeamPosition, _members[mainIndex]);
         _members.RemoveAt(mainIndex);
 
         // 세명이면 전방이후방을 정해야 한다.
@@ -93,7 +92,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         {
             CharacterComponent character = null;
             // 주장이 전방일 경우 궁장,책사 중 공격력이 가장 강한 영웅이 뒤로 간다
-            if (teamPositionType == TeamPositionType.Front)
+            if (DataManager.option.mainTeamPosition == TeamPositionType.Front)
             {
                 var backs = _members.Where(x => x.data.classType == HeroClassType.Strategist).ToList();
 
@@ -133,7 +132,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         foreach (var member in m_member)
         {
             member.Value.SetHeroData(member.Value.data.key);
-            member.Value.SetTeamPosition(member.Key, mainHero.transform.position + m_dbPostion[member.Key]);
+            member.Value.SetTeamPosition(member.Key, m_dbPostion[TeamPositionType.Front] + m_dbPostion[member.Key]);
             member.Value.SetMain(0 == index++);
             member.Value.SetFaction(FactionType.Alliance);
         }
@@ -144,7 +143,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     }
 
     public float teamMoveSpeed => mainHero.data.moveSpeed;
-    public CharacterComponent mainHero => m_member.Values.First();
+    public CharacterComponent mainHero => m_member[DataManager.option.mainTeamPosition];
 
 
     public void RestartStage()

@@ -24,6 +24,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
 
     List<string> m_openHeroSkins = new();
 
+    TeamPositionType m_teamPosition;
+
     protected override void Awake()
     {
         base.Awake();
@@ -56,6 +58,9 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
                     SetLayout_List();
             });
 
+        m_element.btn_mainPosition.onClick.AddListener(OnButton_TeamPosition);
+        m_element.txt_mainPosition.text = m_teamPosition == TeamPositionType.Front ? "전열" : "후열";
+
         // 출정 중 히어로 세팅
         {
             var panel = m_element.batch.layout;
@@ -82,6 +87,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             SetLayout_Batch();
             SetLayout_List();
         }
+
+        m_teamPosition = DataManager.option.mainTeamPosition;
 
         base.OnEnable();
     }
@@ -199,6 +206,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
                     break;
                 }
             }
+
+            m_isNeedUpdateLayout = m_isNeedUpdateLayout || m_teamPosition != DataManager.option.mainTeamPosition;
         }
 
         if (m_isNeedUpdateLayout)
@@ -222,6 +231,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             TeamManager.instance.SetState(CharacterStateType.None);
             StageManager.instance.SetState(CharacterStateType.None);
 
+            DataManager.option.mainTeamPosition = m_teamPosition;
+
             await TeamManager.instance.SpawnUpdateAsync();
 
             DataManager.userInfo.SortTeamPosition(TeamManager.instance.members.Select(x => x.Value.info).ToList());
@@ -229,6 +240,12 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             TeamManager.instance.RepositionToMain(0, true);
             StageManager.instance.RestartStage();
         }
+    }
+
+    void OnButton_TeamPosition()
+    {
+        m_teamPosition = m_teamPosition == TeamPositionType.Front ? TeamPositionType.Back : TeamPositionType.Front;
+        m_element.txt_mainPosition.text = m_teamPosition == TeamPositionType.Front ? "전열" : "후열";
     }
 
     void UpdateHeroData(HeroInfoData _data, bool _isLast = false)
@@ -520,6 +537,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         public Button btn_sort;
         public Button btn_mainPosition;
 
+        public TextMeshProUGUI txt_mainPosition;
+
         public LayoutData batch;
         public LayoutData list;
 
@@ -528,6 +547,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             btn_filter = _transform.GetComponent<Button>("Panel/List/btn_filter");
             btn_sort = _transform.GetComponent<Button>("Panel/List/btn_sort");
             btn_mainPosition = _transform.GetComponent<Button>("Panel/Batch/btn_position");
+
+            txt_mainPosition = btn_mainPosition.GetComponentInChildren<TextMeshProUGUI>();
 
             batch.Initialize(_transform, "Batch");
             list.Initialize(_transform, "List");
