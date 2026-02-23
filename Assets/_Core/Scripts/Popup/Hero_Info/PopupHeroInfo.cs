@@ -15,6 +15,7 @@ public class PopupHeroInfo : BasePopupComponent, IValidatable
     HeroInfoData m_heroInfoData;
 
     CharacterComponent m_character;
+    public bool isNeedUpdate { get; private set; }
 
     void Start()
     {
@@ -28,6 +29,7 @@ public class PopupHeroInfo : BasePopupComponent, IValidatable
 
     public async UniTask SetHeroInfoDataAsync(HeroInfoData _data)
     {
+        isNeedUpdate = false;
         gameObject.SetActive(true);
 
         if (_data.key == m_heroInfoData.key)

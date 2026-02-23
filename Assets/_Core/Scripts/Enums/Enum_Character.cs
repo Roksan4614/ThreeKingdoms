@@ -32,11 +32,11 @@ public enum HeroGradeType
 {
     NONE = -1,
 
-    Normal,
-    Elite,
-    General,
-    Hero,
-    Legend,
+    Normal,     //일반
+    Elite,      //정예
+    General,    //장군
+    Hero,       //영웅
+    Legend,     //전설
 }
 
 public enum HeroClassType

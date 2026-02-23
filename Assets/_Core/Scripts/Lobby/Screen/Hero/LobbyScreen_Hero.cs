@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public partial class LobbyScreen_Hero : LobbyScreen_Base
 {
     PopupHeroFilter m_popupFilter;
+    PopupHeroSort m_popupSort;
     PopupHeroInfo m_popupHeroInfo;
 
     List<HeroIconComponent> m_itemBatch = new();
@@ -32,6 +33,25 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
                     m_popupFilter = await PopupManager.instance.OpenPopup<PopupHeroFilter>(PopupType.Hero_Filter);
                 else
                     m_popupFilter.OpenPopup();
+
+                await UniTask.WaitUntil(() => m_popupFilter.gameObject.activeSelf == false);
+
+                if (m_popupFilter.isNeedUpdate)
+                    SetLayout_List();
+            });
+
+        m_element.btn_sort.onClick.AddListener(
+            async () =>
+            {
+                if (m_popupSort == null)
+                    m_popupSort = await PopupManager.instance.OpenPopup<PopupHeroSort>(PopupType.Hero_Sort);
+                else
+                    m_popupSort.OpenPopup();
+
+                await UniTask.WaitUntil(() => m_popupSort.gameObject.activeSelf == false);
+
+                if (m_popupSort.isNeedUpdate)
+                    SetLayout_List();
             });
 
         // 출정 중 히어로 세팅
@@ -130,13 +150,16 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
     async UniTask SaveDataAsync()
     {
         List<string> resultSkins = m_itemBatch.Where(x => x.data.isActive).Select(x => x.data.skin).ToList();
-        bool isNeedSave = false;
-        for (int i = 0; i < m_openHeroSkins.Count; i++)
+        bool isNeedSave = m_openHeroSkins.Count != resultSkins.Count;
+        if (isNeedSave == false)
         {
-            if (resultSkins.Contains(m_openHeroSkins[i]) == false)
+            for (int i = 0; i < m_openHeroSkins.Count; i++)
             {
-                isNeedSave = true;
-                break;
+                if (resultSkins.Contains(m_openHeroSkins[i]) == false)
+                {
+                    isNeedSave = true;
+                    break;
+                }
             }
         }
 
@@ -147,6 +170,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             DataManager.userInfo.UpdateAll(m_itemList.Select(x => x.data).ToList());
 
             await TeamManager.instance.SpawnUpdateAsync();
+            TeamManager.instance.RepositionToMain(0, true);
             StageManager.instance.RestartStage();
         }
     }
@@ -176,6 +200,9 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         await m_popupHeroInfo.SetHeroInfoDataAsync(_data);
 
         await UniTask.WaitUntil(() => m_popupHeroInfo.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+
+        if (m_popupHeroInfo.isNeedUpdate)
+            SetLayout_List(DataManager.userInfo.GetHeroInfoData(_data.key));
     }
 
     #region BATCH
@@ -277,34 +304,35 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
     #endregion BATCH
 
     #region LIST
-    void SetLayout_List()
+    void SetLayout_List(HeroInfoData _updateInfoData = default)
     {
+        // 업데이트 정보가 필요하다면
+        if (_updateInfoData.isActive)
+        {
+            var indexList = m_itemList.FindIndex(x => x.data.key == _updateInfoData.key);
+            if (indexList > -1)
+                m_itemList[indexList].UpdateHeroInfo(_updateInfoData);
+        }
+
         //보유 미보유 전체
         bool isAll = true;
         var db = m_itemList.OrderByDescending(x => x.data.isMine || isAll);
 
         //정렬
 
-
-        // 배치
-        bool isBatch = true;
-        if (isBatch)
+        // 배치된 유저가 앞으로 오기
+        var dbNotBatch = db.Where(x => x.data.isBatch == false).ToList();
+        var dbBatch = db.Where(x => x.data.isBatch).ToList();
+        m_itemList.Clear();
+        for (int i = 0; i < m_itemBatch.Count; i++)
         {
-            var dbNotBatch = db.Where(x => x.data.isBatch == false).ToList();
-            var dbBatch = db.Where(x => x.data.isBatch).ToList();
-            m_itemList.Clear();
-            for (int i = 0; i < m_itemBatch.Count; i++)
-            {
-                var batchData = m_itemBatch[i];
-                if (batchData.data.isActive == false)
-                    continue;
+            var batchData = m_itemBatch[i];
+            if (batchData.data.isActive == false)
+                continue;
 
-                m_itemList.Add(dbBatch.Find(x => x.data.key == batchData.data.key));
-            }
-            m_itemList.AddRange(dbNotBatch);
+            m_itemList.Add(dbBatch.Find(x => x.data.key == batchData.data.key));
         }
-        else
-            m_itemList = db.ToList();
+        m_itemList.AddRange(dbNotBatch);
 
         for (int i = m_itemList.Count - 1; i > -1; i--)
             m_itemList[i].transform.SetAsFirstSibling();
@@ -395,6 +423,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
     struct ElementData
     {
         public Button btn_filter;
+        public Button btn_sort;
         public Button btn_mainPosition;
 
         public LayoutData batch;
@@ -403,6 +432,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         public void Initialize(Transform _transform)
         {
             btn_filter = _transform.GetComponent<Button>("Panel/List/btn_filter");
+            btn_sort = _transform.GetComponent<Button>("Panel/List/btn_sort");
             btn_mainPosition = _transform.GetComponent<Button>("Panel/Batch/btn_position");
 
             batch.Initialize(_transform, "Batch");

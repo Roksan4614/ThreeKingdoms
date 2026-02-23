@@ -41,6 +41,13 @@ public class Data_UserInfo
     public HeroInfoData GetHeroInfoData(string _key)
         => m_myHero.Where(x => x.key.Equals(_key)).FirstOrDefault();
 
+    public void Update(HeroInfoData _heroData)
+    {
+        var index = m_myHero.FindIndex(x => x.key.Equals(_heroData.key));
+        m_myHero[index] = _heroData;
+        SaveHero();
+    }
+
     public void UpdateAll(List<HeroInfoData> _heroList)
     {
         m_myHero = _heroList;

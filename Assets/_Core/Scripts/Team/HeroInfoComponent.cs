@@ -86,6 +86,10 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         transform.Find("HP").gameObject.SetActive(false);
         transform.Find("Cooltime").gameObject.SetActive(false);
 
+        StopAllCoroutines();
+        m_coCooltimeSkill = null;
+        StopRespawn();
+
         m_hero = null;
     }
 
