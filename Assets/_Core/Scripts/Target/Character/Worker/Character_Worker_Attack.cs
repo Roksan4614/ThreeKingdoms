@@ -42,5 +42,10 @@ public class Character_Worker_Attack : Character_Worker
         => m_owner.isLive && m_weapon.IsValidUseSkill();
 
     public IEnumerator DoUseSkill()
-    { yield return m_weapon.DoUseSkill(); }
+    {
+        yield return m_weapon.DoUseSkill();
+    }
+
+    public void ResetFX()
+        => m_weapon.ResetFX();
 }

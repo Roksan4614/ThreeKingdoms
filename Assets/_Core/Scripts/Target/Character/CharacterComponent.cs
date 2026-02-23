@@ -48,7 +48,7 @@ public class CharacterComponent : TargetComponent
         m_dbState.Add(CharacterStateType.SearchEnemy, new CharacterState_SearchEnemy(this));
         m_dbState.Add(CharacterStateType.Battle, new CharacterState_Battle(this));
 
-        SetState(CharacterStateType.Wait);
+        SetState(CharacterStateType.None);
 
         if (m_faction == FactionType.Enemy)
         {
@@ -70,6 +70,8 @@ public class CharacterComponent : TargetComponent
     {
         m_data = TableManager.hero.GetHeroData(_key);
         m_info = DataManager.userInfo.GetHeroInfoData(_key);
+
+        attack.ResetFX();
     }
 
     public void SetFaction(FactionType _factionType) => m_faction = _factionType;
@@ -148,6 +150,12 @@ public class CharacterComponent : TargetComponent
     {
         Destroy(m_element.effect_renderer.gameObject);
         m_element.effect_canvas.parent.gameObject.SetActive(false);
+    }
+
+    public void DestroyCharacter()
+    {
+        StopAllCoroutines();
+        Destroy(gameObject);
     }
 
     //[SerializeField, HideInInspector]

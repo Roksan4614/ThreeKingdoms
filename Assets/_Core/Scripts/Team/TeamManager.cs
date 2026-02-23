@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class TeamManager : Singleton<TeamManager>, IValidatable
 {
@@ -47,6 +48,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public async UniTask SpawnUpdateAsync()
     {
+        m_heroInfo.DisableAll();
+
         List<HeroInfoData> myHero = DataManager.userInfo.myHero.Where(x => x.isBatch).ToList();
 
         var remove = m_member
@@ -55,7 +58,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         for (int i = 0; i < remove.Count; i++)
         {
-            Destroy(m_member[remove[i]].gameObject);
+            m_member[remove[i]].DestroyCharacter();
             m_member.Remove(remove[i]);
         }
 
@@ -68,9 +71,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
             var hero = Instantiate(heroCharacter, MapManager.instance.element.pHero);
             hero.SetHeroData(myHero[i].key);
-            hero.name = myHero[i].skin;
-            hero.transform.position = m_element.startPos;
-            hero.move.SetFlip(true);
+            hero.name = myHero[i].key;
 
             m_member.Add(TeamPositionType.MAX + i, hero);
         }
@@ -82,9 +83,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         m_member.Clear();
 
+        var mainIndex = _members.FindIndex(x => x.data.key.Equals(DataManager.userInfo.myHero[0].key));
         // 일단 주장은 무조건 전방으로 해보자
-        m_member.Add(teamPositionType, _members[0]);
-        _members.RemoveAt(0);
+        m_member.Add(teamPositionType, _members[mainIndex]);
+        _members.RemoveAt(mainIndex);
 
         // 세명이면 전방이후방을 정해야 한다.
         if (_members.Count == 3)
@@ -127,8 +129,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         m_member = m_member.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
 
         int index = 0;
+
         foreach (var member in m_member)
         {
+            member.Value.SetHeroData(member.Value.data.key);
             member.Value.SetTeamPosition(member.Key, mainHero.transform.position + m_dbPostion[member.Key]);
             member.Value.SetMain(0 == index++);
             member.Value.SetFaction(FactionType.Alliance);
@@ -147,8 +151,6 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         StartStage();
 
-        RepositionToMain(0, true);
-
         teamState = CharacterStateType.Wait;
         foreach (var member in m_member.Values)
             member.Respawn();
@@ -160,6 +162,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         mainHero.transform.position = m_element.startPos;
         mainHero.move.SetFlip(true);
         m_heroInfo.StartStage();
+
+        RepositionToMain(0, true);
 
         CameraManager.instance.SetCameraPosTarget();
     }
@@ -174,7 +178,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         teamState = CharacterStateType.SearchEnemy;
         foreach (var member in m_member.Values)
         {
-            if( member.isLive == false)
+            if (member.isLive == false)
                 m_heroInfo.StopRespawn(member);
 
             member.Respawn();

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
@@ -109,5 +110,26 @@ public static class Utils
         }
 
         return $"{_size:0.##} {strFileSize[count]}";
+    }
+
+    public static void WaitEscape(MonoBehaviour _mono, UnityAction _onEscape, bool _isForceBreak = false, CancellationTokenSource _token = null)
+    {
+        WaitEscapeAsync(_mono, _onEscape, _isForceBreak, _token).Forget();
+    }
+
+    public static async UniTask WaitEscapeAsync(MonoBehaviour _mono, UnityAction _onEscape, bool _isForceBreak = false, CancellationTokenSource _token = null)
+    {
+        while (true)
+        {
+            await UniTask.WaitUntil(() =>
+            {
+                return Input.GetKeyDown(KeyCode.Escape);
+            }, cancellationToken: _token == null ? _mono.destroyCancellationToken : _token.Token);
+
+            _onEscape();
+
+            if (_isForceBreak == true)
+                break;
+        }
     }
 }

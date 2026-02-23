@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 
 public class CameraManager : MonoSingleton<CameraManager>
@@ -24,7 +26,11 @@ public class CameraManager : MonoSingleton<CameraManager>
             return;
 #endif
 
-        CameraMove();
+        if (m_isShake == false)
+            CameraMove();
+
+        if (Input.GetKeyDown(KeyCode.Z))
+            Shake();
     }
 
     public void SetCameraPosTarget()
@@ -67,5 +73,27 @@ public class CameraManager : MonoSingleton<CameraManager>
         //}
 
         m_camera.transform.position = posCamera;
+    }
+
+    bool m_isShake;
+    public void Shake()
+    {
+        ShakeAsync().Forget();
+    }
+
+    Tween m_tween;
+    public async UniTask ShakeAsync()
+    {
+        m_tween?.Kill();
+
+        int count = 3;
+        m_isShake = true;
+        while (count > 0)
+        {
+            m_tween = m_camera.DOShakePosition(.05f, 0.1f, 5);
+            await m_tween.AsyncWaitForCompletion();
+            count--;
+        }
+        m_isShake = false;
     }
 }

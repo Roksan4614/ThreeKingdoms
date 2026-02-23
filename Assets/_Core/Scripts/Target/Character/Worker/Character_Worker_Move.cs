@@ -14,6 +14,12 @@ public class Character_Woker_Move : Character_Worker
     {
         m_owner.rig.linearVelocity = Vector2.zero;
         m_owner.anim.Play(CharacterAnimType.Idle);
+
+        if (m_coMoveTarget != null)
+        {
+            m_owner.StopCoroutine(m_coMoveTarget);
+            m_coMoveTarget = null;
+        }
     }
 
     public void OnMoveUpdate(Vector2 _velocity)

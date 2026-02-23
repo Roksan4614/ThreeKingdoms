@@ -11,7 +11,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
 {
     CharacterComponent m_hero;
 
-    public string key => m_hero.data.key;
+    public string key => isActive ? m_hero.data.key : "";
 
     CooltimeData m_cooltime_Revive;
     CooltimeData m_cooltime_Skill;
@@ -72,6 +72,10 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         }
 
         m_element.icon.gameObject.SetActive(true);
+        m_element.Outline.gameObject.SetActive(true);
+
+        m_element.rtBar_Cooltime.parent.gameObject.SetActive(true);
+        m_element.rtBar_HP.parent.gameObject.SetActive(true);
 
         UpdateHP();
     }
@@ -80,11 +84,12 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
     {
         var panel = m_element.icon.parent;
 
-        for (int i = 0; i < panel.childCount; i++)
-            panel.GetChild(i).gameObject.SetActive(false);
+        m_element.icon.gameObject.SetActive(false);
+        m_element.Outline.gameObject.SetActive(false);
+        m_element.objOnSkill.SetActive(false);
 
-        transform.Find("HP").gameObject.SetActive(false);
-        transform.Find("Cooltime").gameObject.SetActive(false);
+        m_element.rtBar_Cooltime.parent.gameObject.SetActive(false);
+        m_element.rtBar_HP.parent.gameObject.SetActive(false);
 
         StopAllCoroutines();
         m_coCooltimeSkill = null;
@@ -109,12 +114,10 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
     public void StopRespawn()
     {
         if (m_ctsRespawn != null)
-        {
             m_ctsRespawn.Cancel();
 
-            m_element.txtRespawnTimer.text = "";
-            m_element.imgRespawn.gameObject.SetActive(false);
-        }
+        m_element.txtRespawnTimer.text = "";
+        m_element.imgRespawn.gameObject.SetActive(false);
     }
 
     public void UpdateHP()
@@ -315,6 +318,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
 
         public Image imgRespawn;
         public TextMeshProUGUI txtRespawnTimer;
+        public GameObject Outline;
 
         public Transform panel => icon.parent;
 
@@ -324,7 +328,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
             objOnSkill = _transform.Find("Panel/OnSkill").gameObject;
             rtBar_HP = _transform.GetComponent<RectTransform>("HP/img_bar");
             rtBar_Cooltime = _transform.GetComponent<RectTransform>("Cooltime/img_bar");
-
+            Outline = panel.Find("Outline").gameObject;
 
             imgRespawn = _transform.GetComponent<Image>("Panel/img_respawn");
             txtRespawnTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_cooltime");

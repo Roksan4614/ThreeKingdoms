@@ -16,7 +16,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     [SerializeField]
     public HeroInfoData data { get; private set; }
 
-    UnityAction<HeroIconComponent> m_onClick;
+    UnityAction<HeroIconComponent, bool> m_onClick;
     UnityAction<HeroIconComponent> m_onClickAction;
 
     LobbyScreen_Hero m_screenHero;
@@ -26,7 +26,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     private void Start()
     {
-        m_element.btnHero.onClick.AddListener(() => m_onClick(this));
+        m_element.btnHero.onClick.AddListener(() => m_onClick(this, false));
         m_element.btnAction?.onClick.AddListener(() =>
         {
             if (m_isOpenPopup == false)
@@ -36,7 +36,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
 
     public void SetHeroData(HeroInfoData _data
-        , UnityAction<HeroIconComponent> _onClick
+        , UnityAction<HeroIconComponent, bool> _onClick
         , UnityAction<HeroIconComponent> _onClickAction
         )
     {
@@ -126,6 +126,12 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     private CancellationTokenSource m_cts;
     public async void OnPointerDown(PointerEventData eventData)
     {
+        if (ControllerManager.instance.isRightClick_Push == true)
+        {
+            m_onClick(this, true);
+            return;
+        }
+
         RelaseCTS();
         m_cts = new CancellationTokenSource();
 

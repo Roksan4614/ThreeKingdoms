@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +18,17 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     {
         for (int i = 0; i < m_animSlash.Count; i++)
             m_animSlash[i].gameObject.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        if (m_animSlash.Count > 0 && m_animSlash[0].transform.parent != m_owner.panel)
+        {
+            for (int i = 0; i < m_animSlash.Count; i++)
+            {
+                Destroy(m_animSlash[i].gameObject);
+            }
+        }
     }
 
 #if UNITY_EDITOR
@@ -58,7 +70,9 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         isUseSkill = true;
 
         m_owner.anim.Play(CharacterAnimType.Attack);
-        ShowSlashEffect();
+        ShowSlashEffect(true);
+
+        CameraManager.instance.Shake();
 
         yield return null;
 
@@ -90,9 +104,56 @@ public class Character_Weapon : MonoBehaviour, IValidatable
             _owner.target.SetTarget(null);
     }
 
-    public void ShowSlashEffect()
+    public void ShowSlashEffect(bool _isWorld = false)
     {
+        if (m_animSlash.Count == 0)
+            return;
+
+        if (TeamManager.instance.teamState != CharacterStateType.Battle)
+            return;
+
+        CameraManager.instance.Shake();
+
         for (int i = 0; i < m_animSlash.Count; i++)
             m_animSlash[i].Play();
+
+        var fxSlash = m_animSlash[0].transform;
+
+        // 제일 위로 올리기 위한 작업
+        {
+            if (_isWorld == (fxSlash.parent == m_owner.panel))
+            {
+                if (_isWorld)
+                    fxSlash.localPosition = Vector3.zero;
+
+                fxSlash.SetParent(_isWorld ? EffectWorker.instance.element.renderer : m_owner.panel);
+
+                if (_isWorld == false)
+                    fxSlash.localPosition = Vector3.zero;
+            }
+
+            if (_isWorld == false)
+            {
+                if (fxSlash.localScale.x < 0)
+                {
+                    var scale = fxSlash.localScale;
+                    scale.x *= -1;
+                    fxSlash.localScale = scale;
+                }
+            }
+            else if (m_owner.move.isFlip == fxSlash.localScale.x > 0)
+            {
+                var scale = fxSlash.localScale;
+                scale.x *= -1;
+                fxSlash.localScale = scale;
+            }
+        }
+        // 제일 위로 올리기 위한 작업
+    }
+
+    public void ResetFX()
+    {
+        for (int i = 0; i < m_animSlash.Count; i++)
+            m_animSlash[i].Stop();
     }
 }

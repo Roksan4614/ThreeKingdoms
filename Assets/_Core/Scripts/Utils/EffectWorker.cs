@@ -72,6 +72,8 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
             }
 
             var trns = txtdamage.transform;
+            if (trns.localScale.x != 1)
+                trns.localScale = new Vector3(1, 0.9f, 1);
 
             txtdamage.text = $"<size={txtdamage.fontSize * (_hitData.isCritical ? 1.5 : 1)}><color=#{(_hitData.value > 0 ? "A5FFAB>+" : _hitData.isCritical ? $"E58B00>" : _hitData.isAlliance ? "0B7FC6>" : "9F2625>")}{_hitData.value}</color></size>";
             trns.SetParent(targetParent);
@@ -239,9 +241,10 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
 
     [SerializeField, HideInInspector]
     ElementData m_element;
+    public ElementData element => m_element;
 
     [Serializable]
-    struct ElementData
+    public struct ElementData
     {
         public Transform renderer;
         public Transform canvas;

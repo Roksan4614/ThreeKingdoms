@@ -48,7 +48,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     // 스크린에서 닫기를 눌러서 닫을 때
     public void CloseScreen(LobbyScreenType _nextScreen)
     {
-        m_dicScreen[_nextScreen].Close().Forget();
+        m_dicScreen[_nextScreen].Close();
         SetActiveDimm(false, true);
 
         m_curScreen = LobbyScreenType.None;
@@ -66,7 +66,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         }
 
         if (m_curScreen > LobbyScreenType.None && m_dicScreen[m_curScreen].isOpenned)
-            m_dicScreen[m_curScreen].Close(false).Forget();
+            m_dicScreen[m_curScreen].Close(false);
 
         if (m_dicScreen.ContainsKey(_screen) == false)
         {

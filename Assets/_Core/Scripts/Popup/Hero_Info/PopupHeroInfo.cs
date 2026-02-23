@@ -79,7 +79,7 @@ public class PopupHeroInfo : BasePopupComponent, IValidatable
         }
     }
 
-    public override void OnClose()
+    public override void Close()
     {
         gameObject.SetActive(false);
     }

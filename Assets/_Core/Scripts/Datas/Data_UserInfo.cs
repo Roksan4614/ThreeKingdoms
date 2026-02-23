@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Overlays;
 using UnityEngine;
 
 public class Data_UserInfo
@@ -23,14 +24,14 @@ public class Data_UserInfo
             m_myHero.Add(new("ZhugeLiang", _isBatch: true));
             m_myHero.Add(new("ZhangFei", _isBatch: true));
             m_myHero.Add(new("ZhaYun"));
-            SaveHero();
+            SaveData();
         }
 
         await AddressableManager.instance.Load_HeroIcon(m_myHero.Select(x => x.skin).ToArray());
         await AddressableManager.instance.Load_HeroCharacter(m_myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
     }
 
-    public void SaveHero()
+    public void SaveData()
     {
         if (m_myHero.Count > 1)
             m_myHero = m_myHero.OrderByDescending(x => x.isMain).ToList();
@@ -45,12 +46,32 @@ public class Data_UserInfo
     {
         var index = m_myHero.FindIndex(x => x.key.Equals(_heroData.key));
         m_myHero[index] = _heroData;
-        SaveHero();
+        SaveData();
     }
 
     public void UpdateAll(List<HeroInfoData> _heroList)
     {
         m_myHero = _heroList;
-        SaveHero();
+
+        SaveData();
+    }
+
+    public void SortTeamPosition(List<HeroInfoData> _heroList)
+    {
+        // key와 index를 매핑한 딕셔너리 생성
+        var indexMap = _heroList
+            .Select((_item, _idx) => new { _item.key, _idx })
+            .ToDictionary(x => x.key, x => x._idx);
+
+        m_myHero = m_myHero.OrderBy(x =>
+        {
+            if (indexMap.TryGetValue(x.key, out int index))
+            {
+                return index;
+            }
+            return int.MaxValue;
+        }).ToList();
+
+        SaveData();
     }
 }

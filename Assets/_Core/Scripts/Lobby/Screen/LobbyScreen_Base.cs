@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,12 +19,33 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 
     LobbyScreenType m_screenType;
 
+    CancellationTokenSource m_ctsEscape;
+
     protected virtual void Awake()
     {
         m_btnBack.onClick.AddListener(
             () => Signal.instance.CloseLobbyScreen.Emit(m_screenType));
         m_btnBack = null;
     }
+
+    protected virtual void OnEnable()
+    {
+        m_ctsEscape = new();
+        Utils.WaitEscape(this, () =>
+        {
+            if (IsCloseScreen())
+                Signal.instance.CloseLobbyScreen.Emit(m_screenType);
+        }, _token: m_ctsEscape);
+    }
+
+    protected virtual void OnDisable()
+    {
+        m_ctsEscape.Cancel();
+        m_ctsEscape.Dispose();
+        m_ctsEscape = null;
+    }
+
+    protected virtual bool IsCloseScreen() => true;
 
 #if UNITY_EDITOR
     public virtual void OnManualValidate()
@@ -46,10 +68,10 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
         ActivePanel(true, _prevScreen == LobbyScreenType.None);
     }
 
-    public virtual async UniTask Close(bool _isTween = true)
+    public virtual void Close(bool _isTween = true)
     {
         if (_isTween == false)
-            await CloseAsync();
+            CloseAsync().Forget();
         else
             ActivePanel(false, _isTween);
     }

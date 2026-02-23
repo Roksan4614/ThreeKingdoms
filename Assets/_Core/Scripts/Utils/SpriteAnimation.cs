@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 public class SpriteAnimaion : MonoBehaviour, IValidatable
 {
+    [Serializable]
     public enum LoopType
     {
         none,
@@ -24,6 +25,9 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
     public void OnManualValidate()
     {
         m_element.Initialize(transform);
+
+        //if (m_effectData.duration == 0)
+            m_effectData.duration = 0.03f;
     }
 #endif
 
@@ -75,11 +79,9 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
         int increaseValue = 1;
         int indexSprite = 0;
 
-        m_isForceStop = false;
-
         DateTime dtTimer = DateTime.Now;
 
-        var effectData = m_element.effectData;
+        var effectData = m_effectData;
 
         while (true)
         {
@@ -113,13 +115,6 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
                         yield return new WaitForSeconds(effectData.delay);
                 }
 
-                if (m_isForceStop == true)
-                {
-                    m_callbackForceStop?.Invoke();
-                    m_callbackForceStop = null;
-                    break;
-                }
-
                 ResetScaleRot(effect);
             }
         }
@@ -133,16 +128,15 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
 
     void ResetScaleRot(Transform _trns)
     {
-        if (m_element.effectData.isFlipLoop)
+        if (m_effectData.isFlipLoop)
         {
             var scale = _trns.localScale;
             scale.x *= -1;
             _trns.localScale = scale;
         }
 
-        if (m_element.effectData.isRotateLoop)
+        if (m_effectData.isRotateLoop)
             _trns.rotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
-
     }
 
     public void SetColor(Color _color)
@@ -158,17 +152,20 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
         return m_element.image?.color ?? m_element.renderer?.color ?? Color.white;
     }
 
-
-    UnityAction m_callbackForceStop;
-    bool m_isForceStop = false;
-    public void Stop(UnityAction _callback = null)
+    public void Stop()
     {
-        m_callbackForceStop = _callback;
-        m_isForceStop = true;
+        if (m_coPlay != null)
+        {
+            StopCoroutine(m_coPlay);
+            m_coPlay = null;
+        }
+        gameObject.SetActive(false);
+
+        ResetScaleRot(m_element.image?.transform ?? m_element.renderer.transform);
     }
 
     [Serializable]
-    public struct EffectData
+    struct EffectData
     {
         public float duration;
         public float delay;
@@ -176,6 +173,9 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
         public bool isFlipLoop;
         public bool isRotateLoop;
     }
+
+    [SerializeField]
+    EffectData m_effectData;
 
     [SerializeField, HideInInspector]
     ElementData m_element;
@@ -187,8 +187,6 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
         public SpriteRenderer renderer;
         public bool isAddEmptySprite;
         public Sprite[] sprite;
-
-        public EffectData effectData;
 
         public void Initialize(Transform _transform)
         {

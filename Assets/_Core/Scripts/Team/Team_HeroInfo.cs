@@ -15,6 +15,12 @@ public class Team_HeroInfo
         }
     }
 
+    public void DisableAll()
+    {
+        for (int i = 0; i < m_lstHeroInfo.Count; i++)
+            m_lstHeroInfo[i].Disable();
+    }
+
     public void SetTeamPosition()
     {
         int i = 0;

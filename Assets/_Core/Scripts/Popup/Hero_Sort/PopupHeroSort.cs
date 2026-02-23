@@ -11,7 +11,7 @@ public class PopupHeroSort : BasePopupComponent
         gameObject.SetActive(true);
     }
 
-    public override void OnClose()
+    public override void Close()
     {
         gameObject.SetActive(false);
     }
