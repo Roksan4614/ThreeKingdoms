@@ -109,9 +109,6 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
                 // 위치 세팅한다
                 var posMainHero = TeamManager.instance.mainHero.transform.position;
-                var pos = phase.position;
-                pos.x = posMainHero.x;
-                phase.position = pos;
 
                 bool isFlip = posMainHero.x > 0;
                 if (isFlip == phase.localScale.x > 0)
@@ -120,6 +117,17 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     scale.x *= -1;
                     phase.localScale = scale;
                 }
+
+                var pos = phase.position;
+                pos.x = posMainHero.x;
+
+                if (DataManager.option.mainTeamPosition == TeamPositionType.Back)
+                {
+                    pos.x -= TeamManager.instance.GetDBTeamPosition(TeamPositionType.Back).x
+                        * (isFlip ? -1 : 1);
+                }
+
+                phase.position = pos;
 
                 m_enemyList.Clear();
                 for (int i = 0; i < phase.childCount; i++)
@@ -145,7 +153,6 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     }
 
                     e.move.SetFlip(isFlip);
-                    e.SetState(CharacterStateType.Wait);
                 }
 
                 TeamManager.instance.StartPhase(isFlip);

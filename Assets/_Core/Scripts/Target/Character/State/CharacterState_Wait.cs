@@ -16,17 +16,23 @@ public class CharacterState_Wait : CharacterState
 
     public override IEnumerator DoUpdate()
     {
-        var mainHero = TeamManager.instance.mainHero;
+        // 캐릭터 재 정렬할 시간이 필요해.
+        yield return new WaitForSeconds(.5f);
 
         while (true)
         {
-            var distance = (m_owner.transform.position - mainHero.transform.position).sqrMagnitude;
+            var nearestHero = TeamManager.instance.GetNearestHero(m_owner.transform.position);
 
-            if (distance < 36f)
+            if (nearestHero != null)
             {
-                TeamManager.instance.SetState(CharacterStateType.Battle);
-                StageManager.instance.SetState(CharacterStateType.Battle);
-                break;
+                var distance = (m_owner.transform.position - nearestHero.transform.position).sqrMagnitude;
+
+                if (distance < 36f)
+                {
+                    TeamManager.instance.SetState(CharacterStateType.Battle);
+                    StageManager.instance.SetState(CharacterStateType.Battle);
+                    break;
+                }
             }
             yield return null;
         }

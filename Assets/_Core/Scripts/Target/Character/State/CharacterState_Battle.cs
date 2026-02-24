@@ -18,11 +18,7 @@ public class CharacterState_Battle : CharacterState
             target = GetNearestHero();
 
             if (target == null && m_owner.anim.animType != CharacterAnimType.Idle)
-            {
                 m_owner.anim.Play(CharacterAnimType.Idle);
-                if (m_owner.factionType == FactionType.Alliance)
-                    break;
-            }
 
             yield return null;
         }

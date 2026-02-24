@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,7 +16,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     public IReadOnlyDictionary<TeamPositionType, CharacterComponent> members => m_member;
 
     public Team_HeroInfo m_heroInfo;
-    public Dictionary<TeamPositionType, Vector3> m_dbPostion = new();
+    public Dictionary<TeamPositionType, Vector3> m_dbPosition = new();
 
     //public IReadOnlyList<CharacterComponent> myHero
     //    => m_member.Values.ToList();
@@ -27,7 +28,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         for (int i = 0; i < transform.childCount; i++)
         {
-            m_dbPostion.Add(TeamPositionType.NONE + i + 1,
+            m_dbPosition.Add(TeamPositionType.NONE + i + 1,
                 transform.GetChild(i).position - m_element.startPos);
         }
     }
@@ -127,13 +128,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         m_member = m_member.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
 
-        int index = 0;
-
         foreach (var member in m_member)
         {
             member.Value.SetHeroData(member.Value.data.key);
-            member.Value.SetTeamPosition(member.Key, m_dbPostion[TeamPositionType.Front] + m_dbPostion[member.Key]);
-            member.Value.SetMain(0 == index++);
+            member.Value.SetTeamPosition(member.Key, m_element.startPos + m_dbPosition[member.Key]);
             member.Value.SetFaction(FactionType.Alliance);
         }
 
@@ -158,7 +156,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public void StartStage()
     {
-        mainHero.transform.position = m_element.startPos;
+        mainHero.transform.position = m_element.startPos + m_dbPosition[mainHero.teamPosition];
         mainHero.move.SetFlip(true);
         m_heroInfo.StartStage();
 
@@ -200,12 +198,15 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         teamState = _stateType;
     }
 
+    public Vector3 GetDBTeamPosition(TeamPositionType _teamPosition)
+        => m_dbPosition[_teamPosition];
+
     public Vector3 GetPositionByType(TeamPositionType _teamPosition)
     {
         if (m_member.ContainsKey(_teamPosition) == false)
             return Vector3.zero;
 
-        return m_member.Values.First().transform.position - m_dbPostion[_teamPosition];
+        return m_member[TeamPositionType.Front].transform.position - m_dbPosition[_teamPosition];
     }
 
     public CharacterComponent GetHero(TeamPositionType _teamPosition)
@@ -215,22 +216,27 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         var main = mainHero;
         var startPosMain = main.transform.position;
-
         bool isFlip = main.move.isFlip;
 
-        foreach (var member in m_member)
+        bool isMainBack = DataManager.option.mainTeamPosition == TeamPositionType.Back;
+
+        Dictionary<TeamPositionType, Vector3> dbPosition = new();
+
+        for (var key = TeamPositionType.NONE + 1; key < TeamPositionType.MAX; key++)
+            dbPosition.Add(key,
+                m_dbPosition[key] - (isMainBack ? m_dbPosition[TeamPositionType.Back] : Vector3.zero));
+
+        foreach (var m in m_member)
         {
-            var hero = member.Value;
+            var hero = m.Value;
 
             if ((hero.isLive == false || hero.isMain == true) && _isForce == false)
                 continue;
 
             hero.move.SetFlip(isFlip);
 
-            var targetPos = m_dbPostion[member.Key];
-            if (isFlip == false)
-                targetPos.x *= -1;
-            targetPos += main.transform.position;
+            // FIIP인 상태로 위치자 저장이 되었어 ㅜㅜ
+            var targetPos = dbPosition[m.Key] * (isFlip ? 1 : -1) + startPosMain;
 
             if (_duration == 0)
             {
@@ -249,12 +255,14 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
                     {
                         if (startPosMain != main.transform.position)
                         {
-                            var targetPos = m_dbPostion[member.Key];
+                            var targetPos = dbPosition[m.Key];
                             if (isFlip == false)
                                 targetPos.x *= -1;
                             targetPos += main.transform.position;
 
-                            tween.ChangeValues(hero.transform.position, targetPos, _duration - (float)(DateTime.Now - dt).TotalSeconds);
+                            float ts = _duration - (float)(DateTime.Now - dt).TotalSeconds;
+                            if (ts > 0)
+                                tween.ChangeValues(hero.transform.position, targetPos, ts);
                         }
                     });
                 }

@@ -25,7 +25,9 @@ public class Team_HeroInfo
     {
         int i = 0;
 
-        var members = TeamManager.instance.members.Values.OrderBy(_x => _x.teamPosition);
+        var members = TeamManager.instance.members.Values.
+            OrderByDescending(_x => _x.isMain)
+            .ThenBy(_x => _x.teamPosition);
 
         foreach (var hero in members)
         {

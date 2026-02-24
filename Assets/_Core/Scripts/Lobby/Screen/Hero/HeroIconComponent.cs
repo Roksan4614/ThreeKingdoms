@@ -110,9 +110,16 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         data = default;
     }
 
-    public void SetActiveButton(bool _isActive)
+    public void SetActiveButton(bool _isActive, bool _isChange = false)
     {
+        _isActive = _isActive && data.isActive;
+
         m_element.btnAction.gameObject.SetActive(_isActive);
+        if (_isActive == true)
+        {
+            m_element.objActionText.SetActive(_isChange == false);
+            m_element.objActionChange.SetActive(_isChange);
+        }
     }
 
     public void IsValide(string _keyHero)
@@ -176,6 +183,9 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         public Button btnHero;
         public Button btnAction;
 
+        public GameObject objActionChange;
+        public GameObject objActionText;
+
         public GameObject dimm;
         public GameObject batch;
         public Image outline;
@@ -189,6 +199,9 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
             btnHero = _transform.GetComponent<Button>();
             btnAction = panel.GetComponent<Button>("btn_action");
+
+            objActionChange = btnAction.transform.Find("Image").gameObject;
+            objActionText = btnAction.transform.Find("Text").gameObject;
 
             dimm = panel.Find("Icon/Dimm").gameObject;
             outline = panel.GetComponent<Image>("Icon/Outline");

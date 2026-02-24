@@ -31,11 +31,9 @@ public class CharacterComponent : TargetComponent
     public TableHeroData data => m_data;
     public HeroInfoData info => m_info;
     public override bool isLive => gameObject != null && data.health > 0;
-    public bool isMain => m_element.isMain;
+    public bool isMain => m_info.isMain;
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; } = TeamPositionType.NONE;
-
-    public void SetMain(bool _isMain) => m_element.isMain = _isMain;
 
     void Awake()
     {
@@ -165,8 +163,6 @@ public class CharacterComponent : TargetComponent
     [Serializable]
     public struct ElementData
     {
-        public bool isMain;
-
         public Transform panel;
         public Rigidbody2D rig;
         public Animator animator;
