@@ -35,7 +35,7 @@ public class CharacterComponent : TargetComponent
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; } = TeamPositionType.NONE;
 
-    void Awake()
+    protected virtual void Awake()
     {
         anim = new(this);// m_element.animator = default;
         move = new(this);
@@ -53,6 +53,15 @@ public class CharacterComponent : TargetComponent
             m_data.attackPower /= 2;
             m_data.healthMax = m_data.health /= 2;
         }
+    }
+
+    private void Update()
+    {
+        if (isMain == false)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            anim.Play(CharacterAnimType.Attack, 1);
     }
 
 #if UNITY_EDITOR
@@ -118,7 +127,7 @@ public class CharacterComponent : TargetComponent
         m_stateType = _stateType;
     }
 
-    public bool OnDamage(int _damage)
+    public virtual bool OnDamage(int _damage)
     {
         m_data.health -= _damage;
         if (m_data.health <= 0)

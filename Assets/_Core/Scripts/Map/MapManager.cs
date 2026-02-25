@@ -95,7 +95,8 @@ public class MapManager : Singleton<MapManager>, IValidatable
 
         public void Initialize(Transform _transform)
         {
-            bounceLayer = LayerMask.GetMask("BouceCamera");
+            bounceLayer = LayerMask.GetMask("BounceCamera");
+
             hero = _transform.Find("Heros/Team");
             enemy = _transform.Find("Heros/Enemy");
 

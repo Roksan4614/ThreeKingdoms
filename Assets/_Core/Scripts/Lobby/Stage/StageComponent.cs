@@ -7,11 +7,11 @@ using UnityEngine;
 
 public class StageComponent : MonoBehaviour, IValidatable
 {
-    public LoadData_Stage data { get; private set; }
+    public StageManager.LoadData_Stage data { get; private set; }
 
-    public bool IsNow(LoadData_Stage _data)
+    public bool IsNow(StageManager.LoadData_Stage _data)
         => data.level == _data.level && data.chapterIdx == _data.chapterIdx && data.stageIdx == _data.stageIdx;
-    public void SetData(LoadData_Stage _data) => data = _data;
+    public void SetData(StageManager.LoadData_Stage _data) => data = _data;
 
     public void OnManualValidate()
     {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Table_Hero : BaseTable<string, TableHeroData>
 {
@@ -76,16 +77,15 @@ public struct TableHeroData
 public struct HeroInfoData
 {
     public string key;
-    public HeroGradeType grade;
+    public GradeType grade;
     public string skin;
     public int enchantLevel;
     public bool isBatch;
     public bool isMain;
     public bool isMine;
 
-    public HeroInfoData(string _key, HeroGradeType _grade = HeroGradeType.Normal, string _skin = null, int _enchantLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
+    public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, string _skin = null, int _enchantLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
     {
-
         key = _key;
         grade = _grade;
         skin = _skin.IsNullOrEmpty() ? key : _skin;

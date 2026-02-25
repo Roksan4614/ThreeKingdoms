@@ -11,6 +11,7 @@ using UnityEngine;
 public class StageManager : Singleton<StageManager>, IValidatable
 {
     LoadData_Stage m_loadData;
+    //public LoadData_Stage data => m_loadData;
     List<Character_Enemy> m_enemyList = new();
 
     StageComponent m_stage;
@@ -83,6 +84,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
         TeamManager.instance.StartStage();
         var tickStart = m_tickStart = DateTime.Now.Ticks;
+
         while (true)
         {
 #if UNITY_EDITOR
@@ -95,6 +97,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 p.gameObject.SetActive(false);
 
             MapManager.instance.FadeDimm(false);
+            Signal.instance.StartStage.Emit(m_loadData);
 
             while (phases.Count > 0)
             {
@@ -155,6 +158,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     e.move.SetFlip(isFlip);
                 }
 
+                Signal.instance.StartPhase.Emit(m_stage.element.phase.childCount - phases.Count);
                 TeamManager.instance.StartPhase(isFlip);
                 SetState(CharacterStateType.Wait);
 
@@ -325,6 +329,15 @@ public class StageManager : Singleton<StageManager>, IValidatable
             enemy.SetState(_stateType);
     }
 
+    public void BossKillAllDieEnemy()
+    {
+        foreach (var enemy in m_enemyList)
+        {
+            if (enemy.isBoss == false)
+                enemy.OnDamage(enemy.data.healthMax);
+        }
+    }
+
     public void OnManualValidate()
     {
         m_element.Initialize(transform);
@@ -345,12 +358,12 @@ public class StageManager : Singleton<StageManager>, IValidatable
             indexLayerEnemy = LayerMask.NameToLayer("Enemy");
         }
     }
-}
 
-public struct LoadData_Stage
-{
-    public int level;
-    public int chapterIdx;
-    public int stageIdx;
-    public bool isBossWait;
+    public struct LoadData_Stage
+    {
+        public int level;
+        public int chapterIdx;
+        public int stageIdx;
+        public bool isBossWait;
+    }
 }

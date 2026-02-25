@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using TMPro;
@@ -131,5 +132,32 @@ public static class Utils
             if (_isForceBreak == true)
                 break;
         }
+    }
+
+    public static string MSpace(string _msgAmount, int _mspace = 20)
+    {
+        List<char> ignores = new string[]
+        { ",", ".", "%", ":" }
+        .SelectMany(x => x.ToCharArray()).ToList();
+
+        var msgs = _msgAmount.Split(ignores.ToArray());
+
+        List<char> ignoreChar = new();
+        foreach (char c in _msgAmount)
+        {
+            if (ignores.Contains(c))
+                ignoreChar.Add(c);
+        }
+
+        int index = 0;
+        string result = "";
+        foreach (var msg in msgs)
+        {
+            if (msg.IsNullOrEmpty() == false)
+                result += $"<mspace={_mspace}>{msgs[index]}</mspace>";
+            result += $"{(ignoreChar.Count > index ? ignoreChar[index++] : "")}";
+        }
+
+        return result;
     }
 }

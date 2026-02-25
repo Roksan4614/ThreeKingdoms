@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using UnityEditor.PackageManager;
@@ -9,7 +10,7 @@ using UnityEngine.UIElements;
 public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandler, IPointerUpHandler, IDragHandler, IValidatable
 {
     [SerializeField] float m_maxRadiusBar = 150;
-    //[SerializeField]    float m_speed = 10;
+    [SerializeField] float m_startRotZ = 20;
 
     CharacterComponent m_character;
 
@@ -22,13 +23,6 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
         Signal.instance.ConnectMainHero.connectLambda = new(this, _ => m_character = _);
 
     }
-
-#if UNITY_EDITOR
-    public void OnManualValidate()
-    {
-        m_element.Initialize(transform);
-    }
-#endif
 
     private void Update()
     {
@@ -49,6 +43,10 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
 
         m_element.pad.anchoredPosition = startPos;
         m_element.pad.gameObject.SetActive(true);
+
+        m_element.pad.rotation = Quaternion.Euler(0, 0, m_startRotZ);
+        m_element.pad.DORotate(Vector3.zero, 0.1f).SetEase(Ease.OutBack);
+
         m_element.padBar.localPosition = Vector3.zero;
 
         OnDrag(_eventData);
@@ -74,6 +72,13 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
 
         m_element.padBar.anchoredPosition = Vector2.ClampMagnitude(targetPos - m_element.pad.anchoredPosition, m_maxRadiusBar);
     }
+
+#if UNITY_EDITOR
+    public void OnManualValidate()
+    {
+        m_element.Initialize(transform);
+    }
+#endif
 
     [SerializeField, HideInInspector]
     ElementData m_element;

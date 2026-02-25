@@ -86,6 +86,9 @@ public class CameraManager : MonoSingleton<CameraManager>
     {
         m_tween?.Kill();
 
+        if (ControllerManager.instance.isActive == true)
+            return;
+
         int count = 3;
         m_isShake = true;
         while (count > 0)

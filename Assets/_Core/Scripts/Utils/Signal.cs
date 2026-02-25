@@ -263,14 +263,19 @@ public class Signal
 
     #endregion INITIALIZE
 
-
     #region Signal
+
     public SignalObject ApplicationQuit = new();
 
     public SignalObject<LobbyScreenType> CloseLobbyScreen = new();
 
     public SignalObject<CharacterComponent> ConnectMainHero = new();
     public SignalObject<CharacterComponent> UpdateHP = new();
+    public SignalObject<float> UpdageBossHP = new(); //percent
+
+    public SignalObject<StageManager.LoadData_Stage> StartStage = new();
+    public SignalObject<int> StartPhase = new(); // Phase index
+    
 
     #endregion
 }

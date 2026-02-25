@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Character_Enemy : CharacterComponent
 {
+    public bool isBoss { get; protected set; }
+
     public override void SetHeroData(string _key)
     {
         m_data = TableManager.enemy.GetHeroData(_key);

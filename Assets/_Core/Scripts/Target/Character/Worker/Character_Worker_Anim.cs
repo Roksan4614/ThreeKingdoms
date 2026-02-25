@@ -38,7 +38,7 @@ public class Character_Woker_Anim : Character_Worker
 
     public void Play(CharacterAnimType _animType, int _layerIndex)
     {
-        m_animator.Play(animType.ToString(), _layerIndex, 0);
+        m_animator.Play(_animType.ToString(), _layerIndex, 0);
         m_animator.Update(0);
     }
 
