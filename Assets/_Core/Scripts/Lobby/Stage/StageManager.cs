@@ -11,7 +11,7 @@ using UnityEngine;
 public class StageManager : Singleton<StageManager>, IValidatable
 {
     LoadData_Stage m_loadData;
-    //public LoadData_Stage data => m_loadData;
+    public LoadData_Stage data => m_loadData;
     List<Character_Enemy> m_enemyList = new();
 
     StageComponent m_stage;
@@ -145,8 +145,6 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 foreach (var e in m_enemyList)
                 {
                     e.SetHeroData(e.name);
-                    if (m_loadData.isBossWait)
-                        e.SetDebuffStat(0.1f);
 
                     if (e.transform.localScale.x < 0)
                     {
@@ -157,6 +155,9 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
                     e.move.SetFlip(isFlip);
                 }
+
+                //test
+                //await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Z));
 
                 Signal.instance.StartPhase.Emit(m_stage.element.phase.childCount - phases.Count);
                 TeamManager.instance.StartPhase(isFlip);
@@ -191,11 +192,11 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     break;
                 }
 
-                TeamManager.instance.PhaseFinished();
-
                 // 클리어하면 원상 복구 시킨다.
                 for (int i = 0; i < m_enemyList.Count; i++)
+                {
                     m_enemyList[i].transform.SetParent(phase);
+                }
 
                 if (isLastPhase == true)
                     await UniTask.WaitForSeconds(1f, cancellationToken: m_cts.Token);
@@ -210,7 +211,6 @@ public class StageManager : Singleton<StageManager>, IValidatable
                                 var e = phase.GetChild(i);
                                 e.position = prevPosition[i];
                                 var parts = e.Find("Character/Panel/Parts");
-                                e.GetComponent<Collider2D>("Character").enabled = true;
                                 parts.Find("Sub").gameObject.SetActive(true);
                                 parts.Find("Weapon").gameObject.SetActive(true);
                             }
@@ -221,6 +221,8 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
                     await UniTask.WaitForSeconds(0.5f, cancellationToken: m_cts.Token);
                 }
+
+                TeamManager.instance.PhaseFinished();
             }
 
             // 보스까지 다 깻으면

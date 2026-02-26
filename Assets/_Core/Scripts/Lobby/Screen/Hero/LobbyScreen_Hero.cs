@@ -311,7 +311,10 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         if (_isRightClick)
         {
             if (m_curIndex_Batch > -1)
+            {
                 OnButton_BatchHeroRemove(_item);
+                ResetActiveButton_Batch();
+            }
             else
             {
                 ResetActiveButton_Batch();

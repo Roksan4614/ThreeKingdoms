@@ -89,6 +89,8 @@ public class Character_Weapon : MonoBehaviour, IValidatable
             return;
 
         var damage = _owner.data.attackPower;
+        if (m_isCritial == true)
+            damage = (int)(damage * _owner.data.criticalDamage);
 
         EffectWorker.instance.SlotDamageTakenEffect(new()
         {

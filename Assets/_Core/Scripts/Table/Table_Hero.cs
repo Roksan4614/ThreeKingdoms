@@ -18,9 +18,23 @@ public class Table_Hero : BaseTable<string, TableHeroData>
         SetDictionary(x => x.key);
     }
 
-    public TableHeroData GetHeroData(string _key)
+    public TableHeroData GetHeroData(string _key, GradeType _grade = GradeType.Normal, int _encahntLevel = 0)
     {
-        return Exists(_key) ? m_dictionary[_key] : default;
+        if (Exists(_key) == false)
+            return default;
+
+        var data = m_dictionary[_key];
+
+        if(_grade > GradeType.Normal || _encahntLevel > 0)
+        {
+            float percent = (float)(_grade);
+            percent += (_encahntLevel) * 0.3f;
+
+            data.attackPower = (int)(data.attackPower * percent);
+            data.health = data.healthMax = (int)(data.healthMax * percent);
+        }
+
+        return data;
     }
 }
 
@@ -32,6 +46,8 @@ public struct TableHeroData
     public RegionType regionType;
 
     public int attackPower;
+
+    public float criticalDamage;
 
     public int healthMax;
     public int health;
@@ -67,6 +83,7 @@ public struct TableHeroData
         attackSpeed = attackSpeed == 0 ? 1 : attackSpeed;
         percent_startCooltime = percent_startCooltime == 0 ? .8f : percent_startCooltime;
         skillCooltime = skillCooltime == 0 ? 15 : skillCooltime;
+        criticalDamage = criticalDamage == 0 ? 1.5f : criticalDamage;
 
         health = healthMax;
     }
@@ -77,8 +94,8 @@ public struct TableHeroData
 public struct HeroInfoData
 {
     public string key;
-    public GradeType grade;
     public string skin;
+    public GradeType grade;
     public int enchantLevel;
     public bool isBatch;
     public bool isMain;

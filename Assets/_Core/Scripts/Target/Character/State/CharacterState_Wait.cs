@@ -19,6 +19,8 @@ public class CharacterState_Wait : CharacterState
         // 캐릭터 재 정렬할 시간이 필요해.
         yield return new WaitForSeconds(.5f);
 
+        m_owner.transform.GetComponent<Collider2D>("Character").enabled = true;
+
         while (true)
         {
             var nearestHero = TeamManager.instance.GetNearestHero(m_owner.transform.position);

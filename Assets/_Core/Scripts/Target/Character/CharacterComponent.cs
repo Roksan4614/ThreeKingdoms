@@ -75,8 +75,8 @@ public class CharacterComponent : TargetComponent
 
     public virtual void SetHeroData(string _key)
     {
-        m_data = TableManager.hero.GetHeroData(_key);
         m_info = DataManager.userInfo.GetHeroInfoData(_key);
+        m_data = TableManager.hero.GetHeroData(_key, m_info.grade, m_info.enchantLevel);
 
         attack.ResetFX();
     }

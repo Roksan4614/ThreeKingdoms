@@ -75,7 +75,8 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
             if (trns.localScale.x != 1)
                 trns.localScale = new Vector3(1, 0.9f, 1);
 
-            txtdamage.text = $"<size={txtdamage.fontSize * (_hitData.isCritical ? 1.5 : 1)}><color=#{(_hitData.value > 0 ? "A5FFAB>+" : _hitData.isCritical ? $"E58B00>" : _hitData.isAlliance ? "0B7FC6>" : "9F2625>")}{_hitData.value}</color></size>";
+            txtdamage.text = $"<size={txtdamage.fontSize * (_hitData.isCritical ? 1.5 : 1)}>" +
+                $"<color=#{(_hitData.value > 0 ? "A5FFAB>+" : _hitData.isCritical ? (_hitData.isAlliance ? "06008A>" : "FF8200>") : _hitData.isAlliance ? "0B7FC6>" : "9F2625>")}{_hitData.value}</color></size>";
             trns.SetParent(targetParent);
             trns.SetAsLastSibling();
 

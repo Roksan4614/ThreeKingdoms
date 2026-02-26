@@ -70,7 +70,7 @@ public class InfoStageComponent : MonoBehaviour, IValidatable
             if (m_element.boss.gameObject.activeSelf == false)
                 ChageBossPhaseAsync().Forget();
         }
-        else
+        else if (StageManager.instance.data.isBossWait == false)
         {
             // 보스창이 열려 있으면 초기화 해줘야 할 것들이 있어
             if (m_element.infoStage.gameObject.activeSelf == false)
