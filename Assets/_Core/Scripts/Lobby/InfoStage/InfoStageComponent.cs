@@ -16,6 +16,8 @@ public class InfoStageComponent : MonoBehaviour, IValidatable
         m_element.btn_challenge.gameObject.SetActive(false);
         m_element.rtIconBoss.gameObject.SetActive(false);
         m_element.txtLevel.text = "";
+
+        m_element.btn_challenge.onClick.AddListener(OnButton_Challenge);
     }
 
     void Start()
@@ -42,7 +44,7 @@ public class InfoStageComponent : MonoBehaviour, IValidatable
         if (_data.level > 5)
             diff += $"{_data.level - 4}";
 
-        m_element.txtLevel.text = string.Format(sf, diff, _data.chapterIdx, _data.stageIdx);
+        m_element.txtLevel.text = string.Format(sf, diff, _data.chapterNumber, _data.stageNumber);
         m_element.btn_challenge.gameObject.SetActive(_data.isBossWait);
 
         m_element.infoStage.gameObject.SetActive(false);
@@ -147,6 +149,11 @@ public class InfoStageComponent : MonoBehaviour, IValidatable
         //m_element.rtIconBoss.rotation = Quaternion.Euler(new Vector3(0, 0, -10));
 
         //m_element.rtIconBoss.DOPunchScale(new Vector3(-0.1f, 0.1f), 0.2f);
+    }
+
+    void OnButton_Challenge()
+    {
+        StageManager.instance.RechallengeBoss();
     }
 
 #if UNITY_EDITOR

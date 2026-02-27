@@ -97,6 +97,7 @@ MonoBehaviour:
     effect_canvas: {fileID: 8325325626858849113}
     effect_renderer: {fileID: 2598324622848813328}
     cameraPos: {fileID: 7771191375908206003}
+    collider: {fileID: 904747915223809821}
     animationClipData:
       attack: {fileID: 7400000, guid: 4823e54a9a8905d41a75c8d9e8884b77, type: 2}
 --- !u!1001 &6686848874586333230
@@ -236,6 +237,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+--- !u!58 &904747915223809821 stripped
+CircleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 5783249674202832691, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 6686848874586333230}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2598324622848813328 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8701921934893222206, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

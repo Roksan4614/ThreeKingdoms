@@ -33,8 +33,8 @@ public class StageManager : Singleton<StageManager>, IValidatable
             m_loadData = new()
             {
                 level = 1,
-                chapterIdx = 1,
-                stageIdx = 1,
+                chapterNumber = 1,
+                stageNumber = 1,
             };
             SaveData();
         }
@@ -50,7 +50,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
             Destroy(m_element.chapter.GetChild(i).gameObject);
 
         m_stage = null;
-        string key = $"Stage/{m_loadData.chapterIdx}_{m_loadData.stageIdx}.prefab";
+        string key = $"Stage/{m_loadData.chapterNumber}_{m_loadData.stageNumber}.prefab";
 
         long tickStart = m_tickStart;
         await AddressableManager.instance.LoadAssetAsync<GameObject>(_result =>
@@ -88,7 +88,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
         while (true)
         {
 #if UNITY_EDITOR
-            m_element.chapter.name = $"Chapter_{m_loadData.chapterIdx}";
+            m_element.chapter.name = $"Chapter_{m_loadData.chapterNumber}";
 #endif
 
             var phases = new Queue<Transform>(m_stage.element.phase.Cast<Transform>());
@@ -101,6 +101,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
             while (phases.Count > 0)
             {
+                var phaseIdx = m_stage.element.phase.childCount - phases.Count;
                 var phase = phases.Dequeue();
                 var isLastPhase = phases.Count == 0;
 
@@ -108,56 +109,28 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 if (m_loadData.isBossWait == true && isLastPhase == true)
                     continue;
 
-                phase.gameObject.SetActive(true);
-
-                // 위치 세팅한다
-                var posMainHero = TeamManager.instance.mainHero.transform.position;
-
-                bool isFlip = posMainHero.x > 0;
-                if (isFlip == phase.localScale.x > 0)
-                {
-                    var scale = phase.localScale;
-                    scale.x *= -1;
-                    phase.localScale = scale;
-                }
-
-                var pos = phase.position;
-                pos.x = posMainHero.x;
-
-                if (DataManager.option.mainTeamPosition == TeamPositionType.Back)
-                {
-                    pos.x -= TeamManager.instance.GetDBTeamPosition(TeamPositionType.Back).x
-                        * (isFlip ? -1 : 1);
-                }
-
-                phase.position = pos;
+                bool isFlip = TeamManager.instance.mainHero.transform.position.x > 0;
+                var ctsClose = m_stage.StartPhase(phaseIdx, isFlip);
 
                 m_enemyList.Clear();
-                for (int i = 0; i < phase.childCount; i++)
+
+                while (phase.childCount > 0)
                 {
-                    var e = phase.GetChild(i).GetComponent<Character_Enemy>();
+                    var e = phase.GetChild(0).GetComponent<Character_Enemy>();
                     e.gameObject.layer = m_element.indexLayerEnemy;
-                    m_enemyList.Add(e);
-                }
-
-                var prevPosition = m_enemyList.Select(x => x.transform.position).ToList();
-
-                foreach (var e in m_enemyList)
-                {
                     e.SetHeroData(e.name);
+                    e.transform.SetParent(MapManager.instance.element.pEnemy);
+                    e.move.SetFlip(isFlip);
 
-                    if (e.transform.localScale.x < 0)
+                    var scale = e.transform.localScale;
+                    if (scale.x < 0)
                     {
-                        var scale = e.transform.localScale;
                         scale.x *= -1;
                         e.transform.localScale = scale;
                     }
 
-                    e.move.SetFlip(isFlip);
+                    m_enemyList.Add(e);
                 }
-
-                //test
-                //await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Z));
 
                 Signal.instance.StartPhase.Emit(m_stage.element.phase.childCount - phases.Count);
                 TeamManager.instance.StartPhase(isFlip);
@@ -179,7 +152,9 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     }
                     await UniTask.WaitForEndOfFrame(cancellationToken: m_cts.Token);
                 }
+                // 클리어 할 때까지 대기
 
+                // 실패 했다면?
                 if (isStageFailed == true)
                 {
                     if (m_loadData.isBossWait == true)
@@ -194,35 +169,24 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
                 // 클리어하면 원상 복구 시킨다.
                 for (int i = 0; i < m_enemyList.Count; i++)
-                {
                     m_enemyList[i].transform.SetParent(phase);
-                }
 
+                //보스 잡은거면 그냥 조금있다가 다음으로 넘어가면 됨
                 if (isLastPhase == true)
                     await UniTask.WaitForSeconds(1f, cancellationToken: m_cts.Token);
                 else
                 {
-                    Utils.AfterSecond(() =>
-                    {
-                        if (phase != null)
-                        {
-                            for (int i = 0; i < phase.childCount; i++)
-                            {
-                                var e = phase.GetChild(i);
-                                e.position = prevPosition[i];
-                                var parts = e.Find("Character/Panel/Parts");
-                                parts.Find("Sub").gameObject.SetActive(true);
-                                parts.Find("Weapon").gameObject.SetActive(true);
-                            }
-
-                            phase.gameObject.SetActive(false);
-                        }
-                    }, 5f, m_cts);
+                    // 쓰러지고 5초후에 초기화 해주자
+                    Utils.AfterSecond(() => m_stage.ClosePhase(phaseIdx), 5f, ctsClose);
 
                     await UniTask.WaitForSeconds(0.5f, cancellationToken: m_cts.Token);
                 }
 
                 TeamManager.instance.PhaseFinished();
+
+                // 대기중이라면 계속 돌려막아야 해.
+                if (m_loadData.isBossWait == true && phases.Count == 1)
+                    phases = new Queue<Transform>(m_stage.element.phase.Cast<Transform>());
             }
 
             // 보스까지 다 깻으면
@@ -231,20 +195,20 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 MapManager.instance.FadeDimm(true, _token: m_cts);
                 await UniTask.WaitForSeconds(0.2f, cancellationToken: m_cts.Token);
 
-                m_loadData.stageIdx++;
+                m_loadData.stageNumber++;
                 await LoadStageAsync();
 
                 if (m_stage == null)
                 {
-                    m_loadData.chapterIdx++;
-                    m_loadData.stageIdx = 1;
+                    m_loadData.chapterNumber++;
+                    m_loadData.stageNumber = 1;
 
                     await LoadStageAsync();
                 }
 
                 if (m_stage == null)
                 {
-                    m_loadData.chapterIdx = 1;
+                    m_loadData.chapterNumber = 1;
                     await LoadStageAsync();
                     m_loadData.level++;
                 }
@@ -281,7 +245,15 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
         TeamManager.instance.RestartStage();
         m_stage = null;
+
         StartStageAsync().Forget();
+    }
+
+    public void RechallengeBoss()
+    {
+        m_loadData.isBossWait = false;
+        SaveData();
+        RestartStage();
     }
 
     public IReadOnlyList<CharacterComponent> enemyList => m_enemyList.Where(_x => _x.isLive).ToList();
@@ -364,8 +336,8 @@ public class StageManager : Singleton<StageManager>, IValidatable
     public struct LoadData_Stage
     {
         public int level;
-        public int chapterIdx;
-        public int stageIdx;
+        public int chapterNumber;
+        public int stageNumber;
         public bool isBossWait;
     }
 }

@@ -14,8 +14,8 @@ public class Character_Enemy : CharacterComponent
         var stageData = StageManager.instance.data;
 
         float percent = (float)(stageData.level + GradeType.NONE + 1);
-        percent += (stageData.chapterIdx - 1) * 0.1f;
-        percent += (stageData.stageIdx - 1) * 0.1f;
+        percent += (stageData.chapterNumber - 1) * 0.1f;
+        percent += (stageData.stageNumber - 1) * 0.1f;
         SetBuffStat(percent);
 
         if (stageData.isBossWait)
@@ -24,8 +24,6 @@ public class Character_Enemy : CharacterComponent
             SetBuffStat(0.5f);
 
         SetFaction(FactionType.Enemy);
-
-        transform.SetParent(MapManager.instance.element.pEnemy);
     }
 
     public void SetBuffStat(float _percent)

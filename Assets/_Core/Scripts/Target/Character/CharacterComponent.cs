@@ -136,7 +136,7 @@ public class CharacterComponent : TargetComponent
             m_state?.Stop();
             anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
 
-            transform.GetComponent<Collider2D>("Character").enabled = false;
+            m_element.collider.enabled = false;
         }
 
         Signal.instance.UpdateHP.Emit(this);
@@ -150,7 +150,7 @@ public class CharacterComponent : TargetComponent
             SetState(TeamManager.instance.teamState);
 
         m_data.health = m_data.healthMax;
-        transform.GetComponent<Collider2D>("Character").enabled = true;
+        m_element.collider.enabled = true;
     }
 
     public void DeleteElement()
@@ -181,6 +181,8 @@ public class CharacterComponent : TargetComponent
 
         public Transform cameraPos;
 
+        public Collider2D collider;
+
         public CharacterAnimationClipData animationClipData;
 
         public void Initialize(Transform _transform)
@@ -191,6 +193,8 @@ public class CharacterComponent : TargetComponent
             effect_canvas = _transform.Find("Character/Canvas/Effect");
             effect_renderer = _transform.Find("Character/Effect_Renderer");
             cameraPos = panel.Find("CameraPos");
+
+            collider = panel.parent.GetComponent<Collider2D>();
         }
     }
 }

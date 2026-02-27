@@ -10,6 +10,9 @@ public class CharacterState_Battle : CharacterState
     {
         var target = GetNearestHero();
 
+        // 반복 중에 이게 꺼지는 경우가 있음
+        m_owner.element.collider.enabled = true;
+
         while (true)
         {
             if (target != null)
