@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -38,6 +39,7 @@ public class Table_Hero : BaseTable<string, TableHeroData>
     }
 }
 
+[Serializable]
 public struct TableHeroData
 {
     public string key;

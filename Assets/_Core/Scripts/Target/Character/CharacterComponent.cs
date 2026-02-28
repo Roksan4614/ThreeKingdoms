@@ -62,6 +62,8 @@ public class CharacterComponent : TargetComponent
 
         if (Input.GetKeyDown(KeyCode.Space))
             anim.Play(CharacterAnimType.Attack, 1);
+        else if (Input.GetKeyDown(KeyCode.Z))
+            move.Dash();
     }
 
 #if UNITY_EDITOR

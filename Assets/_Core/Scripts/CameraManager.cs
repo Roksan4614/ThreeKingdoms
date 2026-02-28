@@ -28,9 +28,6 @@ public class CameraManager : MonoSingleton<CameraManager>
 
         if (m_isShake == false)
             CameraMove();
-
-        if (Input.GetKeyDown(KeyCode.Z))
-            Shake();
     }
 
     public void SetCameraPosTarget()

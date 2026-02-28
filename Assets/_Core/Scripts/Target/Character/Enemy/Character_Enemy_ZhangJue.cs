@@ -16,10 +16,7 @@ public class Character_Enemy_ZhangJue : Character_Enemy
 
         // 보스가 죽었기 때문에 다 죽이자!!
         if(isLive == false)
-        {
             StageManager.instance.BossKillAllDieEnemy();
-        }
-
 
         return result;
     }

@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Mono.Cecil.Cil;
 using System.Collections;
 using UnityEngine;
@@ -30,7 +32,8 @@ public class Character_Woker_Move : Character_Worker
         if (m_owner.anim.animType != CharacterAnimType.Walk)
             m_owner.anim.Play(CharacterAnimType.Walk);
 
-        m_owner.rig.linearVelocity = _velocity;
+        if (m_isDash == false)
+            m_owner.rig.linearVelocity = _velocity;
 
         SetFlip(_velocity.x > 0);
     }
@@ -74,5 +77,26 @@ public class Character_Woker_Move : Character_Worker
         }
 
         m_coMoveTarget = null;
+    }
+
+    bool m_isDash = false;
+    public void Dash()
+        => DashAsync().Forget();
+    public async UniTask DashAsync()
+    {
+        m_isDash = true;
+
+        Vector3 lookAt = m_owner.rig.linearVelocity.normalized;
+        var target = m_owner.transform.position + lookAt * 5;
+
+        EffectWorker.instance.Dash(m_owner, isFlip);
+
+        await DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f).AsyncWaitForCompletion();
+
+        //m_owner.rig.MovePosition()
+
+        //await m_owner.transform.DOMove(target, m_owner.dashDuration).AsyncWaitForCompletion();
+
+        m_isDash = false;
     }
 }

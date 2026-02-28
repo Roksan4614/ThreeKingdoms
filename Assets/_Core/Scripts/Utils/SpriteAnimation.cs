@@ -179,9 +179,10 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
 
     [SerializeField, HideInInspector]
     ElementData m_element;
+    public ElementData element => m_element;
 
     [Serializable]
-    struct ElementData
+    public struct ElementData
     {
         public Image image;
         public SpriteRenderer renderer;

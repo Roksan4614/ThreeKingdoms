@@ -33,4 +33,6 @@ public abstract class TargetComponent : MonoBehaviour, IValidatable
             m_canvas.sortingOrder = m_sortingGroup.sortingOrder + 1;
         }
     }
+
+    public int sortingOrder => m_sortingGroup.sortingOrder;
 }

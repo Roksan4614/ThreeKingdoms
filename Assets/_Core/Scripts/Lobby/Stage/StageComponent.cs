@@ -25,7 +25,6 @@ public class StageComponent : MonoBehaviour, IValidatable
             if (ctsClose != null)
             {
                 ctsClose.Cancel();
-                ctsClose.Dispose();
                 ctsClose = null;
             }
             return this;

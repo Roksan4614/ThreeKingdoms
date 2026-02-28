@@ -13,6 +13,7 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
         damage,
         //bounty,
         hit,
+        dash
         //die,
     }
 
@@ -29,6 +30,7 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
     Dictionary<EffectType, List<SpriteAnimaion>> m_fx_animation = new()
     {
         { EffectType.hit, new List<SpriteAnimaion>() },
+        { EffectType.dash, new List<SpriteAnimaion>() },
         //{ EffectType.die, new List<SpriteAnimaion>() },
     };
 
@@ -46,8 +48,35 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
 
         m_fx_text[EffectType.damage].Add(m_element.baseDamage);
         m_fx_animation[EffectType.hit].Add(m_element.baseDamageHit);
+        m_fx_animation[EffectType.dash].Add(m_element.baseDash);
 
         m_colorHit = m_element.baseDamageHit.GetColor();
+    }
+
+    public void Dash(CharacterComponent _character, bool _isFlip)
+    {
+        SpriteAnimaion animation = m_fx_animation[EffectType.dash].Find(x => x.gameObject.activeSelf == false);
+        if (animation == null)
+        {
+            animation = Instantiate(m_fx_animation[EffectType.dash][0], m_element.renderer)
+                .GetComponent<SpriteAnimaion>();
+            animation.name = $"Dash_{m_fx_animation[EffectType.dash].Count}";
+            m_fx_animation[EffectType.dash].Add(animation);
+        }
+
+        animation.element.renderer.sortingOrder = _character.sortingOrder;
+        var trns = animation.transform;
+        trns.SetAsLastSibling();
+        trns.position = _character.transform.position;
+
+        var scale = trns.localScale;
+        if (_isFlip == scale.x < 0)
+        {
+            scale.x *= -1;
+            trns.localScale = scale;
+        }
+
+        animation.Play(() => trns.SetParent(m_element.renderer));
     }
 
     public void SlotDamageTakenEffect(HitData _hitData)
@@ -252,6 +281,7 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
 
         public TextMeshProUGUI baseDamage;
         public SpriteAnimaion baseDamageHit;
+        public SpriteAnimaion baseDash;
 
         public void Initialize(Transform _transform)
         {
@@ -260,6 +290,7 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
 
             baseDamage = _transform.GetComponent<TextMeshProUGUI>("Canvas/Damage");
             baseDamageHit = _transform.GetComponent<SpriteAnimaion>("Renderer/DamageHit");
+            baseDash = _transform.GetComponent<SpriteAnimaion>("Renderer/Dash");
         }
     }
 }
