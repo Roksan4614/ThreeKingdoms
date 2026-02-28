@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Mono.Cecil.Cil;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -29,13 +30,16 @@ public class Character_Woker_Move : Character_Worker
         if (_velocity == Vector2.zero)
             return;
 
-        if (m_owner.anim.animType != CharacterAnimType.Walk)
-            m_owner.anim.Play(CharacterAnimType.Walk);
-
         if (m_isDash == false)
-            m_owner.rig.linearVelocity = _velocity;
+        {
+            if (m_owner.anim.animType != CharacterAnimType.Walk)
+                m_owner.anim.Play(CharacterAnimType.Walk);
 
-        SetFlip(_velocity.x > 0);
+            m_owner.rig.linearVelocity = _velocity;
+        }
+
+        if (_velocity.x != 0)
+            SetFlip(_velocity.x > 0);
     }
 
     public void SetFlip(bool _isFlip)
@@ -89,13 +93,18 @@ public class Character_Woker_Move : Character_Worker
         Vector3 lookAt = m_owner.rig.linearVelocity.normalized;
         var target = m_owner.transform.position + lookAt * 5;
 
+        DateTime dt = DateTime.Now.AddSeconds(0.1f);
         EffectWorker.instance.Dash(m_owner, isFlip);
-
-        await DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f).AsyncWaitForCompletion();
-
-        //m_owner.rig.MovePosition()
-
-        //await m_owner.transform.DOMove(target, m_owner.dashDuration).AsyncWaitForCompletion();
+        m_owner.anim.Play(CharacterAnimType.Dash);
+        await DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f).OnUpdate(
+            () =>
+            {
+                if (DateTime.Now > dt)
+                {
+                    EffectWorker.instance.Dash(m_owner, isFlip);
+                    dt = DateTime.Now.AddSeconds(10);
+                }
+            }).AsyncWaitForCompletion();
 
         m_isDash = false;
     }

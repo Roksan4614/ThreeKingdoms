@@ -33,6 +33,12 @@ public class Character_Worker_Attack : Character_Worker
         }
     }
 
+    public void ControlAttack()
+    {
+        m_owner.anim.Play(CharacterAnimType.Attack, 1);
+        m_weapon.ShowSlashEffect();
+    }
+
     public void EventAttackHit()
     {
         m_weapon.EventAttackHit(m_owner);

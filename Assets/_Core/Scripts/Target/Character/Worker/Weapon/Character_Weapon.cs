@@ -111,9 +111,6 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         if (m_animSlash.Count == 0)
             return;
 
-        if (TeamManager.instance.teamState != CharacterStateType.Battle)
-            return;
-
         CameraManager.instance.Shake();
 
         for (int i = 0; i < m_animSlash.Count; i++)

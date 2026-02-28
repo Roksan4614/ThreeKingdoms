@@ -132,7 +132,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     m_enemyList.Add(e);
                 }
 
-                await UniTask.WaitUntil(() => Input.GetKey(KeyCode.A));
+                await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Return));
 
                 Signal.instance.StartPhase.Emit(m_stage.element.phase.childCount - phases.Count);
                 TeamManager.instance.StartPhase(isFlip);

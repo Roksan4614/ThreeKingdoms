@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,7 +15,7 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
 
     CharacterComponent m_character;
 
-    public bool isActive => m_element.pad.gameObject.activeSelf;
+    public bool isActive => m_element.pad.gameObject.activeSelf || m_isKeyboardDoing;
 
     private void Start()
     {
@@ -24,10 +25,46 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
 
     }
 
+    bool m_isKeyboardDoing = false;
     private void Update()
     {
-        if (isActive == true && m_character?.isLive == true)
-            m_character.OnConrollerMove(m_element.padBar.position - m_element.pad.position);
+        if (m_character?.isLive == false)
+            return;
+
+        var lookAt = Vector2.zero;
+        if (m_element.pad.gameObject.activeSelf == true)
+            lookAt = m_element.padBar.position - m_element.pad.position;
+        else
+        {
+            if (Input.GetKey(KeyCode.LeftArrow))
+                lookAt = Vector2.left;
+            else if (Input.GetKey(KeyCode.RightArrow))
+                lookAt = Vector2.right;
+
+            if (Input.GetKey(KeyCode.UpArrow))
+                lookAt += Vector2.up;
+            else if (Input.GetKey(KeyCode.DownArrow))
+                lookAt += Vector2.down;
+        }
+
+        if (lookAt != Vector2.zero)
+        {
+            // 대쉬
+            if (Input.GetKeyDown(KeyCode.D))
+                m_character.move.Dash();
+
+            m_character.OnConrollerMove(lookAt);
+            m_isKeyboardDoing = true;
+        }
+        else if (m_isKeyboardDoing == true)
+        {
+            m_isKeyboardDoing = false;
+            StopControll();
+        }
+
+        // 공격
+        if (Input.GetKeyDown(KeyCode.A))
+            m_character.attack.ControlAttack();
     }
 
     public bool isLeftClick => Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Z);
@@ -56,9 +93,7 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
     {
         if (isActive == false)
             return;
-
-        if (m_character?.isLive == true)
-            m_character.SetState(TeamManager.instance.teamState);
+        StopControll();
 
         m_element.pad.gameObject.SetActive(false);
     }
@@ -71,6 +106,12 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 targetPos);
 
         m_element.padBar.anchoredPosition = Vector2.ClampMagnitude(targetPos - m_element.pad.anchoredPosition, m_maxRadiusBar);
+    }
+
+    void StopControll()
+    {
+        if (m_character?.isLive == true)
+            m_character.SetState(TeamManager.instance.teamState);
     }
 
 #if UNITY_EDITOR
