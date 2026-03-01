@@ -73,17 +73,17 @@ public class CameraManager : MonoSingleton<CameraManager>
     }
 
     bool m_isShake;
-    public void Shake()
+    public void Shake(bool _isForceShake = false)
     {
-        ShakeAsync().Forget();
+        ShakeAsync(_isForceShake).Forget();
     }
 
     Tween m_tween;
-    public async UniTask ShakeAsync()
+    public async UniTask ShakeAsync(bool _isForceShake = false)
     {
         m_tween?.Kill();
 
-        if (ControllerManager.instance.isActive == true)
+        if (ControllerManager.instance.isActive == true && _isForceShake == false)
             return;
 
         int count = 3;

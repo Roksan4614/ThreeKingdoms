@@ -14,7 +14,8 @@ public class Character_Worker_Target : Character_Worker
 
     public void SetTarget(CharacterComponent _target)
         => target = _target;
-
+    public void SetTargetNearest()
+        => SetTarget(nearestEnemy);
     public void AddTarget(CharacterComponent _target)
     {
         if (IsEnemy(_target) == false || m_targetList.Contains(_target) == true)

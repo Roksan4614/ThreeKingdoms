@@ -10,6 +10,9 @@ using UnityEngine;
 
 public class StageManager : Singleton<StageManager>, IValidatable
 {
+    [SerializeField]
+    bool m_stopStageStart = true;
+
     LoadData_Stage m_loadData;
     public LoadData_Stage data => m_loadData;
     List<Character_Enemy> m_enemyList = new();
@@ -132,7 +135,10 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     m_enemyList.Add(e);
                 }
 
-                await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Return));
+#if UNITY_EDITOR
+                if (m_stopStageStart == true)
+                    await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Return));
+#endif
 
                 Signal.instance.StartPhase.Emit(m_stage.element.phase.childCount - phases.Count);
                 TeamManager.instance.StartPhase(isFlip);

@@ -36,14 +36,14 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
             lookAt = m_element.padBar.position - m_element.pad.position;
         else
         {
-            if (Input.GetKey(KeyCode.LeftArrow))
+            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Keypad4))
                 lookAt = Vector2.left;
-            else if (Input.GetKey(KeyCode.RightArrow))
+            else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.Keypad6))
                 lookAt = Vector2.right;
 
-            if (Input.GetKey(KeyCode.UpArrow))
+            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Keypad8))
                 lookAt += Vector2.up;
-            else if (Input.GetKey(KeyCode.DownArrow))
+            else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Keypad5))
                 lookAt += Vector2.down;
         }
 
@@ -64,7 +64,10 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
 
         // 공격
         if (Input.GetKeyDown(KeyCode.A))
+        {
+            m_isKeyboardDoing = true;
             m_character.attack.ControlAttack();
+        }
     }
 
     public bool isLeftClick => Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Z);

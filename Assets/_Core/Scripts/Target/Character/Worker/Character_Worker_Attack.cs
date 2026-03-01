@@ -35,8 +35,10 @@ public class Character_Worker_Attack : Character_Worker
 
     public void ControlAttack()
     {
+        m_owner.target.SetTargetNearest();
         m_owner.anim.Play(CharacterAnimType.Attack, 1);
-        m_weapon.ShowSlashEffect();
+
+        m_weapon.ShowSlashEffect(_isForceShake: m_owner.target.target != null);
     }
 
     public void EventAttackHit()

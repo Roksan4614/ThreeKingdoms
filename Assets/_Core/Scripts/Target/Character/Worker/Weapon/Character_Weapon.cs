@@ -106,12 +106,12 @@ public class Character_Weapon : MonoBehaviour, IValidatable
             _owner.target.SetTarget(null);
     }
 
-    public void ShowSlashEffect(bool _isWorld = false)
+    public void ShowSlashEffect(bool _isWorld = false, bool _isForceShake = false)
     {
         if (m_animSlash.Count == 0)
             return;
 
-        CameraManager.instance.Shake();
+        CameraManager.instance.Shake(_isForceShake);
 
         for (int i = 0; i < m_animSlash.Count; i++)
             m_animSlash[i].Play();
