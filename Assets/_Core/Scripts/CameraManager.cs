@@ -96,4 +96,12 @@ public class CameraManager : MonoSingleton<CameraManager>
         }
         m_isShake = false;
     }
+
+    public Vector3 GetMousePosition()
+    {
+        var pos = m_camera.ScreenToWorldPoint(Input.mousePosition);
+        pos.z = 0;
+
+        return pos;
+    }
 }

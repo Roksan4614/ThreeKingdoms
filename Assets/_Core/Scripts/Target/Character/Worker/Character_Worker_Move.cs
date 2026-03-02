@@ -84,14 +84,21 @@ public class Character_Woker_Move : Character_Worker
     }
 
     Tween m_tweenDash;
-    public void Dash()
-        => DashAsync().Forget();
-    public async UniTask DashAsync()
+    public void Dash(Vector3 _targetPos)
+        => DashAsync(_targetPos).Forget();
+    public async UniTask DashAsync(Vector3 _targetPos)
     {
+        //test
+        if (m_tweenDash == null)
+            return;
+
         m_tweenDash?.Kill();
 
-        Vector3 lookAt = m_owner.rig.linearVelocity.normalized;
-        var target = m_owner.transform.position + lookAt * 5;
+        Vector3 lookAt = _targetPos == Vector3.zero ? m_owner.rig.linearVelocity : _targetPos;
+        Vector3 target = lookAt.normalized * 5;
+
+        if (_targetPos != Vector3.zero)
+            target += m_owner.transform.position;
 
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
         EffectWorker.instance.Dash(m_owner, isFlip);
