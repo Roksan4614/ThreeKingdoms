@@ -30,7 +30,7 @@ public class Character_Woker_Move : Character_Worker
         if (_velocity == Vector2.zero)
             return;
 
-        if (m_isDash == false)
+        if (m_tweenDash == null)
         {
             if (m_owner.anim.IsType(CharacterAnimType.Walk) == false)
                 m_owner.anim.Play(CharacterAnimType.Walk);
@@ -83,15 +83,12 @@ public class Character_Woker_Move : Character_Worker
         m_coMoveTarget = null;
     }
 
-    bool m_isDash = false;
+    Tween m_tweenDash;
     public void Dash()
         => DashAsync().Forget();
     public async UniTask DashAsync()
     {
-        if (m_isDash == true)
-            return;
-
-        m_isDash = true;
+        m_tweenDash?.Kill();
 
         Vector3 lookAt = m_owner.rig.linearVelocity.normalized;
         var target = m_owner.transform.position + lookAt * 5;
@@ -99,7 +96,9 @@ public class Character_Woker_Move : Character_Worker
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
         EffectWorker.instance.Dash(m_owner, isFlip);
         m_owner.anim.Play(CharacterAnimType.Dash);
-        await DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f).OnUpdate(
+
+        m_tweenDash = DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f);
+        await m_tweenDash.OnUpdate(
             () =>
             {
                 if (DateTime.Now > dt)
@@ -109,6 +108,6 @@ public class Character_Woker_Move : Character_Worker
                 }
             }).AsyncWaitForCompletion();
 
-        m_isDash = false;
+        m_tweenDash = null;
     }
 }
