@@ -32,7 +32,7 @@ public class Character_Woker_Move : Character_Worker
 
         if (m_isDash == false)
         {
-            if (m_owner.anim.animType != CharacterAnimType.Walk)
+            if (m_owner.anim.CheckType(CharacterAnimType.Walk) == false)
                 m_owner.anim.Play(CharacterAnimType.Walk);
 
             m_owner.rig.linearVelocity = _velocity;
@@ -71,7 +71,7 @@ public class Character_Woker_Move : Character_Worker
             if (_isAttack && m_owner.target.Contains(_target))
             {
                 m_owner.target.SetTarget(_target);
-                yield return m_owner.attack.DoAttack(_target);
+                yield return m_owner.attack.DoAttack();
 
                 if (m_owner.target.Contains(_target) == false)
                     yield break;

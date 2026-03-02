@@ -52,14 +52,14 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     }
 #endif
 
-    public void Attack(bool _isCritical)
+    public void Attack(bool _isCritical, int _layerIndex = 0)
     {
         m_isCritial = _isCritical;
 
         if (m_isCritial)
             ShowSlashEffect();
 
-        m_owner.anim.Play(CharacterAnimType.Attack);
+        m_owner.anim.Play(CharacterAnimType.Attack, _layerIndex);
     }
 
     public virtual bool IsValidUseSkill() => m_owner.target.target != null;

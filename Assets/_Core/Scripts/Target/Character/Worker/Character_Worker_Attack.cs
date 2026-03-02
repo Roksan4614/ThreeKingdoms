@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -20,25 +22,43 @@ public class Character_Worker_Attack : Character_Worker
 
     Character_Weapon m_weapon;
 
-    public IEnumerator DoAttack(CharacterComponent _target)
+    float m_timeAttack;
+
+    public IEnumerator DoAttack()
     {
-        while (_target.isLive && m_owner.target.Contains(_target))
+        while (m_owner.target.isAttackTarget)
         {
             while (m_weapon.isUseSkill)
                 yield return null;
 
-            m_weapon.Attack(UnityEngine.Random.Range(0, 100) > 50f);
+            m_weapon.Attack(IsCritical());
 
-            yield return new WaitForSeconds(m_owner.data.attackSpeed);
+            m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
+            while (m_timeAttack > Time.realtimeSinceStartup)
+                yield return null;
         }
     }
 
     public void ControlAttack()
     {
-        m_owner.target.SetTargetNearest();
-        m_owner.anim.Play(CharacterAnimType.Attack, 1);
+        if (Time.realtimeSinceStartup < m_timeAttack)
+            return;
 
-        m_weapon.ShowSlashEffect(_isForceShake: m_owner.target.target != null);
+        m_owner.target.SetTargetNearest();
+
+        bool isCritical = IsCritical();
+        m_weapon.Attack(isCritical, 1);
+
+        if (isCritical == false)
+            m_weapon.ShowSlashEffect(_isForceShake: m_owner.target.target != null);
+
+        m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
+    }
+
+    bool IsCritical()
+    {
+        bool isCritical = UnityEngine.Random.Range(0, 100) > 50f;
+        return isCritical;
     }
 
     public void EventAttackHit()

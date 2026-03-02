@@ -12,6 +12,9 @@ public class Character_Worker_Target : Character_Worker
     List<CharacterComponent> m_targetList = new();
     //public IReadOnlyList<CharacterComponent> targetList => m_targetList;
 
+    public bool isLive => target != null && target.isLive;
+    public bool isAttackTarget => isLive && m_targetList.Contains(target);
+
     public void SetTarget(CharacterComponent _target)
         => target = _target;
     public void SetTargetNearest()
@@ -41,7 +44,7 @@ public class Character_Worker_Target : Character_Worker
 
     public bool Contains(CharacterComponent _target)
     {
-        for( int i = 0; i < m_targetList.Count; i++)
+        for (int i = 0; i < m_targetList.Count; i++)
         {
             if (m_targetList[i] == _target)
                 return true;

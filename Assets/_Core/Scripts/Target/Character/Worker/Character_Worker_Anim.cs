@@ -30,19 +30,27 @@ public class Character_Woker_Anim : Character_Worker
 
     }
 
+    public bool CheckType(CharacterAnimType _animType)
+    {
+        var clips = m_animator.GetCurrentAnimatorClipInfo(0);
+        if (clips.Length == 0)
+            return false;
+        return clips[0].clip.name.Contains(_animType.ToString());
+    }
+
     public void Play(CharacterAnimType _animType)
-     {
+    {
         animType = _animType;
         Play(_animType, 0);
     }
 
     public void Play(CharacterAnimType _animType, int _layerIndex)
     {
-        m_animator.Play(_animType.ToString(), _layerIndex, 0);
-        m_animator.Update(0);
+        //m_animator.Play(_animType.ToString(), _layerIndex, 0);
+        m_animator.CrossFade(_animType.ToString(), 0, _layerIndex, 0);
     }
 
-    public void AttackMotionStart()
+    public void AttackMotionFirstFrame()
     {
         m_animator.speed = 0;
         Play(CharacterAnimType.Attack);

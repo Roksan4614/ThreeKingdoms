@@ -15,7 +15,10 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
 
     CharacterComponent m_character;
 
-    public bool isActive => m_element.pad.gameObject.activeSelf || m_isKeyboardDoing;
+    bool m_isKeyboardDoing = false;
+    bool m_isKeyboadAttack = false;
+
+    public bool isActive => m_element.pad.gameObject.activeSelf || m_isKeyboardDoing || m_isKeyboadAttack;
 
     private void Start()
     {
@@ -25,7 +28,6 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
 
     }
 
-    bool m_isKeyboardDoing = false;
     private void Update()
     {
         if (m_character?.isLive == false)
@@ -55,6 +57,7 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
 
             m_character.OnConrollerMove(lookAt);
             m_isKeyboardDoing = true;
+
         }
         else if (m_isKeyboardDoing == true)
         {
@@ -63,10 +66,11 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
         }
 
         // 공격
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
         {
-            m_isKeyboardDoing = true;
+            m_isKeyboadAttack = true;
             m_character.attack.ControlAttack();
+            m_isKeyboadAttack = false;
         }
     }
 
