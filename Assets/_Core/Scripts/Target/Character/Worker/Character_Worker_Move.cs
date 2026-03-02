@@ -32,7 +32,7 @@ public class Character_Woker_Move : Character_Worker
 
         if (m_isDash == false)
         {
-            if (m_owner.anim.CheckType(CharacterAnimType.Walk) == false)
+            if (m_owner.anim.IsType(CharacterAnimType.Walk) == false)
                 m_owner.anim.Play(CharacterAnimType.Walk);
 
             m_owner.rig.linearVelocity = _velocity;
@@ -88,6 +88,9 @@ public class Character_Woker_Move : Character_Worker
         => DashAsync().Forget();
     public async UniTask DashAsync()
     {
+        if (m_isDash == true)
+            return;
+
         m_isDash = true;
 
         Vector3 lookAt = m_owner.rig.linearVelocity.normalized;

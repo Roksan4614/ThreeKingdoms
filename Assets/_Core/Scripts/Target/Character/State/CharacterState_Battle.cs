@@ -20,7 +20,7 @@ public class CharacterState_Battle : CharacterState
 
             target = GetNearestHero();
 
-            if (target == null && m_owner.anim.animType != CharacterAnimType.Idle)
+            if (target == null && m_owner.anim.IsType(CharacterAnimType.Idle) == false)
                 m_owner.anim.Play(CharacterAnimType.Idle);
 
             yield return null;

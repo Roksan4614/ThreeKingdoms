@@ -38,15 +38,15 @@ public class ControllerManager : Singleton<ControllerManager>, IPointerDownHandl
             lookAt = m_element.padBar.position - m_element.pad.position;
         else
         {
-            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Keypad4))
-                lookAt = Vector2.left;
-            else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.Keypad6))
-                lookAt = Vector2.right;
+            if (Input.GetKey(KeyCode.LeftArrow))
+                lookAt.x = -1;
+            else if (Input.GetKey(KeyCode.RightArrow))
+                lookAt.x = 1;
 
-            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Keypad8))
-                lookAt += Vector2.up;
-            else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Keypad5))
-                lookAt += Vector2.down;
+            if (Input.GetKey(KeyCode.UpArrow))
+                lookAt.y = 1;
+            else if (Input.GetKey(KeyCode.DownArrow))
+                lookAt.y = -1;
         }
 
         if (lookAt != Vector2.zero)

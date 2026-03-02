@@ -7,8 +7,6 @@ public class Character_Woker_Anim : Character_Worker
 {
     Animator m_animator;
 
-    public CharacterAnimType animType { get; private set; }
-
     public Character_Woker_Anim(CharacterComponent _owner) : base(_owner)
     {
         m_animator = m_owner.element.animator;
@@ -30,17 +28,12 @@ public class Character_Woker_Anim : Character_Worker
 
     }
 
-    public bool CheckType(CharacterAnimType _animType)
-    {
-        var clips = m_animator.GetCurrentAnimatorClipInfo(0);
-        if (clips.Length == 0)
-            return false;
-        return clips[0].clip.name.Contains(_animType.ToString());
-    }
+    public bool IsType(CharacterAnimType _animType, int _layerIndex = 0)
+        => m_animator.GetCurrentAnimatorStateInfo(_layerIndex).IsName(_animType.ToString());
+
 
     public void Play(CharacterAnimType _animType)
     {
-        animType = _animType;
         Play(_animType, 0);
     }
 
