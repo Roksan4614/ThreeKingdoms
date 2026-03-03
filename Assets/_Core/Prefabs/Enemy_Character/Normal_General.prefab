@@ -98,9 +98,11 @@ MonoBehaviour:
     health: 0
     moveSpeed: 0
     attackSpeed: 0
-    skillCooltime: 0
-    cooldown: 0
-    percent_startCooltime: 0
+    skillCooldown: 0
+    skillCooldownRate: 0
+    dashCooldown: 0
+    dashCooldownRate: 0
+    percent_startCooldownRate: 0
     LEA: 0
     POW: 0
     INT: 0
@@ -127,8 +129,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 5404998624126433756}
     m_Modifications:
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_Size.x
+      value: 1.995477
+      objectReference: {fileID: 0}
+    - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_Size.y
+      value: 1.7301679
+      objectReference: {fileID: 0}
+    - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Offset.x
-      value: -1
+      value: -1.202675
+      objectReference: {fileID: 0}
+    - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.772532
       objectReference: {fileID: 0}
     - target: {fileID: 1527386525559561668, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Sprite

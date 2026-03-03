@@ -49,7 +49,7 @@ public class Team_HeroInfo
     public void UpdateHP(CharacterComponent _hero)
     {
         if (_hero.teamPosition > TeamPositionType.NONE)
-            m_lstHeroInfo.Find(x => x.key == _hero.data.key).UpdateHP();
+            m_lstHeroInfo.Find(x => x.key == _hero.data.key)?.UpdateHP();
     }
 
     public void StopRespawn(CharacterComponent _hero)
@@ -62,5 +62,12 @@ public class Team_HeroInfo
     {
         for (int i = 0; i < m_lstHeroInfo.Count; i++)
             m_lstHeroInfo[i].StopRespawn();
+    }
+
+    public void UseSkill(int _heroIdx)
+    {
+        var info = m_lstHeroInfo[_heroIdx];
+        if (info.isActive == true)
+            info.OnButton_UseSkill();
     }
 }

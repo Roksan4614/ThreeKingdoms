@@ -25,9 +25,15 @@ public class InfoStage_Boss : MonoBehaviour, IValidatable
 
     void SlotUpdateBossHP(float _percent)
     {
-        m_element.txtPercent.text = _percent == 0 ? "" : $"{_percent * 100:0.#0}%";
+        var width = m_element.rtBar.rect.width;
+        //m_element.txtPercent.text = _percent == 0 ? "" : $"{_percent * 100:0.#0}%";
         m_element.rtBar.DOKill();
-        m_element.rtBar.DOAnchorPosX(m_element.rtBar.rect.width * - (1 - _percent), 0.2f);
+        m_element.rtBar.DOAnchorPosX(width * -(1 - _percent), 0.2f)
+            .OnUpdate(() =>
+            {
+                var p = 1 + (m_element.rtBar.anchoredPosition.x / width);
+                m_element.txtPercent.text = $"{p * 100:0.#0}%";
+            });
     }
 
 #if UNITY_EDITOR

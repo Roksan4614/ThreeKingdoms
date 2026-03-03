@@ -26,7 +26,7 @@ public class Table_Hero : BaseTable<string, TableHeroData>
 
         var data = m_dictionary[_key];
 
-        if(_grade > GradeType.Normal || _encahntLevel > 0)
+        if (_grade > GradeType.Normal || _encahntLevel > 0)
         {
             float percent = (float)(_grade);
             percent += (_encahntLevel) * 0.3f;
@@ -57,10 +57,13 @@ public struct TableHeroData
     public float moveSpeed;
     public float attackSpeed;
 
-    public float skillCooltime;
-    public float cooldown;
+    public float skillCooldown;
+    public float skillCooldownRate;
 
-    public float percent_startCooltime; //챕터 시작하면 쿨타임 몇퍼부터 시작할지 여부
+    public float dashCooldown;
+    public float dashCooldownRate;
+
+    public float percent_startCooldownRate; //챕터 시작하면 쿨타임 몇퍼부터 시작할지 여부
 
     public int LEA;
     public int POW;
@@ -83,9 +86,15 @@ public struct TableHeroData
     {
         moveSpeed = moveSpeed == 0 ? 10 : moveSpeed;
         attackSpeed = attackSpeed == 0 ? 1 : attackSpeed;
-        percent_startCooltime = percent_startCooltime == 0 ? .8f : percent_startCooltime;
-        skillCooltime = skillCooltime == 0 ? 15 : skillCooltime;
-        criticalDamage = criticalDamage == 0 ? 1.5f : criticalDamage;
+        percent_startCooldownRate = percent_startCooldownRate == 0 ? .8f : percent_startCooldownRate;
+
+        skillCooldown = skillCooldown == 0 ? 15 : skillCooldown;
+        skillCooldownRate = 1;
+
+        dashCooldown = dashCooldown == 0 ? 5 : dashCooldown;
+        dashCooldownRate = 1;
+
+        criticalDamage = criticalDamage == 0 ? 1.2f : criticalDamage;
 
         health = healthMax;
     }

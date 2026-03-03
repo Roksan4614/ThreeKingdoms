@@ -99,7 +99,12 @@ public class CameraManager : MonoSingleton<CameraManager>
 
     public Vector3 GetMousePosition()
     {
-        var pos = m_camera.ScreenToWorldPoint(Input.mousePosition);
+        if (m_camera == null)
+            return Vector3.zero;
+
+        var mousePos = Input.mousePosition;
+        mousePos.z = -m_camera.transform.position.z;
+        var pos = m_camera.ScreenToWorldPoint(mousePos);
         pos.z = 0;
 
         return pos;

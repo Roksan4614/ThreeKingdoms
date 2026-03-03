@@ -59,9 +59,11 @@ MonoBehaviour:
     health: 0
     moveSpeed: 0
     attackSpeed: 0
-    skillCooltime: 0
-    cooldown: 0
-    percent_startCooltime: 0
+    skillCooldown: 0
+    skillCooldownRate: 0
+    dashCooldown: 0
+    dashCooldownRate: 0
+    percent_startCooldownRate: 0
     LEA: 0
     POW: 0
     INT: 0
@@ -128,7 +130,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Size.x
-      value: 5
+      value: 4.4756656
       objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Size.y
@@ -136,7 +138,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Offset.x
-      value: -2
+      value: -2.2621672
       objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Offset.y

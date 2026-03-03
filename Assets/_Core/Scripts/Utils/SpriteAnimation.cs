@@ -186,7 +186,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
     {
         public Image image;
         public SpriteRenderer renderer;
-        public bool isAddEmptySprite;
+        //public bool isAddEmptySprite;
         public Sprite[] sprite;
 
         public void Initialize(Transform _transform)
@@ -206,7 +206,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
                     .OfType<Sprite>()
                     .OrderBy(_x => int.Parse(_x.name.Split("_").Last())).ToList();
 
-                if (isAddEmptySprite)
+                //if (isAddEmptySprite)
                     sprites.Add(AssetLoader.Load<Sprite>("Icon/empty"));
 
                 sprite = sprites.ToArray();

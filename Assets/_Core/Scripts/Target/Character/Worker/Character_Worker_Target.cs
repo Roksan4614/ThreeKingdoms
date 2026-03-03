@@ -21,7 +21,7 @@ public class Character_Worker_Target : Character_Worker
         => SetTarget(nearestEnemy);
     public void AddTarget(CharacterComponent _target)
     {
-        if (IsEnemy(_target) == false || m_targetList.Contains(_target) == true)
+        if (m_owner.isLive == false || IsEnemy(_target) == false || m_targetList.Contains(_target) == true)
             return;
 
         m_targetList.Add(_target);
@@ -29,7 +29,7 @@ public class Character_Worker_Target : Character_Worker
 
     public void RemoveTarget(CharacterComponent _target)
     {
-        if (IsEnemy(_target) == false)
+        if (m_owner.isLive == false || IsEnemy(_target) == false)
             return;
 
         m_targetList.Remove(_target);

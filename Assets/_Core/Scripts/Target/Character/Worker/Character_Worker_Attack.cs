@@ -26,33 +26,34 @@ public class Character_Worker_Attack : Character_Worker
 
     public IEnumerator DoAttack()
     {
-        while (m_owner.target.isAttackTarget)
+        while (true)
         {
-            while (m_weapon.isUseSkill)
-                yield return null;
-
-            m_weapon.Attack(IsCritical());
-
-            m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
-            while (m_timeAttack > Time.realtimeSinceStartup)
-                yield return null;
+            if (m_owner.target.isAttackTarget)
+            {
+                if (m_timeAttack < Time.realtimeSinceStartup && m_weapon.isUseSkill == false)
+                {
+                    m_weapon.Attack(IsCritical());
+                    m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
+                }
+            }
+            else if (m_timeAttack < Time.realtimeSinceStartup)
+                break;
+            yield return null;
         }
     }
 
     public void ControlAttack()
     {
-        if (Time.realtimeSinceStartup < m_timeAttack)
-            return;
-
         m_owner.target.SetTargetNearest();
 
-        bool isCritical = IsCritical();
+        bool isCritical = m_owner.target.target != null && IsCritical();
         m_weapon.Attack(isCritical, 1);
 
         if (isCritical == false)
             m_weapon.ShowSlashEffect(_isForceShake: m_owner.target.target != null);
 
-        m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
+        if (m_owner.target.isAttackTarget)
+            m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
     }
 
     bool IsCritical()

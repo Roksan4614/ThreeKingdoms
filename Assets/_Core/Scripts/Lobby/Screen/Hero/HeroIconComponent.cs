@@ -133,7 +133,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     private CancellationTokenSource m_cts;
     public async void OnPointerDown(PointerEventData eventData)
     {
-        if (ControllerManager.instance.isRightClick_Push == true)
+        if (ControllerManager.instance.isRightClick == true)
         {
             m_onClick(this, true);
             return;

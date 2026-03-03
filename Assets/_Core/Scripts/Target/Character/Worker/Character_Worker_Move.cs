@@ -11,7 +11,7 @@ public class Character_Woker_Move : Character_Worker
     {
     }
     public bool isMoving => m_owner.rig.linearVelocity == Vector2.zero;
-    public bool isFlip => m_owner.panel.localScale.x < 0;
+    public bool isFlip => m_owner.panel.localScale.x < 0; // 오른쪽을 보는게 플립임. 기본이 왼쪽보니까
 
     public void MoveStop()
     {
@@ -42,9 +42,10 @@ public class Character_Woker_Move : Character_Worker
             SetFlip(_velocity.x > 0);
     }
 
-    public void SetFlip(bool _isFlip)
+    // 기본이 왼쪽을 보는거라, 오른쪽을 보게 하려면 Flip 해줘야 한다.
+    public void SetFlip(bool _isRight)
     {
-        if (_isFlip == m_owner.panel.localScale.x > 0)
+        if (_isRight == m_owner.panel.localScale.x > 0 && m_tweenDash == null)
         {
             var scale = m_owner.panel.localScale;
             scale.x *= -1;
@@ -70,11 +71,12 @@ public class Character_Woker_Move : Character_Worker
 
             if (_isAttack && m_owner.target.Contains(_target))
             {
+                m_owner.anim.Play(CharacterAnimType.Idle);
+
                 m_owner.target.SetTarget(_target);
                 yield return m_owner.attack.DoAttack();
-
                 if (m_owner.target.Contains(_target) == false)
-                    yield break;
+                    break;
             }
 
             yield return null;
@@ -89,19 +91,38 @@ public class Character_Woker_Move : Character_Worker
     public async UniTask DashAsync(Vector3 _targetPos)
     {
         //test
-        if (m_tweenDash == null)
+        if (m_tweenDash != null)
             return;
 
         m_tweenDash?.Kill();
+        m_tweenDash = null;
 
-        Vector3 lookAt = _targetPos == Vector3.zero ? m_owner.rig.linearVelocity : _targetPos;
-        Vector3 target = lookAt.normalized * 5;
+        Vector3 lookAt = Vector3.zero, target = Vector3.zero;
 
-        if (_targetPos != Vector3.zero)
-            target += m_owner.transform.position;
+        if (_targetPos == Vector3.zero)
+        {
+            _targetPos = m_owner.rig.linearVelocity;
+
+            lookAt = m_owner.rig.linearVelocity;
+            if (lookAt == Vector3.zero)
+                lookAt = m_owner.move.isFlip ? Vector3.right : Vector3.left;
+
+            //target = m_owner.transform.position + lookAt.normalized * 5;
+        }
+        else
+        {
+            lookAt = (_targetPos - m_owner.transform.position);
+            //var sqr = (_targetPos - m_owner.transform.position).sqrMagnitude;
+            //if (sqr > 25)
+            //    target = m_owner.transform.position + lookAt.normalized * 5;
+            //else
+            //    target = _targetPos;
+        }
+        target = m_owner.transform.position + lookAt.normalized * 5;
 
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
         EffectWorker.instance.Dash(m_owner, isFlip);
+        m_owner.move.SetFlip(lookAt.x > 0);
         m_owner.anim.Play(CharacterAnimType.Dash);
 
         m_tweenDash = DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f);
@@ -114,6 +135,8 @@ public class Character_Woker_Move : Character_Worker
                     dt = DateTime.Now.AddSeconds(10);
                 }
             }).AsyncWaitForCompletion();
+
+        m_owner.anim.Play(CharacterAnimType.Idle);
 
         m_tweenDash = null;
     }

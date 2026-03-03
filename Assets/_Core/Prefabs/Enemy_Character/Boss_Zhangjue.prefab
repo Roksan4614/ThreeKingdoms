@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6182821017471498839}
   - component: {fileID: 1373827979032907503}
   - component: {fileID: -638875615084983825}
-  - component: {fileID: -5217452178581335629}
+  - component: {fileID: 1080572775049398487}
   m_Layer: 0
   m_Name: Boss_Zhangjue
   m_TagString: Untagged
@@ -74,7 +74,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &-5217452178581335629
+--- !u!114 &1080572775049398487
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -83,7 +83,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5321107220624196040}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16058815235ddab44975536181d42901, type: 3}
+  m_Script: {fileID: 11500000, guid: 65bf6a8a371bc1745bc6f4ea9f86f27c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_sortingGroup: {fileID: 1373827979032907503}
@@ -98,9 +98,11 @@ MonoBehaviour:
     health: 0
     moveSpeed: 0
     attackSpeed: 0
-    skillCooltime: 0
-    cooldown: 0
-    percent_startCooltime: 0
+    skillCooldown: 0
+    skillCooldownRate: 0
+    dashCooldown: 0
+    dashCooldownRate: 0
+    percent_startCooldownRate: 0
     LEA: 0
     POW: 0
     INT: 0
@@ -128,19 +130,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Size.x
-      value: 3
+      value: 3.6403143
       objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Size.y
-      value: 3
+      value: 2.6943955
       objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Offset.x
-      value: -1.5
+      value: -1.8201572
       objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Offset.y
-      value: 1.5
+      value: 1.1725667
       objectReference: {fileID: 0}
     - target: {fileID: 1527386525559561668, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Sprite
@@ -281,7 +283,7 @@ PrefabInstance:
     - target: {fileID: 8860257806905419174, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_owner
       value: 
-      objectReference: {fileID: -5217452178581335629}
+      objectReference: {fileID: 1080572775049398487}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 2692883751194285822, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

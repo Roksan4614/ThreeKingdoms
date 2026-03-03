@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 3457136202996952296}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.45744747, w: 0.8892366}
-  m_LocalPosition: {x: -0.5057211, y: 1.8503081, z: 0}
+  m_LocalPosition: {x: -0.33916914, y: 1.7669737, z: 0}
   m_LocalScale: {x: -4, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -146,9 +146,11 @@ MonoBehaviour:
     health: 0
     moveSpeed: 0
     attackSpeed: 0
-    skillCooltime: 0
-    cooldown: 0
-    percent_startCooltime: 0
+    skillCooldown: 0
+    skillCooldownRate: 0
+    dashCooldown: 0
+    dashCooldownRate: 0
+    percent_startCooldownRate: 0
     LEA: 0
     POW: 0
     INT: 0
@@ -231,7 +233,7 @@ Transform:
   m_GameObject: {fileID: 5605850101790413683}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.33484775, w: 0.94227225}
-  m_LocalPosition: {x: 0.08844805, y: 1.5093343, z: 0}
+  m_LocalPosition: {x: 0.255, y: 1.426, z: 0}
   m_LocalScale: {x: -3.4999995, y: 3.4999995, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -346,7 +348,6 @@ MonoBehaviour:
   m_element:
     image: {fileID: 0}
     renderer: {fileID: 9100544117116760473}
-    isAddEmptySprite: 0
     sprite:
     - {fileID: 3854239232107137326, guid: 56a78d7975901374e80f06188f423bcb, type: 3}
     - {fileID: 8561970336583484899, guid: 56a78d7975901374e80f06188f423bcb, type: 3}
@@ -354,6 +355,7 @@ MonoBehaviour:
     - {fileID: -2997179279008128965, guid: 56a78d7975901374e80f06188f423bcb, type: 3}
     - {fileID: 4266250308318725102, guid: 56a78d7975901374e80f06188f423bcb, type: 3}
     - {fileID: 3179265397888755372, guid: 56a78d7975901374e80f06188f423bcb, type: 3}
+    - {fileID: -8527568592950175283, guid: 57d480bba27b8934ba78148c0680e0ad, type: 3}
 --- !u!1001 &8329700655089616340
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -362,6 +364,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 972091409300749054}
     m_Modifications:
+    - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_Size.y
+      value: 2.0402555
+      objectReference: {fileID: 0}
+    - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.8470166
+      objectReference: {fileID: 0}
     - target: {fileID: 1886970838021006312, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

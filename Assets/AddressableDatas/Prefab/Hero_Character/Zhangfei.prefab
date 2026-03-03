@@ -59,9 +59,11 @@ MonoBehaviour:
     health: 0
     moveSpeed: 0
     attackSpeed: 0
-    skillCooltime: 0
-    cooldown: 0
-    percent_startCooltime: 0
+    skillCooldown: 0
+    skillCooldownRate: 0
+    dashCooldown: 0
+    dashCooldownRate: 0
+    percent_startCooldownRate: 0
     LEA: 0
     POW: 0
     INT: 0
@@ -143,13 +145,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6178699835681108239}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.43813583, w: 0.8989088}
-  m_LocalPosition: {x: -1.0700002, y: 0.77, z: 0}
-  m_LocalScale: {x: -6, y: 6, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.37217793, w: 0.92816144}
+  m_LocalPosition: {x: -0.27, y: 1.54, z: 0}
+  m_LocalScale: {x: -5.2, y: 5.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7418161719816933445}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 51.97}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 43.7}
 --- !u!212 &6995464778444568067
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -215,19 +217,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Size.x
-      value: 2
+      value: 3.3051267
       objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Size.y
-      value: 2
+      value: 2.1646318
       objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Offset.x
-      value: -1
+      value: -1.6525633
       objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Offset.y
-      value: 1.4
+      value: 0.85671574
       objectReference: {fileID: 0}
     - target: {fileID: 1886970838021006312, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_LocalPosition.x

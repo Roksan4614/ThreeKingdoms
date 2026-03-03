@@ -15,7 +15,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     public CharacterStateType teamState { get; private set; } = CharacterStateType.Wait;
     public IReadOnlyDictionary<TeamPositionType, CharacterComponent> members => m_member;
 
-    public Team_HeroInfo m_heroInfo;
+    public Team_HeroInfo heroInfo { get; private set; }
     public Dictionary<TeamPositionType, Vector3> m_dbPosition = new();
 
     //public IReadOnlyList<CharacterComponent> myHero
@@ -35,8 +35,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     private void Start()
     {
-        m_heroInfo = new(m_element.heroInfo);
-        Signal.instance.UpdateHP.connect = m_heroInfo.UpdateHP;
+        heroInfo = new(m_element.heroInfo);
+        Signal.instance.UpdateHP.connect = heroInfo.UpdateHP;
     }
 
 #if UNITY_EDITOR
@@ -48,7 +48,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public async UniTask SpawnUpdateAsync()
     {
-        m_heroInfo.DisableAll();
+        heroInfo.DisableAll();
 
         List<HeroInfoData> myHero = DataManager.userInfo.myHero.Where(x => x.isBatch).ToList();
 
@@ -137,7 +137,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         Signal.instance.ConnectMainHero.Emit(mainHero);
         CameraManager.instance.SetCameraPosTarget();
-        m_heroInfo.SetTeamPosition();
+        heroInfo.SetTeamPosition();
     }
 
     public float teamMoveSpeed => mainHero.data.moveSpeed;
@@ -151,14 +151,14 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         teamState = CharacterStateType.Wait;
         foreach (var member in m_member.Values)
             member.Respawn();
-        m_heroInfo.StartStage();
+        heroInfo.StartStage();
     }
 
     public void StartStage()
     {
         mainHero.transform.position = m_element.startPos + m_dbPosition[mainHero.teamPosition];
         mainHero.move.SetFlip(true);
-        m_heroInfo.StartStage();
+        heroInfo.StartStage();
 
         RepositionToMain(0, true);
 
@@ -176,10 +176,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         foreach (var member in m_member.Values)
         {
             if (member.isLive == false)
-                m_heroInfo.StopRespawn(member);
+                heroInfo.StopRespawn(member);
 
             member.Respawn();
-            m_heroInfo.UpdateHP(member);
+            heroInfo.UpdateHP(member);
         }
     }
 
@@ -305,7 +305,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
                 return false;
         }
 
-        m_heroInfo.StopRespawn();
+        heroInfo.StopRespawn();
 
         StageManager.instance.isStageFailed = true;
         return true;
