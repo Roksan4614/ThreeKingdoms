@@ -19,9 +19,14 @@ public enum PopupType
     MAX
 }
 
-public class PopupManager : MonoSingleton<PopupManager>
+public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 {
     private Dictionary<PopupType, AsyncOperationHandle<GameObject>> m_dicPopup = new();
+
+    protected override void OnAwake()
+    {
+        transform.SetSiblingIndex(0);
+    }
 
     protected override void OnDestroy()
     {
@@ -92,16 +97,47 @@ public class PopupManager : MonoSingleton<PopupManager>
 
     public void ShowDimm(bool _isShow, bool _isFade = true)
     {
-        var cg = transform.Find("MAX_Dimm").GetComponent<CanvasGroup>();
+        ShowDimmAsync(_isShow, _isFade).Forget();
+    }
 
+    public async UniTask ShowDimmAsync(bool _isShow, bool _isFade = true)
+    {
         if (_isFade)
         {
             if (_isShow)
-                cg.gameObject.SetActive(true);
+                m_element.cgMaxDimm.gameObject.SetActive(true);
 
-            cg.DOFade(_isShow ? 1f : 0f, 0.2f).OnComplete(() => cg.gameObject.SetActive(_isShow));
+            await m_element.cgMaxDimm.DOFade(_isShow ? 1f : 0f, 0.5f).AsyncWaitForCompletion();
         }
-        else
-            cg.gameObject.SetActive(_isShow);
+
+        m_element.cgMaxDimm.gameObject.SetActive(_isShow);
+    }
+
+    public void SetCanvasCamera() => m_element.canvas.worldCamera = CameraManager.instance.main;
+
+    public void OnManualValidate()
+    {
+        m_element.Initialize(transform);
+    }
+
+    [SerializeField]
+    ElementData m_element;
+
+    [Serializable]
+    struct ElementData
+    {
+        [SerializeField]
+        Canvas m_canvas;
+        public Canvas canvas => m_canvas;
+
+        [SerializeField]
+        CanvasGroup m_cgMaxDimm;
+        public CanvasGroup cgMaxDimm => m_cgMaxDimm;
+
+        public void Initialize(Transform _transform)
+        {
+            m_canvas = _transform.GetComponent<Canvas>();
+            m_cgMaxDimm = _transform.GetComponent<CanvasGroup>("MAX_Dimm");
+        }
     }
 }

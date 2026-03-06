@@ -4,27 +4,25 @@ using UnityEngine;
 
 public class CameraManager : MonoSingleton<CameraManager>
 {
-
+    [SerializeField]
     Camera m_camera;
-
-    [SerializeField] float m_smoothFactor = 5f;
-    //[SerializeField] float m_distMax = 1f;
-    //[SerializeField] float m_posCameraY = 3f;
+    public Camera main => m_camera;
+    const float c_smoothFactor = 5f;
 
     [SerializeField] Transform m_playerCameraPos;
 
     private void Start()
     {
+        DontDestroyOnLoad(this);
+
         Signal.instance.ConnectMainHero.connectLambda =
             new(this, _ => m_playerCameraPos = _.element.cameraPos);
     }
 
     private void LateUpdate()
     {
-#if UNITY_EDITOR
-        if (MapManager.instance == null || m_playerCameraPos == null)
+        if (m_camera == null || MapManager.instance == null || m_playerCameraPos == null)
             return;
-#endif
 
         if (m_isShake == false)
             CameraMove();
@@ -35,18 +33,6 @@ public class CameraManager : MonoSingleton<CameraManager>
 
     public void CameraMove(bool _isForce = false)
     {
-        if (m_camera == null)
-            m_camera = Camera.main;
-
-
-        // 땅에 있고, 아래를 눌르면 카메라를 아래로 내려서 보여주자
-        {
-            //if (Input.GetKey(KeyCode.DownArrow) && m_player.isGround)
-            //    targetPos.y -= 5f;
-            //else
-            //targetPos.y += m_posCameraY;
-        }
-
         // 카메라 바운스 체크
         var targetPos = MapManager.instance.GetBounceHorizontalPos(m_playerCameraPos.position);
 
@@ -59,15 +45,8 @@ public class CameraManager : MonoSingleton<CameraManager>
         Vector3 posCamera = _isForce ? targetPos : Vector3.Lerp(
             cameraPos,
             targetPos,
-            m_smoothFactor * Time.deltaTime
+            c_smoothFactor * Time.deltaTime
         );
-
-        //if (m_isColliderVerti == false)
-        //{
-        //    var dy = cameraPos.y - targetPos.y;
-        //    if (Math.Abs(dy) > m_distMax)
-        //        posCamera.y = targetPos.y + Math.Clamp(dy, -m_distMax, m_distMax);
-        //}
 
         m_camera.transform.position = posCamera;
     }

@@ -15,13 +15,13 @@ MonoBehaviour:
   m_DefaultGroup: 0ffd3e1994ab9f94dad3e4e0de04c840
   m_currentHash:
     serializedVersion: 2
-    Hash: f07282757fdcc7b89b9c97d606e610b4
+    Hash: e3a8571c294a93b73b19eaf0a107ea07
   m_OptimizeCatalogSize: 0
-  m_BuildRemoteCatalog: 0
+  m_BuildRemoteCatalog: 1
   m_CatalogRequestsTimeout: 0
   m_DisableCatalogUpdateOnStart: 0
   m_InternalIdNamingMode: 0
-  m_InternalBundleIdMode: 1
+  m_InternalBundleIdMode: 0
   m_AssetLoadMode: 0
   m_BundledAssetProviderType:
     m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
@@ -30,12 +30,12 @@ MonoBehaviour:
     m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.AssetBundleProvider
   m_IgnoreUnsupportedFilesInBuild: 0
-  m_UniqueBundleIds: 0
+  m_UniqueBundleIds: 1
   m_EnableJsonCatalog: 0
   m_NonRecursiveBuilding: 1
   m_AllowNestedBundleFolders: 0
   m_CCDEnabled: 0
-  m_maxConcurrentWebRequests: 3
+  m_maxConcurrentWebRequests: 500
   m_UseUWRForLocalBundles: 0
   m_BundleTimeout: 0
   m_BundleRetryCount: 0
@@ -51,16 +51,17 @@ MonoBehaviour:
   m_CheckForContentUpdateRestrictionsOption: 0
   m_MonoScriptBundleCustomNaming: 
   m_RemoteCatalogBuildPath:
-    m_Id: 
+    m_Id: 70cbff467c1f74f4189a22534bbbec72
   m_RemoteCatalogLoadPath:
-    m_Id: 
-  m_ContentStateBuildPathProfileVariableName: 
+    m_Id: 15ed446d12175714bb03262aa3071d2f
+  m_ContentStateBuildPathProfileVariableName: <default settings path>
   m_CustomContentStateBuildPath: 
   m_ContentStateBuildPath: 
-  m_BuildAddressablesWithPlayerBuild: 0
-  m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
+  m_BuildAddressablesWithPlayerBuild: 2
+  m_overridePlayerVersion: KINGZ
   m_GroupAssets:
   - {fileID: 11400000, guid: 79cdd11d67fc9454fba74f1c106b08dc, type: 2}
+  - {fileID: 11400000, guid: 489bc5588a6d26141813ec6abc0da2e7, type: 2}
   - {fileID: 11400000, guid: 5a5055ff9dbcabf4e91ea0a304acf1c2, type: 2}
   - {fileID: 11400000, guid: f099b56d401042244b5388c5e91ea8f2, type: 2}
   m_BuildSettings:
@@ -73,13 +74,27 @@ MonoBehaviour:
       m_ProfileName: Default
       m_Values:
       - m_Id: 15ed446d12175714bb03262aa3071d2f
-        m_Value: <undefined>
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: 26aa7324b5e174f408af2d8e49042a66
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 31fad3186f63fc148a7c0702cfaee2e2
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: 70cbff467c1f74f4189a22534bbbec72
-        m_Value: 'ServerData/[BuildTarget]'
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: 7fd04d8dc94b4c4469df2342a2ddc65b
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+    - m_InheritedParent: 
+      m_Id: 71b596b816358984d94245021fbd609e
+      m_ProfileName: ROKSAN_Bundle
+      m_Values:
+      - m_Id: 15ed446d12175714bb03262aa3071d2f
+        m_Value: ROKSAN_Bundle
+      - m_Id: 26aa7324b5e174f408af2d8e49042a66
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: 31fad3186f63fc148a7c0702cfaee2e2
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: 70cbff467c1f74f4189a22534bbbec72
+        m_Value: Bundle/Dev/[BuildTarget]/
       - m_Id: 7fd04d8dc94b4c4469df2342a2ddc65b
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
     m_ProfileEntryNames:
@@ -118,4 +133,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c60bf32e0728f2d43b51950116efc424, type: 2}
   - {fileID: 11400000, guid: 9814f651572066840a616db9aff51582, type: 2}
   - {fileID: 11400000, guid: 9d843042fff31a34fb17111f92c5d36a, type: 2}
-  m_ActiveProfileId: 7b0685598f429844297db1ef610864ae
+  m_ActiveProfileId: 71b596b816358984d94245021fbd609e

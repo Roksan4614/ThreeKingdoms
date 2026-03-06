@@ -9,7 +9,7 @@ public class DataManager
     public static Data_UserInfo userInfo { get; private set; } = new();
     public static Data_Option option { get; private set; } = new();
 
-    public static async UniTask Initialize()
+    public static async UniTask InitializeAsync()
     {
         await userInfo.Initialize();
         option.Initialize();

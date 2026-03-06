@@ -14,7 +14,7 @@ public class TableManager
     public static Table_Hero enemy { get; private set; }
     public static Table_StringHero stringHero { get; private set; }
 
-    public async UniTask Initialize()
+    public async UniTask InitializeAsync()
     {
         await AddressableManager.instance.LoadAssetAsync<TextAsset>(_result =>
         {

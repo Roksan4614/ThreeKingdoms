@@ -6,7 +6,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.U2D;
@@ -23,16 +22,11 @@ public enum AddressableLabelType
 
 public partial class AddressableManager : MonoSingleton<AddressableManager>
 {
-    public string bundleUrl { get; set; }
+    public string bundleUrl { get; set; } = "https://dev-static.kingz.games/Bundle/WebGL/" + Application.version.Split('.')[2];
 
     Dictionary<string, AsyncOperationHandle<SpriteAtlas>> m_loadedAtlas = new();
 
-    protected override void OnAwake()
-    {
-        Initialize();
-    }
-
-    public async void Initialize()
+    public async UniTask InitializeAsync()
     {
         Addressables.InternalIdTransformFunc = CustomTransform;
 
@@ -272,65 +266,8 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         _onComplete?.Invoke(resultData);
     }
 
-    /*
-    public IEnumerator DoLoadAsset<T>(
-        UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
-        UnityAction<float> _onPercent,
-        params AddressableLabelType[] _labels)
-    {
-        yield return DoLoadAsset<T>(_onComplete, _onPercent, _labels.Select(_x => _x.ToString()).ToArray());
-    }
-
-    public IEnumerator DoLoadAsset<T>(
-        UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
-        UnityAction<float> _onPercent,
-        params string[] _keys)
-    {
-        Dictionary<string, AsyncOperationHandle<T>> resultData = _onComplete == null ? null : new();
-        DownloadData downloadData = new();
-
-        yield return DoLoad_DownloadSize(_size => downloadData.totalFileSize = _size, _keys);
-
-        var handle = Addressables.LoadResourceLocationsAsync(_keys.Select(x => x.ToString()).ToList(), Addressables.MergeMode.Intersection);
-        yield return handle;
-
-        if (handle.Result != null)
-        {
-            foreach (var result in handle.Result)
-            {
-                downloadData.fileSize = Addressables.GetDownloadSizeAsync(result).Result;
-
-                var h = Addressables.LoadAssetAsync<T>(result.PrimaryKey);
-
-                while (h.IsDone == false)
-                {
-                    if (downloadData.totalFileSize > 0)
-                    {
-                        downloadData.downloadSize = (long)(downloadData.fileSize * h.PercentComplete);
-                        _onPercent?.Invoke((downloadData.totalDownloadSize + downloadData.downloadSize) / downloadData.totalFileSize);
-                    }
-                    yield return null;
-                }
-
-                downloadData.totalDownloadSize += downloadData.fileSize;
-
-                if (h.Status == AsyncOperationStatus.Succeeded)
-                {
-                    if (resultData?.ContainsKey(result.PrimaryKey) == false)
-                        resultData.Add(result.PrimaryKey.Split("/").Last().Split(".").First(), h);
-                }
-                else
-                    h.Release();
-            }
-        }
-
-        if (downloadData.totalFileSize > 0)
-            _onPercent?.Invoke(1f);
-
-        handle.Release();
-        _onComplete?.Invoke(resultData);
-    }
-    */
+    public void LoadScene(string _sceneName)
+        => Addressables.LoadSceneAsync(_sceneName);
 
     public struct DownloadData
     {
