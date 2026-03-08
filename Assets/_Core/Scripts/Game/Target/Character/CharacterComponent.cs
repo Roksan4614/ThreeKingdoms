@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 
@@ -25,6 +26,7 @@ public class CharacterComponent : TargetComponent
     public Character_Woker_Move move { get; private set; }
     public Character_Worker_Attack attack { get; private set; }
     public Character_Worker_Target target { get; private set; }
+    public Character_Worker_Talkbox talkbox { get; private set; }
     public Transform panel => m_element.panel;
     public Rigidbody2D rig => m_element.rig;
     public TableHeroData data => m_data;
@@ -40,6 +42,7 @@ public class CharacterComponent : TargetComponent
         move = new(this);
         attack = new(this);
         target = new(this);
+        talkbox = new(this);
 
         m_dbState.Add(CharacterStateType.Wait, new CharacterState_Wait(this));
         m_dbState.Add(CharacterStateType.SearchEnemy, new CharacterState_SearchEnemy(this));
@@ -71,16 +74,10 @@ public class CharacterComponent : TargetComponent
 
     public virtual void SetHeroData(string _key)
     {
-        int count = 0;
-        IngameLog.Add("tt: SetHeroData: "+ _key + count++);
-
         m_info = DataManager.userInfo.GetHeroInfoData(_key);
-        IngameLog.Add("tt: SetHeroData: " + _key + count++);
         m_data = TableManager.hero.GetHeroData(_key, m_info.grade, m_info.enchantLevel);
-        IngameLog.Add("tt: SetHeroData: " + _key + count++);
 
         attack.ResetFX();
-        IngameLog.Add("tt: SetHeroData: " + _key + count++);
     }
 
     public void SetFaction(FactionType _factionType) => m_faction = _factionType;
@@ -174,29 +171,36 @@ public class CharacterComponent : TargetComponent
     [Serializable]
     public struct ElementData
     {
-        public Transform panel;
-        public Rigidbody2D rig;
-        public Animator animator;
+        [SerializeField] Transform m_panel;
+        [SerializeField] Rigidbody2D m_rig;
+        [SerializeField] Animator m_animator;
+        [SerializeField] Transform m_effect_canvas;
+        [SerializeField] Transform m_effect_renderer;
+        [SerializeField] Transform m_cameraPos;
+        [SerializeField] Collider2D m_collider;
+        [SerializeField] TextMeshProUGUI m_txtTalk;
+        [SerializeField] CharacterAnimationClipData m_animationClipData;
 
-        public Transform effect_canvas;
-        public Transform effect_renderer;
-
-        public Transform cameraPos;
-
-        public Collider2D collider;
-
-        public CharacterAnimationClipData animationClipData;
+        public Transform panel => m_panel;
+        public Rigidbody2D rig => m_rig;
+        public Animator animator => m_animator;
+        public Transform effect_canvas => m_effect_canvas;
+        public Transform effect_renderer => m_effect_renderer;
+        public Transform cameraPos => m_cameraPos;
+        public Collider2D collider => m_collider;
+        public CharacterAnimationClipData animationClipData => m_animationClipData;
+        public TextMeshProUGUI txtTalk => m_txtTalk;
 
         public void Initialize(Transform _transform)
         {
-            rig = _transform.GetComponent<Rigidbody2D>();
-            panel = _transform.Find("Character/Panel");
-            animator = _transform.GetComponent<Animator>("Character/Panel/Parts");
-            effect_canvas = _transform.Find("Character/Canvas/Effect");
-            effect_renderer = _transform.Find("Character/Effect_Renderer");
-            cameraPos = panel.Find("CameraPos");
-
-            collider = panel.parent.GetComponent<Collider2D>();
+            m_rig = _transform.GetComponent<Rigidbody2D>();
+            m_panel = _transform.Find("Character/Panel");
+            m_animator = _transform.GetComponent<Animator>("Character/Panel/Parts");
+            m_effect_canvas = _transform.Find("Character/Canvas/Effect");
+            m_effect_renderer = _transform.Find("Character/Effect_Renderer");
+            m_cameraPos = panel.Find("CameraPos");
+            m_txtTalk = _transform.GetComponent<TextMeshProUGUI>("Character/Canvas/Talkbox/txt_talk");
+            m_collider = panel.parent.GetComponent<Collider2D>();
         }
     }
 }

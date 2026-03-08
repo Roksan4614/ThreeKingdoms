@@ -72,14 +72,15 @@ MonoBehaviour:
   m_faction: 0
   m_stateType: 0
   m_element:
-    panel: {fileID: 3206158204002623712}
-    rig: {fileID: -249085400203903426}
-    animator: {fileID: 8790418162921262154}
-    effect_canvas: {fileID: 3637611197112465913}
-    effect_renderer: {fileID: 7349032273262547888}
-    cameraPos: {fileID: 3038464040220856083}
-    collider: {fileID: 5583431093376206269}
-    animationClipData:
+    m_panel: {fileID: 3206158204002623712}
+    m_rig: {fileID: -249085400203903426}
+    m_animator: {fileID: 8790418162921262154}
+    m_effect_canvas: {fileID: 3637611197112465913}
+    m_effect_renderer: {fileID: 7349032273262547888}
+    m_cameraPos: {fileID: 3038464040220856083}
+    m_collider: {fileID: 5583431093376206269}
+    m_txtTalk: {fileID: 8685237962022487647}
+    m_animationClipData:
       attack: {fileID: 7400000, guid: 5acf85614570ad041b066a5b50fe8fbb, type: 2}
 --- !u!210 &6443282102274461194
 SortingGroup:
@@ -495,6 +496,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa2ef32c27c003640a3a3469bdf3b181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8685237962022487647 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7329124504122760401, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 2107242687614655118}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!95 &8790418162921262154 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 7260850097131345604, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

@@ -163,14 +163,15 @@ MonoBehaviour:
   m_faction: 0
   m_stateType: 0
   m_element:
-    panel: {fileID: 4817140168328544186}
-    rig: {fileID: -6514951258677087083}
-    animator: {fileID: 1682853318749803280}
-    effect_canvas: {fileID: 6691223764302309027}
-    effect_renderer: {fileID: 818077856302697706}
-    cameraPos: {fileID: 4939796100230058057}
-    collider: {fileID: 2583712055831059175}
-    animationClipData:
+    m_panel: {fileID: 4817140168328544186}
+    m_rig: {fileID: -6514951258677087083}
+    m_animator: {fileID: 1682853318749803280}
+    m_effect_canvas: {fileID: 6691223764302309027}
+    m_effect_renderer: {fileID: 818077856302697706}
+    m_cameraPos: {fileID: 4939796100230058057}
+    m_collider: {fileID: 2583712055831059175}
+    m_txtTalk: {fileID: 1598581584509638917}
+    m_animationClipData:
       attack: {fileID: 7400000, guid: 373ca8d501c6a4b4990c36944ae5dd2d, type: 2}
 --- !u!210 &1552902286594738652
 SortingGroup:
@@ -373,6 +374,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 972091409300749054}
     m_Modifications:
+    - target: {fileID: 785473797494319700, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 785473797494319700, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 785473797494319700, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 785473797494319700, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1135703513444689858, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Size.y
       value: 2.0402555
@@ -423,6 +440,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1950067227416545972, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2052972265508614442, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2052972265508614442, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8109508588679080917, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
@@ -548,6 +573,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8701921934893222206, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 8329700655089616340}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1598581584509638917 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7329124504122760401, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 8329700655089616340}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!95 &1682853318749803280 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 7260850097131345604, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

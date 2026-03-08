@@ -61,17 +61,13 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
             var prefab = await AddressableManager.instance.GetHeroIcon(key)
                 .AttachExternalCancellation(destroyCancellationToken);
 
-            IngameLog.Add("tt: setheroInfo: 0");
-
             if (prefab != null)
             {
                 Instantiate(prefab, m_element.icon)
                     .AutoResizeParent()
                     .name = key;
             }
-            IngameLog.Add("tt: setheroInfo: 1: " + prefab != null);
         }
-        IngameLog.Add("tt: setheroInfo: 3: ");
 
         m_element.icon.gameObject.SetActive(true);
         m_element.Outline.gameObject.SetActive(true);
@@ -79,9 +75,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         m_element.rtBar_Cooltime.parent.gameObject.SetActive(true);
         m_element.rtBar_HP.parent.gameObject.SetActive(true);
 
-        IngameLog.Add("tt: setheroInfo: 4: ");
         UpdateHP();
-        IngameLog.Add("tt: setheroInfo: 5: ");
     }
 
     public void Disable()

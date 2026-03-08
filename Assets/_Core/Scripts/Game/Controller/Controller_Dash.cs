@@ -5,10 +5,10 @@ using UnityEngine;
 
 public partial class ControllerManager
 {
+    float m_dashRechargeDuration = .5f;
     int m_dashRemainCount = 0;
 
     CancellationTokenSource m_ctsDash;
-    float m_timeAddDsahCount;
 
     void DashButtonInitalize()
     {
@@ -44,13 +44,14 @@ public partial class ControllerManager
             m_ctsDash.Dispose();
         }
         m_ctsDash = new();
+        var token = m_ctsDash.Token;
 
         m_dashRemainCount = 0;
         UpdateDashCount();
 
         float startTime = 0, endTime = 0;
 
-        float cooldown = m_mainHero.data.dashCooldown * m_mainHero.data.dashCooldownRate;
+        float cooldown = 1f; //m_mainHero.data.dashCooldown * m_mainHero.data.dashCooldownRate;
         int mspaceValue = (int)(m_element.txtDashTimer.fontSize * 0.5f);
 
         while (true)
@@ -95,7 +96,7 @@ public partial class ControllerManager
                 m_element.txtDashTimer.gameObject.SetActive(false);
             }
 
-            await UniTask.WaitForEndOfFrame(cancellationToken: m_ctsDash.Token);
+            await UniTask.WaitForEndOfFrame(cancellationToken: token);
         }
     }
 

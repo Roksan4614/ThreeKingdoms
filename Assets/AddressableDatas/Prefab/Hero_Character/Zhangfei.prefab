@@ -72,14 +72,15 @@ MonoBehaviour:
   m_faction: 0
   m_stateType: 0
   m_element:
-    panel: {fileID: 4859569166556454672}
-    rig: {fileID: 3007626638836024784}
-    animator: {fileID: 1653930678672061370}
-    effect_canvas: {fileID: 6734363115494901257}
-    effect_renderer: {fileID: 789016574147963968}
-    cameraPos: {fileID: 4982368207049830627}
-    collider: {fileID: 2482173277590616653}
-    animationClipData:
+    m_panel: {fileID: 4859569166556454672}
+    m_rig: {fileID: 3007626638836024784}
+    m_animator: {fileID: 1653930678672061370}
+    m_effect_canvas: {fileID: 6734363115494901257}
+    m_effect_renderer: {fileID: 789016574147963968}
+    m_cameraPos: {fileID: 4982368207049830627}
+    m_collider: {fileID: 2482173277590616653}
+    m_txtTalk: {fileID: 1695058142500010415}
+    m_animationClipData:
       attack: {fileID: 7400000, guid: 22b3407d714a90c4faca359933ee07d9, type: 2}
 --- !u!210 &6486370696543548981
 SortingGroup:
@@ -461,6 +462,17 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 7260850097131345604, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 8228157341623756158}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1695058142500010415 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7329124504122760401, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 8228157341623756158}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!58 &2482173277590616653 stripped
 CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 5783249674202832691, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

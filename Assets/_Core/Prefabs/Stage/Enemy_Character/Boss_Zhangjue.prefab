@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6182821017471498839}
+  - component: {fileID: 1080572775049398487}
   - component: {fileID: 1373827979032907503}
   - component: {fileID: -638875615084983825}
-  - component: {fileID: 1080572775049398487}
   m_Layer: 0
   m_Name: Boss_Zhangjue
   m_TagString: Untagged
@@ -35,6 +35,53 @@ Transform:
   - {fileID: 1875413610791200785}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1080572775049398487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5321107220624196040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65bf6a8a371bc1745bc6f4ea9f86f27c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sortingGroup: {fileID: 1373827979032907503}
+  m_canvas: {fileID: 1844631069813262495}
+  m_data:
+    key: 
+    classType: 0
+    regionType: 0
+    attackPower: 0
+    criticalDamage: 0
+    healthMax: 0
+    health: 0
+    moveSpeed: 0
+    attackSpeed: 0
+    skillCooldown: 0
+    skillCooldownRate: 0
+    dashCooldown: 0
+    dashCooldownRate: 0
+    percent_startCooldownRate: 0
+    LEA: 0
+    POW: 0
+    INT: 0
+    POL: 0
+    CHA: 0
+  m_faction: 0
+  m_stateType: 0
+  m_element:
+    m_panel: {fileID: 3560643808921088407}
+    m_rig: {fileID: -638875615084983825}
+    m_animator: {fileID: 7271813618393996605}
+    m_effect_canvas: {fileID: 3417134082813307022}
+    m_effect_renderer: {fileID: 8712913464254431943}
+    m_cameraPos: {fileID: 3980539653630533220}
+    m_collider: {fileID: 5794771202197673162}
+    m_txtTalk: {fileID: 7322664580016903976}
+    m_animationClipData:
+      attack: {fileID: 7400000, guid: 22b3407d714a90c4faca359933ee07d9, type: 2}
 --- !u!210 &1373827979032907503
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -75,52 +122,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &1080572775049398487
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5321107220624196040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65bf6a8a371bc1745bc6f4ea9f86f27c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 1373827979032907503}
-  m_canvas: {fileID: 1844631069813262495}
-  m_data:
-    key: 
-    classType: 0
-    regionType: 0
-    attackPower: 0
-    criticalDamage: 0
-    healthMax: 0
-    health: 0
-    moveSpeed: 0
-    attackSpeed: 0
-    skillCooldown: 0
-    skillCooldownRate: 0
-    dashCooldown: 0
-    dashCooldownRate: 0
-    percent_startCooldownRate: 0
-    LEA: 0
-    POW: 0
-    INT: 0
-    POL: 0
-    CHA: 0
-  m_faction: 0
-  m_stateType: 0
-  m_element:
-    panel: {fileID: 3560643808921088407}
-    rig: {fileID: -638875615084983825}
-    animator: {fileID: 7271813618393996605}
-    effect_canvas: {fileID: 3417134082813307022}
-    effect_renderer: {fileID: 8712913464254431943}
-    cameraPos: {fileID: 3980539653630533220}
-    collider: {fileID: 5794771202197673162}
-    animationClipData:
-      attack: {fileID: 7400000, guid: 22b3407d714a90c4faca359933ee07d9, type: 2}
 --- !u!1001 &11561660513192953
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -326,6 +327,17 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 7260850097131345604, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 11561660513192953}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7322664580016903976 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7329124504122760401, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 11561660513192953}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!4 &8712913464254431943 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8701921934893222206, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

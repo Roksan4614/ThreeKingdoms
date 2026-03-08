@@ -3,9 +3,7 @@ using UnityEngine;
 
 public class Character_Worker_Target : Character_Worker
 {
-    public Character_Worker_Target(CharacterComponent _owner) : base(_owner)
-    {
-    }
+    public Character_Worker_Target(CharacterComponent _owner) : base(_owner) { }
 
     public CharacterComponent target { get; private set; }
 

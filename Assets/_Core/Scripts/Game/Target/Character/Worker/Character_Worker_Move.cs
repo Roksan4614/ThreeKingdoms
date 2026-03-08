@@ -49,6 +49,8 @@ public class Character_Woker_Move : Character_Worker
             var scale = m_owner.panel.localScale;
             scale.x *= -1;
             m_owner.panel.localScale = scale;
+
+            m_owner.talkbox.SetFlip(_isRight);
         }
     }
 
@@ -121,7 +123,8 @@ public class Character_Woker_Move : Character_Worker
 
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
         EffectWorker.instance.Dash(m_owner, isFlip);
-        m_owner.move.SetFlip(lookAt.x > 0);
+        if (lookAt.x != 0)
+            m_owner.move.SetFlip(lookAt.x > 0);
         m_owner.anim.Play(CharacterAnimType.Dash);
 
         m_tweenDash = DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f);

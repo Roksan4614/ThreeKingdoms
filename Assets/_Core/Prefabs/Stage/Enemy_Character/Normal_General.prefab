@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5404998624126433756}
+  - component: {fileID: -2577671349289516746}
   - component: {fileID: 6900326075731652713}
   - component: {fileID: -5309356270895079747}
-  - component: {fileID: -2577671349289516746}
   m_Layer: 0
   m_Name: Normal_General
   m_TagString: Untagged
@@ -35,6 +35,53 @@ Transform:
   - {fileID: 9112770253693523237}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-2577671349289516746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7206921061573547839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16058815235ddab44975536181d42901, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_sortingGroup: {fileID: 6900326075731652713}
+  m_canvas: {fileID: 9072691471389046187}
+  m_data:
+    key: 
+    classType: 0
+    regionType: 0
+    attackPower: 0
+    criticalDamage: 0
+    healthMax: 0
+    health: 0
+    moveSpeed: 0
+    attackSpeed: 0
+    skillCooldown: 0
+    skillCooldownRate: 0
+    dashCooldown: 0
+    dashCooldownRate: 0
+    percent_startCooldownRate: 0
+    LEA: 0
+    POW: 0
+    INT: 0
+    POL: 0
+    CHA: 0
+  m_faction: 0
+  m_stateType: 0
+  m_element:
+    m_panel: {fileID: 6131699616509136035}
+    m_rig: {fileID: -5309356270895079747}
+    m_animator: {fileID: 43757302640713737}
+    m_effect_canvas: {fileID: 5412701861452305850}
+    m_effect_renderer: {fileID: 2061419771657256947}
+    m_cameraPos: {fileID: 6002288144559596368}
+    m_collider: {fileID: 3754585134027090430}
+    m_txtTalk: {fileID: 139200778320243228}
+    m_animationClipData:
+      attack: {fileID: 7400000, guid: 373ca8d501c6a4b4990c36944ae5dd2d, type: 2}
 --- !u!210 &6900326075731652713
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -75,52 +122,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &-2577671349289516746
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7206921061573547839}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16058815235ddab44975536181d42901, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 6900326075731652713}
-  m_canvas: {fileID: 9072691471389046187}
-  m_data:
-    key: 
-    classType: 0
-    regionType: 0
-    attackPower: 0
-    criticalDamage: 0
-    healthMax: 0
-    health: 0
-    moveSpeed: 0
-    attackSpeed: 0
-    skillCooldown: 0
-    skillCooldownRate: 0
-    dashCooldown: 0
-    dashCooldownRate: 0
-    percent_startCooldownRate: 0
-    LEA: 0
-    POW: 0
-    INT: 0
-    POL: 0
-    CHA: 0
-  m_faction: 0
-  m_stateType: 0
-  m_element:
-    panel: {fileID: 6131699616509136035}
-    rig: {fileID: -5309356270895079747}
-    animator: {fileID: 43757302640713737}
-    effect_canvas: {fileID: 5412701861452305850}
-    effect_renderer: {fileID: 2061419771657256947}
-    cameraPos: {fileID: 6002288144559596368}
-    collider: {fileID: 3754585134027090430}
-    animationClipData:
-      attack: {fileID: 7400000, guid: 373ca8d501c6a4b4990c36944ae5dd2d, type: 2}
 --- !u!1001 &7230755397922289357
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -283,6 +284,17 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 7260850097131345604, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 7230755397922289357}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &139200778320243228 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7329124504122760401, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 7230755397922289357}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!4 &2061419771657256947 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8701921934893222206, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

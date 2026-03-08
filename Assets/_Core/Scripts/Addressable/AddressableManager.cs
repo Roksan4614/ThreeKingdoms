@@ -22,9 +22,14 @@ public enum AddressableLabelType
 
 public partial class AddressableManager : MonoSingleton<AddressableManager>
 {
-    public string bundleUrl { get; set; } = "https://dev-static.kingz.games/Bundle/WebGL/" + Application.version.Split('.')[2];
+    public string bundleUrl { get; set; }
 
     Dictionary<string, AsyncOperationHandle<SpriteAtlas>> m_loadedAtlas = new();
+
+    protected override void OnAwake()
+    {
+        bundleUrl = "https://dev-static.kingz.games/Bundle/WebGL/" + Application.version.Split('.')[2];
+    }
 
     public async UniTask InitializeAsync()
     {

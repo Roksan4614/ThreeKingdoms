@@ -22,14 +22,14 @@ public static class Utils
 #endif
     }
 
-    public static void AfterSecond(Action _callback, float _duration = 0, CancellationTokenSource _token = null)
+    public static void AfterSecond(Action _callback, float _duration = 0, CancellationToken _token = default)
     {
         AfterSecondAsync(_callback, _duration, _token).Forget();
     }
 
-    public static async UniTask AfterSecondAsync(Action _callback, float _duration = 0, CancellationTokenSource _token = null)
+    public static async UniTask AfterSecondAsync(Action _callback, float _duration = 0, CancellationToken _token = default)
     {
-        await UniTask.WaitForSeconds(_duration, cancellationToken: _token == null ? default : _token.Token);
+        await UniTask.WaitForSeconds(_duration, cancellationToken: _token);
         _callback();
     }
 

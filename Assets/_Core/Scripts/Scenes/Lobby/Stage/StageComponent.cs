@@ -13,11 +13,14 @@ public class StageComponent : MonoBehaviour, IValidatable
     struct StageData
     {
         public List<Vector3> enemyLocalPos;
-        public CancellationTokenSource ctsClose;
+        public CancellationToken ctsCloseToken;
+        CancellationTokenSource ctsClose;
 
         public StageData CreateNewCTS()
         {
             ctsClose = new();
+            ctsCloseToken = ctsClose.Token;
+
             return this;
         }
         public StageData ResetCTS()
@@ -47,7 +50,7 @@ public class StageComponent : MonoBehaviour, IValidatable
         => data.level == _data.level && data.chapterNumber == _data.chapterNumber && data.stageNumber == _data.stageNumber;
     public void SetData(StageManager.LoadData_Stage _data) => data = _data;
 
-    public CancellationTokenSource StartPhase(int _phaseIdx, bool _isFlip)
+    public CancellationToken StartPhase(int _phaseIdx, bool _isFlip)
     {
         ClosePhase(_phaseIdx);
 
@@ -74,7 +77,7 @@ public class StageComponent : MonoBehaviour, IValidatable
         phase.position = pos;
 
         m_stage[_phaseIdx] = m_stage[_phaseIdx].CreateNewCTS();
-        return m_stage[_phaseIdx].ctsClose;
+        return m_stage[_phaseIdx].ctsCloseToken;
     }
 
     public void ClosePhaseAll()

@@ -40,7 +40,6 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public async UniTask SpawnUpdateAsync()
     {
-        int count = 0;
         heroInfo.DisableAll();
 
         List<HeroInfoData> myHero = DataManager.userInfo.myHero.Where(x => x.isBatch).ToList();
@@ -55,30 +54,22 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             m_member.Remove(remove[i]);
         }
 
-        IngameLog.Add("tt: SpawnUpdateAsync: " + count++);
         for (int i = 0; i < myHero.Count; i++)
         {
-
-            IngameLog.Add("tt: SpawnUpdateAsync: Key: " + myHero[i].key);
             if (m_member.Values.Any(x => x.data.key.Equals(myHero[i].key)))
                 continue;
 
-            IngameLog.Add("tt: SpawnUpdateAsync: Key: " + 0);
             var heroCharacter = (await AddressableManager.instance.GetHeroCharacter(myHero[i].skin)).GetComponent<CharacterComponent>();
 
-            IngameLog.Add("tt: SpawnUpdateAsync: Key: " + heroCharacter);
             var hero = Instantiate(heroCharacter, MapManager.instance.element.pHero);
 
-            IngameLog.Add("tt: SpawnUpdateAsync: Key: " + hero);
             hero.SetHeroData(myHero[i].key);
             hero.name = myHero[i].key;
 
             m_member.Add(TeamPositionType.MAX + i, hero);
         }
 
-        IngameLog.Add("tt: SpawnUpdateAsync: " + count++);
         SetTeamPosition(m_member.Values.ToList());
-        IngameLog.Add("tt: SpawnUpdateAsync: " + count++);
     }
 
     public void SetTeamPosition(List<CharacterComponent> _members)

@@ -77,16 +77,11 @@ public partial class AddressableManager
     {
         int count = 0;
 
-        IngameLog.Add("tt: " + m_heroCharacter != null + _key);
-
         if (m_heroCharacter.ContainsKey(_key))
             return m_heroCharacter[_key].Result;
-
-
-        IngameLog.Add("tt: GetHeroCharacter: " + _key + count++);
+        
         await Load_HeroCharacter(_key);
 
-        IngameLog.Add("tt: GetHeroCharacter: " + _key + count++);
         return m_heroCharacter.ContainsKey(_key) ? m_heroCharacter[_key].Result : null;
     }
 }

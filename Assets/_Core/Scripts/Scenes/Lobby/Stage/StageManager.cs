@@ -54,7 +54,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
         for (int i = 0; i < m_element.chapter.childCount; i++)
             Destroy(m_element.chapter.GetChild(i).gameObject);
 
-        if( m_stage != null)
+        if (m_stage != null)
         {
             m_handlerStage.Release();
             m_stage = null;
@@ -80,7 +80,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
         return m_stage == null;
     }
 
-    public async UniTask StartStageAsync()
+    public async UniTask StartStageAsync(Action _onStartStage = null)
     {
         if (m_cts != null)
         {
@@ -88,11 +88,14 @@ public class StageManager : Singleton<StageManager>, IValidatable
             m_cts.Dispose();
         }
         m_cts = new();
+        var ctsToken = m_cts.Token;
 
         if (m_stage == null || m_stage.IsNow(m_loadData) == false)
             await LoadStageAsync();
 
         TeamManager.instance.StartStage();
+        _onStartStage?.Invoke();
+
         var tickStart = m_tickStart = DateTime.Now.Ticks;
 
         while (true)
@@ -120,7 +123,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     continue;
 
                 bool isFlip = TeamManager.instance.mainHero.transform.position.x > 0;
-                var ctsClose = m_stage.StartPhase(phaseIdx, isFlip);
+                var ctsCloseToken = m_stage.StartPhase(phaseIdx, isFlip);
 
                 m_enemyList.Clear();
 
@@ -144,7 +147,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
 #if UNITY_EDITOR
                 if (m_stopStageStart == true)
-                    await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Return));
+                    await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Backspace));
 #endif
 
                 Signal.instance.StartPhase.Emit(m_stage.element.phase.childCount - phases.Count);
@@ -165,7 +168,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
                             break;
                         }
                     }
-                    await UniTask.WaitForEndOfFrame(cancellationToken: m_cts.Token);
+                    await UniTask.WaitForEndOfFrame(cancellationToken: ctsToken);
                 }
                 // 클리어 할 때까지 대기
 
@@ -188,13 +191,13 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
                 //보스 잡은거면 그냥 조금있다가 다음으로 넘어가면 됨
                 if (isLastPhase == true)
-                    await UniTask.WaitForSeconds(1f, cancellationToken: m_cts.Token);
+                    await UniTask.WaitForSeconds(1f, cancellationToken: ctsToken);
                 else
                 {
                     // 쓰러지고 5초후에 초기화 해주자
-                    Utils.AfterSecond(() => m_stage.ClosePhase(phaseIdx), 5f, ctsClose);
+                    Utils.AfterSecond(() => m_stage.ClosePhase(phaseIdx), 5f, ctsCloseToken);
 
-                    await UniTask.WaitForSeconds(0.5f, cancellationToken: m_cts.Token);
+                    await UniTask.WaitForSeconds(0.5f, cancellationToken: ctsToken);
                 }
 
                 TeamManager.instance.PhaseFinished();
@@ -208,7 +211,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
             if (m_loadData.isBossWait == false)
             {
                 MapManager.instance.FadeDimm(true, _token: m_cts);
-                await UniTask.WaitForSeconds(0.2f, cancellationToken: m_cts.Token);
+                await UniTask.WaitForSeconds(0.2f, cancellationToken: ctsToken);
 
                 m_loadData.stageNumber++;
                 await LoadStageAsync();
@@ -260,7 +263,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
         TeamManager.instance.RestartStage();
 
-        if( m_stage != null)
+        if (m_stage != null)
         {
             m_handlerStage.Release();
             m_stage = null;

@@ -12,21 +12,12 @@ public class Scene_Lobby : SceneBase
     async void Start()
     {
         await UniTask.WaitForEndOfFrame();
-
         await DataManager.InitializeAsync();
-
         await TeamManager.instance.SpawnUpdateAsync();
 
-        IngameLog.Add("tt: 2");
-        await UniTask.WaitForEndOfFrame();
-
-        IngameLog.Add("tt: 2.1");
-        PopupManager.instance.ShowDimm(false);
-
-        IngameLog.Add("tt: 3");
-        StageManager.instance.StartStageAsync().Forget();
-
-        IngameLog.Add("tt: 4");
+        StageManager.instance
+            .StartStageAsync(() => PopupManager.instance.ShowDimm(false))
+            .Forget();
     }
 
     //public override void OnManualValidate()
