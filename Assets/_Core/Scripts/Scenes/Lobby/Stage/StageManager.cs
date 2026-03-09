@@ -122,6 +122,9 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 if (m_loadData.isBossWait == true && isLastPhase == true)
                     continue;
 
+                // 스토리가 있는지 여부 확인한다.
+                await ScenarioManager.instance.StartAsync(phaseIdx, true);
+
                 bool isFlip = TeamManager.instance.mainHero.transform.position.x > 0;
                 var ctsCloseToken = m_stage.StartPhase(phaseIdx, isFlip);
 
@@ -188,6 +191,9 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 // 클리어하면 원상 복구 시킨다.
                 for (int i = 0; i < m_enemyList.Count; i++)
                     m_enemyList[i].transform.SetParent(phase);
+
+                // 끝났을 때 연출해준다.
+                await ScenarioManager.instance.StartAsync(phaseIdx, false);
 
                 //보스 잡은거면 그냥 조금있다가 다음으로 넘어가면 됨
                 if (isLastPhase == true)
@@ -362,5 +368,8 @@ public class StageManager : Singleton<StageManager>, IValidatable
         public int chapterNumber;
         public int stageNumber;
         public bool isBossWait;
+
+        public string GetKey(int _phaseIdx, bool _isStart)
+            => $"{chapterNumber}.{stageNumber}.{_phaseIdx + 1}_{DataManager.userInfo.region.ToString().ToUpper()}_{(_isStart ? "START" : "END")}";
     }
 }

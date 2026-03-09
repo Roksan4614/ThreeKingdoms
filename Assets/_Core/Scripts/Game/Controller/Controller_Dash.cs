@@ -5,7 +5,6 @@ using UnityEngine;
 
 public partial class ControllerManager
 {
-    float m_dashRechargeDuration = .5f;
     int m_dashRemainCount = 0;
 
     CancellationTokenSource m_ctsDash;

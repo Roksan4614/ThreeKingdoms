@@ -17,7 +17,6 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     CharacterComponent m_mainHero;
 
     bool m_isKeyboardMoving = false;
-    bool m_isControlAttack = false;
 
     bool m_isDashClick = false;
     bool m_isPush = false;
@@ -127,9 +126,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         m_element.btnAttack.transform.localScale = Vector3.one;
         m_element.btnAttack.transform.DOPunchScale(Vector3.one * .05f, 0.1f);
 
-        m_isControlAttack = true;
         m_mainHero.attack.ControlAttack();
-        m_isControlAttack = false;
     }
 
     public bool isLeftClick_Down => Input.GetMouseButtonDown(0);

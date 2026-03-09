@@ -78,9 +78,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
     public async UniTask DoDownloadAsync(IProgress<float> _onProgress, params AddressableLabelType[] _labels)
     {
-        m_mergeMode = Addressables.MergeMode.Intersection;
         await DoDownloadAsync(_onProgress, _labels.Select(_x => _x.ToString()).ToArray());
-        m_mergeMode = Addressables.MergeMode.Union;
     }
 
     public async UniTask DoDownloadAsync(IProgress<float> _onProgress, params string[] _keys)
@@ -107,9 +105,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
     public async UniTask<long> GetDownloadSizeAsync(params AddressableLabelType[] _keys)
     {
-        m_mergeMode = Addressables.MergeMode.Intersection;
         var result = await GetDownloadSizeAsync(_keys.Select(_x => _x.ToString()).ToArray());
-        m_mergeMode = Addressables.MergeMode.Union;
         return result;
     }
 
@@ -197,12 +193,10 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         IProgress<float> _onProgress,
         params AddressableLabelType[] _labels)
     {
-        m_mergeMode = Addressables.MergeMode.Intersection;
         await LoadAssetAsync<T>(_onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
-        m_mergeMode = Addressables.MergeMode.Union;
     }
 
-    Addressables.MergeMode m_mergeMode = Addressables.MergeMode.Union;
+    Addressables.MergeMode m_mergeMode = Addressables.MergeMode.Intersection;
     public async UniTask LoadAssetAsync<T>(
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         IProgress<float> _onProgress,

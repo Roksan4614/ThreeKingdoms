@@ -1,6 +1,9 @@
 public enum RegionType
 {
-    Wei, Shu, Wu, Etc
+    Wei,    // ¿ß
+    Shu,    // √À
+    Wu,     // ø¿
+    Etc     // ¡ﬂ∏≥
 }
 
 public enum FactionType

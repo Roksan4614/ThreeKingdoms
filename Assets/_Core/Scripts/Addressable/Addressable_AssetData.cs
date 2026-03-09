@@ -75,8 +75,6 @@ public partial class AddressableManager
 
     public async UniTask<GameObject> GetHeroCharacter(string _key)
     {
-        int count = 0;
-
         if (m_heroCharacter.ContainsKey(_key))
             return m_heroCharacter[_key].Result;
         

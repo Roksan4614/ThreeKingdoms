@@ -7,6 +7,7 @@ using UnityEngine;
 public class Data_UserInfo
 {
     public int uid;
+    public RegionType region = RegionType.Shu;
 
     List<HeroInfoData> m_myHero = new();
     public IReadOnlyList<HeroInfoData> myHero => m_myHero;

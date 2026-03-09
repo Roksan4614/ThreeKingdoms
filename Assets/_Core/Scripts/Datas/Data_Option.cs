@@ -9,6 +9,7 @@ public enum OptionType
 
     LANGUEGE,
     MAIN_TEAMPOSITION_TYPE,
+    SCENARIO_SKIP,
 
     MAX
 }
@@ -36,6 +37,16 @@ public class Data_Option
     public void SaveData_Option()
     {
         PPWorker.Set(PlayerPrefsType.OPTION, m_data, false);
+    }
+
+    public bool isScenarioSkip
+    {
+        get => m_data.db[OptionType.SCENARIO_SKIP] == 1;
+        set
+        {
+            m_data.db[OptionType.SCENARIO_SKIP] = value ? 1 : 0;
+            SaveData_Option();
+        }
     }
 
     public TeamPositionType mainTeamPosition
