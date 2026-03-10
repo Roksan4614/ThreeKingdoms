@@ -15,4 +15,8 @@ public class PopupHeroSort : BasePopupComponent
     {
         gameObject.SetActive(false);
     }
+
+    public override void OnManualValidate()
+    {
+    }
 }

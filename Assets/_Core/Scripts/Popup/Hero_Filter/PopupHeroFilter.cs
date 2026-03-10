@@ -17,4 +17,8 @@ public class PopupHeroFilter : BasePopupComponent
     {
         gameObject.SetActive(false);
     }
+
+    public override void OnManualValidate()
+    {
+    }
 }

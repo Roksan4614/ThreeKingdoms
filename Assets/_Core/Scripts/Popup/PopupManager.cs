@@ -13,6 +13,7 @@ public enum PopupType
     Hero_Filter,
     Hero_Sort,
     Hero_HeroInfo,
+    SelectRegion,
 
     Modal_Start,
 

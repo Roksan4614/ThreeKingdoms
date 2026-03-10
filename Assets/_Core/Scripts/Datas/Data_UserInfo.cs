@@ -15,20 +15,12 @@ public class Data_UserInfo
     public async UniTask Initialize()
     {
         if (PPWorker.HasKey(PlayerPrefsType.HERO_LIST))
-            m_myHero = PPWorker.Get<List<HeroInfoData>>(PlayerPrefsType.HERO_LIST);
-        else
         {
-            //유비가 가장 첫번째임
-            m_myHero.Add(new("LiuBei", _isBatch: true, _isMain: true));
-            m_myHero.Add(new("GuanYu", _isBatch: true));
-            m_myHero.Add(new("ZhugeLiang", _isBatch: true));
-            m_myHero.Add(new("ZhangFei", _isBatch: true));
-            m_myHero.Add(new("ZhaYun"));
-            SaveData();
-        }
+            m_myHero = PPWorker.Get<List<HeroInfoData>>(PlayerPrefsType.HERO_LIST);
 
-        await AddressableManager.instance.Load_HeroIcon(m_myHero.Select(x => x.skin).ToArray());
-        await AddressableManager.instance.Load_HeroCharacter(m_myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+            await AddressableManager.instance.Load_HeroIcon(m_myHero.Select(x => x.skin).ToArray());
+            await AddressableManager.instance.Load_HeroCharacter(m_myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+        }
     }
 
     public void SaveData()

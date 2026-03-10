@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BasePopupComponent : MonoBehaviour
+public abstract class BasePopupComponent : MonoBehaviour, IValidatable
 {
     public PopupType popupType { get; private set; }
     protected BasePopupComponent(PopupType _popupType) => popupType = _popupType;
@@ -21,4 +21,5 @@ public class BasePopupComponent : MonoBehaviour
 
     protected virtual void OnClosePopup() { }
 
+    public abstract void OnManualValidate();
 }

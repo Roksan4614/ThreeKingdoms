@@ -1,9 +1,13 @@
 public enum RegionType
 {
+    NONE = -1,
+
     Wei,    // 위
     Shu,    // 촉
     Wu,     // 오
-    Etc     // 중립
+    Etc,     // 중립
+
+    MAX
 }
 
 public enum FactionType

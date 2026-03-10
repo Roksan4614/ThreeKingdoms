@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PopupHeroInfo : BasePopupComponent, IValidatable
+public class PopupHeroInfo : BasePopupComponent
 {
     PopupHeroInfo() : base(PopupType.Hero_HeroInfo) { }
 
@@ -81,10 +81,8 @@ public class PopupHeroInfo : BasePopupComponent, IValidatable
         gameObject.SetActive(false);
     }
 
-    public void OnManualValidate()
-    {
-        m_element.Initialize(transform);
-    }
+    public override void OnManualValidate()
+        => m_element.Initialize(transform);
 
     [SerializeField]
     ElementData m_element;
