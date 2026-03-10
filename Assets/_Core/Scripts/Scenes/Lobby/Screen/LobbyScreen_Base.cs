@@ -63,7 +63,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 
     public virtual void Open(LobbyScreenType _prevScreen)
     {
-        ActivePanel(true, _prevScreen == LobbyScreenType.None);
+        ActivePanelAsync(true, _prevScreen == LobbyScreenType.None).Forget();
     }
 
     public virtual void Close(bool _isTween = true)
@@ -71,7 +71,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
         if (_isTween == false)
             CloseAsync().Forget();
         else
-            ActivePanel(false, _isTween);
+            ActivePanelAsync(false, _isTween).Forget();
     }
 
     protected virtual async UniTask CloseAsync()
@@ -80,11 +80,10 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
         await UniTask.WaitForEndOfFrame();
     }
 
-    void ActivePanel(bool _isOpen, bool _isTween)
+    async UniTask ActivePanelAsync(bool _isOpen, bool _isTween)
     {
         if (m_isDoing == true)
             return;
-
         m_isDoing = true;
 
         if (_isOpen == true)
@@ -92,26 +91,14 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 
         var targetScale = Vector3.one * (_isOpen ? 1 : 0.5f);
 
-        TweenCallback callbackFinished = () =>
-        {
-            m_isDoing = false;
-
-            if (_isOpen == false)
-                CloseAsync().Forget();
-        };
-
         if (_isTween)
-        {
-            m_panel.localScale = Vector3.one * (_isOpen ? 0.5f : 1);
-            var duration = 0.15f;
-
-            m_panel.DOScale(targetScale, duration).SetEase(_isOpen ? Ease.OutBack : Ease.InBack)
-                .OnComplete(callbackFinished);
-        }
+            await Utils.SetActivePunchAsync(m_panel, _isOpen);
         else
-        {
             m_panel.localScale = targetScale;
-            callbackFinished();
-        }
+
+        m_isDoing = false;
+
+        if (_isOpen == false)
+            CloseAsync().Forget();
     }
 }

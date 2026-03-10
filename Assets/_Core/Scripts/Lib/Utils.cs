@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -159,5 +160,16 @@ public static class Utils
         }
 
         return result;
+    }
+
+    public static void SetActivePunch(Transform _transform, bool _isActive)
+        => SetActivePunchAsync(_transform, _isActive).Forget();
+    public static async UniTask SetActivePunchAsync(Transform _transform, bool _isActive)
+    {
+        var targetScale = Vector3.one * (_isActive ? 1 : 0.5f);
+        _transform.localScale = Vector3.one * (_isActive ? 0.5f : 1);
+        var duration = 0.15f;
+
+        await _transform.DOScale(targetScale, duration).SetEase(_isActive ? Ease.OutBack : Ease.InBack).AsyncWaitForCompletion();
     }
 }

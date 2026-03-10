@@ -27,15 +27,14 @@ public class PopupSelectRegionComponent : BasePopupComponent
 
     async UniTask OnButton_RegionAsync(RegionType _region)
     {
+        RegionData regionData = m_element.dbHero.Find(x=>x.region == _region);
         foreach (var hero in m_element.dbHero)
         {
             if (hero.region != _region)
                 StartFade(hero, false);
         }
 
-        m_popupHeroInfo.Open();
-
-        await UniTask.WaitUntil(() => m_popupHeroInfo.gameObject.activeSelf == false);
+        await m_popupHeroInfo.OpenAsync(regionData);
 
         foreach (var hero in m_element.dbHero)
         {
@@ -84,7 +83,7 @@ public class PopupSelectRegionComponent : BasePopupComponent
     }
 
     [Serializable]
-    struct RegionData
+    public struct RegionData
     {
         public RegionType region;
 
