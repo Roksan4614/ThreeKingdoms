@@ -13,6 +13,8 @@ public class TableManager
     public static Table_Hero hero { get; private set; }
     public static Table_Hero enemy { get; private set; }
     public static Table_Scenario scenario { get; private set; }
+    public static Table_Region region { get; private set; }
+    public static Table_String stringTable { get; private set; }
     public static Table_String stringHero { get; private set; }
     public static Table_String stringScenario { get; private set; }
 
@@ -23,6 +25,9 @@ public class TableManager
             hero = new(LoadList<TableHeroData>(_result, "HeroData"));
             enemy = new(LoadList<TableHeroData>(_result, "EnemyData"));
             scenario = new(LoadList<TableScenarioData>(_result, "ScenarioData"));
+            region = new(LoadList<TableRegionData>(_result, "RegionData"));
+
+            stringTable = new(LoadList<TableStringData>(_result, "String"));
             stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
             stringScenario = new(LoadList<TableStringData>(_result, "String_Scenario"));
 

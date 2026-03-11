@@ -11,14 +11,14 @@ public class Character_Worker_Talkbox : Character_Worker
         m_txtTalk = m_owner.element.txtTalk;
         m_rtTalkbox = (RectTransform)m_txtTalk.transform.parent;
         m_layout = m_rtTalkbox.GetComponent<HorizontalLayoutGroup>();
-        m_filtter = m_rtTalkbox.GetComponent<ContentSizeFitter>();
+        m_fitter = m_rtTalkbox.GetComponent<ContentSizeFitter>();
         SetActive(false);
     }
 
     RectTransform m_rtTalkbox;
     TextMeshProUGUI m_txtTalk;
     HorizontalLayoutGroup m_layout;
-    ContentSizeFitter m_filtter;
+    ContentSizeFitter m_fitter;
 
     public void StartTalk(params string[] _talks)
     {
@@ -27,13 +27,13 @@ public class Character_Worker_Talkbox : Character_Worker
 
         m_txtTalk.text = string.Join(" ", _talks);
 
-        m_layout.enabled = m_filtter.enabled = true;
-        m_filtter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        m_layout.enabled = m_fitter.enabled = true;
+        m_fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         m_rtTalkbox.ForceRebuildLayout();
 
         if (m_rtTalkbox.rect.width > 1000)
         {
-            m_filtter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            m_fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             var size = m_rtTalkbox.sizeDelta;
             size.x = 1000;
@@ -42,7 +42,7 @@ public class Character_Worker_Talkbox : Character_Worker
             m_rtTalkbox.ForceRebuildLayout();
         }
 
-        m_layout.enabled = m_filtter.enabled = false;
+        m_layout.enabled = m_fitter.enabled = false;
     }
 
     public void SetFlip(bool _isFlip)

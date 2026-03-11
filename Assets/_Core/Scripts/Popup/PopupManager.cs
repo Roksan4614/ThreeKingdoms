@@ -3,8 +3,12 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using TMPro;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
 
 public enum PopupType
 {
@@ -116,6 +120,35 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     public void SetCanvasCamera() => m_element.canvas.worldCamera = CameraManager.instance.main;
 
+    CancellationTokenSource m_ctsAlert;
+    public void AlertShow(string _message)
+        => AlertShowAsync(_message).Forget();
+
+    public async UniTask AlertShowAsync(string _message)
+    {
+        if (m_ctsAlert != null)
+        {
+            m_ctsAlert.Cancel();
+            m_ctsAlert.Dispose();
+        }
+        m_ctsAlert = new();
+
+        await m_element.alertData.ShowAsync(_message, m_ctsAlert.Token);
+
+        m_ctsAlert = null;
+    }
+
+    public void AlertDisable()
+    {
+        if (m_ctsAlert != null)
+        {
+            m_ctsAlert.Cancel();
+            m_ctsAlert.Dispose();
+            m_ctsAlert = null;
+        }
+        m_element.alertData.Disable();
+    }
+
     public void OnManualValidate()
     {
         m_element.Initialize(transform);
@@ -127,18 +160,80 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     [Serializable]
     struct ElementData
     {
-        [SerializeField]
-        Canvas m_canvas;
+        [SerializeField] Canvas m_canvas;
         public Canvas canvas => m_canvas;
 
-        [SerializeField]
-        CanvasGroup m_cgMaxDimm;
+        [SerializeField] CanvasGroup m_cgMaxDimm;
         public CanvasGroup cgMaxDimm => m_cgMaxDimm;
+
+        public AlertData alertData;
 
         public void Initialize(Transform _transform)
         {
             m_canvas = _transform.GetComponent<Canvas>();
             m_cgMaxDimm = _transform.GetComponent<CanvasGroup>("MAX_Dimm");
+
+            alertData.Initialize(_transform.Find("Alert"));
         }
+    }
+
+    [Serializable]
+    struct AlertData
+    {
+        [SerializeField] RectTransform m_rt;
+        [SerializeField] HorizontalLayoutGroup m_layout;
+        [SerializeField] ContentSizeFitter m_fitter;
+        [SerializeField] TextMeshProUGUI m_txtAlert;
+
+        public void Initialize(Transform _transform)
+        {
+            m_rt = (RectTransform)_transform;
+            m_layout = _transform.GetComponent<HorizontalLayoutGroup>();
+            m_fitter = _transform.GetComponent<ContentSizeFitter>();
+            m_txtAlert = _transform.GetComponent<TextMeshProUGUI>("Text");
+
+            m_rt.gameObject.SetActive(false);
+        }
+
+        public async UniTask ShowAsync(string _message, CancellationToken _token)
+        {
+            if (m_rt.gameObject.activeSelf == false)
+            {
+                Utils.SetActivePunch(m_rt, true);
+                m_rt.gameObject.SetActive(true);
+            }
+
+            m_fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            m_txtAlert.text = _message;
+            m_rt.ForceRebuildLayout();
+
+            var size = m_rt.sizeDelta;
+            if (size.x > Screen.width * 0.8f)
+            {
+                m_fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+                size.x = Screen.width * 0.8f;
+                m_rt.sizeDelta = size;
+
+                m_rt.ForceRebuildLayout();
+            }
+
+            await UniTask.WaitForSeconds(3f, cancellationToken: _token);
+
+            Disable();
+        }
+
+        public void Disable()
+            => DisableAsync().Forget();
+
+        public async UniTask DisableAsync()
+        {
+            if (m_rt.gameObject.activeSelf == false)
+                return;
+
+            await Utils.SetActivePunchAsync(m_rt, false);
+            m_rt.gameObject.SetActive(false);
+        }
+
     }
 }

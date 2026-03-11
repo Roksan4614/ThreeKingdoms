@@ -23,6 +23,8 @@ public class Scene_Lobby : SceneBase
         StageManager.instance
             .StartStageAsync(() => PopupManager.instance.ShowDimm(false))
             .Forget();
+
+        ControllerManager.instance.isSwitch = true;
     }
 
     //public override void OnManualValidate()

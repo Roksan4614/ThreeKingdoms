@@ -2,10 +2,9 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Threading;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static PopupSelectRegionComponent;
-using static UnityEditor.PlayerSettings;
 
 public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
 {
@@ -34,7 +33,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
 
     public async UniTask OpenAsync(PopupSelectRegionComponent.RegionData _regionData)
     {
-        _regionData.txtName.gameObject.SetActive(false);
+        _regionData.SetActiveName(false);
 
         m_prevPos = _regionData.rt.position;
         m_trnsHero = _regionData.rt;
@@ -47,11 +46,13 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         var isFlipPrev = _regionData.heroComponent.move.isFlip;
         _regionData.heroComponent.move.SetFlip(true);
 
+        SetRegionData(_regionData);
+
         await UniTask.WaitForSeconds(0.2f);
 
         await UniTask.WaitUntil(() => gameObject.activeSelf == false);
         _regionData.heroComponent.move.SetFlip(isFlipPrev);
-        _regionData.txtName.gameObject.SetActive(true);
+        _regionData.SetActiveName(true);
     }
 
     async UniTask CloseAsync()
@@ -62,6 +63,18 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
 
         m_trnsHero.DOMove(m_prevPos, 0.2f);
         m_trnsHero.DOScale(Vector3.one * 0.8f, 0.2f);
+    }
+
+    void SetRegionData(PopupSelectRegionComponent.RegionData _regionData)
+    {
+        var dbHeroData = TableManager.hero.Get(_regionData.keyMaster);
+
+        //// FRONT PANEL
+        var key = $"{dbHeroData.regionType}_{_regionData.keyMaster}".ToUpper();
+        m_element.txtName.text = $"{TableManager.stringHero.GetString("NAME_" + key)}<size=80%><color=#888888> {TableManager.stringHero.GetString("COURTESY_" + key)}";
+        m_element.txtTalk.text = _regionData.masterTalk;
+        m_element.txtDesc.text = _regionData.masterDesc;
+        m_element.txtDescSub.text = _regionData.masterDescSub;
     }
 
     public void OnManualValidate()
@@ -75,9 +88,21 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
     {
         public Transform posCharacter;
 
+        public TextMeshProUGUI txtName;
+        public TextMeshProUGUI txtTalk;
+        public TextMeshProUGUI txtDesc;
+        public TextMeshProUGUI txtDescSub;
+
+
         public void Initialize(Transform _trnsform)
         {
             posCharacter = _trnsform.Find("Panel/PosCharacter");
+
+            var front = _trnsform.Find("Panel/FrontPanel");
+            txtName = front.GetComponent<TextMeshProUGUI>("txt_name");
+            txtTalk = front.GetComponent<TextMeshProUGUI>("txt_talk");
+            txtDesc = front.GetComponent<TextMeshProUGUI>("txt_desc");
+            txtDescSub = front.GetComponent<TextMeshProUGUI>("txt_descSub");
         }
     }
 }

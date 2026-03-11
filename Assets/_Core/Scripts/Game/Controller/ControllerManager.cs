@@ -21,7 +21,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     bool m_isDashClick = false;
     bool m_isPush = false;
 
-    public bool isSwitch { get; set; } = true;
+    public bool isSwitch { get; set; } = false;
 
     public bool isActive => m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
 
@@ -49,7 +49,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     private void Update()
     {
-        if (m_mainHero?.isLive == false)
+        if (isSwitch == false || m_mainHero?.isLive == false)
             return;
 
         OnUpdateMove();

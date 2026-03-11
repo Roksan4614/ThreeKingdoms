@@ -33,10 +33,11 @@ public enum OrderLayerType
 
     Popup,
 
+    Alert,
     MAX
 }
 
-public class AutoOrderInLayer : MonoBehaviour
+public class AutoOrderInLayer : MonoBehaviour, IValidatable
 {
     [SerializeField] private OrderLayerType m_orderLayer = OrderLayerType.none;
 
@@ -107,5 +108,13 @@ public class AutoOrderInLayer : MonoBehaviour
         }
 
         Utils.SetOrderInLayer(transform, m_orderLayer);
+    }
+
+    public void OnManualValidate()
+    {
+        if (m_layerName.IsNullOrEmpty() == false && m_layerName != m_orderLayer.ToString())
+        {
+            OnButton_Repeat();
+        }
     }
 }
