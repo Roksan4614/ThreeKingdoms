@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -75,6 +76,15 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         m_element.txtTalk.text = _regionData.masterTalk;
         m_element.txtDesc.text = _regionData.masterDesc;
         m_element.txtDescSub.text = _regionData.masterDescSub;
+
+        var startHeroKey = TableManager.region.Get(_regionData.region).startHeroKey;
+        for (int i = 0; i < m_element.startHero.Length; i++)
+        {
+            HeroInfoData data = new(startHeroKey[i]);
+
+            m_element.startHero[i].SetHeroData(data, null, null);
+            m_element.startHero[i].element.SetActiveName(true);
+        }
     }
 
     public void OnManualValidate()
@@ -93,6 +103,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtDesc;
         public TextMeshProUGUI txtDescSub;
 
+        public HeroIconComponent[] startHero;
 
         public void Initialize(Transform _trnsform)
         {
@@ -103,6 +114,8 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
             txtTalk = front.GetComponent<TextMeshProUGUI>("txt_talk");
             txtDesc = front.GetComponent<TextMeshProUGUI>("txt_desc");
             txtDescSub = front.GetComponent<TextMeshProUGUI>("txt_descSub");
+
+            startHero = _trnsform.Find("Panel/StartHero").GetComponentsInChildren<HeroIconComponent>();
         }
     }
 }

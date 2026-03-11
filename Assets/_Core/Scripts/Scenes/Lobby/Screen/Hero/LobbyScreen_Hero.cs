@@ -137,11 +137,11 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
                 scroll.verticalScrollbar.gameObject.SetActive(false);
 
                 var e = baseItem.element;
-                DestroyImmediate(e.txtLevel.gameObject);
-                DestroyImmediate(e.txtName.gameObject);
-                DestroyImmediate(e.icon.parent.gameObject);
-                DestroyImmediate(e.btnAction.gameObject);
-                DestroyImmediate(e.batch);
+                Destroy(e.txtLevel.gameObject);
+                Destroy(e.txtName.gameObject);
+                Destroy(e.icon.parent.gameObject);
+                Destroy(e.btnAction.gameObject);
+                Destroy(e.batch);
                 e.btnHero.interactable = false;
 
                 // 20개 미리 생성은 해두자

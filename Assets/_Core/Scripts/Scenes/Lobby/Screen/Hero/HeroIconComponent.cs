@@ -38,10 +38,13 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         if (_data.skin.Equals(data.skin))
             return;
 
-        m_screenHero = _onClick.Target as LobbyScreen_Hero;
+        if (_onClick != null)
+        {
+            m_screenHero = _onClick.Target as LobbyScreen_Hero;
 
-        m_onClick = _onClick;
-        m_onClickAction = _onClickAction;
+            m_onClick = _onClick;
+            m_onClickAction = _onClickAction;
+        }
 
         m_element.icon.parent.gameObject.SetActive(true);
         m_element.btnAction.gameObject.SetActive(false);
@@ -203,5 +206,8 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
             batch = panel.Find("Batch").gameObject;
         }
+
+        public void SetActiveName(bool _isActive)
+            => txtName.gameObject.SetActive(_isActive);
     }
 }
