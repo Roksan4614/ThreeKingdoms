@@ -35,7 +35,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
         {
             if (IsCloseScreen())
                 Signal.instance.CloseLobbyScreen.Emit(m_screenType);
-        }, _token: m_ctsEscape);
+        }, _token: m_ctsEscape.Token);
     }
 
     protected virtual void OnDisable()

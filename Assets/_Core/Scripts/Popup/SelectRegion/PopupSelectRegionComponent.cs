@@ -27,7 +27,7 @@ public class PopupSelectRegionComponent : BasePopupComponent
 
     async UniTask OnButton_RegionAsync(RegionType _region)
     {
-        RegionData regionData = m_element.dbHero.Find(x=>x.region == _region);
+        RegionData regionData = m_element.dbHero.Find(x => x.region == _region);
         foreach (var hero in m_element.dbHero)
         {
             if (hero.region != _region)
@@ -91,6 +91,8 @@ public class PopupSelectRegionComponent : BasePopupComponent
         public TextMeshProUGUI txtName;
         public Button btnHero;
 
+        public CharacterComponent heroComponent;
+
         [SerializeField] SpriteRenderer[] renderers;
         [SerializeField] float[] orinAlpha;
 
@@ -100,6 +102,8 @@ public class PopupSelectRegionComponent : BasePopupComponent
             rt = (RectTransform)_transform;
             txtName = _transform.GetComponent<TextMeshProUGUI>("txt_name");
             btnHero = _transform.GetComponent<Button>();
+
+            heroComponent = rt.GetComponentInChildren<CharacterComponent>();
 
             renderers = rt.GetComponentsInChildren<SpriteRenderer>();
             orinAlpha = new float[renderers.Length];

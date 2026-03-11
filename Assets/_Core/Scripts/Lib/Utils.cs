@@ -114,19 +114,19 @@ public static class Utils
         return $"{_size:0.##} {strFileSize[count]}";
     }
 
-    public static void WaitEscape(MonoBehaviour _mono, UnityAction _onEscape, bool _isForceBreak = false, CancellationTokenSource _token = null)
+    public static void WaitEscape(MonoBehaviour _mono, UnityAction _onEscape, bool _isForceBreak = false, CancellationToken _token = default)
     {
         WaitEscapeAsync(_mono, _onEscape, _isForceBreak, _token).Forget();
     }
 
-    public static async UniTask WaitEscapeAsync(MonoBehaviour _mono, UnityAction _onEscape, bool _isForceBreak = false, CancellationTokenSource _token = null)
+    public static async UniTask WaitEscapeAsync(MonoBehaviour _mono, UnityAction _onEscape, bool _isForceBreak = false, CancellationToken _token = default)
     {
         while (true)
         {
             await UniTask.WaitUntil(() =>
             {
                 return Input.GetKeyDown(KeyCode.Escape);
-            }, cancellationToken: _token == null ? _mono.destroyCancellationToken : _token.Token);
+            }, cancellationToken: _token == default ? _mono.destroyCancellationToken : _token);
 
             _onEscape();
 
