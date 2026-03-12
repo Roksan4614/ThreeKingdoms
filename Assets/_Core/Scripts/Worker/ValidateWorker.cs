@@ -11,7 +11,7 @@ public interface IValidatable
 #if UNITY_EDITOR
 public static class ValidateWorker
 {
-    [MenuItem("Rev9/Validate/RUN")]
+    [MenuItem("Rev9/Validate RUN")]
     static void Run()
     {
         Utils.ClearDebugLog();

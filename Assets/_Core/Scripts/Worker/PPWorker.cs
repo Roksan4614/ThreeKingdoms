@@ -6,7 +6,7 @@ using UnityEngine;
 public enum PlayerPrefsType
 {
     OPTION,
-    HERO_LIST,
+    USER_DATA,
 
     CHAPTER_STAGE_INFO,
 

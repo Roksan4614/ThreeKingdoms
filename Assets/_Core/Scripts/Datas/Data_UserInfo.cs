@@ -6,45 +6,49 @@ using UnityEngine;
 
 public class Data_UserInfo
 {
-    public int uid;
-    public RegionType region = RegionType.Shu;
+    ElementData m_element;
 
-    List<HeroInfoData> m_myHero = new();
-    public IReadOnlyList<HeroInfoData> myHero => m_myHero;
+    public int uid => m_element.uid;
+    public RegionType region => m_element.region;
+    public IReadOnlyList<HeroInfoData> myHero => m_element.myHero;
 
     public async UniTask Initialize()
     {
-        if (PPWorker.HasKey(PlayerPrefsType.HERO_LIST))
+        if (PPWorker.HasKey(PlayerPrefsType.USER_DATA))
         {
-            m_myHero = PPWorker.Get<List<HeroInfoData>>(PlayerPrefsType.HERO_LIST);
+            m_element = PPWorker.Get<ElementData>(PlayerPrefsType.USER_DATA);
 
-            await AddressableManager.instance.Load_HeroIcon(m_myHero.Select(x => x.skin).ToArray());
-            await AddressableManager.instance.Load_HeroCharacter(m_myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+            await AddressableManager.instance.Load_HeroIcon(m_element.myHero.Select(x => x.skin).ToArray());
+            await AddressableManager.instance.Load_HeroCharacter(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+        }
+        else
+        {
+            m_element.Default();
+            SaveData();
         }
     }
 
     public void SaveData()
     {
-        if (m_myHero.Count > 1)
-            m_myHero = m_myHero.OrderByDescending(x => x.isMain).ToList();
+        if (m_element.myHero.Count > 1)
+            m_element.myHero = m_element.myHero.OrderByDescending(x => x.isMain).ToList();
 
-        PPWorker.Set(PlayerPrefsType.HERO_LIST, m_myHero);
+        PPWorker.Set(PlayerPrefsType.USER_DATA, m_element);
     }
 
     public HeroInfoData GetHeroInfoData(string _key)
-        => m_myHero.Where(x => x.key.Equals(_key)).FirstOrDefault();
+        => m_element.myHero.Where(x => x.key.Equals(_key)).FirstOrDefault();
 
     public void Update(HeroInfoData _heroData)
     {
-        var index = m_myHero.FindIndex(x => x.key.Equals(_heroData.key));
-        m_myHero[index] = _heroData;
+        var index = m_element.myHero.FindIndex(x => x.key.Equals(_heroData.key));
+        m_element.myHero[index] = _heroData;
         SaveData();
     }
 
     public void UpdateAll(List<HeroInfoData> _heroList)
     {
-        m_myHero = _heroList;
-
+        m_element.myHero = _heroList;
         SaveData();
     }
 
@@ -55,7 +59,7 @@ public class Data_UserInfo
             .Select((_item, _idx) => new { _item.key, _idx })
             .ToDictionary(x => x.key, x => x._idx);
 
-        m_myHero = m_myHero.OrderBy(x =>
+        m_element.myHero = m_element.myHero.OrderBy(x =>
         {
             if (indexMap.TryGetValue(x.key, out int index))
             {
@@ -65,5 +69,35 @@ public class Data_UserInfo
         }).ToList();
 
         SaveData();
+    }
+
+    public void AddHero(string _key, bool _isBatch = false, bool _isMain = false)
+        => AddHeroAsync(_key, _isBatch, _isMain).Forget();
+
+    public async UniTask AddHeroAsync(string _key, bool _isBatch = false, bool _isMain = false)
+    {
+        if (m_element.myHero.Any(x => x.key == _key))
+            return;
+
+        m_element.myHero.Add(new(_key, _isMain: _isMain, _isBatch: _isBatch));
+
+        await AddressableManager.instance.Load_HeroIcon(_key);
+        if (_isBatch)
+            await AddressableManager.instance.Load_HeroCharacter(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+
+        SaveData();
+    }
+
+    struct ElementData
+    {
+        public int uid;
+        public RegionType region;
+        public List<HeroInfoData> myHero;
+
+        public void Default()
+        {
+            region = RegionType.Shu;
+            myHero = new();
+        }
     }
 }

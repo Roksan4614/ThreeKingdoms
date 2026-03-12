@@ -48,6 +48,12 @@ public class PopupSelectRegionComponent : BasePopupComponent
 
         await m_popupHeroInfo.OpenAsync(regionData);
 
+        if (DataManager.userInfo.myHero.Count > 0)
+        {
+            Close();
+            return;
+        }
+
         foreach (var hero in m_element.dbHero)
         {
             if (hero.region != _region)

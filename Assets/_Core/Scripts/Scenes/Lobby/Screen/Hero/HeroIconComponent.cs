@@ -21,11 +21,11 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     private void Start()
     {
-        m_element.btnHero.onClick.AddListener(() => m_onClick(this, false));
+        m_element.btnHero.onClick.AddListener(() => m_onClick?.Invoke(this, false));
         m_element.btnAction?.onClick.AddListener(() =>
         {
             if (m_isOpenPopup == false)
-                m_onClickAction(this);
+                m_onClickAction?.Invoke(this);
         });
     }
 
@@ -131,20 +131,26 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     private CancellationTokenSource m_cts;
     public async void OnPointerDown(PointerEventData eventData)
     {
+        if (m_screenHero == null)
+            return;
+
         if (ControllerManager.instance.isRightClick == true)
         {
             m_onClick(this, true);
             return;
         }
 
-        RelaseCTS();
-        m_cts = new CancellationTokenSource();
+        if (Input.GetKey(KeyCode.LeftShift) == false)
+        {
+            RelaseCTS();
+            m_cts = new CancellationTokenSource();
 
-        bool isCanceled = await UniTask.Delay(500, cancellationToken: m_cts.Token).SuppressCancellationThrow();
+            bool isCanceled = await UniTask.Delay(500, cancellationToken: m_cts.Token).SuppressCancellationThrow();
 
-        RelaseCTS();
-        if (isCanceled == true)
-            return;
+            RelaseCTS();
+            if (isCanceled == true)
+                return;
+        }
 
         m_isOpenPopup = true;
         await m_screenHero.OpenHeroInfoPopup(data);

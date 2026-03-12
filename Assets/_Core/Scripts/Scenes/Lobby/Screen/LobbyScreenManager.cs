@@ -52,10 +52,14 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         SetActiveDimm(false, true);
 
         m_curScreen = LobbyScreenType.None;
+
+        ControllerManager.instance.isSwitch = true;
     }
 
     public LobbyScreen_Base OpenScreen(LobbyScreenType _screen)
     {
+        ControllerManager.instance.isSwitch = true;
+
         if (m_doing_ActiveDimm == true)
             return null;
 
@@ -74,6 +78,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         m_dicScreen[_screen].Open(m_curScreen);
         m_curScreen = _screen;
 
+        ControllerManager.instance.isSwitch = false;
         return m_dicScreen[_screen];
     }
 

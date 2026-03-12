@@ -98,6 +98,8 @@ public struct TableHeroData
     }
 
     public bool isActive => key.IsNullOrEmpty() == false;
+    public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
+    public string regionKey => $"{regionType}_{key}".ToUpper();
 }
 
 public struct HeroInfoData
@@ -122,8 +124,6 @@ public struct HeroInfoData
     }
 
     public bool isActive => key.IsNullOrEmpty() == false;
-    // TODO
-    public string name
-        => key;
-
+    public string regionKey => $"{TableManager.hero.Get(key).regionType}_{key}".ToUpper();
+    public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
 }
