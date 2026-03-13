@@ -14,6 +14,7 @@ public abstract class TargetComponent : MonoBehaviour, IValidatable
     {
         m_canvas = transform.GetComponent<Canvas>("Character/Canvas");
         m_sortingGroup = transform.GetComponent<SortingGroup>();
+        m_canvas.sortingOrder = m_sortingGroup.sortingOrder + 1;
     }
 
     private void LateUpdate()

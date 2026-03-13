@@ -19,7 +19,8 @@ public class ScenarioManager
         if (DataManager.option.isScenarioSkip)
             return;
 
-        string key = GetStageData().GetKey(_phaseIdx, _isStart);
+        string stageKey = GetStageData().GetKey(_phaseIdx, _isStart);
+        string key = $"Scenario/Scenario_{stageKey}.prefab";
 
         AsyncOperationHandle<GameObject> handle = default;
         await AddressableManager.instance.LoadAssetAsync<GameObject>(
@@ -32,6 +33,10 @@ public class ScenarioManager
         if (handle.IsValid() == false)
             return;
 
+        var scenario = GameObject.Instantiate(handle.Result, StageManager.instance.transform);
+        await scenario.GetComponent<ScenarioBase>().StartAsync(stageKey);
+
+        GameObject.Destroy(scenario.gameObject);
         handle.Release();
     }
 

@@ -25,6 +25,9 @@ public class Character_Worker_Target : Character_Worker
         m_targetList.Add(_target);
     }
 
+    public void RemoveAll()
+        => m_targetList.Clear();
+
     public void RemoveTarget(CharacterComponent _target)
     {
         if (m_owner.isLive == false || IsEnemy(_target) == false)

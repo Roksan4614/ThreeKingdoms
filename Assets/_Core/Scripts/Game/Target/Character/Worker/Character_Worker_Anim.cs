@@ -2,11 +2,11 @@ using System;
 using UnityEngine;
 
 
-public class Character_Woker_Anim : Character_Worker
+public class Character_Worker_Anim : Character_Worker
 {
     Animator m_animator;
 
-    public Character_Woker_Anim(CharacterComponent _owner) : base(_owner)
+    public Character_Worker_Anim(CharacterComponent _owner) : base(_owner)
     {
         m_animator = m_owner.element.animator;
 

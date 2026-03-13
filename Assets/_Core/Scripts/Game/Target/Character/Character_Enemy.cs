@@ -4,9 +4,10 @@ public class Character_Enemy : CharacterComponent
 {
     public bool isBoss { get; protected set; }
 
-    public override void SetHeroData(string _key)
+    public override void SetHeroData(string _key = null)
     {
-        m_data = TableManager.enemy.GetHeroData(_key);
+        if (_key.IsNullOrEmpty() == false)
+            m_data = TableManager.enemy.GetHeroData(_key);
 
         if (m_data.isActive == false)
             m_data = TableManager.enemy.GetHeroData("Enemy");

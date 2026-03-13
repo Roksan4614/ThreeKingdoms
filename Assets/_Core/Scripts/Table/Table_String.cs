@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class Table_String : BaseTable<string, TableStringData>
@@ -18,11 +20,7 @@ public class Table_String : BaseTable<string, TableStringData>
         if (db.isActive == false)
             return _key;
 
-        return DataManager.option.language switch
-        {
-            LanguageType.English => db.en,
-            _ => db.kr
-        };
+        return db.message;
     }
 
     public string GetStringFormat(string _key, params string[] _args)
@@ -39,6 +37,18 @@ public struct TableStringData
     public string key;
     public string kr;
     public string en;
+    public string target;
 
     public bool isActive => key.IsNullOrEmpty() == false;
+
+    public string message =>
+        DataManager.option.language switch
+        {
+            LanguageType.English => en,
+            _ => kr
+        };
+
+    public string[] talkArray =>
+        Regex.Split(message, @"(?<=[.,?!]+\s+)").Where(x => string.IsNullOrWhiteSpace(x) == false).ToArray();
+    //message.Split(new string[] { ". ", ", ", "? ", "! " }, System.StringSplitOptions.RemoveEmptyEntries);
 }

@@ -13,9 +13,6 @@ public class Table_Scenario : BaseTable<string, TableScenarioData>
 
     public string[] GetNextScenarios(string _key)
         => Get(_key).nextScenario.Replace(" ", "").Split(',');
-
-    public string GetChoiceTextNextScenario(string _key)
-        => TableManager.stringScenario.GetString($"CHOICE_{_key}");
 }
 
 public enum ScenarioStartType

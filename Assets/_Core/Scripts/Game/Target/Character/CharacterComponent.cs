@@ -22,8 +22,9 @@ public class CharacterComponent : TargetComponent
 
     Dictionary<CharacterStateType, CharacterState> m_dbState = new();
 
-    public Character_Woker_Anim anim { get; private set; }
-    public Character_Woker_Move move { get; private set; }
+    public Character_Worker_Buff buff { get; private set; }
+    public Character_Worker_Anim anim { get; private set; }
+    public Character_Worker_Move move { get; private set; }
     public Character_Worker_Attack attack { get; private set; }
     public Character_Worker_Target target { get; private set; }
     public Character_Worker_Talkbox talkbox { get; private set; }
@@ -43,6 +44,7 @@ public class CharacterComponent : TargetComponent
         attack = new(this);
         target = new(this);
         talkbox = new(this);
+        buff = new(this);
 
         m_dbState.Add(CharacterStateType.Wait, new CharacterState_Wait(this));
         m_dbState.Add(CharacterStateType.SearchEnemy, new CharacterState_SearchEnemy(this));
@@ -128,6 +130,9 @@ public class CharacterComponent : TargetComponent
 
     public virtual bool OnDamage(int _damage)
     {
+        if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE))
+            return m_data.health == 0;
+
         m_data.health -= _damage;
         if (m_data.health <= 0)
         {
@@ -136,6 +141,8 @@ public class CharacterComponent : TargetComponent
             anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
 
             m_element.collider.enabled = false;
+            StopAllCoroutines();
+            target.RemoveAll();
         }
 
         Signal.instance.UpdateHP.Emit(this);

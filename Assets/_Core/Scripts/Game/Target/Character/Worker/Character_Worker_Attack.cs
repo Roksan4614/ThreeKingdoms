@@ -9,6 +9,8 @@ using UnityEngine.Events;
 
 public class Character_Worker_Attack : Character_Worker
 {
+    public bool isAttack => m_weapon.isAttack;
+
     public Character_Worker_Attack(CharacterComponent _owner) : base(_owner)
     {
         m_weapon = _owner.transform.GetComponent<Character_Weapon>("Character");
@@ -70,8 +72,10 @@ public class Character_Worker_Attack : Character_Worker
     public bool IsValidUseSkill()
         => m_owner.isLive && m_weapon.IsValidUseSkill();
 
+    public bool isUseSkill { get; private set; }
     public IEnumerator DoUseSkill()
     {
+        isUseSkill = true;
         yield return m_weapon.DoUseSkill();
     }
 

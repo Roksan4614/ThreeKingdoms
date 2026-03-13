@@ -28,8 +28,13 @@ public class CameraManager : MonoSingleton<CameraManager>
             CameraMove();
     }
 
-    public void SetCameraPosTarget()
-        => CameraMove(true);
+    public void SetCameraPosTarget(Transform _target = null, bool _isForce = true)
+    {
+        if (_target != null)
+            m_playerCameraPos = _target;
+
+        CameraMove(_isForce);
+    }
 
     public void CameraMove(bool _isForce = false)
     {

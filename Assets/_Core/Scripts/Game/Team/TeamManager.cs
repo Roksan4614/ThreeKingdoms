@@ -306,8 +306,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField]
-    //[SerializeField, HideInInspector]
+    //[SerializeField]
+    [SerializeField, HideInInspector]
     ElementData m_element;
     public ElementData element => m_element;
     [Serializable]

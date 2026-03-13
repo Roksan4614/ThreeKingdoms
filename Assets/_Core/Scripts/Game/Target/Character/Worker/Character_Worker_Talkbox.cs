@@ -20,12 +20,12 @@ public class Character_Worker_Talkbox : Character_Worker
     HorizontalLayoutGroup m_layout;
     ContentSizeFitter m_fitter;
 
-    public void StartTalk(params string[] _talks)
+    void Init(params string[] _talks)
     {
         SetActive(true);
         SetFlip(m_owner.move.isFlip);
 
-        m_txtTalk.text = string.Join(" ", _talks);
+        m_txtTalk.text = string.Join("", _talks);
 
         m_layout.enabled = m_fitter.enabled = true;
         m_fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -63,7 +63,7 @@ public class Character_Worker_Talkbox : Character_Worker
     }
 
     CancellationTokenSource m_cts;
-    public void CancelTalk()
+    public void Cancel()
     {
         if (m_cts != null)
         {
@@ -73,18 +73,33 @@ public class Character_Worker_Talkbox : Character_Worker
         }
     }
 
-    public async UniTask StartTalkAsync(params string[] _talks)
+    public async UniTask StartAsyncClickDisable(params string[] _talks)
     {
-        CancelTalk();
+        await StartAsync(_talks);
+        await UniTask.WaitUntil(() => ControllerManager.isClickDown || Input.GetKeyDown(KeyCode.Return));
+        SetActive(false);
+    }
+
+    public async UniTask StartAsyncAutoDisable(float _duration, CancellationToken _token,  params string[] _talks)
+    {
+        await StartAsync(_talks);
+        await UniTask.WaitForSeconds(_duration, cancellationToken: _token);
+        SetActive(false);
+    }
+
+    public void Start(params string[] _talks)
+        => StartAsync(_talks).Forget();
+
+    public async UniTask StartAsync(params string[] _talks)
+    {
+        Cancel();
         m_cts = new();
         var token = m_cts.Token;
 
-        StartTalk(_talks);
+        Init(_talks);
 
         var totalMsg = m_txtTalk.text;
         m_txtTalk.text = "";
-
-        ControllerManager.instance.isSwitch = false;
 
         for (int i = 0; i < _talks.Length; i++)
         {
@@ -113,15 +128,17 @@ public class Character_Worker_Talkbox : Character_Worker
                 if (Input.GetKey(KeyCode.Return) || ControllerManager.isClick)
                 {
                     m_txtTalk.text = totalMsg;
+
+                    await UniTask.WaitForEndOfFrame();
                     ControllerManager.instance.isSwitch = true;
                     return;
                 }
             }
 
             await UniTask.WaitForSeconds(0.2f, cancellationToken: token);
-            m_txtTalk.text += " ";
         }
 
+        await UniTask.WaitForEndOfFrame();
         ControllerManager.instance.isSwitch = true;
     }
 

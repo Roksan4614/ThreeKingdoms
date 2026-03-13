@@ -4,11 +4,14 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Character_Woker_Move : Character_Worker
+public class Character_Worker_Move : Character_Worker
 {
-    public Character_Woker_Move(CharacterComponent _owner) : base(_owner)
+    public Character_Worker_Move(CharacterComponent _owner) : base(_owner)
     {
     }
+
+    public bool isDash => m_tweenDash != null;
+
     public bool isMoving => m_owner.rig.linearVelocity == Vector2.zero;
     public bool isFlip => m_owner.panel.localScale.x < 0; // 오른쪽을 보는게 플립임. 기본이 왼쪽보니까
 

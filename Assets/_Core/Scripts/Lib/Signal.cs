@@ -276,7 +276,8 @@ public class Signal
 
     public SignalObject<StageManager.LoadData_Stage> StartStage = new();
     public SignalObject<int> StartPhase = new(); // Phase index
-    
 
+    public SignalObject Dash = new();
+    public SignalObject Attack = new();
     #endregion
 }

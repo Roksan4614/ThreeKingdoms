@@ -53,16 +53,6 @@ public class InfoStageComponent : MonoBehaviour, IValidatable
         m_element.rtIconBoss.gameObject.SetActive(true);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            SlotStartPhase(1);
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-            SlotStartPhase(2);
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-            SlotStartPhase(3);
-    }
-
     void SlotStartPhase(int _phaseIdx)
     {
         bool isBossPhase = _phaseIdx == 3;

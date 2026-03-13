@@ -16,7 +16,7 @@ public class TableManager
     public static Table_Region region { get; private set; }
     public static Table_String stringTable { get; private set; }
     public static Table_String stringHero { get; private set; }
-    public static Table_String stringScenario { get; private set; }
+    public static Table_StringTalk scenarioTalk { get; private set; }
 
     public async UniTask InitializeAsync()
     {
@@ -29,7 +29,7 @@ public class TableManager
 
             stringTable = new(LoadList<TableStringData>(_result, "String"));
             stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
-            stringScenario = new(LoadList<TableStringData>(_result, "String_Scenario"));
+            scenarioTalk = new(LoadList<TableStringData>(_result, "String_ScenarioTalk"));
 
             foreach (var h in _result)
                 h.Value.Release();

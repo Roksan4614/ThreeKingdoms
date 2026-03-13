@@ -50,8 +50,11 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         }
     }
 
+    public bool isAttack { get; private set; } = false;
     public void Attack(bool _isCritical, int _layerIndex = 0)
     {
+        isAttack = true;
+
         m_isCritial = _isCritical;
 
         if (m_isCritial)
@@ -60,7 +63,8 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         m_owner.anim.Play(CharacterAnimType.Attack, _layerIndex);
     }
 
-    public virtual bool IsValidUseSkill() => m_owner.target.target != null;
+    public virtual bool IsValidUseSkill() =>
+        m_owner.target.target != null && m_owner.buff.IsActive(BuffType.DEBUFF_NO_SKILL) == false;
 
     public virtual IEnumerator DoUseSkill()
     {
@@ -79,6 +83,8 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
     public virtual void EventAttackHit(CharacterComponent _owner)
     {
+        isAttack = false;
+
         if (isUseSkill == true)
             return;
 

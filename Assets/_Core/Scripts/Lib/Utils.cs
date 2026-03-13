@@ -172,4 +172,9 @@ public static class Utils
 
         await _transform.DOScale(targetScale, duration).SetEase(_isActive ? Ease.OutBack : Ease.InBack).AsyncWaitForCompletion();
     }
+
+    public static long GetUTCTicks(float _second = 0)
+    {
+        return DateTime.UtcNow.AddSeconds(_second).Ticks;
+    }
 }

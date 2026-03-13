@@ -58,9 +58,6 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         {
             if (Input.anyKeyDown)
             {
-                if (Input.GetKeyDown(KeyCode.P))
-                    m_mainHero.talkbox.StartTalkAsync("안녕하세요. 저는 <color=#0000ff>임희동</color>입니다.", "삼국지 킹즈에 오신 걸 환영합니다.").Forget();
-
                 // 공격
                 if (Input.GetKeyDown(KeyCode.X))
                     OnButton_Attack();
@@ -135,6 +132,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public bool isRightClick => Input.GetMouseButton(1);
     public bool isTouch => Input.touchCount > 0;
     public static bool isClick => instance.isLeftClick || instance.isRightClick || instance.isTouch;
+    public static bool isClickDown => instance.isLeftClick_Down || instance.isRightClick_Down || instance.isTouch;
 
     public void OnPointerDown(PointerEventData _eventData)
     {
