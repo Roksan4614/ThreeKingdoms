@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class Scene_Lobby : SceneBase
 {
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
     async void Start()
     {
+        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => {
+            m_elementBase.canvas.transform.Find("HeroInfo").gameObject.SetActive(false);
+        });
+
         await UniTask.WaitForEndOfFrame();
         await DataManager.InitializeAsync();
 
@@ -19,6 +18,9 @@ public class Scene_Lobby : SceneBase
             await PopupManager.instance.OpenPopupAndWait(PopupType.SelectRegion);
 
         await TeamManager.instance.SpawnUpdateAsync();
+
+        if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            await TutorialManager.instance.StartAsync(TutorialType.START);
 
         StageManager.instance
             .StartStageAsync(() => PopupManager.instance.ShowDimm(false))

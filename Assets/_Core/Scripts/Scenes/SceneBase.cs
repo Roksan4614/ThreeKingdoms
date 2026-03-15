@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public abstract class SceneBase : MonoBehaviour, IValidatable
+public abstract class SceneBase : Singleton<SceneBase>, IValidatable
 {
-    protected virtual void Awake()
+    protected override void Awake()
     {
         if (Configure.instance.isBooted == false)
         {
@@ -12,16 +12,18 @@ public abstract class SceneBase : MonoBehaviour, IValidatable
             return;
         }
 
+        base.Awake();
         m_elementBase.canvas.worldCamera = CameraManager.instance.main;
     }
+    public Canvas canvas => m_elementBase.canvas;
 
     public virtual void OnManualValidate() { m_elementBase.Initialize(transform); }
 
     [SerializeField]
-    ElementBaseData m_elementBase;
+    protected ElementBaseData m_elementBase;
 
     [Serializable]
-    struct ElementBaseData
+    protected struct ElementBaseData
     {
         [SerializeField]
         Canvas m_canvas;

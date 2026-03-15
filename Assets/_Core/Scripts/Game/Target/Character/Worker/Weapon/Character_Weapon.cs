@@ -106,6 +106,9 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         });
         m_isCritial = false;
 
+        if (target.target.target == null && ControllerManager.instance.IsControll(target) == false)
+            target.move.MoveTarget(m_owner, true);
+
         if (target.OnDamage(damage))
             _owner.target.SetTarget(null);
     }

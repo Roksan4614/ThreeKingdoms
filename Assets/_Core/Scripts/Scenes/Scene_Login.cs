@@ -19,6 +19,8 @@ public class Scene_Login : SceneBase
 
         //await PopupManager.instance.ShowDimmAsync(true);
 
+        await TutorialManager.instance.InitializeAsync();
+
         AddressableManager.instance.LoadScene("02_Lobby");
     }
 }

@@ -24,6 +24,8 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     LobbyScreenType m_curScreen = LobbyScreenType.None;
     public LobbyScreenType curScreen => m_curScreen;
 
+    public LobbyScreen_Summon GetScreenSummon() => m_dicScreen[LobbyScreenType.Summon] as LobbyScreen_Summon;
+
     private void Start()
     {
         List<string> screens = new() {

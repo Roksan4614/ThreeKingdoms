@@ -12,6 +12,10 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         package.SetActive(true);
     }
 
+    public void SetEnableRegion(params RegionType[] _region)
+        => package.SetEnableRegion(_region);
+
+    #region VALIDATE
     public override void OnManualValidate()
     {
         base.OnManualValidate();
@@ -32,4 +36,5 @@ public class LobbyScreen_Summon : LobbyScreen_Base
             m_package = _transform.GetComponent<LobbyScreen_Summon_Package>("Panel/BG/Content/Package");
         }
     }
+    #endregion VALIDATA
 }

@@ -70,6 +70,12 @@ public class Character_Worker_Move : Character_Worker
     {
         while (_target.isLive)
         {
+            if (ControllerManager.instance.IsControll(m_owner))
+            {
+                yield return null;
+                continue;
+            }
+
             var lookAt = _target.transform.position - m_owner.transform.position;
             OnMoveUpdate(lookAt.normalized * m_owner.data.moveSpeed);
 
@@ -79,8 +85,19 @@ public class Character_Worker_Move : Character_Worker
 
                 m_owner.target.SetTarget(_target);
                 yield return m_owner.attack.DoAttack();
+                //if (m_owner.target.Contains(_target) == false)
+                //    break;
+
+                //공격을 멈췄는데 적이ㅣ 아직 있으면 따라가야하는거 아닌가?
                 if (m_owner.target.Contains(_target) == false)
-                    break;
+                {
+                    var nt = m_owner.target.nearestEnemy;
+                    if (nt != null)
+                    {
+                        m_owner.target.SetTarget(nt);
+                        _target = nt;
+                    }
+                }
             }
 
             yield return null;

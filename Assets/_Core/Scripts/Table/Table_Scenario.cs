@@ -9,7 +9,7 @@ public class Table_Scenario : BaseTable<string, TableScenarioData>
     }
 
     public TableScenarioData GetScenario(StageManager.LoadData_Stage _stage, int _phaseIdx, bool _isStart)
-        => Get(_stage.GetKey(_phaseIdx, _isStart));
+        => Get(_stage.GetKey_Scenario(_phaseIdx, _isStart));
 
     public string[] GetNextScenarios(string _key)
         => Get(_key).nextScenario.Replace(" ", "").Split(',');

@@ -279,5 +279,8 @@ public class Signal
 
     public SignalObject Dash = new();
     public SignalObject Attack = new();
+
+    public SignalObject<bool> ActiveHUD = new();
+
     #endregion
 }

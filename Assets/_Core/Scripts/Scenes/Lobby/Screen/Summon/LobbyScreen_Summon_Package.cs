@@ -10,6 +10,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
 {
     ScrollRect scroll => m_element.scroll;
     Dictionary<RegionType, Button> m_dbButton;
+    Dictionary<RegionType, bool> m_dbActive;
 
     RegionType m_curRegion = RegionType.NONE;
 
@@ -17,16 +18,26 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
 
     private void Awake()
     {
-        m_dbButton = m_element.buttons.ToDictionary(x =>
-        {
-            if (Enum.TryParse(x.name, out RegionType region) == false)
-                return RegionType.NONE;
-            return region;
-        }, x => x);
-
+        SetDBButton();
         m_element.scroll.onValueChanged.AddListener(_pos => m_isPush = true);
 
         SetButtonSort();
+    }
+
+    void SetDBButton()
+    {
+        if (m_dbActive == null)
+        {
+            m_dbActive = new();
+            m_dbButton = m_element.buttons.ToDictionary(x =>
+            {
+                if (Enum.TryParse(x.name, out RegionType region) == false)
+                    region = RegionType.NONE;
+
+                m_dbActive.Add(region, true);
+                return region;
+            }, x => x);
+        }
     }
 
     private void Update()
@@ -97,7 +108,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
                 b.Value.gameObject.SetActive(false);
                 continue;
             }
-            b.Value.gameObject.SetActive(true);
+            b.Value.gameObject.SetActive(m_dbActive[b.Key]);
         }
     }
 
@@ -110,6 +121,26 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
 
         if (_isActive)
             scroll.content.anchoredPosition = Vector2.zero;
+    }
+
+    public void SetEnableRegion(params RegionType[] _region)
+    {
+        bool isAwaked = m_dbActive != null;
+        SetDBButton();
+
+        var region = _region.ToList();
+
+        for (var r = RegionType.NONE; r < RegionType.MAX; r++)
+        {
+            if (m_dbActive.ContainsKey(r))
+                m_dbActive[r] = region.Count == 0 || region.Contains(r);
+        }
+
+        m_element.scroll.enabled = m_dbActive.Where(x => x.Value == true).Count() > 1;
+        m_curRegion = _region.Length == 0 ? RegionType.NONE : _region[0];
+
+        if (isAwaked)
+            SetButtonSort();
     }
 
     public void OnManualValidate()

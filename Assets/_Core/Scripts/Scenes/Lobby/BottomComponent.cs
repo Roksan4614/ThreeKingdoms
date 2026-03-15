@@ -49,6 +49,7 @@ public class BottomComponent : MonoBehaviour
         }
 
         Signal.instance.CloseLobbyScreen.connectLambda = new(this, _screen => SelectButton(_screen, false));
+        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(_isActive));
     }
 
     void OnButton(LobbyScreenType _screen)

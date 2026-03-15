@@ -42,6 +42,9 @@ public class StageManager : Singleton<StageManager>, IValidatable
             };
             SaveData();
         }
+
+        for (int i = 0; i < m_element.chapter.childCount; i++)
+            Destroy(m_element.chapter.GetChild(i).gameObject);
     }
 
     void SaveData()
@@ -369,7 +372,10 @@ public class StageManager : Singleton<StageManager>, IValidatable
         public int stageNumber;
         public bool isBossWait;
 
-        public string GetKey(int _phaseIdx, bool _isStart)
+        public string GetKey_Scenario(int _phaseIdx, bool _isStart)
             => $"{chapterNumber}.{stageNumber}.{_phaseIdx + 1}_{DataManager.userInfo.region.ToString().ToUpper()}_{(_isStart ? "START" : "END")}";
+
+        //public string GetKey_Tutorial(int _phaseIdx, bool _isStart)
+        //    => $"{chapterNumber}.{stageNumber}.{_phaseIdx + 1}_{(_isStart ? "START" : "END")}";
     }
 }

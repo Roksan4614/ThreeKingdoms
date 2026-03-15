@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -23,7 +24,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     public bool isSwitch { get; set; } = false;
 
-    public bool isActive => m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
+    public bool isDoing => m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
 
     private void Start()
     {
@@ -44,8 +45,19 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         Signal.instance.ConnectMainHero.connectLambda = new(this, _mainHero => m_mainHero = _mainHero);
         Signal.instance.StartStage.connectLambda = new(this, _ => DashTimerStartAsync().Forget());
 
+        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive =>
+        {
+            gameObject.SetActive(_isActive);
+        });
+
         DashButtonInitalize();
     }
+
+    public bool IsControll(CharacterComponent _hero)
+        => m_mainHero == _hero && isDoing;
+
+    public void SetActive_Action(bool _isActive)
+        => m_element.btnAttack.transform.parent.gameObject.SetActive(_isActive);
 
     private void Update()
     {
@@ -162,7 +174,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         m_isDashClick = m_isPush = false;
 
-        if (isActive == false)
+        if (isDoing == false)
             return;
 
         StopControll();
@@ -172,7 +184,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     public void OnDrag(PointerEventData _eventData)
     {
-        if (isActive == false)
+        if (isDoing == false)
             return;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 targetPos);
@@ -186,6 +198,19 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             m_mainHero.SetState(TeamManager.instance.teamState);
     }
 
+    Tween m_tweenMoveAction;
+    public void SetMoveActionArea(bool _isBottom, bool _isTween = true)
+    {
+        m_tweenMoveAction?.Kill();
+
+        var target = m_element.rt.offsetMin;
+        target.y = _isBottom ? 250 : 455;
+
+        DOTween.To(() => target, _offsetMin => m_element.rt.offsetMin = _offsetMin, target, _isTween ? 0.2f : 0f);
+        //m_tweenMoveAction = m_element.rtAction.DOAnchorPosY(_isBottom ? -50f : 130f, _isTween ? 0.1f : 0f);
+    }
+
+    #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
@@ -196,6 +221,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         public RectTransform pad;
         public RectTransform padBar;
+        public RectTransform rt;
 
         public Button btnAttack;
 
@@ -208,6 +234,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
         public void Initialize(Transform _transform)
         {
+            rt = (RectTransform)_transform;
             pad = (RectTransform)_transform.Find("Pad");
             padBar = (RectTransform)pad.Find("Bar");
 
@@ -226,4 +253,5 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             };
         }
     }
+    #endregion
 }

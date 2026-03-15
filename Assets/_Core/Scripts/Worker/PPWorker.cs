@@ -7,6 +7,7 @@ public enum PlayerPrefsType
 {
     OPTION,
     USER_DATA,
+    TUTORIAL_DATA,
 
     CHAPTER_STAGE_INFO,
 

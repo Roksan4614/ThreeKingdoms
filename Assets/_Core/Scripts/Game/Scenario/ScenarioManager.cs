@@ -7,8 +7,6 @@ public class ScenarioManager
 {
     public static ScenarioManager instance { get; private set; } = new();
 
-
-
     public void Initialize()
     {
 
@@ -19,7 +17,7 @@ public class ScenarioManager
         if (DataManager.option.isScenarioSkip)
             return;
 
-        string stageKey = GetStageData().GetKey(_phaseIdx, _isStart);
+        string stageKey = StageManager.instance.data.GetKey_Scenario(_phaseIdx, _isStart);
         string key = $"Scenario/Scenario_{stageKey}.prefab";
 
         AsyncOperationHandle<GameObject> handle = default;
@@ -39,7 +37,4 @@ public class ScenarioManager
         GameObject.Destroy(scenario.gameObject);
         handle.Release();
     }
-
-    public StageManager.LoadData_Stage GetStageData()
-        => StageManager.instance.data;
 }
