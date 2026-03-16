@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -117,4 +118,79 @@ public static class Extenssions
 
     public static bool IsNullOrEmpty(this string _string)
         => string.IsNullOrEmpty(_string);
+
+    #region AMOUNT
+    public static string AmountKMBT(this long _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
+    {
+        string amount = $"{_value:#,##0.##}";
+
+        if ((_isMBT && _value < 1000000) ||
+            (_isMBT == false && _value < 1000))
+            return _isDot ? _isFullDot ? $"{_value:#,##0.#0}" : amount : $"{Mathf.Floor(_value):#,##0}";
+
+        switch (DataManager.option.language)
+        {
+            case LanguageType.Korean:
+                return AmountKMBT_EastAsia(_value);
+        }
+
+        var amount_point = amount.Split('.');
+        var amount_data = amount_point[0].Split(',');
+
+        var result = amount_data[0];
+
+        if (_isDot == true)
+        {
+            float valuePoint = int.Parse($"{amount_data[1][0]}{amount_data[1][1]}") * 0.01f;
+            result += _isFullDot ? $"{valuePoint:.#0}" : $"{valuePoint:.##}";
+        }
+
+        //string keySuffix = amount_data.Length switch
+        //{
+        //    2 => _isMBT ? "" : "Thousand",
+        //    3 => "Million",
+        //    4 => "Billion",
+        //    5 => "Trilion",
+        //    _ => ""
+        //};
+        //if (keySuffix.IsNullOrEmpty() == false)
+        //    result += TableManager.stringTable.GetString("Number_Unit_Suffixes_" + keySuffix);
+
+        string keySuffix = amount_data.Length switch
+        {
+            2 => _isMBT ? "" : "K",
+            3 => "M",
+            4 => "B",
+            5 => "T",
+            _ => ""
+        };
+
+        if (keySuffix.IsNullOrEmpty() == false)
+            result += keySuffix;
+
+        return result;
+    }
+
+    static string AmountKMBT_EastAsia(double _value, bool _isDot = true, bool _isFullDot = false)
+    {
+        string amount = $"{_value:#,##0.##}";
+
+        List<double> checkDB = new() { 1_000_000_000_000, 100_000_000, 10_000 };
+        List<string> symbolDB = new() { "°æ", "¾ï", "¸¸" };
+
+        for (int i = 0; i < checkDB.Count; i++)
+        {
+            if (_value >= checkDB[i])
+            {
+                var value = _value / checkDB[i];
+
+                amount = (_isDot == false ? $"{value:0}" : _isFullDot == false ? $"{value:0.##}" : $"{value:0.00}") + symbolDB[i];
+
+                break;
+            }
+        }
+
+        return amount;
+    }
+    #endregion AMOUNT
 }

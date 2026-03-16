@@ -12,6 +12,9 @@ public class Data_UserInfo
     public RegionType region => m_element.region;
     public IReadOnlyList<HeroInfoData> myHero => m_element.myHero;
 
+    public long gold => m_element.gold;
+    public long rice => m_element.rice;
+
     public async UniTask Initialize()
     {
         if (PPWorker.HasKey(PlayerPrefsType.USER_DATA))
@@ -88,11 +91,48 @@ public class Data_UserInfo
         SaveData();
     }
 
+    #region ASSETS
+    public long GetAssetAmount(ItemType _itemType)
+        => _itemType switch { ItemType.Gold => m_element.gold, ItemType.Rice => m_element.rice, _ => -1 };
+
+    public void AddProvision(long _amount, bool _isUpdate = true, bool _isTween = true)
+        => AddAsset(0, _amount, _isUpdate, _isTween);
+    public void AddGold(long _amount, bool _isUpdate = true, bool _isTween = true)
+        => AddAsset(_amount, 0, _isUpdate, _isTween);
+    public void AddAsset(long _gold, long _rice, bool _isUpdate = true, bool _isTween = true)
+    {
+        SetAsset(
+            _gold != 0 ? m_element.gold + _gold : -1,
+            _rice != 0 ? m_element.rice + _rice : -1,
+            _isUpdate, _isTween);
+    }
+
+    public void SetProvision(long _amount, bool _isUpdate = true, bool _isTween = true)
+        => SetAsset(-1, _amount, _isUpdate, _isTween);
+    public void SetGold(long _amount, bool _isUpdate = true, bool _isTween = true)
+        => SetAsset(_amount, -1, _isUpdate, _isTween);
+    public void SetAsset(long _gold, long _rice, bool _isUpdate = true, bool _isTween = true)
+    {
+        if (_gold > -1)
+            m_element.gold = _gold;
+        else if (_rice > -1)
+            m_element.rice = _rice;
+
+        if (_isUpdate)
+            Signal.instance.UpdateAsset.Emit(_isTween);
+
+        SaveData();
+    }
+    #endregion ASSETS
+
     struct ElementData
     {
         public int uid;
         public RegionType region;
         public List<HeroInfoData> myHero;
+
+        public long gold;
+        public long rice;
 
         public void Default()
         {

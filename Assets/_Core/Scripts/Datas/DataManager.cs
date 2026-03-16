@@ -12,6 +12,5 @@ public class DataManager
     public static async UniTask InitializeAsync()
     {
         await userInfo.Initialize();
-        option.Initialize();
     }
 }

@@ -13,6 +13,7 @@ public class Scene_Login : SceneBase
 
     async UniTask StartAsync()
     {
+        DataManager.option.Initialize();
         await UniTask.WaitForEndOfFrame();
 
         //await PopupManager.instance.ShowDimmAsync(false);
@@ -20,6 +21,7 @@ public class Scene_Login : SceneBase
         //await PopupManager.instance.ShowDimmAsync(true);
 
         await TutorialManager.instance.InitializeAsync();
+        await DataManager.InitializeAsync();
 
         AddressableManager.instance.LoadScene("02_Lobby");
     }

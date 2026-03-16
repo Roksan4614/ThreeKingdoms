@@ -11,7 +11,6 @@ public class Scene_Lobby : SceneBase
         });
 
         await UniTask.WaitForEndOfFrame();
-        await DataManager.InitializeAsync();
 
         // 캐릭터가 없다면 선택 화면부터
         if( DataManager.userInfo.myHero.Count == 0)

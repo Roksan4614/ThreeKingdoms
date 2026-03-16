@@ -6,6 +6,12 @@ using UnityEngine.UI;
 
 public class Tutorial_START : TutorialBase
 {
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.K))
+            RewardWorker.instance.isSwitchReceive = true;
+    }
+
     public override async UniTask StartAsync(TutorialType _type)
     {
         Signal.instance.ActiveHUD.Emit(false);
@@ -43,6 +49,7 @@ public class Tutorial_START : TutorialBase
         enemy.gameObject.SetActive(true);
         enemy.anim.Play(CharacterAnimType.Attack);
         enemy.SetHeroData("");
+
         CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
 
         //얼빠지게 생긴 넘이다!! 죽여라!!
@@ -112,11 +119,13 @@ public class Tutorial_START : TutorialBase
         await UniTask.WaitUntil(() => enemy.isLive == false);
 
         //보상 나오는 연출 해줄거야.
+        {
+            RewardWorker.instance.Run(enemy.transform, ItemType.Scroll_Party);
+            //"연회권? 동료를 얻을 수 있으려나? 주막에 가보자."
+            mainHero.talkbox.Start(talk.Dequeue().talkArray);
 
-        m_elementBase.arrows[0].gameObject.SetActive(true);
-
-        //"연회권? 동료를 얻을 수 있으려나? 주막에 가보자."
-        mainHero.talkbox.Start(talk.Dequeue().talkArray);
+            m_elementBase.arrows[0].gameObject.SetActive(true);
+        }
 
         // 하단 버튼활성화
         for (int i = 0; i < bottomButton.Count; i++)

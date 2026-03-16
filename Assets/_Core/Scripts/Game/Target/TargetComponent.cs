@@ -10,11 +10,15 @@ public abstract class TargetComponent : MonoBehaviour, IValidatable
     [SerializeField]
     protected Canvas m_canvas;
 
+    protected bool isSwitchSorting { get; set; } = true;
+
     public virtual void OnManualValidate()
     {
-        m_canvas = transform.GetComponent<Canvas>("Character/Canvas");
         m_sortingGroup = transform.GetComponent<SortingGroup>();
-        m_canvas.sortingOrder = m_sortingGroup.sortingOrder + 1;
+
+        m_canvas = transform.GetComponent<Canvas>("Character/Canvas");
+        if (m_canvas != null)
+            m_canvas.sortingOrder = m_sortingGroup.sortingOrder + 1;
     }
 
     private void LateUpdate()
@@ -25,11 +29,12 @@ public abstract class TargetComponent : MonoBehaviour, IValidatable
     float m_prevPosY;
     public void UpdateSortingOreder()
     {
-        if (m_prevPosY != transform.position.y)
+        if (m_prevPosY != transform.position.y && isSwitchSorting == true)
         {
             m_prevPosY = transform.position.y;
             m_sortingGroup.sortingOrder = (int)(transform.position.y * -10f);
-            m_canvas.sortingOrder = m_sortingGroup.sortingOrder + 1;
+            if (m_canvas != null)
+                m_canvas.sortingOrder = m_sortingGroup.sortingOrder + 1;
         }
     }
 
