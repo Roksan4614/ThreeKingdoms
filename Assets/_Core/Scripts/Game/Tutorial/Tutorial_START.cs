@@ -52,6 +52,20 @@ public class Tutorial_START : TutorialBase
 
         CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
 
+        // test
+        {
+            ControllerManager.instance.gameObject.SetActive(true);
+            while (true)
+            {
+                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.L));
+
+                RewardWorker.instance.isSwitchReceive = false;
+                RewardWorker.instance.Run(enemy.transform, ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1));
+
+                await UniTask.WaitForEndOfFrame();
+            }
+        }
+
         //얼빠지게 생긴 넘이다!! 죽여라!!
         await enemy.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
 
