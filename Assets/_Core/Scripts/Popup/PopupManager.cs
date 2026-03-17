@@ -20,6 +20,7 @@ public enum PopupType
     SelectRegion,
 
     Modal_Start,
+    Modal,
 
     MAX
 }
@@ -100,26 +101,44 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         return popup;
     }
 
-    public void ShowDimm(bool _isShow, bool _isFade = true)
+    public void ShowDimm(bool _isShow, bool _isFade = true, bool _isOpercity = false)
     {
-        ShowDimmAsync(_isShow, _isFade).Forget();
+        ShowDimmAsync(_isShow, _isFade, _isOpercity).Forget();
     }
 
-    public async UniTask ShowDimmAsync(bool _isShow, bool _isFade = true)
+    public async UniTask ShowDimmAsync(bool _isShow, bool _isFade = true, bool _isOpercity = false)
     {
         if (_isFade)
         {
             if (_isShow)
                 m_element.cgMaxDimm.gameObject.SetActive(true);
 
-            await m_element.cgMaxDimm.DOFade(_isShow ? 1f : 0f, 0.5f).AsyncWaitForCompletion();
+            await m_element.cgMaxDimm.DOFade(_isShow ? _isOpercity ? 0.0001f : 1f : 0f, 0.5f).AsyncWaitForCompletion();
         }
+        else if (_isShow)
+            m_element.cgMaxDimm.alpha = _isOpercity ? 0.0001f : 1f;
 
         m_element.cgMaxDimm.gameObject.SetActive(_isShow);
     }
 
     public void SetCanvasCamera() => m_element.canvas.worldCamera = CameraManager.instance.main;
 
+    public async UniTask<StatusType> OpenModalAsync(string _content = null, string _confirm = null, string _cancel = null)
+    {
+        PopupModalComponent.ModalPopupData popupData = new()
+        {
+            content = _confirm,
+            confirm = _confirm,
+            cancel = _cancel,
+        };
+
+        var popup = await OpenPopupAndWait<PopupModalComponent>(PopupType.Modal, popupData);
+
+        return popup.statusType;
+    }
+
+
+    #region ALERT
     CancellationTokenSource m_ctsAlert;
     public void AlertShow(string _message)
         => AlertShowAsync(_message).Forget();
@@ -147,34 +166,6 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
             m_ctsAlert = null;
         }
         m_element.alertData.Disable();
-    }
-
-    public void OnManualValidate()
-    {
-        m_element.Initialize(transform);
-    }
-
-    [SerializeField]
-    ElementData m_element;
-
-    [Serializable]
-    struct ElementData
-    {
-        [SerializeField] Canvas m_canvas;
-        public Canvas canvas => m_canvas;
-
-        [SerializeField] CanvasGroup m_cgMaxDimm;
-        public CanvasGroup cgMaxDimm => m_cgMaxDimm;
-
-        public AlertData alertData;
-
-        public void Initialize(Transform _transform)
-        {
-            m_canvas = _transform.GetComponent<Canvas>();
-            m_cgMaxDimm = _transform.GetComponent<CanvasGroup>("MAX_Dimm");
-
-            alertData.Initialize(_transform.Find("Alert"));
-        }
     }
 
     [Serializable]
@@ -223,9 +214,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
             Disable();
         }
 
-        public void Disable()
-            => DisableAsync().Forget();
-
+        public void Disable() => DisableAsync().Forget();
         public async UniTask DisableAsync()
         {
             if (m_rt.gameObject.activeSelf == false)
@@ -234,6 +223,33 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
             await Utils.SetActivePunchAsync(m_rt, false);
             m_rt.gameObject.SetActive(false);
         }
-
     }
+    #endregion ALERT
+
+    #region VALIDATE
+    public void OnManualValidate() => m_element.Initialize(transform);
+
+    [SerializeField]
+    ElementData m_element;
+
+    [Serializable]
+    struct ElementData
+    {
+        [SerializeField] Canvas m_canvas;
+        public Canvas canvas => m_canvas;
+
+        [SerializeField] CanvasGroup m_cgMaxDimm;
+        public CanvasGroup cgMaxDimm => m_cgMaxDimm;
+
+        public AlertData alertData;
+
+        public void Initialize(Transform _transform)
+        {
+            m_canvas = _transform.GetComponent<Canvas>();
+            m_cgMaxDimm = _transform.GetComponent<CanvasGroup>("MAX_Dimm");
+
+            alertData.Initialize(_transform.Find("Alert"));
+        }
+    }
+    #endregion VALIDATE
 }

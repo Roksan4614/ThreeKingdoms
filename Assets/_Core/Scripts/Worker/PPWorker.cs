@@ -9,6 +9,8 @@ public enum PlayerPrefsType
     USER_DATA,
     TUTORIAL_DATA,
 
+    SUMMON_SKIP_ACTION,
+
     CHAPTER_STAGE_INFO,
 
     MAX

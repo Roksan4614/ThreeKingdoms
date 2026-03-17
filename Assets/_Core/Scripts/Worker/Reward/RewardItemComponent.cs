@@ -49,7 +49,31 @@ public class RewardItemComponent : TargetComponent, IValidatable
 
         m_element.ps.gameObject.SetActive(true);
 
-        await transform.DOLocalMove(_target.localPosition, _moveDuration).SetEase(Ease.InBack).AsyncWaitForCompletion();
+        // 방향 곡선!!
+        {
+            Vector3 startPos = transform.localPosition;
+            var endPos = _target.localPosition;
+
+            Vector3 lookAt = endPos - startPos;
+            float distance = lookAt.magnitude;
+
+            Vector3 backPos = startPos + lookAt.normalized * -UnityEngine.Random.Range(0.1f, 0.15f) * distance;
+
+            // 수직벡터
+            Vector3 sideStep = new Vector3(-lookAt.y, lookAt.x, 0).normalized;
+
+            float randomStrength = UnityEngine.Random.Range(-0.1f, 0.1f) * distance;
+
+            Vector3 midPos = Vector3.Lerp(startPos, endPos, UnityEngine.Random.Range(0.1f, 0.5f));
+            midPos += sideStep * randomStrength;// * randomDir;
+
+            // 경로 패스 생성
+            Vector3[] path = new Vector3[] { backPos, midPos, endPos };
+
+            await transform.DOLocalPath(path, _moveDuration, PathType.CatmullRom)
+                .SetEase(Ease.InCubic)
+                .AsyncWaitForCompletion();
+        }
 
         m_element.character.gameObject.SetActive(false);
         transform.SetParent(prevParent);

@@ -59,7 +59,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             if (m_member.Values.Any(x => x.data.key.Equals(myHero[i].key)))
                 continue;
 
-            var heroCharacter = (await AddressableManager.instance.GetHeroCharacter(myHero[i].skin)).GetComponent<CharacterComponent>();
+            var heroCharacter = (await AddressableManager.instance.GetHeroCharacterAsync(myHero[i].skin)).GetComponent<CharacterComponent>();
 
             var hero = Instantiate(heroCharacter, MapManager.instance.element.pHero);
 

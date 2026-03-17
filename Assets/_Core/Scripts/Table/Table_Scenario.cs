@@ -26,5 +26,5 @@ public struct TableScenarioData
     public string fromStage;
     public string nextScenario;
 
-    public bool isActive => key.IsNullOrEmpty() == false;
+    public bool isActive => key.IsActive();
 }

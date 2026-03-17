@@ -14,13 +14,25 @@ public partial class AddressableManager
             h.Value.Release();
         foreach (var h in m_loadedAtlas)
             h.Value.Release();
+        foreach (var h in m_itemIcon)
+            h.Value.Release();
+
         base.OnDestroy();
     }
 
     Dictionary<string, AsyncOperationHandle<GameObject>> m_heroIcon = new();
+    Dictionary<string, AsyncOperationHandle<GameObject>> m_itemIcon = new();
     Dictionary<string, AsyncOperationHandle<GameObject>> m_heroCharacter = new();
 
-    public async UniTask Load_HeroIcon(params string[] _key)
+    public async UniTask<GameObject> GetIconAsync(string _key, bool _isHero)
+    {
+        if (_isHero)
+            return await GetHeroIconAsync(_key);
+        else
+            return await GetItemIconAsync(_key);
+    }
+
+    public async UniTask Load_HeroIconAsync(params string[] _key)
     {
         List<string> keys = new();
 
@@ -42,18 +54,51 @@ public partial class AddressableManager
         }, null, keys.ToArray());
     }
 
-    public async UniTask<GameObject> GetHeroIcon(string _key)
+    public async UniTask<GameObject> GetHeroIconAsync(string _key)
     {
         string key = $"Icon_{_key}";
         if (m_heroIcon.ContainsKey(key))
             return m_heroIcon[key].Result;
 
-        await Load_HeroIcon(_key);
+        await Load_HeroIconAsync(_key);
 
         return m_heroIcon.ContainsKey(key) ? m_heroIcon[key].Result : null;
     }
 
-    public async UniTask Load_HeroCharacter(params string[] _key)
+    public async UniTask Load_ItemIconAsync(params string[] _key)
+    {
+        List<string> keys = new();
+
+        for (int i = 0; i < _key.Length; i++)
+        {
+            var key = $"Icon_{_key[i]}";
+
+            if (m_itemIcon.ContainsKey(key) == false)
+                keys.Add($"Item_Icon/{key}.prefab");
+        }
+
+        await LoadAssetAsync<GameObject>(_result =>
+        {
+            foreach (var data in _result)
+            {
+                if (m_itemIcon.ContainsKey(data.Key) == false)
+                    m_itemIcon.Add(data.Key, data.Value);
+            }
+        }, null, keys.ToArray());
+    }
+
+    public async UniTask<GameObject> GetItemIconAsync(string _key)
+    {
+        string key = $"Icon_{_key}";
+        if (m_itemIcon.ContainsKey(key))
+            return m_itemIcon[key].Result;
+
+        await Load_ItemIconAsync(_key);
+
+        return m_itemIcon.ContainsKey(key) ? m_itemIcon[key].Result : null;
+    }
+
+    public async UniTask Load_HeroCharacterAsync(params string[] _key)
     {
         List<string> keys = new();
 
@@ -73,12 +118,12 @@ public partial class AddressableManager
         }, null, keys.ToArray());
     }
 
-    public async UniTask<GameObject> GetHeroCharacter(string _key)
+    public async UniTask<GameObject> GetHeroCharacterAsync(string _key)
     {
         if (m_heroCharacter.ContainsKey(_key))
             return m_heroCharacter[_key].Result;
-        
-        await Load_HeroCharacter(_key);
+
+        await Load_HeroCharacterAsync(_key);
 
         return m_heroCharacter.ContainsKey(_key) ? m_heroCharacter[_key].Result : null;
     }

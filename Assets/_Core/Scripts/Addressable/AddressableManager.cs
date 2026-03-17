@@ -70,7 +70,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     {
         string internalId = _location.InternalId;
 
-        if (internalId.Contains("ROKSAN_Bundle") && bundleUrl.IsNullOrEmpty() == false)
+        if (internalId.Contains("ROKSAN_Bundle") && bundleUrl.IsActive())
             internalId = internalId.Replace("ROKSAN_Bundle", bundleUrl);
 
         return internalId;

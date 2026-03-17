@@ -112,7 +112,7 @@ public class AutoOrderInLayer : MonoBehaviour, IValidatable
 
     public void OnManualValidate()
     {
-        if (m_layerName.IsNullOrEmpty() == false && m_layerName != m_orderLayer.ToString())
+        if (m_layerName.IsActive() && m_layerName != m_orderLayer.ToString())
         {
             OnButton_Repeat();
         }

@@ -82,7 +82,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
         if (isFinded == false)
         {
-            var prefab = await AddressableManager.instance.GetHeroIcon(_data.skin)
+            var prefab = await AddressableManager.instance.GetHeroIconAsync(_data.skin)
                 .AttachExternalCancellation(destroyCancellationToken);
 
             if (prefab != null)

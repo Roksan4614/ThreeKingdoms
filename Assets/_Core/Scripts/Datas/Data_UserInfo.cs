@@ -21,8 +21,8 @@ public class Data_UserInfo
         {
             m_element = PPWorker.Get<ElementData>(PlayerPrefsType.USER_DATA);
 
-            await AddressableManager.instance.Load_HeroIcon(m_element.myHero.Select(x => x.skin).ToArray());
-            await AddressableManager.instance.Load_HeroCharacter(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+            await AddressableManager.instance.Load_HeroIconAsync(m_element.myHero.Select(x => x.skin).ToArray());
+            await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
         }
         else
         {
@@ -84,9 +84,9 @@ public class Data_UserInfo
 
         m_element.myHero.Add(new(_key, _isMain: _isMain, _isBatch: _isBatch));
 
-        await AddressableManager.instance.Load_HeroIcon(_key);
+        await AddressableManager.instance.Load_HeroIconAsync(_key);
         if (_isBatch)
-            await AddressableManager.instance.Load_HeroCharacter(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+            await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
 
         SaveData();
     }

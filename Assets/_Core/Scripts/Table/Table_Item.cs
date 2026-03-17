@@ -26,5 +26,8 @@ public enum ItemType
 public struct TableItemData
 {
     public ItemType key;
+    public string value;
 
+    //custom 
+    public long count;
 }

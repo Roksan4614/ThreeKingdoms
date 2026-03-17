@@ -154,7 +154,7 @@ public static class Utils
         string result = "";
         foreach (var msg in msgs)
         {
-            if (msg.IsNullOrEmpty() == false)
+            if (msg.IsActive())
                 result += $"<mspace={_mspace}>{msgs[index]}</mspace>";
             result += $"{(ignoreChar.Count > index ? ignoreChar[index++] : "")}";
         }
@@ -173,8 +173,32 @@ public static class Utils
         await _transform.DOScale(targetScale, duration).SetEase(_isActive ? Ease.OutBack : Ease.InBack).AsyncWaitForCompletion();
     }
 
-    public static long GetUTCTicks(float _second = 0)
+    public static DateTime GetUTC(bool _isServerTime = true)
     {
-        return DateTime.UtcNow.AddSeconds(_second).Ticks;
+        if (_isServerTime)
+            return DateTime.UtcNow.AddSeconds(Configure.instance.timeGapFromServer);
+        return DateTime.UtcNow;
+    }
+
+    // 서버 시간이 더 빠르다면, 빠른만큼 빼줘야 로컬과 계산이 맞는다.
+    public static DateTime DateTimeParse(string _msgTime, bool _isFromServerTime = true)
+        => _isFromServerTime ?
+        DateTime.Parse(_msgTime).AddSeconds(-Configure.instance.timeGapFromServer) :
+        DateTime.Parse(_msgTime);
+
+    public static string GetRemainTime(TimeSpan _ts, bool _isDay = false)
+    {
+        string remain = "";
+
+        if (_ts.Days > 0 && _isDay == true)
+            remain += $"{_ts.Days}{_ts.Hours}:{_ts.Minutes:00}";
+        else if (_ts.Hours > 0)
+            remain += $"{_ts.Hours}:{_ts.Minutes:00}";
+        else if (_ts.Minutes > 0)
+            remain += $"{_ts.Minutes}:{_ts.Seconds:00}";
+        else
+            remain += $"{_ts.Seconds}:{_ts.Milliseconds:00}";
+
+        return remain;
     }
 }

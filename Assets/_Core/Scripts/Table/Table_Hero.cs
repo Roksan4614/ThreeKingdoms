@@ -97,7 +97,7 @@ public struct TableHeroData
         health = healthMax;
     }
 
-    public bool isActive => key.IsNullOrEmpty() == false;
+    public bool isActive => key.IsActive();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
     public string regionKey => $"{regionType}_{key}".ToUpper();
 }
@@ -116,14 +116,14 @@ public struct HeroInfoData
     {
         key = _key;
         grade = _grade;
-        skin = _skin.IsNullOrEmpty() ? key : _skin;
+        skin = _skin.IsActive() ? _skin : key;
         enchantLevel = _enchantLevel;
         isBatch = _isBatch;
         isMain = _isMain;
         isMine = _isMine;
     }
 
-    public bool isActive => key.IsNullOrEmpty() == false;
+    public bool isActive => key.IsActive();
     public string regionKey => $"{TableManager.hero.Get(key).regionType}_{key}".ToUpper();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
 }

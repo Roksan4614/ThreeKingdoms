@@ -23,8 +23,15 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
 
     LobbyScreenType m_curScreen = LobbyScreenType.None;
     public LobbyScreenType curScreen => m_curScreen;
+    public bool isLock { get; set; } = false;
 
     public LobbyScreen_Summon GetScreenSummon() => m_dicScreen[LobbyScreenType.Summon] as LobbyScreen_Summon;
+
+    protected override void OnAwake()
+    {
+        for (int i = 0; i < transform.childCount; i++)
+            transform.GetChild(i).gameObject.SetActive(false);
+    }
 
     private void Start()
     {

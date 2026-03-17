@@ -2,6 +2,7 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,6 +21,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
     {
         SetDBButton();
         m_element.scroll.onValueChanged.AddListener(_pos => m_isPush = true);
+        m_element.txtRemainTime.text = "";
 
         SetButtonSort();
     }
@@ -113,6 +115,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
     }
 
     public RegionType prevRegion => m_curRegion == RegionType.NONE ? RegionType.Wu : m_curRegion - 1;
+    public RegionType curRegion => m_curRegion;
     public RegionType nextRegion => m_curRegion == RegionType.Wu ? RegionType.NONE : m_curRegion + 1;
 
     public void SetActive(bool _isActive)
@@ -121,6 +124,20 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
 
         if (_isActive)
             scroll.content.anchoredPosition = Vector2.zero;
+    }
+
+    int m_lastRemainTimeValue;
+    public void SetHostRemainTime(TimeSpan _ts)
+    {
+        int lastValue = _ts.Hours > 0 ? _ts.Minutes : _ts.Minutes > 0 ? _ts.Seconds : _ts.Milliseconds;
+
+        if (m_lastRemainTimeValue != lastValue)
+        {
+            m_lastRemainTimeValue = lastValue;
+
+            string remain = Utils.GetRemainTime(_ts);
+            m_element.txtRemainTime.text = $"_주최자 변경까지 남은시간: " + Utils.MSpace(remain, 23);
+        }
     }
 
     public void SetEnableRegion(params RegionType[] _region)
@@ -157,6 +174,8 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
         [SerializeField] ScrollRect m_scroll;
         public ScrollRect scroll => m_scroll;
 
+        public TextMeshProUGUI txtRemainTime;
+
         public Button[] buttons;
         public Vector2[] posButton;
 
@@ -165,6 +184,8 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
         public void Initialize(Transform _transform)
         {
             m_scroll = _transform.GetComponent<ScrollRect>();
+
+            txtRemainTime = m_scroll.viewport.GetComponent<TextMeshProUGUI>("txt_remainTime");
 
             // 전체 위촉오 순으로 넣어주기 위함
             buttons = m_scroll.content.GetComponentsInChildren<Button>(true);

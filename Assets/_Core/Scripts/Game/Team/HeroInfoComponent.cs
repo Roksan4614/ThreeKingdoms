@@ -58,7 +58,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         if (m_element.icon.childCount == countDestroy)
         {
             m_element.icon.gameObject.SetActive(false);
-            var prefab = await AddressableManager.instance.GetHeroIcon(key)
+            var prefab = await AddressableManager.instance.GetHeroIconAsync(key)
                 .AttachExternalCancellation(destroyCancellationToken);
 
             if (prefab != null)

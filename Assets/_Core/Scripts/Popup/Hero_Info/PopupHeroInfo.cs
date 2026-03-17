@@ -65,7 +65,7 @@ public class PopupHeroInfo : BasePopupComponent
 
             if (isFinded == false)
             {
-                var heroCharacter = (await AddressableManager.instance.GetHeroCharacter(_data.skin)).GetComponent<CharacterComponent>();
+                var heroCharacter = (await AddressableManager.instance.GetHeroCharacterAsync(_data.skin)).GetComponent<CharacterComponent>();
 
                 m_character = Instantiate(heroCharacter, parent);
                 m_character.name = _data.skin;

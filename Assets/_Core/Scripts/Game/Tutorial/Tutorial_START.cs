@@ -54,6 +54,10 @@ public class Tutorial_START : TutorialBase
 
         // test
         {
+            // 하단 버튼활성화
+            for (int i = 0; i < bottomButton.Count; i++)
+                bottomButton[i].interactable = true;
+
             ControllerManager.instance.gameObject.SetActive(true);
             while (true)
             {

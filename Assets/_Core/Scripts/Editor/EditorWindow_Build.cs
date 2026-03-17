@@ -32,7 +32,7 @@ public partial class EditorWindow_Build : EditorWindow
         m_projectName = new DirectoryInfo(Application.dataPath).Parent.Name;
 
         string userData = EditorPrefs.GetString(c_key + "_userData_" + m_projectName);
-        if (userData.IsNullOrEmpty() == false)
+        if (userData.IsActive())
             m_userData = JsonUtility.FromJson<UserData>(userData);
 
         if (EditorPrefs.HasKey(c_key + "_position") == false)
@@ -470,7 +470,7 @@ public partial class EditorWindow_Build : EditorWindow
             m_buildLog.Enqueue(build_script + " couldn't be found or isn't a build script.");
             return false;
         }
-        
+
         string remoteBuildPath = $"Bundle/{_serviceType}/[BuildTarget]/";
 
         int index = settings.DataBuilders.IndexOf((ScriptableObject)builderScript);
@@ -484,13 +484,13 @@ public partial class EditorWindow_Build : EditorWindow
         remoteBuildPath = "Bundle/_Last/[BuildTarget]/";
         settings.profileSettings.SetValue(profileId, "Remote.BuildPath", remoteBuildPath);
 
-        if (result.Error.IsNullOrEmpty())
-            m_buildLog.Enqueue("Addressables build successed: " + remoteBuildPath);
-        else
+        if (result.Error.IsActive())
         {
             m_buildLog.Enqueue("Addressables build error encountered: " + result.Error);
             return false;
         }
+        else
+            m_buildLog.Enqueue("Addressables build successed: " + remoteBuildPath);
 
         return true;
     }

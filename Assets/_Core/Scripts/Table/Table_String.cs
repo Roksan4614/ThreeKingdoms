@@ -39,7 +39,7 @@ public struct TableStringData
     public string en;
     public string target;
 
-    public bool isActive => key.IsNullOrEmpty() == false;
+    public bool isActive => key.IsActive();
 
     public string message =>
         DataManager.option.language switch

@@ -10,9 +10,9 @@ public class Character_Worker_Buff : Character_Worker
     public BuffData Add(BuffType _buffType, float _duration = -1)
     {
         BuffData buffData = new();
-        buffData.hash = Utils.GetUTCTicks();
+        buffData.hash = Utils.GetUTC().Ticks;
         if (_duration > 0)
-            buffData.endTick = Utils.GetUTCTicks(_duration);
+            buffData.endTick = Utils.GetUTC().AddSeconds(_duration).Ticks;
 
         if (m_dbBuff.ContainsKey(_buffType))
             m_dbBuff[_buffType].Add(buffData);
@@ -62,7 +62,7 @@ public class Character_Worker_Buff : Character_Worker
 
     public bool IsActive(BuffType _buffType)
     {
-        var nowTick = Utils.GetUTCTicks();
+        var nowTick = Utils.GetUTC().Ticks;
 
         if (m_dbBuff.ContainsKey(_buffType))
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
@@ -116,17 +117,22 @@ public static class Extenssions
         return path;
     }
 
-    public static bool IsNullOrEmpty(this string _string)
-        => string.IsNullOrEmpty(_string);
+    public static bool IsActive(this string _string)
+        => string.IsNullOrWhiteSpace(_string) == false;
 
     #region AMOUNT
+    public static string AmountKMBT(this int _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
+        => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT);
     public static string AmountKMBT(this long _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
+        => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT);
+
+    public static string AmountKMBT(this double _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
     {
         string amount = $"{_value:#,##0.##}";
 
         if ((_isMBT && _value < 1000000) ||
             (_isMBT == false && _value < 1000))
-            return _isDot ? _isFullDot ? $"{_value:#,##0.#0}" : amount : $"{Mathf.Floor(_value):#,##0}";
+            return _isDot ? _isFullDot ? $"{_value:#,##0.#0}" : amount : $"{Math.Floor(_value):#,##0}";
 
         switch (DataManager.option.language)
         {
@@ -165,7 +171,7 @@ public static class Extenssions
             _ => ""
         };
 
-        if (keySuffix.IsNullOrEmpty() == false)
+        if (keySuffix.IsActive())
             result += keySuffix;
 
         return result;

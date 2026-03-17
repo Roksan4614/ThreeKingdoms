@@ -41,6 +41,9 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
 
     void OnButton(LobbyScreenType _screen)
     {
+        if (LobbyScreenManager.instance.isLock == true)
+            return;
+
         SelectButton(LobbyScreenManager.instance.curScreen, false);
 
         var screen = LobbyScreenManager.instance.OpenScreen(_screen);

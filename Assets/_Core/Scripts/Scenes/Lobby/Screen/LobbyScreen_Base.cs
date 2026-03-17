@@ -19,7 +19,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 
     LobbyScreenType m_screenType;
 
-    CancellationTokenSource m_ctsEscape;
+    protected CancellationTokenSource m_cts;
 
     protected virtual void Awake()
     {
@@ -30,19 +30,28 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 
     protected virtual void OnEnable()
     {
-        m_ctsEscape = new();
+        Release_CTS();
+
+        m_cts = new();
         Utils.WaitEscape(this, () =>
         {
             if (IsCloseScreen())
                 Signal.instance.CloseLobbyScreen.Emit(m_screenType);
-        }, _token: m_ctsEscape.Token);
+        }, _token: m_cts.Token);
     }
 
     protected virtual void OnDisable()
+        => Release_CTS();
+
+
+    void Release_CTS()
     {
-        m_ctsEscape.Cancel();
-        m_ctsEscape.Dispose();
-        m_ctsEscape = null;
+        if (m_cts != null)
+        {
+            m_cts.Cancel();
+            m_cts.Dispose();
+            m_cts = null;
+        }
     }
 
     protected virtual bool IsCloseScreen() => true;
