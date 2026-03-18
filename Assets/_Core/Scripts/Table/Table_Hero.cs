@@ -35,6 +35,27 @@ public class Table_Hero : BaseTable<string, TableHeroData>
 
         return data;
     }
+
+    public int GetNeedSoulNextGrade(GradeType _nowGrade)
+    {
+        if (_nowGrade == GradeType.Legend)
+            return 0;
+
+        GradeType next = _nowGrade + 1;
+
+        return GetNeedSoul(_nowGrade + 1) - GetNeedSoul(_nowGrade);
+    }
+
+    public int GetNeedSoul(GradeType _grade)
+        => _grade switch
+        {
+            GradeType.Legend => 2000,
+            GradeType.Hero => 400,
+            GradeType.General => 100,
+            GradeType.Elite => 30,
+            GradeType.Normal => 10,
+            _ => 0
+        };
 }
 
 [Serializable]

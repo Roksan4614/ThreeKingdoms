@@ -3494,6 +3494,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 862941311}
   m_CullTransparentMesh: 1
+--- !u!114 &877480017 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9007336661091365262, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
+  m_PrefabInstance: {fileID: 6994150954012340988}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 792e77303f18e0a45b69f76fbc827c08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemComponent
 --- !u!1 &886795371
 GameObject:
   m_ObjectHideFlags: 0
@@ -8783,6 +8794,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 479170187}
     m_Modifications:
+    - target: {fileID: 715009817198668098, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1820531919516700516, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -8867,6 +8882,10 @@ PrefabInstance:
       propertyPath: m_element.btnSkip
       value: 
       objectReference: {fileID: 188951037}
+    - target: {fileID: 3258617618090488443, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4175285010679113208, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
       propertyPath: m_Name
       value: Screen_Summon
@@ -8875,6 +8894,22 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5269623501355634919, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5269623501355634919, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5269623501355634919, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 297
+      objectReference: {fileID: 0}
+    - target: {fileID: 8443218239784066244, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
+      propertyPath: m_element.baseItem
+      value: 
+      objectReference: {fileID: 877480017}
     - target: {fileID: 8443218239784066244, guid: 02a698d3956f16e4898de3c6d0b0be4b, type: 3}
       propertyPath: m_element.startPosIcon.y
       value: 4.6827235

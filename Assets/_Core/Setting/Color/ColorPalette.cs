@@ -9,7 +9,7 @@ enum PaletteColorType
 
     hero_icon_empty,
     hero_icon_empty2,
-    
+
     MAX
 }
 
@@ -26,10 +26,15 @@ public class ColorPalette : ScriptableObject
 
     [SerializeField]
     List<ElementData> m_element = new();
+    public IReadOnlyList<ElementData> element => m_element;
 
     Dictionary<string, Color> m_map;
 
-
+    public void SetData(ColorPalette _data)
+    {
+        m_element = _data.m_element;
+        RebuildCache();
+    }
 
     public void RebuildCache()
     {
@@ -46,10 +51,17 @@ public class ColorPalette : ScriptableObject
 
     public Color Get(string _key)
     {
-        if (m_map == null) RebuildCache();
-
-        return m_map.GetValueOrDefault(_key);
+        if (_key.IsActive())
+            return m_map.GetValueOrDefault(_key);
+        else
+            return default;
     }
+
+    public void Add(ElementData _data) => m_element.Add(_data);
+    public void RemoveAt(int _idx) => m_element.RemoveAt(_idx);
+    public void UpdateData(int _idx, ElementData _data) => m_element[_idx] = _data;
+    public void Sort() => m_element.Sort((a, b) => a.key.CompareTo(b.key));
+
 
     //private void OnValidate()
     //{

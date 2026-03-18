@@ -133,6 +133,9 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
         await m_element.result.StartAsync(package.curRegion, m_hostData.key, m_isSkipAction);
 
+        m_element.btnStart.text = "_마무리";
+        await m_element.result.FinishAsync();
+
         m_element.btnStart.text = "_시작하기";
 
         package.gameObject.SetActive(true);

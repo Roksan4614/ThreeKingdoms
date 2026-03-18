@@ -81,4 +81,10 @@ public class Editor_Menu
         window.SetUserData(userData);
         window.Run(true, true);
     }
+
+    [MenuItem("Rev9/Color/Open Palette")]
+    static void OpenPalette()
+    {
+        EditorWindow.GetWindow<EditorWindow_Color>("Eitor Palette");
+    }
 }

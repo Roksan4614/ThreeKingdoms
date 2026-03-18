@@ -59,7 +59,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             if (m_member.Values.Any(x => x.data.key.Equals(myHero[i].key)))
                 continue;
 
-            var heroCharacter = (await AddressableManager.instance.GetHeroCharacterAsync(myHero[i].skin)).GetComponent<CharacterComponent>();
+            var heroCharacter = (await AddressableManager.instance.GetHeroCharacterAsync(myHero[i].skin))?.GetComponent<CharacterComponent>();
+
+            if (heroCharacter == null)
+                continue;
 
             var hero = Instantiate(heroCharacter, MapManager.instance.element.pHero);
 
@@ -77,6 +80,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         m_member.Clear();
 
         var mainIndex = _members.FindIndex(x => x.data.key.Equals(DataManager.userInfo.myHero[0].key));
+
+        if (mainIndex == -1)
+            return;
+
         // 일단 주장은 무조건 전방으로 해보자
         m_member.Add(DataManager.option.mainTeamPosition, _members[mainIndex]);
         _members.RemoveAt(mainIndex);

@@ -45,6 +45,8 @@ public enum GradeType
     General,    //장군, 지옥
     Hero,       //영웅, 심연
     Legend,     //전설
+
+    MAX
 }
 
 public enum HeroClassType

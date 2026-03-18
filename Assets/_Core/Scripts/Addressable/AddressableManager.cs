@@ -268,6 +268,13 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     public void LoadScene(string _sceneName)
         => Addressables.LoadSceneAsync(_sceneName);
 
+    void Release(AsyncOperationHandle _h)
+    {
+        if (_h.IsValid())
+            _h.Release();
+    }
+
+
     public struct DownloadData
     {
         public long totalFileSize;

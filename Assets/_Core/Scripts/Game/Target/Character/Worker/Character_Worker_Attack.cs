@@ -79,6 +79,8 @@ public class Character_Worker_Attack : Character_Worker
         yield return m_weapon.DoUseSkill();
     }
 
+    public void ShowSlashEffect(bool _isShake = false) => m_weapon.ShowSlashEffect(_isForceShake: _isShake);
+
     public void ResetFX()
         => m_weapon.ResetFX();
 }
