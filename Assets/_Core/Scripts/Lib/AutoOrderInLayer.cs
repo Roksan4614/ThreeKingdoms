@@ -32,6 +32,7 @@ public enum OrderLayerType
     Lobby_Bottom,
 
     Popup,
+    Popup_Front,
 
     Alert,
     MAX
