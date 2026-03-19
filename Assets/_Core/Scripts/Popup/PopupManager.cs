@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
@@ -140,10 +141,10 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     #region ALERT
     CancellationTokenSource m_ctsAlert;
-    public void AlertShow(string _message)
-        => AlertShowAsync(_message).Forget();
+    public void AlertShow(string _message, float _posY = 0, bool _isTyping = false, float _duration = 3f)
+        => AlertShowAsync(_message, _posY, _isTyping, _duration).Forget();
 
-    public async UniTask AlertShowAsync(string _message)
+    public async UniTask AlertShowAsync(string _message, float _posY = 0, bool _isTyping = false, float _duration = 3f)
     {
         if (m_ctsAlert != null)
         {
@@ -152,12 +153,13 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         }
         m_ctsAlert = new();
 
-        await m_element.alertData.ShowAsync(_message, m_ctsAlert.Token);
+        await m_element.alertData.ShowAsync(_message, m_ctsAlert.Token, _posY, _isTyping, _duration);
 
         m_ctsAlert = null;
     }
+    public void AlertDisable() => AlertDisableAsync().Forget();
 
-    public void AlertDisable()
+    public async UniTask AlertDisableAsync()
     {
         if (m_ctsAlert != null)
         {
@@ -165,8 +167,10 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
             m_ctsAlert.Dispose();
             m_ctsAlert = null;
         }
-        m_element.alertData.Disable();
+        await m_element.alertData.DisableAsync();
     }
+
+    public bool isAleting => m_element.alertData.isActive;
 
     [Serializable]
     struct AlertData
@@ -176,6 +180,8 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         [SerializeField] ContentSizeFitter m_fitter;
         [SerializeField] TextMeshProUGUI m_txtAlert;
 
+        public float posYDefault;
+
         public void Initialize(Transform _transform)
         {
             m_rt = (RectTransform)_transform;
@@ -183,35 +189,80 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
             m_fitter = _transform.GetComponent<ContentSizeFitter>();
             m_txtAlert = _transform.GetComponent<TextMeshProUGUI>("Text");
 
+            posYDefault = m_rt.anchoredPosition.y;
+
             m_rt.gameObject.SetActive(false);
         }
 
-        public async UniTask ShowAsync(string _message, CancellationToken _token)
+        public bool isActive => m_rt.gameObject.activeSelf;
+
+        public async UniTask ShowAsync(string _message, CancellationToken _token, float _addPosY = 0, bool _isTyping = false, float _duration = 2)
         {
+            var anchorPos = m_rt.anchoredPosition;
+            anchorPos.y = posYDefault + _addPosY;
+            m_rt.anchoredPosition = anchorPos;
+
             if (m_rt.gameObject.activeSelf == false)
             {
                 Utils.SetActivePunch(m_rt, true);
                 m_rt.gameObject.SetActive(true);
             }
 
-            m_fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            m_fitter.verticalFit = m_fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             m_txtAlert.text = _message;
             m_rt.ForceRebuildLayout();
 
             var size = m_rt.sizeDelta;
-            if (size.x > Screen.width * 0.8f)
+            if (size.x > Screen.width * 0.9f)
             {
                 m_fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-                size.x = Screen.width * 0.8f;
+                size.x = Screen.width * 0.9f;
                 m_rt.sizeDelta = size;
 
                 m_rt.ForceRebuildLayout();
             }
 
-            await UniTask.WaitForSeconds(3f, cancellationToken: _token);
+            // 타이핑 연출 할거야?
+            if (_isTyping == true)
+            {
+                m_fitter.verticalFit = m_fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+                m_txtAlert.text = "";
 
-            Disable();
+                for (int i = 0; i < _message.Length; i++)
+                {
+                    var m = _message[i];
+                    m_txtAlert.text += m;
+
+                    if (m == '<')
+                    {
+                        while (true)
+                        {
+                            var fm = _message[i++];
+                            m_txtAlert.text += fm;
+
+                            if (fm == '>')
+                                break;
+                        }
+                        continue;
+                    }
+                    await UniTask.WaitForSeconds(0.03f, cancellationToken: _token);
+
+                    if (ControllerManager.isClick)
+                        break;
+                }
+
+                m_txtAlert.text = _message;
+            }
+
+            // 자동 사라지기 껏어??
+            if (_duration > 0)
+            {
+                await UniTask.WaitForSeconds(_duration, cancellationToken: _token);
+                Disable();
+            }
+            else
+                await UniTask.WaitUntilCanceled(_token);
         }
 
         public void Disable() => DisableAsync().Forget();

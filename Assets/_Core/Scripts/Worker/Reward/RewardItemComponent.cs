@@ -10,15 +10,22 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class RewardItemComponent : TargetComponent, IValidatable
 {
-    public RewardWorker.RewardItemData data { get; private set; }
-    public bool Initialize(RewardWorker.RewardItemData _itemData)
+    RewardWorker.RewardItemData m_data;
+    public RewardWorker.RewardItemData data => m_data;
+    public bool Initialize(RewardWorker.RewardItemData _itemData, bool _isCanvas, bool _isFXStart)
     {
         isSwitchSorting = true;
-        m_element.sg.sortingLayerID = m_element.layerStart;
-        m_element.ps.gameObject.SetActive(false);
+        m_element.sg.sortingLayerID = _isCanvas ? m_element.layerPopup : m_element.layerStart;
         m_element.character.gameObject.SetActive(true);
+        m_element.ps.gameObject.SetActive(_isFXStart);
 
-        data = _itemData;
+        var main = m_element.ps.main;
+        var minMax = main.startDelay;
+        minMax.constantMin = _isFXStart ? 0 : 0.2f;
+        minMax.constantMax = _isFXStart ? 0 : 0.3f;
+        main.startDelay = minMax;
+
+        m_data = _itemData;
 
         for (int i = 0; i < m_element.panel.childCount; i++)
             m_element.panel.GetChild(i).gameObject.SetActive(false);
@@ -38,11 +45,14 @@ public class RewardItemComponent : TargetComponent, IValidatable
         return true;
     }
 
-    public async UniTask ThrowStart(Transform _target, float _moveDuration)
+    public async UniTask ThrowStart(Transform _target, float _moveDuration, bool _isPopup)
     {
         isSwitchSorting = false;
-        m_element.sg.sortingLayerID = m_element.layerAction;
-        m_element.sg.sortingOrder = 1;
+        if (_isPopup == false)
+        {
+            m_element.sg.sortingLayerID = m_element.layerAction;
+            m_element.sg.sortingOrder = 1;
+        }
 
         var prevParent = transform.parent;
         transform.SetParent(_target.parent);
@@ -83,6 +93,10 @@ public class RewardItemComponent : TargetComponent, IValidatable
         _target.DOKill();
         _target.DOScale(prevScale, .2f);
 
+        // 금화와 군량일 경우 올려주는 연출
+        if (m_data.isCurrency)
+            Signal.instance.UpdateAsset.Emit((true, m_data.itemType));
+
         await UniTask.WaitUntil(() => m_element.ps.particleCount == 0);
         gameObject.SetActive(false);
     }
@@ -102,6 +116,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
     {
         public int layerStart;
         public int layerAction;
+        public int layerPopup;
 
         public SortingGroup sg;
         public ParticleSystem ps;
@@ -132,9 +147,10 @@ public class RewardItemComponent : TargetComponent, IValidatable
 
             layerStart = SortingLayer.NameToID("Character");
             layerAction = SortingLayer.NameToID("UI");
+            layerPopup = SortingLayer.NameToID("Popup");
 
-            if (layerStart == 0 || layerAction == 0)
-                IngameLog.Add($"{_transform.name}: layerError: layerStart{layerStart} / layerAction{layerAction}");
+            if (layerStart == 0 || layerAction == 0 || layerPopup == 0)
+                IngameLog.Add($"{_transform.name}: layerError: layerStart{layerStart} / layerAction{layerAction} / layserPopup{layerPopup}");
         }
 
         public GameObject GetObject(ItemType _itemType)

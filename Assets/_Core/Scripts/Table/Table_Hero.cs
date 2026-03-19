@@ -49,10 +49,10 @@ public class Table_Hero : BaseTable<string, TableHeroData>
     public int GetNeedSoul(GradeType _grade)
         => _grade switch
         {
-            GradeType.Legend => 2000,
-            GradeType.Hero => 400,
-            GradeType.General => 100,
-            GradeType.Elite => 30,
+            GradeType.Legend => 2560,
+            GradeType.Hero => 640,
+            GradeType.General => 160,
+            GradeType.Elite => 40,
             GradeType.Normal => 10,
             _ => 0
         };
@@ -121,6 +121,7 @@ public struct TableHeroData
     public bool isActive => key.IsActive();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
     public string regionKey => $"{regionType}_{key}".ToUpper();
+    public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
 }
 
 public struct HeroInfoData
@@ -147,4 +148,5 @@ public struct HeroInfoData
     public bool isActive => key.IsActive();
     public string regionKey => $"{TableManager.hero.Get(key).regionType}_{key}".ToUpper();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
+    public string gradeName => TableManager.stringHero.GetString($"GRADE_" + grade.ToString().ToUpper());
 }

@@ -188,6 +188,16 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     //    _onComplete(totalSize);
     //}
 
+    //이 함수는 동시에 하면 좃됨.. 하나의 라벨
+    public async UniTask LoadAssetIntersectionAsync<T>(
+        UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
+        IProgress<float> _onProgress,
+        params AddressableLabelType[] _labels)
+    {
+        m_mergeMode = Addressables.MergeMode.Intersection;
+        await LoadAssetAsync<T>(_onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
+    }
+
     public async UniTask LoadAssetAsync<T>(
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         IProgress<float> _onProgress,
@@ -196,7 +206,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         await LoadAssetAsync<T>(_onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
     }
 
-    Addressables.MergeMode m_mergeMode = Addressables.MergeMode.Intersection;
+    Addressables.MergeMode m_mergeMode = Addressables.MergeMode.Union; // 포함한거 전체
     public async UniTask LoadAssetAsync<T>(
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         IProgress<float> _onProgress,

@@ -95,7 +95,7 @@ public class Data_UserInfo
     public long GetAssetAmount(ItemType _itemType)
         => _itemType switch { ItemType.Gold => m_element.gold, ItemType.Rice => m_element.rice, _ => -1 };
 
-    public void AddProvision(long _amount, bool _isUpdate = true, bool _isTween = true)
+    public void AddRice(long _amount, bool _isUpdate = true, bool _isTween = true)
         => AddAsset(0, _amount, _isUpdate, _isTween);
     public void AddGold(long _amount, bool _isUpdate = true, bool _isTween = true)
         => AddAsset(_amount, 0, _isUpdate, _isTween);
@@ -113,13 +113,27 @@ public class Data_UserInfo
         => SetAsset(_amount, -1, _isUpdate, _isTween);
     public void SetAsset(long _gold, long _rice, bool _isUpdate = true, bool _isTween = true)
     {
-        if (_gold > -1)
+        ItemType itemType = ItemType.Gold;
+
+        if (_gold > -1 && _rice > -1)
+        {
             m_element.gold = _gold;
-        else if (_rice > -1)
             m_element.rice = _rice;
+            itemType = ItemType.NONE;
+        }
+        else if (_gold > -1)
+        {
+            m_element.gold = _gold;
+            itemType = ItemType.Gold;
+        }
+        else if (_rice > -1)
+        {
+            m_element.rice = _rice;
+            itemType = ItemType.Rice;
+        }
 
         if (_isUpdate)
-            Signal.instance.UpdateAsset.Emit(_isTween);
+            Signal.instance.UpdateAsset.Emit((_isTween, itemType));
 
         SaveData();
     }

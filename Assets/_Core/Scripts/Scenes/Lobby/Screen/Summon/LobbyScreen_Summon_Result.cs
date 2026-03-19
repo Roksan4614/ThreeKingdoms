@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Triggers;
 using DG.Tweening;
 using NUnit.Framework.Interfaces;
 using System;
@@ -9,7 +10,10 @@ using System.Reflection;
 using System.Threading;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.AddressableAssets.Build.AnalyzeRules;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.U2D.Animation;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEditor.PlayerSettings;
@@ -21,14 +25,13 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
     bool m_isNextStep = false;
 
     public void AllSkip() => m_isSkip = true;
-    public void NextStep() => m_isNextStep = true;
     public bool isSkip
     {
         get
         {
             if (m_isSkip)
                 return true;
-            else if (m_isNextStep)
+            else if (m_isNextStep || ControllerManager.isClick)
             {
                 m_isNextStep = false;
                 return true;
@@ -56,6 +59,8 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
     public async UniTask StartAsync(RegionType _regionType, string _hostKey, bool _isSkip)
     {
+        transform.localScale = Vector3.one;
+
         await UniTask.WaitForEndOfFrame();
 
         m_isNextStep = m_isSkip = _isSkip;
@@ -63,71 +68,106 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
         await Request_Summon(_regionType, _hostKey);
 
-        // 문뒤 양쪽으로 움직여주기
         InitializePos();
 
-        await ReceiveProduct();
-    }
+        await ReceiveActionAsync();
 
-    public async UniTask FinishAsync()
-    {
+        await SetResultDataAsync();
+
+        m_element.SetText_btnStart("_마무리_");
+
         m_isNextStep = false;
-        await UniTask.WaitUntil(() => m_isNextStep);
+        await UniTask.WaitUntil(() => m_isNextStep || ControllerManager.isClick);
+
+        await Utils.SetActivePunchAsync(transform, false);
 
         gameObject.SetActive(false);
+        for (int i = 0; i < 10; i++)
+            m_itemComps[i].gameObject.SetActive(false);
+
+        await UniTask.WaitUntil(() => ControllerManager.isClick == false);
+        await UniTask.WaitForEndOfFrame();
     }
 
     async UniTask Request_Summon(RegionType _regionType, string _hostKey)
     {
-        await UniTask.WaitForEndOfFrame();
-
         List<TableItemData> result = new();
 
-        // 영웅 가져오기
-        List<TableHeroData> dbHeros = new();
-        dbHeros.AddRange(TableManager.hero.list);
-
-        // 특정 국가면 하나 더 넣자
-        if (_regionType > RegionType.NONE)
-            dbHeros.AddRange(TableManager.hero.list
-                .Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false).ToList());
-
-        int i = 0;
-
-        //일단 영웅 뽑기
-        for (; i < 10; i++)
+        #region 영웅 불러오기
         {
-            if (UnityEngine.Random.value > m_element.dbRate[i])
-                break;
+            await UniTask.WaitForEndOfFrame();
+            List<TableHeroData> dbHeros = new();
+            dbHeros.AddRange(TableManager.hero.list);
 
-            TableItemData itemData = new();
-            itemData.key = ItemType.Stone_Soul;
+            // 특정 국가면 하나 더 넣자
+            if (_regionType > RegionType.NONE)
+                dbHeros.AddRange(TableManager.hero.list
+                    .Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false).ToList());
 
-            if (i == 0)
-                itemData.value = _hostKey;
+            int i = 0;
+
+            if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            {
+                i++;
+                result.Add(new()
+                {
+                    key = ItemType.Stone_Soul,
+                    value = _hostKey,
+                    count = TableManager.hero.GetNeedSoulNextGrade(GradeType.Normal)
+                });
+
+                var startHero = TableManager.region.Get(
+                    TableManager.hero.Get(_hostKey).regionType).startHeroKey;
+
+                for (; i < startHero.Length; i++)
+                {
+                    result.Add(new()
+                    {
+                        key = ItemType.Stone_Soul,
+                        value = startHero[i],
+                        count = 10,
+                    });
+                }
+            }
             else
             {
-                var randomIdx = UnityEngine.Random.Range(0, dbHeros.Count);
-                itemData.value = dbHeros[randomIdx].key;
-                dbHeros.RemoveAt(randomIdx);
+                //일단 영웅 뽑기
+                for (; i < 10; i++)
+                {
+                    if (UnityEngine.Random.value > m_element.dbRate[i])
+                        break;
+
+                    TableItemData itemData = new();
+                    itemData.key = ItemType.Stone_Soul;
+
+                    if (i == 0)
+                        itemData.value = _hostKey;
+                    else
+                    {
+                        var randomIdx = UnityEngine.Random.Range(0, dbHeros.Count);
+                        itemData.value = dbHeros[randomIdx].key;
+                        dbHeros.RemoveAt(randomIdx);
+                    }
+
+                    GradeType grade = GradeType.Normal;
+                    while (UnityEngine.Random.value <= m_element.dbRate[i + 1] && grade < GradeType.MAX - 1)
+                        grade++;
+
+                    itemData.count = TableManager.hero.GetNeedSoul(grade);
+                    result.Add(itemData);
+                }
             }
 
-            GradeType grade = GradeType.Normal;
-            while (UnityEngine.Random.value <= m_element.dbRate[i + 2] && grade < GradeType.MAX - 1)
-                grade++;
-
-            itemData.count = TableManager.hero.GetNeedSoul(grade);
-            result.Add(itemData);
+            for (; i < 10; i++)
+            {
+                TableItemData itemData = new();
+                itemData.key = ItemType.Gold + UnityEngine.Random.Range(0, 2);
+                itemData.value = itemData.key.ToString();
+                itemData.count = UnityEngine.Random.Range(1, 10) * 10;
+                result.Add(itemData);
+            }
         }
-
-        for (; i < 10; i++)
-        {
-            TableItemData itemData = new();
-            itemData.key = ItemType.Gold + UnityEngine.Random.Range(0, 2);
-            itemData.value = itemData.key.ToString();
-            itemData.count = UnityEngine.Random.Range(1, 10) * 10;
-            result.Add(itemData);
-        }
+        #endregion 영웅 불러오기
 
         // 정렬하자
         result = result
@@ -143,41 +183,25 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             .ThenByDescending(x => x.key == ItemType.Gold)
             .ToList();
 
-
         var keyHero = result.Where(x => x.key == ItemType.Stone_Soul).Select(x => x.value).ToArray();
-        var keyItem = result.Where(x => x.key != ItemType.Stone_Soul).Select(x => x.value).ToArray();
 
-        AddressableManager.instance.Load_HeroIconAsync(keyHero).Forget();
         AddressableManager.instance.Load_HeroCharacterAsync(keyHero).Forget();
+        await AddressableManager.instance.Load_HeroIconAsync(keyHero);
+        SetItemDataAsync(result).Forget();
+    }
+    async UniTask SetItemDataAsync(List<TableItemData> _result)
+    {
+        var keyItem = _result.Where(x => x.key != ItemType.Stone_Soul).Select(x => x.value).ToArray();
         await AddressableManager.instance.Load_ItemIconAsync(keyItem);
 
-        i = 0;
-        for (; i < result.Count; i++)
+        for (int i = 0; i < _result.Count; i++)
         {
-            m_itemComps[i].SetItemData(result[i]);
+            m_itemComps[i].SetItemData(_result[i]);
 #if UNITY_EDITOR
-            m_itemComps[i].name = $"{result[i].value}_x{result[i].count}";
+            m_itemComps[i].name = $"{_result[i].value}_x{_result[i].count}";
 #endif
         }
     }
-
-    async UniTask WaitSkipAsync() => await UniTask.WaitUntil(() => isSkip);
-    void AfterNextStep(float _duration) => AfterNextStepAsync(_duration).Forget();
-    async UniTask AfterNextStepAsync(float _duration)
-    {
-        var dt = DateTime.Now.AddSeconds(_duration);
-
-        bool isSkipPush = isSkip;
-        while (dt > DateTime.Now && isSkipPush == false)
-        {
-            await UniTask.WaitForEndOfFrame();
-            isSkipPush = isSkip;
-        }
-
-        if (isSkipPush == false)
-            NextStep();
-    }
-
     void InitializePos()
     {
         if (m_prevPos == null)
@@ -191,7 +215,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             transform.ForceRebuildLayout();
 
             for (int i = 0; i < m_itemComps.Count; i++)
-                m_prevPos.Add(m_itemComps[i].transform.position);
+                m_prevPos.Add(m_itemComps[i].transform.localPosition);
 
             m_element.layout.enabled = false;
         }
@@ -199,8 +223,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         for (int i = 0; i < m_itemComps.Count; i++)
             m_itemComps[i].transform.position = m_element.pCenter.position;
     }
-
-    async UniTask ReceiveProduct()
+    async UniTask ReceiveActionAsync()
     {
         float duration = 1f;
 
@@ -212,21 +235,24 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             item.SetParent(transform);
             if (m_isSkip == true)
             {
-                item.position = m_prevPos[m_prevPos.Count - idx - 1];
+                item.localPosition = m_prevPos[m_prevPos.Count - idx - 1];
+
+                var itemData = m_itemComps[idx].data;
+                if (itemData.key == ItemType.Stone_Soul)
+                {
+                    if (DataManager.userInfo.GetHeroInfoData(itemData.value).isActive == false)
+                        m_itemComps[idx].SetSoulCount(0);
+                }
+
                 m_itemComps[idx].MoveFinished();
             }
             else
             {
                 if (m_itemComps[i].data.key == ItemType.Stone_Soul)
-                {
                     // 영웅 등장!!
                     await HeroActionAsync(idx);
 
-                    m_itemComps[idx].MoveFinished();
-                    await AfterNextStepAsync(3f);
-                }
-
-                item.DOMove(m_prevPos[m_prevPos.Count - idx - 1], duration).SetEase(Ease.InCubic)
+                item.DOLocalMove(m_prevPos[m_prevPos.Count - idx - 1], duration).SetEase(Ease.InCubic)
                     .OnComplete(() =>
                     {
                         m_itemComps[idx].MoveFinished();
@@ -237,11 +263,35 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             }
         }
     }
-
     async UniTask HeroActionAsync(int _idx)
     {
         var itemComp = m_itemComps[_idx];
+        var dbHeroData = TableManager.hero.GetHeroData(itemComp.data.value);
         string key = itemComp.data.value;
+
+        #region NEW HERO!!
+        bool isNewHero = DataManager.userInfo.GetHeroInfoData(itemComp.data.value).isActive == false;
+        if (isNewHero)
+        {
+            PopupManager.instance.AlertShow("_새로운 영웅이 방문하였습니다");
+
+            m_element.newHero.Show();
+
+            m_element.SetText_btnStart("획득_하기");
+            await AfterNextStepAsync(3f);
+            m_element.SetText_btnStart("진행_중");
+
+            PopupManager.instance.AlertDisable();
+
+            await m_element.newHero.OutAsync();
+
+            if (PopupManager.instance.isAleting)
+                await UniTask.WaitUntil(() => PopupManager.instance.isAleting == false);
+
+            await AfterNextStepAsync(.5f);
+            await PopupManager.instance.AlertShowAsync($"{dbHeroData.talk}\n- {dbHeroData.name} -", -300, true, 1f);
+        }
+        #endregion NEW HERO!!!
 
         CharacterComponent hero = null;
         // LOAD HERO
@@ -268,10 +318,10 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             hero.transform.localPosition = Vector3.zero;
         }
 
-        hero.transform.localPosition += new Vector3(UnityEngine.Random.value > 5f ? 5f : -5f, 0, 0); ;
+        hero.transform.localPosition += new Vector3(UnityEngine.Random.value > .5f ? 5f : -5f, 0, 0); ;
         var prevLocalPos = hero.transform.localPosition;
 
-        if (hero.move.isFlip == hero.transform.localPosition.x > 0)
+        if (hero.move.isFlip != hero.transform.localPosition.x < 0)
             hero.move.SetFlip(!hero.move.isFlip);
 
         hero.anim.AttackMotionFirstFrame();
@@ -279,26 +329,44 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         hero.anim.AttackMotionEnd();
         hero.attack.ShowSlashEffect(true);
 
-        GradeType grade = GradeType.Normal;
-
-        while (true)
+        if (isNewHero)
         {
+            itemComp.SetSoulCount(0);
+
+            GradeType grade = GradeType.Normal;
             var soulCount = TableManager.hero.GetNeedSoul(grade);
-            itemComp.SetSoulCount(soulCount);
 
-            if (itemComp.data.count >= soulCount)
-                break;
+            m_element.SetText_btnStart("확인_하기");
 
-            PopupManager.instance.AlertShow("영웅이 승급을 합니다!!");
+            while (true)
+            {
+                var stringGrade = TableManager.stringHero.GetString($"GRADE_" + grade.ToString().ToUpper());
 
-            if (m_isSkip == false)
-                await UniTask.WaitUntil(() => ControllerManager.isClick);
+                if (grade == GradeType.Normal)
+                    PopupManager.instance.AlertShow($"영웅의_등급을_확인합니다.");
+                else
+                    PopupManager.instance.AlertShow($"[{stringGrade}] 등급을 확인했습니다.\n한번 더 확인해 주세요.");
 
-            grade++;
+                grade++;
+                soulCount = TableManager.hero.GetNeedSoul(grade);
 
-            hero.anim.Play(CharacterAnimType.Attack);
-            hero.attack.ShowSlashEffect(true);
+                await AfterNextStepAsync(1f);
+
+                if (itemComp.data.count <= soulCount)
+                {
+                    m_element.SetText_btnStart("진행_중");
+                    PopupManager.instance.AlertShow($"[{stringGrade}] {dbHeroData.name.WithJosa()} 진영에 합류합니다.");
+                    break;
+                }
+
+                hero.anim.Play(CharacterAnimType.Attack);
+                hero.attack.ShowSlashEffect(true);
+
+                await PopupManager.instance.AlertDisableAsync();
+            }
         }
+        else
+            itemComp.SetSoulCount(itemComp.data.count);
 
         if (m_isSkip == false)
         {
@@ -307,11 +375,65 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             hero.anim.Play(CharacterAnimType.Dash);
             hero.transform.DOLocalMoveX(prevLocalPos.x * -1, 0.3f).SetEase(Ease.OutCubic);
         }
+    }
+    async UniTask SetResultDataAsync()
+    {
+        Dictionary<ItemType, TableItemData> result = new();
 
-        itemComp.MoveFinished();
+        for (int i = 0; i < 10; i++)
+        {
+            var comp = m_itemComps[i];
+            var itemData = comp.data;
 
-        await AfterNextStepAsync(1f);
-        // 등장 > 칼질 > 갯수증가 > 끝나면 아이콘 생성 후 날라가자
+            if (result.ContainsKey(comp.data.key))
+            {
+                var data = result[comp.data.key];
+                data.count += itemData.count;
+                result[itemData.key] = data;
+            }
+            else
+                result.Add(itemData.key, itemData);
+        }
+
+        DataManager.userInfo.AddAsset(
+            result.ContainsKey(ItemType.Gold) ? result[ItemType.Gold].count : 0,
+            result.ContainsKey(ItemType.Rice) ? result[ItemType.Rice].count : 0,
+            false, false);
+
+        int idx = 0;
+        foreach (var i in result)
+        {
+            RewardWorker.instance.Run(
+                transform.position + new Vector3(
+                    UnityEngine.Random.Range(0.5f, 2f) * (idx++ % 2 == 0 ? 1 : -1),
+                    UnityEngine.Random.Range(4f, 6f))
+                , i.Key, i.Value.count, true, false, 0.5f, true);
+
+            await UniTask.WaitForSeconds(UnityEngine.Random.Range(.05f, .1f));
+        }
+
+        await UniTask.WaitForSeconds(.5f);
+    }
+    async UniTask WaitSkipAsync()
+    {
+        m_isNextStep = false;
+        await UniTask.WaitUntil(() => isSkip);
+    }
+    void AfterNextStep(float _duration) => AfterNextStepAsync(_duration).Forget();
+    async UniTask AfterNextStepAsync(float _duration)
+    {
+        var dt = DateTime.Now.AddSeconds(_duration);
+
+        m_isNextStep = false;
+        bool isSkipPush = isSkip;
+        while (dt > DateTime.Now && isSkipPush == false)
+        {
+            await UniTask.WaitForEndOfFrame();
+            isSkipPush = isSkip;
+        }
+
+        if (isSkipPush == false)
+            m_isNextStep = true;
     }
 
     #region VALIDATE
@@ -327,23 +449,33 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         public GridLayoutGroup layout;
 
         public Transform pHero;
+        public Transform pHost;
         public Transform pCenter;
 
         public List<float> dbRate;
 
         public NewHeroComponent newHero;
 
+        [SerializeField] ButtonHelper btnStart;
+
         public void Initialize(Transform _transform)
         {
+            var panelSummon = _transform.parent.parent.parent;
+
             baseItem = _transform.GetComponentInChildren<ItemComponent>(true);
             layout = _transform.GetComponent<GridLayoutGroup>();
-            pHero = _transform.parent.parent.parent.Find("Back_Hero/Hero");
+            pHero = panelSummon.Find("Back_Hero/Hero");
             pCenter = _transform.parent.Find("Center");
+            pHost = panelSummon.Find("Host");
 
             newHero = pHero.parent.GetComponent<NewHeroComponent>("NewHero");
+            btnStart = panelSummon.GetComponent<ButtonHelper>("btn_start");
 
             SetRateValue();
         }
+
+        public void SetText_btnStart(string _text)
+            => btnStart.text = _text;
 
         void SetRateValue()
         {

@@ -273,7 +273,7 @@ public class Signal
     public SignalObject<CharacterComponent> ConnectMainHero = new();
     public SignalObject<CharacterComponent> UpdateHP = new();
     public SignalObject<float> UpdageBossHP = new(); //percent
-    public SignalObject<bool> UpdateAsset = new(); //isTween
+    public SignalObject<(bool _isTween, ItemType _itemType)> UpdateAsset = new();
 
     public SignalObject<StageManager.LoadData_Stage> StartStage = new();
     public SignalObject<int> StartPhase = new(); // Phase index

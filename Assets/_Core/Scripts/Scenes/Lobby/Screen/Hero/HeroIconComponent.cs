@@ -62,7 +62,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     {
         data = _data;
 
-        m_element.batch.SetActive(_data.isBatch);
+        m_element.badge.SetActive(_data.isBatch);
 
         m_element.txtLevel.text = _data.enchantLevel.ToString();
         m_element.txtName.text = _data.name;
@@ -104,7 +104,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         m_element.icon.parent.gameObject.SetActive(false);
         m_element.btnAction.gameObject.SetActive(false);
         m_element.btnHero.interactable = false;
-        m_element.batch.SetActive(false);
+        m_element.badge.SetActive(false);
         data = default;
     }
 
@@ -191,7 +191,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         public GameObject objActionText;
 
         public GameObject dimm;
-        public GameObject batch;
+        public GameObject badge;
         public Image outline;
 
         public void Initialize(Transform _transform)
@@ -210,7 +210,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
             dimm = panel.Find("Icon/Dimm").gameObject;
             outline = panel.GetComponent<Image>("Icon/Outline");
 
-            batch = panel.Find("Batch").gameObject;
+            badge = panel.Find("Badge").gameObject;
         }
 
         public void SetActiveName(bool _isActive)

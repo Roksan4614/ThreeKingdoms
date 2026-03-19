@@ -50,7 +50,7 @@ public class Tutorial_START : TutorialBase
         enemy.anim.Play(CharacterAnimType.Attack);
         enemy.SetHeroData("");
 
-        CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
+        //CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
 
         // test
         {
@@ -64,7 +64,8 @@ public class Tutorial_START : TutorialBase
                 await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.L));
 
                 RewardWorker.instance.isSwitchReceive = false;
-                RewardWorker.instance.Run(enemy.transform, ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1));
+                RewardWorker.instance.Run(enemy.transform.position,
+                    ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1));
 
                 await UniTask.WaitForEndOfFrame();
             }
@@ -138,7 +139,7 @@ public class Tutorial_START : TutorialBase
 
         //보상 나오는 연출 해줄거야.
         {
-            RewardWorker.instance.Run(enemy.transform, ItemType.Scroll_Party);
+            RewardWorker.instance.Run(enemy.transform.position, ItemType.Scroll_Party);
             //"연회권? 동료를 얻을 수 있으려나? 주막에 가보자."
             mainHero.talkbox.Start(talk.Dequeue().talkArray);
 

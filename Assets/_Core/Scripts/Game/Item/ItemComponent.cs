@@ -23,8 +23,9 @@ public class ItemComponent : MonoBehaviour, IValidatable
         gameObject.SetActive(true);
         m_element.panel.gameObject.SetActive(false);
 
-        SetIconAsync(_itemData.value, _itemData.key == ItemType.Stone_Soul).Forget();
-        m_element.txtCount.text = $"x{_itemData.count.AmountKMBT()}";
+        bool isHero = _itemData.key == ItemType.Stone_Soul;
+        SetIconAsync(_itemData.value, isHero).Forget();
+        m_element.txtCount.text = _itemData.count > 0 ? $"x{_itemData.count.AmountKMBT()}" : "";
     }
 
     async UniTask SetIconAsync(string _key, bool _isHero)
@@ -55,14 +56,19 @@ public class ItemComponent : MonoBehaviour, IValidatable
         Utils.SetActivePunch(m_element.panel, true);
         m_element.panel.gameObject.SetActive(true);
         m_element.iconPanel.parent.gameObject.SetActive(true);
+
+        bool isHero = data.key == ItemType.Stone_Soul;
+        bool isNew = isHero && DataManager.userInfo.GetHeroInfoData(data.value).isActive == false;
+        m_element.badge.SetActive(isNew);
     }
 
-    public void SetSoulCount(int _count)
+    public void SetSoulCount(long _count = 0)
     {
         m_element.panel.gameObject.SetActive(true);
         m_element.iconPanel.parent.gameObject.SetActive(false);
 
-        m_element.txtCount.text = $"x{_count.AmountKMBT()}";
+        m_element.txtCount.text = _count == 0 ? "" : $"x{_count.AmountKMBT()}";
+        m_element.badge.SetActive(false);
     }
 
     #region VALIDATE
@@ -79,12 +85,16 @@ public class ItemComponent : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtCount;
         public Transform iconPanel;
 
+        public GameObject badge;
+
         public void Initialize(Transform _transform)
         {
             panel = _transform.Find("Panel");
 
-            iconPanel = _transform.Find("Panel/Icon/Panel");
-            txtCount = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_count");
+            iconPanel = panel.Find("Icon/Panel");
+            txtCount = panel.GetComponent<TextMeshProUGUI>("txt_count");
+
+            badge = panel.Find("Badge").gameObject;
         }
     }
     #endregion VALIDATA

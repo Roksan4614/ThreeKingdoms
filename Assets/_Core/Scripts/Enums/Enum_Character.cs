@@ -42,7 +42,7 @@ public enum GradeType
 
     Normal,     //일반
     Elite,      //정예, 어려움
-    General,    //장군, 지옥
+    General,    //명장, 지옥
     Hero,       //영웅, 심연
     Legend,     //전설
 

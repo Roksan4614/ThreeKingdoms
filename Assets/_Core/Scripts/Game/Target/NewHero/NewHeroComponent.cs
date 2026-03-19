@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,20 +6,27 @@ using UnityEngine.UI;
 
 public class NewHeroComponent : MonoBehaviour, IValidatable
 {
-
-    public void Update()
+    public void Show()
     {
-        if (Input.GetKey(KeyCode.LeftArrow))
-            Play("In");
-        if (Input.GetKey(KeyCode.RightArrow))
-            Play("Out");
-        if (Input.GetKey(KeyCode.DownArrow))
-            Play("Idle");
+        Play("In");
+        gameObject.SetActive(true);
+
+        var scale = transform.localScale;
+        if (UnityEngine.Random.value > .5f != scale.x > 0)
+            scale.x *= -1;
+
+        transform.localScale = scale;
+    }
+
+    public async UniTask OutAsync()
+    {
+        Play("Out");
+        await UniTask.WaitForSeconds(0.5f);
+        gameObject.SetActive(false);
     }
 
     public void Play(string _key)
     {
-        //m_animator.Play(_animType.ToString(), _layerIndex, 0);
         m_element.animator.CrossFade(_key, 0, 0, 0);
     }
 

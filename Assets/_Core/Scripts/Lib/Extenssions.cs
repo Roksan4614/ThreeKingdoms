@@ -117,6 +117,21 @@ public static class Extenssions
         return path;
     }
 
+    public static string WithJosa(this string _string, bool _isSubject = true)
+    {
+        if (DataManager.option.language != LanguageType.Korean || _string.IsActive() == false)
+            return _string;
+
+        char lastChar = _string[_string.Length - 1];
+
+        // ÇÑ±Û ¹üÀ§ È®ÀÎ (°¡: 0xAC00, ÆR: 0xD7A3)
+        if (lastChar < 0xAC00 || lastChar > 0xD7A3) return _string + (_isSubject ? "ÀÌ" : "À»");
+
+        // (±ÛÀÚ - °¡) % 28
+        int tailIndex = (lastChar - 0xAC00) % 28;
+
+        return _string + (_isSubject ? (tailIndex == 0 ? "°¡" : "ÀÌ") : (tailIndex == 0 ? "¸¦" : "À»"));
+    }
     public static bool IsActive(this string _string)
         => string.IsNullOrWhiteSpace(_string) == false;
 

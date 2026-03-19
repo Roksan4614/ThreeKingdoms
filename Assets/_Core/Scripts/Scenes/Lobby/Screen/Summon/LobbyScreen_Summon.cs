@@ -37,8 +37,6 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         {
             if (package.gameObject.activeSelf == true)
                 StartAsync().Forget();
-            else
-                m_element.result.NextStep();
         });
 
         m_element.btnSkip.onClick.AddListener(() => OnButtonAsync_Skip().Forget());
@@ -126,17 +124,14 @@ public class LobbyScreen_Summon : LobbyScreen_Base
     {
         LobbyScreenManager.instance.isLock = true;
 
-        m_element.btnStart.text = "_진행중";
+        m_element.btnStart.text = "진행_중";
 
         await Utils.SetActivePunchAsync(package.transform, false);
         package.gameObject.SetActive(false);
 
         await m_element.result.StartAsync(package.curRegion, m_hostData.key, m_isSkipAction);
 
-        m_element.btnStart.text = "_마무리";
-        await m_element.result.FinishAsync();
-
-        m_element.btnStart.text = "_시작하기";
+        m_element.btnStart.text = "시작_하기";
 
         package.gameObject.SetActive(true);
         Utils.SetActivePunch(package.transform, true);

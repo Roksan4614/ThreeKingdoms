@@ -66,6 +66,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
             var hero = Instantiate(heroCharacter, MapManager.instance.element.pHero);
 
+            hero.gameObject.SetActive(true);
             hero.SetHeroData(myHero[i].key);
             hero.name = myHero[i].key;
 

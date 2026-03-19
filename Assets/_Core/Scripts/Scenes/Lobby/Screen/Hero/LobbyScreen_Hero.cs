@@ -141,7 +141,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
                 Destroy(e.txtName.gameObject);
                 Destroy(e.icon.parent.gameObject);
                 Destroy(e.btnAction.gameObject);
-                Destroy(e.batch);
+                Destroy(e.badge);
                 e.btnHero.interactable = false;
 
                 // 20개 미리 생성은 해두자

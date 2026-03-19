@@ -39,7 +39,7 @@ public class PopupHeroInfo : BasePopupComponent
         // FRONT PANEL
         var key = $"{dbHeroData.regionType}_{_data.key}".ToUpper();
         m_element.txtName.text = $"{TableManager.stringHero.GetString("NAME_" + key)}<size=80%><color=#888888> {TableManager.stringHero.GetString("COURTESY_" + key)}";
-        m_element.txtDescTalk.text = TableManager.stringHero.GetString("DESC_TALK_" + key);
+        m_element.txtDescTalk.text = dbHeroData.talk;
 
         // 고유 능력치
         for (int i = 0; i < m_element.stat.Count; i++)

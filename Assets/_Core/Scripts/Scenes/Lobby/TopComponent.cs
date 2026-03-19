@@ -20,10 +20,15 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
         }
 
         Signal.instance.UpdateAsset.connectLambda = new(this,
-            _isTween =>
+            _data =>
             {
-                for (int i = 0; i < m_element.assets.Count; i++)
-                    UpdateAsset(m_element.assets[i].type, -1, _isTween);
+                if (_data._itemType == ItemType.NONE)
+                {
+                    for (int i = 0; i < m_element.assets.Count; i++)
+                        UpdateAsset(m_element.assets[i].type, -1, _data._isTween);
+                }
+                else
+                    UpdateAsset(_data._itemType, -1, _data._isTween);
             });
     }
 
