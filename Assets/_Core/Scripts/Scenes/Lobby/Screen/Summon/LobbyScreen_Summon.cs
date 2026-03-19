@@ -13,6 +13,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
     struct PartyHostData
     {
+        public CharacterComponent comp;
         public string key;
         public string dt_end;
 
@@ -99,17 +100,20 @@ public class LobbyScreen_Summon : LobbyScreen_Base
             var child = m_element.pHost.GetChild(i);
             child.gameObject.SetActive(child.gameObject.name.Equals(m_hostData.key));
             if (isHas == false && child.gameObject.activeSelf == true)
+            {
                 isHas = true;
+                m_hostData.comp = child.GetComponent<CharacterComponent>();
+            }
         }
 
         if (isHas == false)
         {
             var result = await AddressableManager.instance.GetHeroCharacterAsync(m_hostData.key);
 
-            var hero = Instantiate(result, m_element.pHost);
-            hero.GetComponent<CharacterComponent>().move.SetFlip(true);
-            hero.name = m_hostData.key;
-            hero.transform.localPosition = Vector3.zero;
+            m_hostData.comp = Instantiate(result, m_element.pHost).GetComponent<CharacterComponent>();
+            m_hostData.comp.move.SetFlip(true);
+            m_hostData.comp.name = m_hostData.key;
+            m_hostData.comp.transform.localPosition = Vector3.zero;
         }
 
         m_element.txtHostInfo.text = $"_¡÷√÷¿⁄:{TableManager.hero.Get(m_hostData.key).name}\n<color=#636363><size=80%>øµ»•ºÆ 10∞≥ »πµÊ 100%";
@@ -124,6 +128,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
     {
         LobbyScreenManager.instance.isLock = true;
 
+        m_hostData.comp.anim.Play(CharacterAnimType.Attack);
         m_element.btnStart.text = "¡¯«‡_¡ﬂ";
 
         await Utils.SetActivePunchAsync(package.transform, false);

@@ -44,9 +44,11 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             new(){ itemType = _itemType,  count = _count }
         };
 
-        m_actionData.distInstantiateMAX = _distMax > 0 ? _distMax : m_actionData.distInstantiateMAX;
+        m_actionData.distInstantiateMAX = _distMax > 0 ? _distMax : 2;
         if (m_actionData.distInstantiateMAX < m_actionData.distInstantiateMIN)
             m_actionData.distInstantiateMIN = m_actionData.distInstantiateMAX;
+        else
+            m_actionData.distInstantiateMIN = 0.2f;
 
         m_actionData.isFXStart = _isFXStart;
         m_actionData.isStartPunch = _isStartPunch;
