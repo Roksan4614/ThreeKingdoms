@@ -1,11 +1,9 @@
 using Cysharp.Threading.Tasks;
 using System;
-using System.Threading;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class LobbyScreen_Summon : LobbyScreen_Base
 {
@@ -30,6 +28,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
         package.SetActive(true);
         m_element.pResult.gameObject.SetActive(false);
+        m_element.hostDash.SetActive(false);
     }
 
     private void Start()
@@ -47,8 +46,8 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
         // setlocalization
         {
-            m_element.btnStart.text = "_시작하기";
-            m_element.btnSkip.text = "_건너띄기";
+            m_element.btnStart.text = "시작하기_";
+            m_element.btnSkip.text = "건너띄기_";
         }
     }
 
@@ -82,7 +81,6 @@ public class LobbyScreen_Summon : LobbyScreen_Base
     async UniTask<PartyHostData> LoadHostDataAsync()
     {
         m_element.pHost.gameObject.SetActive(false);
-
         // TODO: Request
         {
             var key = DataManager.userInfo.myHero[UnityEngine.Random.Range(0, DataManager.userInfo.myHero.Count)].key;
@@ -90,8 +88,9 @@ public class LobbyScreen_Summon : LobbyScreen_Base
                 key = DataManager.userInfo.myHero[UnityEngine.Random.Range(0, DataManager.userInfo.myHero.Count)].key;
 
             m_hostData.key = key;
-
         }
+
+        m_element.pHost.gameObject.SetActive(true);
         m_hostData.dt_end = DateTime.UtcNow.AddHours(1f).ToString();
 
         bool isHas = false;
@@ -123,25 +122,54 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
     public void SetEnableRegion(params RegionType[] _region)
         => package.SetEnableRegion(_region);
+    public void SetRegionType(RegionType _region)
+        => package.SetRegionType(_region);
 
     public async UniTask StartAsync()
     {
         LobbyScreenManager.instance.isLock = true;
 
-        m_hostData.comp.anim.Play(CharacterAnimType.Attack);
-        m_element.btnStart.text = "진행_중";
+        StartAsync_HostAction().Forget();
+        m_element.btnStart.text = "진행중_";
 
         await Utils.SetActivePunchAsync(package.transform, false);
         package.gameObject.SetActive(false);
 
         await m_element.result.StartAsync(package.curRegion, m_hostData.key, m_isSkipAction);
 
-        m_element.btnStart.text = "시작_하기";
+        m_element.btnStart.text = "시작하기_";
 
         package.gameObject.SetActive(true);
         Utils.SetActivePunch(package.transform, true);
 
         LobbyScreenManager.instance.isLock = false;
+    }
+
+    public async UniTask StartAsync_HostAction()
+    {
+        var hero = m_hostData.comp;
+
+        if (m_isSkipAction == false)
+        {
+            hero.anim.Play(CharacterAnimType.Dash);
+
+            hero.move.SetFlip(false);
+            m_element.hostDash.SetActive(true);
+
+            var prevPos = hero.transform.position;
+            hero.transform.DOMoveX(prevPos.x - 4, .2f).SetEase(Ease.InBack)
+                .OnComplete(() => hero.gameObject.SetActive(false));
+
+            await UniTask.WaitUntil(() => m_element.result.step == LobbyScreen_Summon_Result.ResultStepType.ReceiveEnd);
+
+            hero.anim.Play(CharacterAnimType.Dash);
+
+            hero.move.SetFlip(true);
+            hero.gameObject.SetActive(true);
+            hero.transform.DOMoveX(prevPos.x, .2f).SetEase(Ease.InCubic);
+        }
+
+        hero.anim.Play(CharacterAnimType.Attack);
     }
 
     public async UniTask OnButtonAsync_Skip()
@@ -188,6 +216,8 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         public ButtonHelper btnSkip;
         public TextMeshProUGUI txtHostInfo;
 
+        public GameObject hostDash;
+
         public void Initialize(Transform _transform)
         {
             var panel = _transform.Find("Panel");
@@ -203,6 +233,8 @@ public class LobbyScreen_Summon : LobbyScreen_Base
             btnSkip = panel.GetComponent<ButtonHelper>("btn_skip");
 
             txtHostInfo = panel.GetComponent<TextMeshProUGUI>("txt_hostInfo");
+
+            hostDash = room.Find("Dash").gameObject;
         }
     }
     #endregion VALIDATA

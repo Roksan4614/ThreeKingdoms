@@ -110,11 +110,15 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void SetActiveButton(bool _isActive, bool _isChange = false)
     {
+        if (data.isMain == true && StageManager.instance.isClearFirstStage == false)
+            return;
+
         _isActive = _isActive && data.isActive;
 
         m_element.btnAction.gameObject.SetActive(_isActive);
         if (_isActive == true)
         {
+
             m_element.objActionText.SetActive(_isChange == false);
             m_element.objActionChange.SetActive(_isChange);
         }

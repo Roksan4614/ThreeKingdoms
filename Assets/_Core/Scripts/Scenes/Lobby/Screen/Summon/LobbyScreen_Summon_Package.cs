@@ -89,7 +89,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
             m_element.scroll.enabled = true;
         });
 
-        m_curRegion = _isLeft ? nextRegion : prevRegion;
+        SetRegionType( _isLeft ? nextRegion : prevRegion);
 
         SetButtonSort();
     }
@@ -154,11 +154,14 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
         }
 
         m_element.scroll.enabled = m_dbActive.Where(x => x.Value == true).Count() > 1;
-        m_curRegion = _region.Length == 0 ? RegionType.NONE : _region[0];
+        SetRegionType(_region.Length == 0 ? RegionType.NONE : _region[0]);
 
         if (isAwaked)
             SetButtonSort();
     }
+
+    public void SetRegionType(RegionType _region)
+        => m_curRegion = _region;
 
     public void OnManualValidate()
     {

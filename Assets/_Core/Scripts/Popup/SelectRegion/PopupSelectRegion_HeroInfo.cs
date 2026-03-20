@@ -91,9 +91,19 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
 
     async UniTask OnButton_ConfirmAsync()
     {
-        await DataManager.userInfo.AddHeroAsync(m_regionData.keyMaster, true, true);
-        await PopupManager.instance.ShowDimmAsync(true);
-        gameObject.SetActive(false);
+        var result = await PopupManager.instance.OpenModalAsync();
+
+        if (result == StatusType.Success)
+        {
+            m_regionData.heroComponent.anim.Play(CharacterAnimType.Attack);
+            await UniTask.WaitForSeconds(1f);
+
+            await DataManager.userInfo.AddHeroAsync(m_regionData.keyMaster, GradeType.Normal, true, true);
+            await PopupManager.instance.ShowDimmAsync(true);
+            gameObject.SetActive(false);
+
+            await UniTask.WaitForSeconds(1f);
+        }
     }
 
     public void OnManualValidate()

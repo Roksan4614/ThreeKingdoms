@@ -128,6 +128,12 @@ public static class Utils
                 return Input.GetKeyDown(KeyCode.Escape);
             }, cancellationToken: _token == default ? _mono.destroyCancellationToken : _token);
 
+            if (PopupManager.instance.isOpenModal)
+            {
+                PopupManager.instance.lastPopupModal.Close();
+                continue;
+            }
+
             _onEscape();
 
             if (_isForceBreak == true)

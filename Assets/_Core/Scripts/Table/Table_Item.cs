@@ -29,5 +29,6 @@ public struct TableItemData
     public string value;
 
     //custom 
+    public bool isNew;
     public long count;
 }

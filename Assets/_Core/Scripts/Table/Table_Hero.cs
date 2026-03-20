@@ -56,6 +56,16 @@ public class Table_Hero : BaseTable<string, TableHeroData>
             GradeType.Normal => 10,
             _ => 0
         };
+
+    public GradeType GetGradeFromSoulCount(long _count)
+    {
+        if (_count >= 2560) return GradeType.Legend;
+        if (_count >= 640) return GradeType.Hero;
+        if (_count >= 160) return GradeType.General;
+        if (_count >= 40) return GradeType.Elite;
+        if (_count >= 10) return GradeType.Normal;
+        return GradeType.NONE;
+    }
 }
 
 [Serializable]
@@ -129,16 +139,19 @@ public struct HeroInfoData
     public string key;
     public string skin;
     public GradeType grade;
+    public int soulCount;
     public int enchantLevel;
     public bool isBatch;
     public bool isMain;
     public bool isMine;
 
-    public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, string _skin = null, int _enchantLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
+    public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, string _skin = null,
+        int _soulCount = 0, int _enchantLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
     {
         key = _key;
         grade = _grade;
         skin = _skin.IsActive() ? _skin : key;
+        soulCount = _soulCount;
         enchantLevel = _enchantLevel;
         isBatch = _isBatch;
         isMain = _isMain;

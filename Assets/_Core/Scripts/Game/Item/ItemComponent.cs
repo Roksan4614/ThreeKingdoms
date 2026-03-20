@@ -57,9 +57,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         m_element.panel.gameObject.SetActive(true);
         m_element.iconPanel.parent.gameObject.SetActive(true);
 
-        bool isHero = data.key == ItemType.Stone_Soul;
-        bool isNew = isHero && DataManager.userInfo.GetHeroInfoData(data.value).isActive == false;
-        m_element.badge.SetActive(isNew);
+        m_element.badge.SetActive(data.isNew);
     }
 
     public void SetSoulCount(long _count = 0)

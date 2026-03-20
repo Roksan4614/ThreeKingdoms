@@ -12,14 +12,13 @@ public enum TutorialType
 
 public class TutorialManager
 {
-    const string c_key = "Tutorial_Data";
     public static TutorialManager instance { get; private set; } = new();
 
     List<TutorialType> m_loadData;
 
     public async UniTask InitializeAsync()
     {
-        m_loadData = PPWorker.Get<List<TutorialType>>(c_key);
+        m_loadData = PPWorker.Get<List<TutorialType>>(PlayerPrefsType.TUTORIAL_DATA);
         if (m_loadData == null)
             m_loadData = new();
     }

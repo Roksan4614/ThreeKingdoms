@@ -50,55 +50,36 @@ public class Tutorial_START : TutorialBase
         enemy.anim.Play(CharacterAnimType.Attack);
         enemy.SetHeroData("");
 
-        //CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
+        CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
 
-        // test
-        {
-            // 하단 버튼활성화
-            for (int i = 0; i < bottomButton.Count; i++)
-                bottomButton[i].interactable = true;
-
-            ControllerManager.instance.gameObject.SetActive(true);
-            while (true)
-            {
-                await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.L));
-
-                RewardWorker.instance.isSwitchReceive = false;
-                RewardWorker.instance.Run(enemy.transform.position,
-                    ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1));
-
-                await UniTask.WaitForEndOfFrame();
-            }
-        }
-
-        //얼빠지게 생긴 넘이다!! 죽여라!!
+        // 얼빠지게 생긴 넘이다!! 죽여라!!
         await enemy.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
 
-        //"앞에 황건적이네. 어쩌지?"
+        // "앞에 황건적이네. 어쩌지?"
         CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos, false);
         await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
         enemy.talkbox.SetActive(false);
 
-        //데미지 안받게 
+        // 데미지 안받게 
         var hashHero = mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
         var hashEnemy = enemy.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
 
         mainHero.move.MoveTarget(m_elementBase.enemy.First(), true);
         enemy.move.MoveTarget(mainHero, true);
 
-        //"응? 적이 있으면 스스로 공격하는구나!!"
+        // "응? 적이 있으면 스스로 공격하는구나!!"
         await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
 
         ControllerManager.instance.gameObject.SetActive(true);
         ControllerManager.instance.SetMoveActionArea(true, false);
         ControllerManager.instance.SetActive_Action(false);
-        //"키보드 조작으로 내가 움직일 수 있을거 같은데?"
+        // "키보드 조작으로 내가 움직일 수 있을거 같은데?"
         mainHero.talkbox.Start(talk.Dequeue().talkArray);
 
         var prevPos = mainHero.transform.position;
         await UniTask.WaitUntil(() => (prevPos - mainHero.transform.position).sqrMagnitude > 2f);
 
-        //"돌진과 공격을 사용해보자"
+        // "돌진과 공격을 사용해보자"
         ControllerManager.instance.SetActive_Action(true);
         ControllerManager.instance.DashTimerStartAsync().Forget();
         mainHero.talkbox.Start(talk.Dequeue().talkArray);
@@ -127,7 +108,7 @@ public class Tutorial_START : TutorialBase
             hi[i].StartStage();
         Utils.SetActivePunch(heroInfo, true);
         mainHero.buff.RemoveAll(BuffType.DEBUFF_NO_SKILL);
-        //영웅 스킬 사용
+        // 영웅 스킬 사용
         await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
         await UniTask.WaitUntil(() => mainHero.attack.isUseSkill);
 
@@ -137,37 +118,107 @@ public class Tutorial_START : TutorialBase
         mainHero.talkbox.Start(talk.Dequeue().talkArray);
         await UniTask.WaitUntil(() => enemy.isLive == false);
 
-        //보상 나오는 연출 해줄거야.
-        {
-            RewardWorker.instance.Run(enemy.transform.position, ItemType.Scroll_Party);
-            //"연회권? 동료를 얻을 수 있으려나? 주막에 가보자."
-            mainHero.talkbox.Start(talk.Dequeue().talkArray);
+        var rtArrow = (RectTransform)m_elementBase.arrows[0].transform;
 
-            m_elementBase.arrows[0].gameObject.SetActive(true);
+        // 연회 열기
+        if (DataManager.userInfo.myHero.Count == 1)
+        {
+            bottomButton[(int)LobbyScreenType.Summon].interactable = true;
+
+            // 연회권 보상 연출
+            await RewardWorker.instance.RunAsync(enemy.transform.position, ItemType.Scroll_Party);
+
+            await UniTask.WaitForSeconds(.5f);
+
+            // "연회권? 동료를 얻을 수 있으려나? 주막에 가보자."
+            await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
+
+            await UniTask.WaitForSeconds(.5f);
+
+            rtArrow.gameObject.SetActive(true);
+            // 영웅 뽑기
+            await SummonHeroAsync();
+            rtArrow.gameObject.SetActive(false);
+        }
+        else
+            talk.Dequeue();
+
+        // "영웅을 출전시켜보자."
+        {
+            await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
+            await UniTask.WaitForSeconds(.5f);
+
+            bottomButton[(int)LobbyScreenType.Summon].interactable = false;
+            bottomButton[(int)LobbyScreenType.Heros].interactable = true;
+
+            rtArrow.anchoredPosition += new Vector2(-200, 0);
+            rtArrow.gameObject.SetActive(true);
+
+            bool isRetry = false;
+            while (true)
+            {
+                // 영웅 창 기다리기
+                await UniTask.WaitUntil(() => LobbyScreenManager.instance.curScreen == LobbyScreenType.Heros);
+
+                // 꺼질 때가지 기다리기
+                // 영웅 창 기다리기
+                await UniTask.WaitUntil(() => LobbyScreenManager.instance.curScreen != LobbyScreenType.Heros);
+
+                //배치 영웅 세명 검색
+                if (DataManager.userInfo.myHero.Count(x => x.isBatch) == 3)
+                {
+                    if (isRetry == false)
+                        talk.Dequeue();
+                    break;
+                }
+
+                if (isRetry == false)
+                {
+                    // 영웅 얼굴을 누르면 합류시킬 수 있어.
+                    mainHero.talkbox.Start(talk.Dequeue().talkArray);
+                    isRetry = true;
+                }
+            }
+
+            rtArrow.gameObject.SetActive(false);
+            enemy.gameObject.SetActive(false);
         }
 
-        // 하단 버튼활성화
+        TutorialManager.instance.Complete(TutorialType.START);
+
+        // 자아! 이제 출발이다!!
+        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+
+        await UniTask.WaitForSeconds(0.5f);
+
         for (int i = 0; i < bottomButton.Count; i++)
             bottomButton[i].interactable = true;
-        await SummonHeroAsync();
 
-        await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.M));
-
-        m_elementBase.arrows[0].gameObject.SetActive(true);
         // 딤 켜주자
         await PopupManager.instance.ShowDimmAsync(true);
+
+        await UniTask.WaitForSeconds(0.5f);
     }
 
     async UniTask SummonHeroAsync()
     {
         var screen = LobbyScreenManager.instance.GetScreenSummon();
+        screen.SetRegionType(TeamManager.instance.mainHero.data.regionType);
 
-        screen.SetEnableRegion(RegionType.Shu);
+        bool isHeroSummon = false;
 
         // 영웅을 뽑고, 스크린을 닫을 떄까지 기다린다.
         while (DataManager.userInfo.myHero.Count == 1 || LobbyScreenManager.instance.curScreen > LobbyScreenType.None)
-            await UniTask.WaitForEndOfFrame();
+        {
+            if (isHeroSummon == false && DataManager.userInfo.myHero.Count > 1)
+            {
+                m_elementBase.arrows[0].gameObject.SetActive(false);
+                isHeroSummon = true;
+            }
 
-        screen.SetEnableRegion();
+            await UniTask.WaitForEndOfFrame();
+        }
+
+        screen.SetRegionType(RegionType.NONE);
     }
 }

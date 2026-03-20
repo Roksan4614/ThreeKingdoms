@@ -27,6 +27,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
     CancellationTokenSource m_cts;
 
     public bool isStageFailed { get; set; }
+    public bool isClearFirstStage => m_loadData.level > 1;
 
     protected override void OnAwake()
     {

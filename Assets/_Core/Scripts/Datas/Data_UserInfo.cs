@@ -23,6 +23,20 @@ public class Data_UserInfo
 
             await AddressableManager.instance.Load_HeroIconAsync(m_element.myHero.Select(x => x.skin).ToArray());
             await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+
+            if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            {
+                var heros = m_element.myHero.FindAll(x => x.isMain == false && x.isBatch == true).ToList();
+                if (heros.Count > 0)
+                {
+                    for (int i = 0; i < heros.Count; i++)
+                    {
+                        var h = heros[i];
+                        h.isBatch = false;
+                        Update(h);
+                    }
+                }
+            }
         }
         else
         {
@@ -74,10 +88,26 @@ public class Data_UserInfo
         SaveData();
     }
 
-    public void AddHero(string _key, bool _isBatch = false, bool _isMain = false)
-        => AddHeroAsync(_key, _isBatch, _isMain).Forget();
+    public void AddHeroSoul(string _key, int _count)
+    {
+        var heroData = GetHeroInfoData(_key);
 
-    public async UniTask AddHeroAsync(string _key, bool _isBatch = false, bool _isMain = false)
+        if (heroData.isActive == true)
+        {
+            heroData.soulCount += _count;
+            Update(heroData);
+        }
+        else
+        {
+            var grade = TableManager.hero.GetGradeFromSoulCount(_count);
+            AddHero(_key, grade);
+        }
+    }
+
+    public void AddHero(string _key, GradeType _grade = GradeType.Normal, bool _isBatch = false, bool _isMain = false)
+        => AddHeroAsync(_key, _grade, _isBatch, _isMain).Forget();
+
+    public async UniTask AddHeroAsync(string _key, GradeType _grade = GradeType.Normal, bool _isBatch = false, bool _isMain = false)
     {
         if (m_element.myHero.Any(x => x.key == _key))
             return;
@@ -85,8 +115,7 @@ public class Data_UserInfo
         m_element.myHero.Add(new(_key, _isMain: _isMain, _isBatch: _isBatch));
 
         await AddressableManager.instance.Load_HeroIconAsync(_key);
-        if (_isBatch)
-            await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+        await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
 
         SaveData();
     }

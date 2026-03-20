@@ -72,9 +72,9 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         if (popupObject == null)
             return null;
 
-        string parent = _popupType > PopupType.Modal_Start ? "Modal" : "Popup";
-
-        var popup = Instantiate(popupObject, transform.Find(parent)).GetComponent<BasePopupComponent>();
+        var popup = Instantiate(popupObject,
+            _popupType > PopupType.Modal_Start ? m_element.pModal : m_element.pPopup)
+            .GetComponent<BasePopupComponent>();
         popup.name = _popupType.ToString();
 
         popup.OpenPopup(_data);
@@ -101,6 +101,10 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
         return popup;
     }
+
+    public bool isOpenModal => m_element.pModal.childCount > 0;
+    public PopupModalComponent lastPopupModal => isOpenModal ?
+        m_element.pModal.GetChild(m_element.pModal.childCount - 1).GetComponent<PopupModalComponent>() : null;
 
     public void ShowDimm(bool _isShow, bool _isFade = true, bool _isOpercity = false)
     {
@@ -170,7 +174,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         await m_element.alertData.DisableAsync();
     }
 
-    public bool isAleting => m_element.alertData.isActive;
+    public bool isAlerting => m_element.alertData.isActive;
 
     [Serializable]
     struct AlertData
@@ -232,18 +236,23 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
                 for (int i = 0; i < _message.Length; i++)
                 {
                     var m = _message[i];
-                    m_txtAlert.text += m;
+
+                    string visibleText = _message.Substring(0, i);
+                    string invisibleText = _message.Substring(i);
+
+                    m_txtAlert.text = $"{visibleText}<color=#00000000>{invisibleText}";
 
                     if (m == '<')
                     {
+                        char tagMsg = m;
                         while (true)
                         {
                             var fm = _message[i++];
-                            m_txtAlert.text += fm;
-
+                            tagMsg += fm;
                             if (fm == '>')
                                 break;
                         }
+
                         continue;
                     }
                     await UniTask.WaitForSeconds(0.03f, cancellationToken: _token);
@@ -294,12 +303,18 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
         public AlertData alertData;
 
+        public Transform pPopup;
+        public Transform pModal;
+
         public void Initialize(Transform _transform)
         {
             m_canvas = _transform.GetComponent<Canvas>();
             m_cgMaxDimm = _transform.GetComponent<CanvasGroup>("MAX_Dimm");
 
             alertData.Initialize(_transform.Find("Alert"));
+
+            pPopup = _transform.Find("Popup");
+            pModal = _transform.Find("Modal");
         }
     }
     #endregion VALIDATE
