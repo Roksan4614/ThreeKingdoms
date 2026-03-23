@@ -12,6 +12,6 @@ public class Character_AnimEvent : MonoBehaviour, IValidatable
 
     public void EventAttackHit()
     {
-        m_owner.attack.EventAttackHit();
+        m_owner.attack?.EventAttackHit();
     }
 }

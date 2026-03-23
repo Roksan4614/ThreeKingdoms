@@ -31,6 +31,13 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         bundleUrl = "https://dev-static.kingz.games/Bundle/WebGL/" + Application.version.Split('.')[2];
     }
 
+    private void OnApplicationQuit()
+    {
+        Signal.Release();
+        DataManager.Release();
+        ScenarioManager.Release();
+    }
+
     public async UniTask InitializeAsync()
     {
         Addressables.InternalIdTransformFunc = CustomTransform;

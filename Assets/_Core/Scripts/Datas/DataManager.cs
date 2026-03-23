@@ -13,4 +13,11 @@ public class DataManager
     {
         await userInfo.Initialize();
     }
+
+    public static void Release()
+    {
+        instance = null;
+        userInfo = null;
+        option = null;
+    }
 }

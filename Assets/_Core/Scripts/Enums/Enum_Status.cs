@@ -9,3 +9,12 @@ public enum StatusType
     Valid,
     Invalid,
 }
+
+public enum DirectionType
+{
+    NONE,
+
+    Left, Right, Up, Down,
+
+    MAX
+}

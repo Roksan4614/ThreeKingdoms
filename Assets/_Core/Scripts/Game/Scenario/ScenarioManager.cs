@@ -7,9 +7,22 @@ public class ScenarioManager
 {
     public static ScenarioManager instance { get; private set; } = new();
 
+    AsyncOperationHandle<GameObject> m_handle;
+
+
     public void Initialize()
     {
+    }
 
+    public static void Release()
+    {
+        if (instance != null)
+        {
+            if (instance.m_handle.IsValid() == true)
+                instance.m_handle.Release();
+
+            instance = null;
+        }
     }
 
     public async UniTask StartAsync(int _phaseIdx, bool _isStart)
@@ -20,21 +33,25 @@ public class ScenarioManager
         string stageKey = StageManager.instance.data.GetKey_Scenario(_phaseIdx, _isStart);
         string key = $"Scenario/Scenario_{stageKey}.prefab";
 
-        AsyncOperationHandle<GameObject> handle = default;
         await AddressableManager.instance.LoadAssetAsync<GameObject>(
             _result =>
             {
                 if (_result.Count > 0)
-                    handle = _result.First().Value;
+                    m_handle = _result.First().Value;
             }, null, key);
 
-        if (handle.IsValid() == false)
+        if (m_handle.IsValid() == false)
             return;
 
-        var scenario = GameObject.Instantiate(handle.Result, StageManager.instance.transform);
-        await scenario.GetComponent<ScenarioBase>().StartAsync(stageKey);
+        await PopupManager.instance.ShowDimmAsync(true, false);
+
+        var scenario = GameObject.Instantiate(m_handle.Result, StageManager.instance.transform);
+        await scenario.GetComponent<ScenarioBase>().InitializeAsync(stageKey);
 
         GameObject.Destroy(scenario.gameObject);
-        handle.Release();
+        m_handle.Release();
+
+        await PopupManager.instance.ShowDimmAsync(false, _duration: 1f);
     }
+
 }

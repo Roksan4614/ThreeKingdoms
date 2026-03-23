@@ -6,14 +6,15 @@ public class Scene_Lobby : SceneBase
 {
     async void Start()
     {
-        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => {
+        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive =>
+        {
             m_elementBase.canvas.transform.Find("HeroInfo").gameObject.SetActive(false);
         });
 
         await UniTask.WaitForEndOfFrame();
 
         // 캐릭터가 없다면 선택 화면부터
-        if( DataManager.userInfo.myHero.Count == 0)
+        if (DataManager.userInfo.myHero.Count == 0)
             await PopupManager.instance.OpenPopupAndWait(PopupType.SelectRegion);
 
         await TeamManager.instance.SpawnUpdateAsync();
@@ -21,9 +22,7 @@ public class Scene_Lobby : SceneBase
         if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
             await TutorialManager.instance.StartAsync(TutorialType.START);
 
-        StageManager.instance
-            .StartStageAsync(() => PopupManager.instance.ShowDimm(false))
-            .Forget();
+        StageManager.instance.StartStageAsync().Forget();
 
         ControllerManager.instance.isSwitch = true;
     }

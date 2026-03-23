@@ -112,19 +112,33 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         ShowDimmAsync(_isShow, _isFade, _isOpercity).Forget();
     }
 
-    public async UniTask ShowDimmAsync(bool _isShow, bool _isFade = true, bool _isOpercity = false)
+    Tween m_tweenDimm;
+    CancellationTokenSource m_ctsDimm;
+    public async UniTask ShowDimmAsync(bool _isShow, bool _isFade = true, bool _isOpercity = false, float _duration = .5f, float _durationWait = .5f)
     {
+        m_tweenDimm?.Kill();
+        if (m_ctsDimm != null)
+        {
+            m_ctsDimm.Cancel(); m_ctsDimm.Dispose();
+        }
+        m_ctsDimm = new();
+
         if (_isFade)
         {
             if (_isShow)
                 m_element.cgMaxDimm.gameObject.SetActive(true);
 
-            await m_element.cgMaxDimm.DOFade(_isShow ? _isOpercity ? 0.0001f : 1f : 0f, 0.5f).AsyncWaitForCompletion();
+            m_tweenDimm = m_element.cgMaxDimm.DOFade(_isShow ? _isOpercity ? 0.0001f : 1f : 0f, _duration);
+            await m_tweenDimm.AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(m_ctsDimm.Token);
         }
         else if (_isShow)
             m_element.cgMaxDimm.alpha = _isOpercity ? 0.0001f : 1f;
 
+        m_tweenDimm = null;
+        m_ctsDimm = null;
         m_element.cgMaxDimm.gameObject.SetActive(_isShow);
+
+        await UniTask.WaitForSeconds(_durationWait);
     }
 
     public void SetCanvasCamera() => m_element.canvas.worldCamera = CameraManager.instance.main;

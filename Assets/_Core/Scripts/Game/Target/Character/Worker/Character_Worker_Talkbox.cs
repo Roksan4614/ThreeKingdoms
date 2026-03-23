@@ -20,6 +20,9 @@ public class Character_Worker_Talkbox : Character_Worker
     HorizontalLayoutGroup m_layout;
     ContentSizeFitter m_fitter;
 
+    public bool isTyping { get; private set; } = false;
+    public async UniTask WaitTyping()=> await UniTask.WaitUntil(()=>isTyping == false);
+
     void Init(params string[] _talks)
     {
         SetActive(true);
@@ -92,6 +95,7 @@ public class Character_Worker_Talkbox : Character_Worker
 
     public async UniTask StartAsync(params string[] _talks)
     {
+        isTyping = true;
         Cancel();
         m_cts = new();
         var token = m_cts.Token;
@@ -131,6 +135,7 @@ public class Character_Worker_Talkbox : Character_Worker
 
                     await UniTask.WaitForEndOfFrame();
                     ControllerManager.instance.isSwitch = true;
+                    isTyping = false;
                     return;
                 }
             }
@@ -140,6 +145,7 @@ public class Character_Worker_Talkbox : Character_Worker
 
         await UniTask.WaitForEndOfFrame();
         ControllerManager.instance.isSwitch = true;
+        isTyping = false;
     }
 
     public void SetActive(bool _isActive)

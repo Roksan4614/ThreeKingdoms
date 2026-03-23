@@ -84,7 +84,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
         return m_stage == null;
     }
 
-    public async UniTask StartStageAsync(Action _onStartStage = null)
+    public async UniTask StartStageAsync()
     {
         if (m_cts != null)
         {
@@ -98,7 +98,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
             await LoadStageAsync();
 
         TeamManager.instance.StartStage();
-        _onStartStage?.Invoke();
+        bool isDisableStart = false;
 
         var tickStart = m_tickStart = DateTime.Now.Ticks;
 
@@ -127,9 +127,13 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     continue;
 
                 // 스토리가 있는지 여부 확인한다.
-                await ScenarioManager.instance.StartAsync(phaseIdx, true);
+                if (m_loadData.isBossWait == false && m_loadData.level == 1)
+                    await ScenarioManager.instance.StartAsync(phaseIdx, true);
+                else if (isDisableStart == false)
+                    PopupManager.instance.ShowDimm(false);
+                isDisableStart = true;
 
-                bool isFlip = TeamManager.instance.mainHero.transform.position.x > 0;
+                    bool isFlip = TeamManager.instance.mainHero.transform.position.x > 0;
                 var ctsCloseToken = m_stage.StartPhase(phaseIdx, isFlip);
 
                 m_enemyList.Clear();

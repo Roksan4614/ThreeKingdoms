@@ -212,6 +212,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public CharacterComponent GetHero(TeamPositionType _teamPosition)
      => m_member.ContainsKey(_teamPosition) == false ? null : m_member[_teamPosition];
+    public CharacterComponent GetHero(string _key)
+     => m_member.Values.Where(x => x.data.key.Equals(_key)).First();
 
     public void RepositionToMain(float _duration = .5f, bool _isForce = false)
     {
@@ -310,6 +312,12 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         StageManager.instance.isStageFailed = true;
         return true;
+    }
+
+    public void ShowHeros(bool _isShow)
+    {
+        foreach (var hero in m_member.Values)
+            hero.gameObject.SetActive(_isShow);
     }
 
     public void OnManualValidate() => m_element.Initialize(transform);

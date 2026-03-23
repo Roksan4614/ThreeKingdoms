@@ -174,7 +174,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
             hero.transform.DOMoveX(prevPos.x, .2f).SetEase(Ease.InCubic);
         }
 
-        hero.anim.Play(CharacterAnimType.Attack);
+        hero.anim.PlayAttack();
     }
 
     public async UniTask OnButtonAsync_Skip()

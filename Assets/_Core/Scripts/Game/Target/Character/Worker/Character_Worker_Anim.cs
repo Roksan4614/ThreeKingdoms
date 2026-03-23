@@ -42,6 +42,13 @@ public class Character_Worker_Anim : Character_Worker
         m_animator.CrossFade(_animType.ToString(), 0, _layerIndex, 0);
     }
 
+    public void PlayAttack(bool _isShowFx = false, bool _isShake = false)
+    {
+        Play(CharacterAnimType.Attack);
+        if (_isShowFx)
+            m_owner.attack.ShowSlashEffect(_isShake);
+    }
+
     public void AttackMotionFirstFrame()
     {
         m_animator.speed = 0;

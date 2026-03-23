@@ -86,6 +86,7 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
                 Utils.SetActivePunch(btn.transform, false);
         }
 
+        m_elementTalk.dimm.DOFade(0, 0.15f);
         await Utils.SetActivePunchAsync(m_elementTalk.rtPanel, false);
         await UniTask.WaitForSeconds(.5f);
         await Utils.SetActivePunchAsync(m_elementTalk.btnSelect[selelctOption].transform, false);
@@ -104,6 +105,7 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
     struct ElementDataTalk
     {
         public RectTransform rtPanel;
+        public Image dimm;
         public Transform mouse;
 
         public List<ButtonHelper> btnSelect;
@@ -115,6 +117,7 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
         public void Initialize(Transform _transform)
         {
             rtPanel = (RectTransform)_transform.Find("Panel");
+            dimm = _transform.GetComponent<Image>("Dimm");
             mouse = _transform.Find("MousePosition");
 
             btnSelect = rtPanel.GetComponentsInChildren<ButtonHelper>().ToList();

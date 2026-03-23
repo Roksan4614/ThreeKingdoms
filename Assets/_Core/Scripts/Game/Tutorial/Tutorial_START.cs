@@ -54,7 +54,7 @@ public class Tutorial_START : TutorialBase
             PopupModal_TalkSelectComponent.ModalTalkData talkData = new()
             {
                 options = new[] {
-                    "투토리얼 진행할래??",
+                    "튜토리얼 진행할거야.",
                     "일단 멈추고 개발할거야."
                 }
             };
@@ -232,8 +232,6 @@ public class Tutorial_START : TutorialBase
 
         // 딤 켜주자
         await PopupManager.instance.ShowDimmAsync(true);
-
-        await UniTask.WaitForSeconds(0.5f);
     }
 
     async UniTask SummonHeroAsync()

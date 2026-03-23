@@ -223,8 +223,8 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
         // SAVEDATA 재화 데이타 저장
         DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
-        //foreach (var soul in resultSoul)
-        //    DataManager.userInfo.AddHeroSoul(soul.Key, (int)soul.Value);
+        foreach (var soul in resultSoul)
+            DataManager.userInfo.AddHeroSoul(soul.Key, (int)soul.Value);
     }
     void InitializePos()
     {
@@ -404,7 +404,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     break;
                 }
 
-                hero.anim.Play(CharacterAnimType.Attack);
+                hero.anim.PlayAttack();
                 hero.attack.ShowSlashEffect(true);
 
                 await PopupManager.instance.AlertDisableAsync();
