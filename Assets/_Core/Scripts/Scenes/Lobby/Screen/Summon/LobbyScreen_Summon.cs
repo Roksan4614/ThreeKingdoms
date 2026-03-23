@@ -51,6 +51,11 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         }
     }
 
+    protected override bool IsCloseScreen()
+    {
+        return m_element.result.gameObject.activeSelf == false;
+    }
+
     public override void Open(LobbyScreenType _prevScreen)
     {
         base.Open(_prevScreen);

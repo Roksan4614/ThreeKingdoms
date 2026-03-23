@@ -22,9 +22,29 @@ public class PopupHeroInfo : BasePopupComponent
 
         for (int i = 0; i < m_element.popup.childCount; i++)
             m_element.popup.GetChild(i).gameObject.SetActive(false);
+
+        Utils.WaitEscape(this, Close, _token: destroyCancellationToken);
     }
 
-    public async UniTask SetHeroInfoDataAsync(HeroInfoData _data)
+    private void OnEnable()
+    {
+        Utils.SetActivePunch(m_element.panel, true, false);
+    }
+
+    // HeroInfoData
+    public override void OpenPopup(params object[] _args)
+    {
+        if (_args.Length > 0)
+            SetHeroInfoDataAsync((HeroInfoData)_args[0]).Forget();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_data"></param>
+    /// <param name="_isJustWatch">오로지 확인용. 승급하기 강화하기 같은거 없음</param>
+    /// <returns></returns>
+    public async UniTask SetHeroInfoDataAsync(HeroInfoData _data, bool _isJustWatch = false)
     {
         isNeedUpdate = false;
         gameObject.SetActive(true);
@@ -74,10 +94,44 @@ public class PopupHeroInfo : BasePopupComponent
                 m_character.DeleteElement();
             }
         }
+
+        // 버튼확인용
+        m_element.btnConfirm.onClick.AddListener(Close);
+    }
+
+    public async UniTask AutoCloseAsync(float _duration)
+    {
+        m_element.btnEnchant.transform.parent.gameObject.SetActive(false);
+        m_element.btnConfirm.transform.gameObject.SetActive(true);
+
+        string key = "{0}초후_닫힘._터치하면_취소됩니다.";
+
+        DateTime dtClose = DateTime.Now.AddSeconds(_duration);
+        while (dtClose > DateTime.Now)
+        {
+            var timer = (dtClose - DateTime.Now).TotalSeconds;
+            m_element.txtTimer_AutoClose.text = string.Format(key, Utils.MSpace($"{timer:0.0}"));
+
+            if (ControllerManager.isClick)
+            {
+                m_element.txtTimer_AutoClose.text = "";
+                return;
+            }
+
+            await UniTask.WaitForEndOfFrame();
+        }
+
+        Close();
     }
 
     public override void Close()
     {
+        CloseAsync().Forget();
+    }
+
+    async UniTask CloseAsync()
+    {
+        await Utils.SetActivePunchAsync(m_element.panel, false, false);
         gameObject.SetActive(false);
     }
 
@@ -89,6 +143,7 @@ public class PopupHeroInfo : BasePopupComponent
     [Serializable]
     struct ElementData
     {
+        public Transform panel;
         public Transform panelHero;
         //public Button btnCharacter;
         public Button btnStatus;
@@ -100,10 +155,15 @@ public class PopupHeroInfo : BasePopupComponent
 
         public Transform popup;
 
+        public ButtonHelper btnEnchant;
+        public ButtonHelper btnUpgrade;
+        public ButtonHelper btnConfirm;
+        public TextMeshProUGUI txtTimer_AutoClose;
+
         public List<EntryData> stat;
         public void Initialize(Transform _transform)
         {
-            var panel = _transform.Find("Panel");
+            panel = _transform.Find("Panel");
             panelHero = panel.Find("btn_character").GetChild(0);
             //btnCharacter = panel.GetComponent<Button>("btn_character");
 
@@ -126,6 +186,13 @@ public class PopupHeroInfo : BasePopupComponent
                     content = item.GetComponent<TextMeshProUGUI>("txt_content"),
                 });
             }
+
+            // BUTTON
+            btnEnchant = panel.GetComponent<ButtonHelper>("Buttons/btn_enchant");
+            btnUpgrade = panel.GetComponent<ButtonHelper>("Buttons/btn_upgrade");
+            btnConfirm = panel.GetComponent<ButtonHelper>("btn_confirm");
+
+            txtTimer_AutoClose = btnConfirm.transform.GetComponent<TextMeshProUGUI>("txt_timer");
         }
 
         //public Transform panelHero => btnCharacter.transform.GetChild(0);

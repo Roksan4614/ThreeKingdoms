@@ -42,7 +42,6 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         m_regionData.rt.DOMove(m_element.posCharacter.position, 0.2f);
         m_regionData.rt.DOScale(Vector3.one, 0.2f);
 
-        gameObject.SetActive(true);
         Utils.SetActivePunch(transform, true);
 
         var isFlipPrev = _regionData.heroComponent.move.isFlip;
@@ -62,7 +61,6 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
     async UniTask CloseAsync()
     {
         await Utils.SetActivePunchAsync(transform, false);
-        gameObject.SetActive(false);
         transform.localScale = Vector3.one;
 
         m_regionData.rt.DOMove(m_prevPos, 0.2f);

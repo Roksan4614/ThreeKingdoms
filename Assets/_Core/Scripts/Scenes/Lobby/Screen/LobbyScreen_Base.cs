@@ -101,7 +101,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
         var targetScale = Vector3.one * (_isOpen ? 1 : 0.5f);
 
         if (_isTween)
-            await Utils.SetActivePunchAsync(m_panel, _isOpen);
+            await Utils.SetActivePunchAsync(m_panel, _isOpen, false);
         else
             m_panel.localScale = targetScale;
 

@@ -22,6 +22,7 @@ public enum PopupType
 
     Modal_Start,
     Modal,
+    Modal_TalkSelect,
 
     MAX
 }
@@ -207,10 +208,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
             m_rt.anchoredPosition = anchorPos;
 
             if (m_rt.gameObject.activeSelf == false)
-            {
                 Utils.SetActivePunch(m_rt, true);
-                m_rt.gameObject.SetActive(true);
-            }
 
             m_fitter.verticalFit = m_fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
@@ -281,7 +279,6 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
                 return;
 
             await Utils.SetActivePunchAsync(m_rt, false);
-            m_rt.gameObject.SetActive(false);
         }
     }
     #endregion ALERT

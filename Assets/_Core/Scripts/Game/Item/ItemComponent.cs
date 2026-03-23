@@ -54,7 +54,6 @@ public class ItemComponent : MonoBehaviour, IValidatable
     public void MoveFinished()
     {
         Utils.SetActivePunch(m_element.panel, true);
-        m_element.panel.gameObject.SetActive(true);
         m_element.iconPanel.parent.gameObject.SetActive(true);
 
         m_element.badge.SetActive(data.isNew);

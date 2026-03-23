@@ -221,10 +221,10 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 #endif
         }
 
-        // 재화 데이타 저장
+        // SAVEDATA 재화 데이타 저장
         DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
-        foreach (var soul in resultSoul)
-            DataManager.userInfo.AddHeroSoul(soul.Key, (int)soul.Value);
+        //foreach (var soul in resultSoul)
+        //    DataManager.userInfo.AddHeroSoul(soul.Key, (int)soul.Value);
     }
     void InitializePos()
     {
@@ -296,6 +296,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         #region NEW HERO!!
         if (itemComp.data.isNew)
         {
+            Utils.Shake(LobbyScreenManager.instance.GetScreenSummon().transform, true);
             PopupManager.instance.AlertShow("새로운_영웅이_방문하였습니다");
 
             m_element.newHero.Show();
@@ -364,8 +365,11 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
             m_element.SetText_btnStart("확인_하기");
 
+            PopupHeroInfo popupHeroInfo = null;
             while (true)
             {
+                Utils.Shake(LobbyScreenManager.instance.GetScreenSummon().transform, true);
+
                 var stringGrade = TableManager.stringHero.GetString($"GRADE_" + grade.ToString().ToUpper());
 
                 if (grade == GradeType.Normal)
@@ -382,6 +386,21 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                 {
                     m_element.SetText_btnStart("진행_중");
                     PopupManager.instance.AlertShow($"[{stringGrade}] {dbHeroData.name.WithJosa()} 진영에 합류합니다.");
+
+                    if (popupHeroInfo == null)
+                        popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo);
+                    popupHeroInfo.AutoCloseAsync(5f).Forget();
+
+                    var heroInfoData = DataManager.userInfo.GetHeroInfoData(itemComp.data.value);
+
+                    // TEST
+                    if (heroInfoData.isActive == false)
+                        heroInfoData = new(itemComp.data.value, grade);
+
+                    await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true);
+                    await UniTask.WaitUntil(() => popupHeroInfo.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+
+                    await UniTask.WaitForSeconds(.5f);
                     break;
                 }
 
@@ -394,7 +413,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         else
             itemComp.SetSoulCount(itemComp.data.count);
 
-        if (m_isSkip == false)
+        if (m_isSkip == false && itemComp.data.isNew == false)
             await UniTask.WaitForSeconds(1f);
 
         hero.anim.Play(CharacterAnimType.Dash);

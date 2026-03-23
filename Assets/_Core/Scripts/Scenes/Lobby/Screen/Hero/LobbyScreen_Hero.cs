@@ -520,7 +520,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
                 ResetActiveButton_Batch();
                 ResetActiveButton_List();
 
-                OnButton_ListHeroRemove(_item);
+                if (_item.data.isMine == true)
+                    OnButton_ListHeroRemove(_item);
                 return;
             }
         }

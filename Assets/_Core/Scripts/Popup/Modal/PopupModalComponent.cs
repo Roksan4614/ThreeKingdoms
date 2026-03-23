@@ -6,16 +6,18 @@ using UnityEngine.UI;
 public class PopupModalComponent : BasePopupComponent
 {
     PopupModalComponent() : base(PopupType.Modal) { }
+    protected PopupModalComponent(PopupType _popupType) : base(_popupType) { }
 
+    public bool isSwitchEscape { get; protected set; } = true;
     public StatusType statusType { get; private set; } = StatusType.Wait;
 
-    private void Start()
+    protected virtual void Start()
     {
         m_element.btnConfirm.onClick.AddListener(() => { statusType = StatusType.Success; Close(); });
         m_element.btnCancel.onClick.AddListener(Close);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (Input.GetKeyDown(KeyCode.Return))
             m_element.btnConfirm.onClick.Invoke();

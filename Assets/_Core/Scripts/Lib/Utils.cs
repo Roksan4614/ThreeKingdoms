@@ -130,7 +130,8 @@ public static class Utils
 
             if (PopupManager.instance.isOpenModal)
             {
-                PopupManager.instance.lastPopupModal.Close();
+                if (PopupManager.instance.lastPopupModal.isSwitchEscape)
+                    PopupManager.instance.lastPopupModal.Close();
                 continue;
             }
 
@@ -168,15 +169,36 @@ public static class Utils
         return result;
     }
 
-    public static void SetActivePunch(Transform _transform, bool _isActive)
-        => SetActivePunchAsync(_transform, _isActive).Forget();
-    public static async UniTask SetActivePunchAsync(Transform _transform, bool _isActive)
+    public static void SetActivePunch(Transform _transform, bool _isActive, bool _isAutoActive = true)
+        => SetActivePunchAsync(_transform, _isActive, _isAutoActive).Forget();
+    public static async UniTask SetActivePunchAsync(Transform _transform, bool _isActive, bool _isAutoActive = true)
     {
+        if (_isActive == true && _isAutoActive == true)
+            _transform.gameObject.SetActive(true);
+
         var targetScale = Vector3.one * (_isActive ? 1 : 0.5f);
         _transform.localScale = Vector3.one * (_isActive ? 0.5f : 1);
         var duration = 0.15f;
 
         await _transform.DOScale(targetScale, duration).SetEase(_isActive ? Ease.OutBack : Ease.InBack).AsyncWaitForCompletion();
+
+        if (_isActive == false && _isAutoActive == true)
+            _transform.gameObject.SetActive(false);
+    }
+
+    public static void Shake(Transform _trns, bool _isForceShake = false, float strength = 10f, int vibrato = 1)
+        => ShakeAsync(_trns, _isForceShake, strength, vibrato).Forget();
+    public static async UniTask ShakeAsync(Transform _trns, bool _isForceShake = false, float strength = 10f, int vibrato = 1)
+    {
+        if (ControllerManager.instance.isDoing == true && _isForceShake == false)
+            return;
+
+        int count = 3;
+        while (count > 0)
+        {
+            await _trns.DOShakePosition(.05f, strength, vibrato).AsyncWaitForCompletion();
+            count--;
+        }
     }
 
     public static DateTime GetUTC(bool _isServerTime = true)

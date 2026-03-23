@@ -50,13 +50,48 @@ public class Tutorial_START : TutorialBase
         enemy.anim.Play(CharacterAnimType.Attack);
         enemy.SetHeroData("");
 
+        {
+            PopupModal_TalkSelectComponent.ModalTalkData talkData = new()
+            {
+                options = new[] {
+                    "투토리얼 진행할래??",
+                    "일단 멈추고 개발할거야."
+                }
+            };
+
+            var popup = await PopupManager.instance.OpenPopupAndWait<PopupModal_TalkSelectComponent>(PopupType.Modal_TalkSelect, talkData);
+
+            await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
+
+            if (popup.selelctOption == 1)
+            {
+                ControllerManager.instance.DashTimerStartAsync().Forget();
+                // 하단 버튼활성화
+                for (int i = 0; i < bottomButton.Count; i++)
+                    bottomButton[i].interactable = true;
+
+                ControllerManager.instance.gameObject.SetActive(true);
+                while (true)
+                {
+                    await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.L));
+
+                    RewardWorker.instance.isSwitchReceive = false;
+                    RewardWorker.instance.Run(enemy.transform.position,
+                        ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1));
+
+                    await UniTask.WaitForEndOfFrame();
+                }
+            }
+        }
+
         CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
 
         // 얼빠지게 생긴 넘이다!! 죽여라!!
         await enemy.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
 
-        // "앞에 황건적이네. 어쩌지?"
         CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos, false);
+
+        // "앞에 황건적이네. 어쩌지?"
         await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
         enemy.talkbox.SetActive(false);
 
@@ -101,12 +136,13 @@ public class Tutorial_START : TutorialBase
         mainHero.move.MoveTarget(enemy, true);
 
         ControllerManager.instance.SetMoveActionArea(false);
+
         var heroInfo = Scene_Lobby.instance.canvas.transform.Find("HeroInfo");
-        heroInfo.gameObject.SetActive(true);
+        Utils.SetActivePunch(heroInfo, true);
+
         var hi = heroInfo.GetComponentsInChildren<HeroInfoComponent>();
         for (int i = 0; i < hi.Length; i++)
             hi[i].StartStage();
-        Utils.SetActivePunch(heroInfo, true);
         mainHero.buff.RemoveAll(BuffType.DEBUFF_NO_SKILL);
         // 영웅 스킬 사용
         await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
