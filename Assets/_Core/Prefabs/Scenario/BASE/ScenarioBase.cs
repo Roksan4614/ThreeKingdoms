@@ -21,12 +21,12 @@ public class ScenarioBase : MonoBehaviour, IValidatable
 
     public async UniTask InitializeAsync(string _stageKey)
     {
-        m_dbTalk = TableManager.scenarioTalk.GetTalk(_stageKey, true).ToList();
+        m_dbTalk = TableManager.scenarioTalk.GetTalk(_stageKey, true, false).ToList();
 
-        await StartAsync();
+        await StartAsync(_stageKey);
     }
 
-    protected virtual async UniTask StartAsync()
+    protected virtual async UniTask StartAsync(string _stageKey)
     {
         await PopupManager.instance.ShowDimmAsync(false);
 

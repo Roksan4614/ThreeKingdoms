@@ -51,19 +51,12 @@ public class Tutorial_START : TutorialBase
         enemy.SetHeroData("");
 
         {
-            PopupModal_TalkSelectComponent.ModalTalkData talkData = new()
-            {
-                options = new[] {
-                    "튜토리얼 진행할거야.",
-                    "일단 멈추고 개발할거야."
-                }
-            };
+            var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
+                "튜토리얼 진행할거야.",
+                "일단 멈추고 개발할거야."
+                );
 
-            var popup = await PopupManager.instance.OpenPopupAndWait<PopupModal_TalkSelectComponent>(PopupType.Modal_TalkSelect, talkData);
-
-            await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
-
-            if (popup.selelctOption == 1)
+            if (resultIdx == 1)
             {
                 ControllerManager.instance.DashTimerStartAsync().Forget();
                 // 하단 버튼활성화

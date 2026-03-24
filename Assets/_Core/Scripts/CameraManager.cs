@@ -11,6 +11,9 @@ public class CameraManager : MonoSingleton<CameraManager>
 
     [SerializeField] Transform m_playerCameraPos;
 
+    float m_addPosY = 0;
+    float m_addSmoothFactor = 0;
+
     private void Start()
     {
         DontDestroyOnLoad(this);
@@ -40,9 +43,13 @@ public class CameraManager : MonoSingleton<CameraManager>
     {
         // 카메라 바운스 체크
         var targetPos = MapManager.instance.GetBounceHorizontalPos(m_playerCameraPos.position);
+        targetPos.y += m_addPosY;
 
         if (Vector2.Distance(targetPos, m_camera.transform.position) < 0.01f)
+        {
+            m_addSmoothFactor = 0;
             return;
+        }
 
         var cameraPos = m_camera.transform.position;
         targetPos.z = cameraPos.z;
@@ -50,7 +57,7 @@ public class CameraManager : MonoSingleton<CameraManager>
         Vector3 posCamera = _isForce ? targetPos : Vector3.Lerp(
             cameraPos,
             targetPos,
-            c_smoothFactor * Time.deltaTime
+            (c_smoothFactor + m_addSmoothFactor) * Time.deltaTime
         );
 
         m_camera.transform.position = posCamera;
@@ -92,5 +99,11 @@ public class CameraManager : MonoSingleton<CameraManager>
         pos.z = 0;
 
         return pos;
+    }
+
+    public void SetAddPosY(float _addPosY, float _addSmoothFactor)
+    {
+        m_addPosY = _addPosY;
+        m_addSmoothFactor = _addSmoothFactor;
     }
 }

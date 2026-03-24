@@ -278,6 +278,9 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
                         break;
                     }
 
+                    if (DataManager.option.isAutoSkill)
+                        OnButton_UseSkill();
+
                     yield return null;
                 }
 

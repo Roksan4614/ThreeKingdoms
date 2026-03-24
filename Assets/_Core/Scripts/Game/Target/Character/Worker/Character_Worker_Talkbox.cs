@@ -21,7 +21,7 @@ public class Character_Worker_Talkbox : Character_Worker
     ContentSizeFitter m_fitter;
 
     public bool isTyping { get; private set; } = false;
-    public async UniTask WaitTyping()=> await UniTask.WaitUntil(()=>isTyping == false);
+    public async UniTask WaitTyping() => await UniTask.WaitUntil(() => isTyping == false);
 
     void Init(params string[] _talks)
     {
@@ -83,7 +83,7 @@ public class Character_Worker_Talkbox : Character_Worker
         SetActive(false);
     }
 
-    public async UniTask StartAsyncAutoDisable(float _duration, CancellationToken _token,  params string[] _talks)
+    public async UniTask StartAsyncAutoDisable(float _duration, CancellationToken _token, params string[] _talks)
     {
         await StartAsync(_talks);
         await UniTask.WaitForSeconds(_duration, cancellationToken: _token);
@@ -95,6 +95,8 @@ public class Character_Worker_Talkbox : Character_Worker
 
     public async UniTask StartAsync(params string[] _talks)
     {
+        await UniTask.WaitUntil(() => ControllerManager.isClick == false);
+
         isTyping = true;
         Cancel();
         m_cts = new();

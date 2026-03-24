@@ -9,7 +9,6 @@ public class ScenarioManager
 
     AsyncOperationHandle<GameObject> m_handle;
 
-
     public void Initialize()
     {
     }
@@ -43,15 +42,15 @@ public class ScenarioManager
         if (m_handle.IsValid() == false)
             return;
 
-        await PopupManager.instance.ShowDimmAsync(true, false);
+        //await PopupManager.instance.ShowDimmAsync(true, false);
 
         var scenario = GameObject.Instantiate(m_handle.Result, StageManager.instance.transform);
         await scenario.GetComponent<ScenarioBase>().InitializeAsync(stageKey);
 
+        if (scenario.gameObject.activeSelf == true)
+            await PopupManager.instance.ShowDimmAsync(false, _duration: 1f);
+
         GameObject.Destroy(scenario.gameObject);
         m_handle.Release();
-
-        await PopupManager.instance.ShowDimmAsync(false, _duration: 1f);
     }
-
 }

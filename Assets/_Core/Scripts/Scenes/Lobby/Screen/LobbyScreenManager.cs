@@ -12,7 +12,7 @@ public enum LobbyScreenType
     Heros,
     Summon,
     Relic,
-    Shop,
+    Boss,
     Castle,
 
     MAX
@@ -38,13 +38,16 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         List<string> screens = new() {
             "Screen_Hero",
             "Screen_Summon",
+            "",
+            "Screen_Boss",
         };
 
         for (int i = 0; i < screens.Count; i++)
         {
-            var screen = transform.GetComponent<LobbyScreen_Base>(screens[i]);
             var type = LobbyScreenType.None + i + 1;
-            screen.Initilize(type);
+
+            var screen = transform.GetComponent<LobbyScreen_Base>(screens[i]);
+            screen?.Initilize(type);
 
             m_dicScreen.Add(type, screen);
         }
@@ -58,7 +61,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     public void CloseScreen(LobbyScreenType _nextScreen)
     {
         m_dicScreen[_nextScreen].Close();
-        SetActiveDimm(false, true);
+        SetActiveDimm(false);
 
         m_curScreen = LobbyScreenType.None;
 
@@ -72,7 +75,9 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         if (m_doing_ActiveDimm == true)
             return null;
 
-        if (m_curScreen == _screen || m_dicScreen.ContainsKey(_screen) == false)
+        if (m_curScreen == _screen ||
+            m_dicScreen.ContainsKey(_screen) == false ||
+            m_dicScreen[_screen] == null)
         {
             if (m_curScreen > LobbyScreenType.None)
                 CloseScreen(m_curScreen);
@@ -80,9 +85,21 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         }
 
         if (m_curScreen == LobbyScreenType.None)
-            SetActiveDimm(true, true);
+        {
+            // BOSS ≥≠ µı æ»±Ú∞≈æﬂ
+            if (_screen != LobbyScreenType.Boss)
+                SetActiveDimm(true);
+        }
         else if (m_dicScreen[m_curScreen].isOpenned)
             m_dicScreen[m_curScreen].Close(false);
+
+        // ∫∏Ω∫¿œ ∂© µı √≥∏Æ∞° ¡ª ¥ﬁ∂Û¡Æ
+        {
+            if (m_curScreen == LobbyScreenType.Boss)
+                SetActiveDimm(true);
+            else if (_screen == LobbyScreenType.Boss)
+                SetActiveDimm(false, false);
+        }
 
         m_dicScreen[_screen].Open(m_curScreen);
         m_curScreen = _screen;
@@ -92,7 +109,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     }
 
     bool m_doing_ActiveDimm;
-    void SetActiveDimm(bool _isActive, bool _isTween)
+    void SetActiveDimm(bool _isActive, bool _isTween = true)
     {
         var targetAlpha = _isActive ? 1 : 0;
 
@@ -107,7 +124,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
             m_doing_ActiveDimm = true;
             c.a = _isActive ? 0 : 1;
 
-            var duration = 0.15f;
+            var duration = 0.1f;
             imgDimm.DOFade(targetAlpha, duration).OnComplete(() => m_doing_ActiveDimm = false);
         }
         else

@@ -11,6 +11,8 @@ public enum OptionType
     MAIN_TEAMPOSITION_TYPE,
     SCENARIO_SKIP,
 
+    AUTO_SKILL,
+
     MAX
 }
 
@@ -65,6 +67,19 @@ public class Data_Option
         set
         {
             m_data.db[OptionType.LANGUEGE] = (int)value;
+            SaveData_Option();
+        }
+    }
+
+    public bool isAutoSkill
+    {
+        get => m_data.db.ContainsKey(OptionType.AUTO_SKILL) && m_data.db[OptionType.AUTO_SKILL] == 1;
+        set
+        {
+            if (m_data.db.ContainsKey(OptionType.AUTO_SKILL) == false)
+                m_data.db.Add(OptionType.AUTO_SKILL, value ? 1 : 0);
+            else
+                m_data.db[OptionType.AUTO_SKILL] = value ? 1 : 0;
             SaveData_Option();
         }
     }

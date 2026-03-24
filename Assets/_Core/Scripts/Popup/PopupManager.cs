@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
@@ -107,9 +108,9 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     public PopupModalComponent lastPopupModal => isOpenModal ?
         m_element.pModal.GetChild(m_element.pModal.childCount - 1).GetComponent<PopupModalComponent>() : null;
 
-    public void ShowDimm(bool _isShow, bool _isFade = true, bool _isOpercity = false)
+    public void ShowDimm(bool _isShow, bool _isFade = true, bool _isOpercity = false, float _duration = .5f, float _durationWait = .5f)
     {
-        ShowDimmAsync(_isShow, _isFade, _isOpercity).Forget();
+        ShowDimmAsync(_isShow, _isFade, _isOpercity, _duration, _durationWait).Forget();
     }
 
     Tween m_tweenDimm;
@@ -157,6 +158,17 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         return popup.statusType;
     }
 
+    public async UniTask<int> OpenTalkSelectAsync(params string[] _questions)
+    {
+        PopupModal_TalkSelectComponent.ModalTalkData talkData = new();
+        talkData.options = _questions.ToArray();
+
+        var popup = await OpenPopupAndWait<PopupModal_TalkSelectComponent>(PopupType.Modal_TalkSelect, talkData);
+
+        await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
+
+        return popup.selelctOption + 1;
+    }
 
     #region ALERT
     CancellationTokenSource m_ctsAlert;

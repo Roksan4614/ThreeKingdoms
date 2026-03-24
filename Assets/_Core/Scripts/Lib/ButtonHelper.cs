@@ -50,6 +50,8 @@ public class ButtonHelper : MonoBehaviour, IValidatable
         }
     }
 
+    public TextMeshProUGUI GetTMPText() => m_element.txtName;
+
     public void SetColliderSize()
         => m_element.SetColliderSize();
 

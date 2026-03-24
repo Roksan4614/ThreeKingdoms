@@ -7,9 +7,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InfoStageComponent : MonoBehaviour, IValidatable
+public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
 {
-    private void Awake()
+    protected override void OnAwake()
     {
         m_element.boss.gameObject.SetActive(false);
         m_element.infoStage.gameObject.SetActive(false);
@@ -24,6 +24,38 @@ public class InfoStageComponent : MonoBehaviour, IValidatable
     {
         Signal.instance.StartStage.connect = SlotStartStage;
         Signal.instance.StartPhase.connect = SlotStartPhase;
+    }
+    
+    public void SetBossRaid(bool _isStart)
+    {
+        bool _isDisableStart = _isStart == false;
+        m_element.txtLevel.gameObject.SetActive(_isDisableStart);
+        m_element.infoStage.gameObject.SetActive(_isDisableStart);
+        m_element.btn_challenge.gameObject.SetActive(_isDisableStart);
+
+        Vector3 anchorPos = m_element.rtIconBoss.anchoredPosition;
+        if (_isStart)
+        {
+            m_element.boss.SetBossInfo();
+            anchorPos.x = m_element.targetPosIconBoss;
+        }
+        else
+        {
+            m_element.boss.gameObject.SetActive(false);
+            anchorPos = m_element.startPosIconBoss;
+        }
+
+        m_element.rtIconBoss.anchoredPosition = anchorPos;
+
+        var scale = m_element.rtIconBoss.localScale;
+
+        if (scale.x > 0 == _isStart)
+        {
+            scale.x *= -1;
+            m_element.rtIconBoss.localScale = scale;
+        }
+
+        m_element.rtIconBoss.rotation = Quaternion.Euler(Vector3.zero);
     }
 
     void SlotStartStage(StageManager.LoadData_Stage _data)

@@ -130,10 +130,19 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 if (m_loadData.isBossWait == false && m_loadData.level == 1)
                     await ScenarioManager.instance.StartAsync(phaseIdx, true);
                 else if (isDisableStart == false)
+                {
                     PopupManager.instance.ShowDimm(false);
+
+                    var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
+                        "개발용으로 진행할거야.",
+                        "멈춤 없이 정상적으로 진행하자."
+                        );
+
+                    m_stopStageStart = resultIdx == 1;
+                }
                 isDisableStart = true;
 
-                    bool isFlip = TeamManager.instance.mainHero.transform.position.x > 0;
+                bool isFlip = TeamManager.instance.mainHero.transform.position.x > 0;
                 var ctsCloseToken = m_stage.StartPhase(phaseIdx, isFlip);
 
                 m_enemyList.Clear();
@@ -201,7 +210,8 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     m_enemyList[i].transform.SetParent(phase);
 
                 // 끝났을 때 연출해준다.
-                await ScenarioManager.instance.StartAsync(phaseIdx, false);
+                if (m_loadData.isBossWait == false && m_loadData.level == 1)
+                    await ScenarioManager.instance.StartAsync(phaseIdx, false);
 
                 //보스 잡은거면 그냥 조금있다가 다음으로 넘어가면 됨
                 if (isLastPhase == true)
@@ -209,7 +219,10 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 else
                 {
                     // 쓰러지고 5초후에 초기화 해주자
-                    Utils.AfterSecond(() => m_stage.ClosePhase(phaseIdx), 5f, ctsCloseToken);
+                    Utils.AfterSecond(() =>
+                    {
+                        m_stage?.ClosePhase(phaseIdx);
+                    }, 5f, ctsCloseToken);
 
                     await UniTask.WaitForSeconds(0.5f, cancellationToken: ctsToken);
                 }
@@ -265,8 +278,15 @@ public class StageManager : Singleton<StageManager>, IValidatable
         }
     }
 
-    public void RestartStage()
+    public void RestartStage(bool _isRestart = true)
     {
+        if (m_cts != null)
+        {
+            m_cts.Cancel();
+            m_cts.Dispose();
+            m_cts = null;
+        }
+
         MapManager.instance.FadeDimm(true, 0f);
 
         for (var i = 0; i < m_enemyList.Count; i++)
@@ -280,10 +300,13 @@ public class StageManager : Singleton<StageManager>, IValidatable
         if (m_stage != null)
         {
             m_handlerStage.Release();
+
+            Destroy(m_stage.gameObject);
             m_stage = null;
         }
 
-        StartStageAsync().Forget();
+        if (_isRestart == true)
+            StartStageAsync().Forget();
     }
 
     public void RechallengeBoss()
@@ -378,7 +401,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
         public bool isBossWait;
 
         public string GetKey_Scenario(int _phaseIdx, bool _isStart)
-            => $"{chapterNumber}.{stageNumber}.{_phaseIdx + 1}_{DataManager.userInfo.region.ToString().ToUpper()}_{(_isStart ? "START" : "END")}";
+            => $"{chapterNumber}_{stageNumber}_{_phaseIdx + 1}_{DataManager.userInfo.region.ToString().ToUpper()}_{(_isStart ? "START" : "END")}";
 
         //public string GetKey_Tutorial(int _phaseIdx, bool _isStart)
         //    => $"{chapterNumber}.{stageNumber}.{_phaseIdx + 1}_{(_isStart ? "START" : "END")}";

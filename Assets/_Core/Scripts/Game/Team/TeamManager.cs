@@ -38,6 +38,12 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         Signal.instance.UpdateHP.connect = heroInfo.UpdateHP;
     }
 
+    public void MoveAttactTarget(Character_Enemy _target)
+    {
+        foreach (var hero in m_member)
+            hero.Value.move.MoveTarget(_target, true);
+    }
+
     public async UniTask SpawnUpdateAsync()
     {
         heroInfo.DisableAll();
@@ -336,7 +342,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         public void Initialize(Transform _transform)
         {
             startPos = _transform.GetChild(0).position;
-            heroInfo = GameObject.Find("Canvas/HeroInfo").transform;
+            heroInfo = GameObject.Find("Canvas/HeroInfo/Panel").transform;
         }
     }
 }

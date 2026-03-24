@@ -177,7 +177,8 @@ public static class Utils
             _transform.gameObject.SetActive(true);
 
         var targetScale = Vector3.one * (_isActive ? 1 : 0.5f);
-        _transform.localScale = Vector3.one * (_isActive ? 0.5f : 1);
+        if (_isActive)
+            _transform.localScale = Vector3.one * 0.5f;
         var duration = 0.15f;
 
         await _transform.DOScale(targetScale, duration).SetEase(_isActive ? Ease.OutBack : Ease.InBack).AsyncWaitForCompletion();
