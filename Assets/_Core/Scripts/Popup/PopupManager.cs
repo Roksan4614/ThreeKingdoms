@@ -35,6 +35,8 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     protected override void OnAwake()
     {
         transform.SetSiblingIndex(0);
+
+        Signal.instance.ChangeDisplayMode.connect = OnChangeDisplayMode;
     }
 
     protected override void OnDestroy()
@@ -168,6 +170,18 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
 
         return popup.selelctOption + 1;
+    }
+
+    void OnChangeDisplayMode(bool _isLandscape)
+    {
+        CanvasScaler canvasScaler = transform.GetComponent<CanvasScaler>();
+
+        var r = canvasScaler.referenceResolution;
+        r.x = _isLandscape ? 1920 : 1080;
+        r.y = _isLandscape ? 1080 : 1920;
+        canvasScaler.referenceResolution = r;
+
+        canvasScaler.matchWidthOrHeight = _isLandscape ? 1 : 0;
     }
 
     #region ALERT

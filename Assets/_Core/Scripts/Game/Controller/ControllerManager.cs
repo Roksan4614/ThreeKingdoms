@@ -41,9 +41,14 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
         m_element.btnDash.onClick.AddListener(() => OnButton_Dash(false));
         m_element.btnAttack.onClick.AddListener(() => OnButton_Attack());
+        m_element.btnCall.onClick.AddListener(() => OnButton_Call());
 
         Signal.instance.ConnectMainHero.connectLambda = new(this, _mainHero => m_mainHero = _mainHero);
-        Signal.instance.StartStage.connectLambda = new(this, _ => DashTimerStartAsync().Forget());
+        Signal.instance.StartStage.connectLambda = new(this, _ =>
+        {
+            TimerCallAsync().Forget();
+            DashTimerStartAsync().Forget();
+        });
 
         Signal.instance.ActiveHUD.connectLambda = new(this, _isActive =>
         {
@@ -71,11 +76,14 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             if (Input.anyKeyDown)
             {
                 // 공격
-                if (Input.GetKeyDown(KeyCode.X))
+                if (Input.GetKeyDown(KeyCode.Z))
                     OnButton_Attack();
                 // 대쉬
-                else if (Input.GetKeyDown(KeyCode.C))
+                else if (Input.GetKeyDown(KeyCode.X))
                     OnButton_Dash(false);
+                // 콜
+                else if (Input.GetKeyDown(KeyCode.C))
+                    OnButton_Call();
                 // 스킬
                 else
                 {
@@ -125,6 +133,48 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             m_isKeyboardMoving = false;
             StopControll();
         }
+    }
+
+    void OnButton_Call()
+    {
+        if (m_element.imgCallTimer.gameObject.activeSelf == false)
+        {
+            m_element.panelCall.localScale = Vector3.one;
+            m_element.panelCall.DOPunchScale(Vector3.one * .1f, 0.1f);
+
+            TimerCallAsync().Forget();
+            TeamManager.instance.CallToMainHeroAsync().Forget();
+        }
+    }
+
+    async UniTask TimerCallAsync()
+    {
+        bool isActive = DataManager.userInfo.myHero.Count > 1;
+        m_element.btnCall.gameObject.SetActive(isActive);
+        if (isActive == false)
+            return;
+
+        // TODO: 어딘가에서 값을 가져와야 하지 않을까?
+        float durationCall = 5f;
+
+        m_element.imgCallTimer.gameObject.SetActive(true);
+        m_element.txtCallTimer.gameObject.SetActive(true);
+
+        float startTime = Time.time, endTime = startTime + durationCall;
+
+        int mspaceValue = (int)(m_element.txtCallTimer.fontSize * 0.5f);
+        while (endTime > Time.time)
+        {
+            m_element.txtCallTimer.text = Utils.MSpace($"{endTime - Time.time:0.0}", mspaceValue);
+
+            float progress = (Time.time - startTime) / (endTime - startTime);
+            m_element.imgDashTimer.fillAmount = 1 - progress;
+
+            await UniTask.Yield();
+        }
+
+        m_element.imgCallTimer.gameObject.SetActive(false);
+        m_element.txtCallTimer.gameObject.SetActive(false);
     }
 
     void OnButton_Attack()
@@ -225,11 +275,15 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
         public Button btnAttack;
 
+        public Button btnCall;
+        public Transform panelCall;
+        public TextMeshProUGUI txtCallTimer;
+        public Image imgCallTimer;
+
         public Button btnDash;
         public Transform panelDash;
         public TextMeshProUGUI txtDashTimer;
         public Image imgDashTimer;
-        public Transform posDash;
         public List<GameObject> iconDashCount;
 
         public void Initialize(Transform _transform)
@@ -240,11 +294,16 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
             btnAttack = _transform.GetComponent<Button>("Action/btn_attack");
 
+            btnCall = _transform.GetComponent<Button>("Action/btn_call");
+            panelCall = btnCall.transform.Find("Panel");
+            txtCallTimer = panelCall.GetComponent<TextMeshProUGUI>("txt_timer");
+            imgCallTimer = panelCall.GetComponent<Image>("Timer");
+
+
             btnDash = _transform.GetComponent<Button>("Action/btn_dash");
             panelDash = btnDash.transform.Find("Panel");
             txtDashTimer = panelDash.GetComponent<TextMeshProUGUI>("txt_timer");
             imgDashTimer = panelDash.GetComponent<Image>("Timer");
-            posDash = _transform.Find("posDash");
 
             iconDashCount = new()
             {

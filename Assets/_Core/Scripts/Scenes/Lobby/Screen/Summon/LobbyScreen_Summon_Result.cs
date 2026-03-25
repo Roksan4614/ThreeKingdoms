@@ -302,7 +302,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             m_element.newHero.Show();
 
             m_element.SetText_btnStart("»πµÊ«œ±‚_");
-            await AfterNextStepAsync(3f);
+            await AfterNextStepAsync(2f);
             m_element.SetText_btnStart("¡¯«‡¡ﬂ_");
 
             PopupManager.instance.AlertDisable();
@@ -443,7 +443,6 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             }
             else
                 result.Add(itemData.key, itemData);
-
         }
 
         int idx = 0;

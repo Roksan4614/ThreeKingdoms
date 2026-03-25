@@ -30,6 +30,10 @@ public class Scene_Lobby : SceneBase
 
         m_element.btnAuto.onClick.AddListener(OnButton_Auto);
         SetAutoUIAsync().Forget();
+
+#if UNITY_EDITOR
+        StageManager.instance.TestDevSelectAsync().Forget();
+#endif
     }
 
     void OnButton_Auto()

@@ -14,12 +14,20 @@ public class CameraManager : MonoSingleton<CameraManager>
     float m_addPosY = 0;
     float m_addSmoothFactor = 0;
 
+    float m_addPosY_Landscape = 0;
+
     private void Start()
     {
         DontDestroyOnLoad(this);
 
         Signal.instance.ConnectMainHero.connectLambda =
             new(this, _ => m_playerCameraPos = _.element.cameraPos);
+
+        Signal.instance.ChangeDisplayMode.connectLambda =
+            new(this, _isLandscape => {
+                m_camera.fieldOfView = _isLandscape ? 100 : 110;
+                m_addPosY_Landscape = _isLandscape ? 1 : 0;
+            });
     }
 
     private void LateUpdate()
@@ -43,7 +51,7 @@ public class CameraManager : MonoSingleton<CameraManager>
     {
         // 카메라 바운스 체크
         var targetPos = MapManager.instance.GetBounceHorizontalPos(m_playerCameraPos.position);
-        targetPos.y += m_addPosY;
+        targetPos.y += m_addPosY + m_addPosY_Landscape;
 
         if (Vector2.Distance(targetPos, m_camera.transform.position) < 0.01f)
         {

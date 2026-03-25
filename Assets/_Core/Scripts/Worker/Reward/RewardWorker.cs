@@ -44,11 +44,11 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             new(){ itemType = _itemType,  count = _count }
         };
 
-        m_actionData.distInstantiateMAX = _distMax > 0 ? _distMax : 2;
+        m_actionData.distInstantiateMAX = _distMax > 0 ? _distMax : m_actionData.distInstantiateMAX;
         if (m_actionData.distInstantiateMAX < m_actionData.distInstantiateMIN)
             m_actionData.distInstantiateMIN = m_actionData.distInstantiateMAX;
         else
-            m_actionData.distInstantiateMIN = 0.2f;
+            m_actionData.distInstantiateMIN = 1;
 
         m_actionData.isFXStart = _isFXStart;
         m_actionData.isStartPunch = _isStartPunch;
@@ -114,8 +114,24 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
 
     public Vector3 GetPositionStartPunch(Vector3 _startPos)
     {
-        Vector3 lookAt = (Vector3)UnityEngine.Random.insideUnitCircle.normalized;
-        Vector3 dist = lookAt * UnityEngine.Random.Range(m_actionData.distInstantiateMIN, m_actionData.distInstantiateMAX);
+        // Vector3 lookAt = (Vector3)UnityEngine.Random.insideUnitCircle.normalized;
+
+        Vector3 lookAt = _startPos;
+        float percentMax = 1f;
+
+        if (UnityEngine.Random.value > .5f)
+        {
+            lookAt.x = UnityEngine.Random.value > .5f ? -2 : 2;
+            lookAt.y = UnityEngine.Random.Range(-1f, 3f);
+        }
+        else
+        {
+            lookAt.x = UnityEngine.Random.Range(-2f, 2f);
+            lookAt.y -= .5f;
+            percentMax = .8f;
+        }
+
+        Vector3 dist = lookAt.normalized * UnityEngine.Random.Range(m_actionData.distInstantiateMIN * percentMax, m_actionData.distInstantiateMAX * percentMax);
 
         return _startPos + dist;
     }
@@ -151,12 +167,12 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
 
         public void SetDefault()
         {
-            durationWait = 1f;
+            durationWait = 1.5f;
             durationInstantiate = 0.2f;
             durationMove = 0.5f;
 
-            distInstantiateMAX = 2f;
-            distInstantiateMIN = 0.5f;
+            distInstantiateMAX = 3f;
+            distInstantiateMIN = 1f;
 
             isStartPunch = true;
             durationThrow = -1;
@@ -181,6 +197,8 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         }
 
         public bool isCurrency => itemType == ItemType.Gold || itemType == ItemType.Rice;
+
+        public string name => TableManager.stringTable.GetString($"ITEM_NAME_{itemType.ToString().ToUpper()}");
     }
 
     #region VALIDATA

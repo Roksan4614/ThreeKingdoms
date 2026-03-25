@@ -70,13 +70,14 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
             await OpenResultAsync();
 
-            await UniTask.WaitForSeconds(100);
+            await UniTask.WaitUntil(() => ControllerManager.isClickDown);
 
-            await PopupManager.instance.ShowDimmAsync(true, _duration: 1f);
+            await PopupManager.instance.ShowDimmAsync(true, _duration: 1f, _durationWait : 0f);
 
             Destroy(bossRaid.gameObject);
             m_handle.Release();
             InfoStageComponent.instance.SetBossRaid(false);
+            StageManager.instance.RestartStage();
 
             return true;
         }

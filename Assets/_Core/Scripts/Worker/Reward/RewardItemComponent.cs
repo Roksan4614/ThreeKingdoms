@@ -38,7 +38,8 @@ public class RewardItemComponent : TargetComponent, IValidatable
         }
 
         obj.SetActive(true);
-        m_element.txtCount.gameObject.SetActive(_itemData.count > 1);
+        m_element.txtCount.text = _itemData.name;
+        m_element.txtCount.gameObject.SetActive(true);
         if (_itemData.count > 1)
             m_element.txtCount.text = $"x{_itemData.count.AmountKMBT()}";
 
@@ -58,6 +59,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         transform.SetParent(_target.parent);
 
         m_element.ps.gameObject.SetActive(true);
+        //m_element.txtCount.gameObject.SetActive(false);
 
         // πÊ«‚ ∞Óº±!!
         {
@@ -89,7 +91,12 @@ public class RewardItemComponent : TargetComponent, IValidatable
         transform.SetParent(prevParent);
 
         var prevScale = _target.localScale;
-        _target.localScale *= 1.1f;
+        prevScale.x = prevScale.y = prevScale.z;
+        var scale = prevScale;
+        scale *= 1.1f;
+        scale.z = prevScale.z;
+        _target.localScale = scale;
+
         _target.DOKill();
         _target.DOScale(prevScale, .2f);
 

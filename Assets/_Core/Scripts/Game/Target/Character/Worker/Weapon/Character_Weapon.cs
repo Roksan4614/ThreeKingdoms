@@ -64,7 +64,9 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     }
 
     public virtual bool IsValidUseSkill() =>
-        m_owner.target.target != null && m_owner.buff.IsActive(BuffType.DEBUFF_NO_SKILL) == false;
+        m_owner.target.target != null &&
+        m_owner.target.target.isLive &&
+        m_owner.buff.IsActive(BuffType.DEBUFF_NO_SKILL) == false;
 
     public virtual IEnumerator DoUseSkill()
     {

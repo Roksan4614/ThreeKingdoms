@@ -9,6 +9,9 @@ public class Team_HeroInfo
 
     public Team_HeroInfo(Transform _heroInfo)
     {
+        if (_heroInfo == null)
+            return;
+
         for (int i = 0; i < _heroInfo.childCount; i++)
         {
             m_lstHeroInfo.Add(_heroInfo.GetChild(i).GetComponent<HeroInfoComponent>());

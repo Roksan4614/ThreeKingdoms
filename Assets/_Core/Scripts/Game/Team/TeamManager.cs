@@ -244,7 +244,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
             hero.move.SetFlip(isFlip);
 
-            // FIIP인 상태로 위치자 저장이 되었어 ㅜㅜ
+            // FLIP인 상태로 위치자 저장이 되었어 ㅜㅜ
             var targetPos = dbPosition[m.Key] * (isFlip ? 1 : -1) + startPosMain;
 
             if (_duration == 0)
@@ -276,6 +276,30 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
                     });
                 }
             }
+        }
+    }
+
+    public async UniTask CallToMainHeroAsync()
+    {
+        RepositionToMain(.2f);
+
+        var main = mainHero;
+        foreach (var hero in m_member.Values)
+        {
+            if (hero.isMain == false)
+            {
+                hero.target.SetTarget(null);
+                hero.move.SetFlip(main.move.isFlip);
+                hero.SetState(CharacterStateType.Wait);
+            }
+        }
+
+        await UniTask.WaitForSeconds(0.2f);
+
+        foreach (var hero in m_member.Values)
+        {
+            if (hero.isMain == false)
+                hero.SetState(teamState);
         }
     }
 

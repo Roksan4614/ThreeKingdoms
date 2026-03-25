@@ -48,6 +48,16 @@ public class StageManager : Singleton<StageManager>, IValidatable
             Destroy(m_element.chapter.GetChild(i).gameObject);
     }
 
+    public async UniTask TestDevSelectAsync()
+    {
+        var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
+            "개발용으로 진행할거야.",
+            "멈춤 없이 정상적으로 진행하자."
+            );
+
+        m_stopStageStart = resultIdx == 1;
+    }
+
     void SaveData()
         => PPWorker.Set(PlayerPrefsType.CHAPTER_STAGE_INFO, m_loadData);
 
@@ -129,17 +139,10 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 // 스토리가 있는지 여부 확인한다.
                 if (m_loadData.isBossWait == false && m_loadData.level == 1)
                     await ScenarioManager.instance.StartAsync(phaseIdx, true);
-                else if (isDisableStart == false)
-                {
+                
+                if (isDisableStart == false)
                     PopupManager.instance.ShowDimm(false);
 
-                    var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
-                        "개발용으로 진행할거야.",
-                        "멈춤 없이 정상적으로 진행하자."
-                        );
-
-                    m_stopStageStart = resultIdx == 1;
-                }
                 isDisableStart = true;
 
                 bool isFlip = TeamManager.instance.mainHero.transform.position.x > 0;
@@ -166,8 +169,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 }
 
 #if UNITY_EDITOR
-                if (m_stopStageStart == true)
-                    await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Backspace));
+                await UniTask.WaitUntil(() => m_stopStageStart == false || Input.GetKey(KeyCode.Backspace));
 #endif
 
                 Signal.instance.StartPhase.Emit(m_stage.element.phase.childCount - phases.Count);
@@ -201,7 +203,10 @@ public class StageManager : Singleton<StageManager>, IValidatable
                             m_loadData.level--;
                     }
                     else
+                    {
+                        PopupManager.instance.AlertShow("잠시 후퇴!!_전량상_후퇴일뿐입니다.");
                         m_loadData.isBossWait = true;
+                    }
                     break;
                 }
 

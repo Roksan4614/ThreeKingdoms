@@ -9,6 +9,8 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     protected override void OnAwake()
     {
         m_element.btnBossRaid.onClick.AddListener(() => BossRaidWorker.instance.Initialize(BossRaidWorker.BossRaidType.LuBu).Forget());
+
+        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(false));
     }
 
     #region VALIDATE

@@ -33,7 +33,7 @@ public class Character_Enemy : CharacterComponent
         m_data.health = m_data.healthMax = (int)(m_data.healthMax * _percent);
     }
 
-    public void SetBossData(string _key =  null)
+    public void SetBossData(string _key = null)
     {
         if (_key.IsActive())
             m_data = TableManager.enemy.GetHeroData(_key);
@@ -42,6 +42,7 @@ public class Character_Enemy : CharacterComponent
             m_data = TableManager.enemy.GetHeroData("Enemy");
 
         SetBuffStat(2);
+        m_data.health = m_data.healthMax = (int)m_data.healthMax * 2;
 
         SetFaction(FactionType.Enemy);
     }

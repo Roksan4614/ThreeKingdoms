@@ -56,7 +56,7 @@ public class Tutorial_START : TutorialBase
                 "일단 멈추고 개발할거야."
                 );
 
-            if (resultIdx == 1)
+            if (resultIdx == 2)
             {
                 ControllerManager.instance.DashTimerStartAsync().Forget();
                 // 하단 버튼활성화

@@ -25,13 +25,15 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
         Signal.instance.StartStage.connect = SlotStartStage;
         Signal.instance.StartPhase.connect = SlotStartPhase;
     }
-    
+
     public void SetBossRaid(bool _isStart)
     {
+        bool isBossWait = StageManager.instance.data.isBossWait;
+
         bool _isDisableStart = _isStart == false;
         m_element.txtLevel.gameObject.SetActive(_isDisableStart);
-        m_element.infoStage.gameObject.SetActive(_isDisableStart);
-        m_element.btn_challenge.gameObject.SetActive(_isDisableStart);
+        m_element.infoStage.gameObject.SetActive(_isDisableStart && isBossWait == false);
+        m_element.btn_challenge.gameObject.SetActive(_isDisableStart && isBossWait);
 
         Vector3 anchorPos = m_element.rtIconBoss.anchoredPosition;
         if (_isStart)

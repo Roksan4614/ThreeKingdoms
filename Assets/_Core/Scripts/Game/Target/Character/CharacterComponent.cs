@@ -155,6 +155,9 @@ public class CharacterComponent : TargetComponent
         if (_isSetState)
             SetState(TeamManager.instance.teamState);
 
+        target.SetTarget(null);
+        move.MoveStop();
+
         m_data.health = m_data.healthMax;
         m_element.collider.enabled = true;
     }

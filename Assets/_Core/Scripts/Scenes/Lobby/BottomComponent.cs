@@ -83,6 +83,8 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
     {
         public Transform panel;
         public List<ScreenData> screens;
+
+        public Vector3 prevScale;
         public void Initialize(Transform _transform)
         {
             panel = _transform.Find("Panel");
