@@ -56,6 +56,9 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         });
 
         DashButtonInitalize();
+
+        bool isActive = DataManager.userInfo.myHero.Count > 1;
+        m_element.btnCall.gameObject.SetActive(isActive);
     }
 
     public bool IsControll(CharacterComponent _hero)
@@ -151,7 +154,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         bool isActive = DataManager.userInfo.myHero.Count > 1;
         m_element.btnCall.gameObject.SetActive(isActive);
-        if (isActive == false)
+        if (isActive == false || m_mainHero.isLive == false)
             return;
 
         // TODO: 어딘가에서 값을 가져와야 하지 않을까?

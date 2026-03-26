@@ -372,15 +372,10 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
                 var stringGrade = TableManager.stringHero.GetString($"GRADE_" + grade.ToString().ToUpper());
 
-                if (grade == GradeType.Normal)
-                    PopupManager.instance.AlertShow($"영웅의_등급을_확인합니다.");
-                else
-                    PopupManager.instance.AlertShow($"[{stringGrade}] 등급을 확인했습니다.\n한번 더 확인해 주세요.");
+                await AfterNextStepAsync(1f);
 
                 grade++;
                 soulCount = TableManager.hero.GetNeedSoul(grade);
-
-                await AfterNextStepAsync(1f);
 
                 if (itemComp.data.count <= soulCount)
                 {
@@ -404,9 +399,13 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     break;
                 }
 
+                if (grade > GradeType.Normal)
+                    PopupManager.instance.AlertShow($"[{stringGrade}] 승급을 확인했습니다.\n한번 더 확인해 주세요.");
+
+                await UniTask.WaitUntil(() => ControllerManager.isClickDown);
+
                 hero.anim.PlayAttack();
                 hero.attack.ShowSlashEffect(true);
-
                 await PopupManager.instance.AlertDisableAsync();
             }
         }

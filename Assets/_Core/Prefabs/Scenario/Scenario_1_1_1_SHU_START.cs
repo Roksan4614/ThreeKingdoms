@@ -88,6 +88,7 @@ public class Scenario_1_1_1_SHU_START : ScenarioBase
         hero.talkbox.SetActive(false);
         hero2.talkbox.SetActive(false);
 
+        gameObject.SetActive(false);
         ControllerManager.instance.gameObject.SetActive(true);
     }
 }

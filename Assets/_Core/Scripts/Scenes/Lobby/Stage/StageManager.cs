@@ -11,6 +11,9 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class StageManager : Singleton<StageManager>, IValidatable
 {
+    const int c_maxChapter = 2;
+    const int c_maxStage = 2;
+
     [SerializeField]
     bool m_stopStageStart = true;
 
@@ -19,9 +22,6 @@ public class StageManager : Singleton<StageManager>, IValidatable
     List<Character_Enemy> m_enemyList = new();
 
     StageComponent m_stage;
-
-    const int c_maxChapter = 2;
-    const int c_maxStage = 2;
 
     long m_tickStart;
     CancellationTokenSource m_cts;
@@ -139,7 +139,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 // 스토리가 있는지 여부 확인한다.
                 if (m_loadData.isBossWait == false && m_loadData.level == 1)
                     await ScenarioManager.instance.StartAsync(phaseIdx, true);
-                
+
                 if (isDisableStart == false)
                     PopupManager.instance.ShowDimm(false);
 
