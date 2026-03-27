@@ -83,8 +83,6 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
 
         m_element.infoStage.gameObject.SetActive(false);
         m_element.boss.gameObject.SetActive(false);
-
-        m_element.rtIconBoss.gameObject.SetActive(true);
     }
 
     void SlotStartPhase(int _phaseIdx)
@@ -105,6 +103,7 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
                 m_element.infoStage.gameObject.SetActive(true);
 
                 // 왼쪽에 있으면 오른쪽으로 돌려주자
+                m_element.rtIconBoss.gameObject.SetActive(true);
                 var scale = m_element.rtIconBoss.localScale;
                 if (scale.x < 0)
                 {

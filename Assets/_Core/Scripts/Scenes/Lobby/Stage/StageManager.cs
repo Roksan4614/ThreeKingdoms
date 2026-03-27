@@ -50,6 +50,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
     public async UniTask TestDevSelectAsync()
     {
+        m_stopStageStart = true;
         var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
             "개발용으로 진행할거야.",
             "멈춤 없이 정상적으로 진행하자."
@@ -136,10 +137,6 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 if (m_loadData.isBossWait == true && isLastPhase == true)
                     continue;
 
-                // 스토리가 있는지 여부 확인한다.
-                if (m_loadData.isBossWait == false && m_loadData.level == 1)
-                    await ScenarioManager.instance.StartAsync(phaseIdx, true);
-
                 if (isDisableStart == false)
                     PopupManager.instance.ShowDimm(false);
 
@@ -215,8 +212,15 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     m_enemyList[i].transform.SetParent(phase);
 
                 // 끝났을 때 연출해준다.
+
+                // 스토리가 있는지 여부 확인한다.
                 if (m_loadData.isBossWait == false && m_loadData.level == 1)
-                    await ScenarioManager.instance.StartAsync(phaseIdx, false);
+                {
+                    // TODO
+                    // 시나리오 아이콘에 레드닷을 달아주자.
+                    // 분리하는 걸로 갈거야.
+                    //await ScenarioManager.instance.StartAsync(phaseIdx, false);
+                }
 
                 //보스 잡은거면 그냥 조금있다가 다음으로 넘어가면 됨
                 if (isLastPhase == true)

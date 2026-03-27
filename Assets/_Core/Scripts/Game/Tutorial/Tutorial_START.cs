@@ -50,6 +50,10 @@ public class Tutorial_START : TutorialBase
         enemy.anim.Play(CharacterAnimType.Attack);
         enemy.SetHeroData("");
 
+        // 데미지 안받게 
+        var hashHero = mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
+        var hashEnemy = enemy.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
+
         {
             var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
                 "튜토리얼 진행할거야.",
@@ -87,10 +91,6 @@ public class Tutorial_START : TutorialBase
         // "앞에 황건적이네. 어쩌지?"
         await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
         enemy.talkbox.SetActive(false);
-
-        // 데미지 안받게 
-        var hashHero = mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
-        var hashEnemy = enemy.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
 
         mainHero.move.MoveTarget(m_elementBase.enemy.First(), true);
         enemy.move.MoveTarget(mainHero, true);
@@ -235,12 +235,19 @@ public class Tutorial_START : TutorialBase
         bool isHeroSummon = false;
 
         // 영웅을 뽑고, 스크린을 닫을 떄까지 기다린다.
-        while (DataManager.userInfo.myHero.Count == 1 || LobbyScreenManager.instance.curScreen > LobbyScreenType.None)
+        while (true)
         {
             if (isHeroSummon == false && DataManager.userInfo.myHero.Count > 1)
             {
                 m_elementBase.arrows[0].gameObject.SetActive(false);
                 isHeroSummon = true;
+            }
+
+            // 영웅 소환을 했고, 리절트를 나왔으면 꺼주자
+            if (DataManager.userInfo.myHero.Count > 1 && screen.isOpenResult == false)
+            {
+                Signal.instance.CloseLobbyScreen.Emit(LobbyScreenType.Summon);
+                break;
             }
 
             await UniTask.WaitForEndOfFrame();

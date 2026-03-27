@@ -24,16 +24,16 @@ public class Scene_Lobby : SceneBase
         if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
             await TutorialManager.instance.StartAsync(TutorialType.START);
 
+#if UNITY_EDITOR
+        StageManager.instance.TestDevSelectAsync().Forget();
+#endif
+
         StageManager.instance.StartStageAsync().Forget();
 
         ControllerManager.instance.isSwitch = true;
 
         m_element.btnAuto.onClick.AddListener(OnButton_Auto);
         SetAutoUIAsync().Forget();
-
-#if UNITY_EDITOR
-        StageManager.instance.TestDevSelectAsync().Forget();
-#endif
     }
 
     void OnButton_Auto()

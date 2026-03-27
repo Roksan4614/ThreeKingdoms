@@ -56,6 +56,7 @@ public class TutorialManager
             return;
 
         var tutorial = GameObject.Instantiate(handle.Result, StageManager.instance.transform);
+        tutorial.transform.position = Vector3.zero;
         await tutorial.GetComponent<TutorialBase>().StartAsync(_tutorialType);
 
         GameObject.Destroy(tutorial.gameObject);

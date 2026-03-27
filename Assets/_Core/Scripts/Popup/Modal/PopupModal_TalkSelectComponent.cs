@@ -88,11 +88,15 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
 
         m_elementTalk.dimm.DOFade(0, 0.15f);
         await Utils.SetActivePunchAsync(m_elementTalk.rtPanel, false);
-        await UniTask.WaitForSeconds(.5f);
-        await Utils.SetActivePunchAsync(m_elementTalk.btnSelect[selelctOption].transform, false);
-        //m_elementTalk.btnSelect[selelctOption].gameObject.SetActive(false);
-        await UniTask.WaitForSeconds(.3f);
+
+        var btnSelect = m_elementTalk.btnSelect[selelctOption].transform;
+
+        btnSelect.SetParent(PopupManager.instance.transform);
+
         Close();
+        await UniTask.WaitForSeconds(.5f);
+        await Utils.SetActivePunchAsync(btnSelect, false);
+        Destroy(btnSelect.gameObject);
     }
 
     #region VALIDATE

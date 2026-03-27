@@ -79,7 +79,9 @@ public class Character_Worker_Talkbox : Character_Worker
     public async UniTask StartAsyncClickDisable(params string[] _talks)
     {
         await StartAsync(_talks);
-        await UniTask.WaitUntil(() => ControllerManager.isClickDown || Input.GetKeyDown(KeyCode.Return));
+        await UniTask.WaitUntil(() => ControllerManager.isClickDown
+        || Input.GetKeyDown(KeyCode.Return)
+        || Input.GetKeyDown(KeyCode.Space));
         SetActive(false);
     }
 

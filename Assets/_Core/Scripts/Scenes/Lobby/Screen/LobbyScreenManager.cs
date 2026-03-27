@@ -58,10 +58,13 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     }
 
     // 스크린에서 닫기를 눌러서 닫을 때
-    public void CloseScreen(LobbyScreenType _nextScreen)
+    public void CloseScreen(LobbyScreenType _screen)
     {
-        m_dicScreen[_nextScreen].Close();
-        SetActiveDimm(false);
+        if(_screen == m_curScreen)
+        {
+            m_dicScreen[_screen].Close();
+            SetActiveDimm(false);
+        }
 
         m_curScreen = LobbyScreenType.None;
 

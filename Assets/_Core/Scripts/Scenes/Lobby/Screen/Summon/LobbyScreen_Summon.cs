@@ -21,6 +21,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
     PartyHostData m_hostData;
 
     bool m_isSkipAction;
+    public bool isOpenResult => m_element.result.gameObject.activeSelf == true;
 
     protected override void Awake()
     {

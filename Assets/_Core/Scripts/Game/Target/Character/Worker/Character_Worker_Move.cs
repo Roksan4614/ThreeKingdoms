@@ -87,16 +87,16 @@ public class Character_Worker_Move : Character_Worker
                 yield return m_owner.attack.DoAttack();
                 //if (m_owner.target.Contains(_target) == false)
                 //    break;
+            }
 
-                //공격을 멈췄는데 적이ㅣ 아직 있으면 따라가야하는거 아닌가?
-                if (m_owner.target.Contains(_target) == false)
+            //공격을 멈췄는데 적이ㅣ 아직 있으면 따라가야하는거 아닌가?
+            if (m_owner.target.Contains(_target) == false)
+            {
+                var nt = m_owner.target.nearestEnemy;
+                if (nt != null)
                 {
-                    var nt = m_owner.target.nearestEnemy;
-                    if (nt != null)
-                    {
-                        m_owner.target.SetTarget(nt);
-                        _target = nt;
-                    }
+                    m_owner.target.SetTarget(nt);
+                    _target = nt;
                 }
             }
 

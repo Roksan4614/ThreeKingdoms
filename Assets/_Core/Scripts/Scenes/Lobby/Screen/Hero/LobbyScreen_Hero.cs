@@ -216,15 +216,13 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             var heroList = m_itemList.Select(x => x.data).ToList();
             for (int i = 0; i < heroList.Count; i++)
             {
-                if (heroList[i].isMain != (i == 0))
-                {
-                    var data = heroList[i];
-                    data.isMain = i == 0;
-                    heroList[i] = data;
-                }
+                var data = heroList[i];
+                data.isMain = i == 0;
+                heroList[i] = data;
             }
 
             DataManager.userInfo.UpdateAll(heroList);
+            Signal.instance.UpdateTeamPosition.Emit();
 
             EffectWorker.instance.ResetEffect();
 
@@ -339,11 +337,11 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             return;
         }
 
-        if (_item.data.isMain == true && StageManager.instance.isClearFirstStage == false)
-        {
-            PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
-            return;
-        }
+        //if (_item.data.isMain == true && StageManager.instance.isClearFirstStage == false)
+        //{
+        //    PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
+        //    return;
+        //}
 
         if (m_itemBatch.Count(x => x.data.isActive) == 1)
             return;
@@ -367,11 +365,11 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
 
     void OnButton_BatchHeroRemove(HeroIconComponent _item)
     {
-        if (_item.data.isMain == true && StageManager.instance.isClearFirstStage == false)
-        {
-            PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
-            return;
-        }
+        //if (_item.data.isMain == true && StageManager.instance.isClearFirstStage == false)
+        //{
+        //    PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
+        //    return;
+        //}
 
         var index = m_itemBatch.FindIndex(x => x.data.key == _item.data.key);
 
@@ -549,8 +547,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             m_curIndex_List = -1;
         }
 
-        if (_item.data.isMain && StageManager.instance.isClearFirstStage == false)
-            PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
+        //if (_item.data.isMain && StageManager.instance.isClearFirstStage == false)
+        //    PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
 
         for (int i = 0; i < m_itemBatch.Count; i++)
             m_itemBatch[i].SetActiveButton(m_curIndex_List > -1 && m_itemBatch[i].data.isActive && _item.data.isBatch == false, true);

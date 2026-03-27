@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -57,7 +58,15 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
         DashButtonInitalize();
 
-        bool isActive = DataManager.userInfo.myHero.Count > 1;
+        SlotUpdateTeamPosition();
+
+        Signal.instance.UpdateTeamPosition.connect = SlotUpdateTeamPosition;
+
+    }
+
+    void SlotUpdateTeamPosition()
+    {
+        bool isActive = DataManager.userInfo.myHero.Count(x => x.isBatch == true) > 1;
         m_element.btnCall.gameObject.SetActive(isActive);
     }
 
@@ -79,13 +88,13 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             if (Input.anyKeyDown)
             {
                 // 공격
-                if (Input.GetKeyDown(KeyCode.Z))
+                if (Input.GetKeyDown(KeyCode.X))
                     OnButton_Attack();
                 // 대쉬
-                else if (Input.GetKeyDown(KeyCode.X))
+                else if (Input.GetKeyDown(KeyCode.C))
                     OnButton_Dash(false);
                 // 콜
-                else if (Input.GetKeyDown(KeyCode.C))
+                else if (Input.GetKeyDown(KeyCode.V))
                     OnButton_Call();
                 // 스킬
                 else
@@ -152,9 +161,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     async UniTask TimerCallAsync()
     {
-        bool isActive = DataManager.userInfo.myHero.Count > 1;
-        m_element.btnCall.gameObject.SetActive(isActive);
-        if (isActive == false || m_mainHero.isLive == false)
+        if (m_mainHero.isLive == false)
             return;
 
         // TODO: 어딘가에서 값을 가져와야 하지 않을까?

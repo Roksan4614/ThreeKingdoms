@@ -273,6 +273,7 @@ public class Signal
 
     public SignalObject<CharacterComponent> ConnectMainHero = new();
     public SignalObject<CharacterComponent> UpdateHP = new();
+    public SignalObject UpdateTeamPosition = new();
     public SignalObject<float> UpdageBossHP = new(); //percent
     public SignalObject<(bool _isTween, ItemType _itemType)> UpdateAsset = new();
 

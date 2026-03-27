@@ -30,7 +30,10 @@ public static class Utils
 
     public static async UniTask AfterSecondAsync(Action _callback, float _duration = 0, CancellationToken _token = default)
     {
-        await UniTask.WaitForSeconds(_duration, cancellationToken: _token);
+        if (_duration == 0)
+            await UniTask.WaitForEndOfFrame();
+        else
+            await UniTask.WaitForSeconds(_duration, cancellationToken: _token);
         _callback();
     }
 
