@@ -94,8 +94,10 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
                 else if (Input.GetKeyDown(KeyCode.C))
                     OnButton_Dash(false);
                 // 콜
-                else if (Input.GetKeyDown(KeyCode.V))
+                else if (Input.GetKeyDown(KeyCode.Z))
                     OnButton_Call();
+                else if (Input.GetKeyDown(KeyCode.V))
+                    m_element.skill.OnButton_Skill();
                 // 스킬
                 else
                 {
@@ -189,7 +191,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     void OnButton_Attack()
     {
-        if (m_mainHero.isLive == false)
+        if (m_mainHero.isLive == false || isSwitch == false)
             return;
 
         m_element.btnAttack.transform.localScale = Vector3.one;
@@ -270,6 +272,12 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         //m_tweenMoveAction = m_element.rtAction.DOAnchorPosY(_isBottom ? -50f : 130f, _isTween ? 0.1f : 0f);
     }
 
+    public void UpdateColltime_Skill(float _duration, float _progress)
+        => m_element.skill.UpdateColltime(_duration, _progress);
+
+    public void SetPunchSkill()
+        => m_element.skill.transform.DOPunchScale(Vector3.one * .05f, 0.1f);
+
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
@@ -284,6 +292,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         public RectTransform rt;
 
         public Button btnAttack;
+
+        public Controller_Skill skill;
 
         public Button btnCall;
         public Transform panelCall;
@@ -303,6 +313,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             padBar = (RectTransform)pad.Find("Bar");
 
             btnAttack = _transform.GetComponent<Button>("Action/btn_attack");
+            skill = _transform.GetComponent<Controller_Skill>("Action/btn_skill");
 
             btnCall = _transform.GetComponent<Button>("Action/btn_call");
             panelCall = btnCall.transform.Find("Panel");

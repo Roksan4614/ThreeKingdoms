@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 797144415276558389}
   - component: {fileID: 647824552516914839}
-  - component: {fileID: 190213068815395558}
   - component: {fileID: 6538707301626241747}
   m_Layer: 0
   m_Name: ZhugeLiang
@@ -47,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cdd31c9780bd15498608bbb7d9d93d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 190213068815395558}
+  m_sortingGroup: {fileID: 1346500987336526587}
   m_canvas: {fileID: 1807316105472950312}
   m_data:
     key: 
@@ -78,23 +77,20 @@ MonoBehaviour:
     m_effect_canvas: {fileID: 3450191710337310777}
     m_effect_renderer: {fileID: 8676165864498268784}
     m_cameraPos: {fileID: 4012749027741374163}
+    m_skillRage: {fileID: 0}
     m_collider: {fileID: 5829553439423028349}
     m_txtTalk: {fileID: 7283102213783592863}
     m_animationClipData:
       attack: {fileID: 7400000, guid: c5bbed9f02ae56542acfe5a5eda79426, type: 2}
---- !u!210 &190213068815395558
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3552858263853492112}
-  m_Enabled: 1
-  m_SortingLayerID: -2006240291
-  m_SortingLayer: 2
-  m_SortingOrder: 10
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
+      skill: {fileID: 0}
+    partsRenders:
+    - {fileID: 1555673663293202058}
+    - {fileID: 6416328683842137120}
+    - {fileID: 3079348808205552403}
+    colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
 --- !u!50 &6538707301626241747
 Rigidbody2D:
   serializedVersion: 5
@@ -156,7 +152,7 @@ PrefabInstance:
       objectReference: {fileID: -4926561113226841233, guid: cb74331d52c1b9c4da751e11e19ce22e, type: 3}
     - target: {fileID: 1851086561491895142, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_SortingOrder
-      value: 11
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1886970838021006312, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -335,6 +331,16 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4589390045995014601}
   m_SourcePrefab: {fileID: 100100000, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+--- !u!210 &1346500987336526587 stripped
+SortingGroup:
+  m_CorrespondingSourceObject: {fileID: 1300197256076429749, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 46303765622915918}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &1555673663293202058 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1527386525559561668, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 46303765622915918}
+  m_PrefabAsset: {fileID: 0}
 --- !u!223 &1807316105472950312 stripped
 Canvas:
   m_CorrespondingSourceObject: {fileID: 1851086561491895142, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
@@ -343,6 +349,11 @@ Canvas:
 --- !u!4 &1912724709661008038 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1886970838021006312, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 46303765622915918}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &3079348808205552403 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 3033326539072260189, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 46303765622915918}
   m_PrefabAsset: {fileID: 0}
 --- !u!224 &3450191710337310777 stripped
@@ -363,6 +374,11 @@ Transform:
 --- !u!58 &5829553439423028349 stripped
 CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 5783249674202832691, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 46303765622915918}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &6416328683842137120 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6462632440588988270, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 46303765622915918}
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &7234814780700644746 stripped
@@ -400,6 +416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_owner: {fileID: 647824552516914839}
   m_animSlash: []
+  m_skillRange: {fileID: 0}
 --- !u!4 &8676165864498268784 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8701921934893222206, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

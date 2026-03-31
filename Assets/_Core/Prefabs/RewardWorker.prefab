@@ -5354,6 +5354,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8466819939395937567}
+  - component: {fileID: 6306022501218064663}
   m_Layer: 10
   m_Name: Character
   m_TagString: CharacterBody
@@ -5378,6 +5379,19 @@ Transform:
   - {fileID: 4140153750913037394}
   m_Father: {fileID: 3373503637292801637}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &6306022501218064663
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6919272368159708279}
+  m_Enabled: 1
+  m_SortingLayerID: -2006240291
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
 --- !u!1 &7041484418094524137
 GameObject:
   m_ObjectHideFlags: 0
@@ -5631,7 +5645,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3373503637292801637}
   - component: {fileID: 7798342497713620984}
-  - component: {fileID: 812760754783540962}
   - component: {fileID: 5595855344278853952}
   m_Layer: 8
   m_Name: Item
@@ -5669,13 +5682,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a115d14fde38b2847b8025f97fee298e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RewardItemComponent
-  m_sortingGroup: {fileID: 812760754783540962}
+  m_sortingGroup: {fileID: 6306022501218064663}
   m_canvas: {fileID: 3209194797178170748}
   m_element:
     layerStart: -2006240291
     layerAction: 498427749
     layerPopup: -1738142153
-    sg: {fileID: 812760754783540962}
+    sg: {fileID: 0}
     ps: {fileID: 7749585010452988586}
     character: {fileID: 8466819939395937567}
     panel: {fileID: 4140153750913037394}
@@ -5691,19 +5704,6 @@ MonoBehaviour:
       obj: {fileID: 2928126114883933780}
     - type: 5
       obj: {fileID: 8268748638694780861}
---- !u!210 &812760754783540962
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8742909394971457768}
-  m_Enabled: 1
-  m_SortingLayerID: -2006240291
-  m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
 --- !u!58 &5595855344278853952
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -101,7 +101,6 @@ GameObject:
   m_Component:
   - component: {fileID: 250404902347658062}
   - component: {fileID: 7904626340159565635}
-  - component: {fileID: 1186684418494579908}
   - component: {fileID: 37095603576543140}
   m_Layer: 0
   m_Name: ZhaYun
@@ -138,7 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cdd31c9780bd15498608bbb7d9d93d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 1186684418494579908}
+  m_sortingGroup: {fileID: 1554436219866879670}
   m_canvas: {fileID: 2173317146263444581}
   m_data:
     key: 
@@ -169,23 +168,22 @@ MonoBehaviour:
     m_effect_canvas: {fileID: 2944306419385875572}
     m_effect_renderer: {fileID: 9176685539226064445}
     m_cameraPos: {fileID: 3498709740850186910}
+    m_skillRage: {fileID: 0}
     m_collider: {fileID: 6330785597954048048}
     m_txtTalk: {fileID: 7074885505999700946}
     m_animationClipData:
       attack: {fileID: 7400000, guid: 6993b3de8cc07614da5f7fddc65327e7, type: 2}
---- !u!210 &1186684418494579908
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8054989375024338379}
-  m_Enabled: 1
-  m_SortingLayerID: -2006240291
-  m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
+      skill: {fileID: 0}
+    partsRenders:
+    - {fileID: 1345187563786666695}
+    - {fileID: 7238025109468269274}
+    - {fileID: 6788803649097035885}
+    - {fileID: 3279121283599554398}
+    colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
 --- !u!50 &37095603576543140
 Rigidbody2D:
   serializedVersion: 5
@@ -471,9 +469,19 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 9177984838794183316}
   m_SourcePrefab: {fileID: 100100000, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+--- !u!212 &1345187563786666695 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1527386525559561668, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 547553516079881987}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1394882522598500920 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1495990324304508219, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 547553516079881987}
+  m_PrefabAsset: {fileID: 0}
+--- !u!210 &1554436219866879670 stripped
+SortingGroup:
+  m_CorrespondingSourceObject: {fileID: 1300197256076429749, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 547553516079881987}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2141058099106446571 stripped
@@ -496,6 +504,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3406139770568483703, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 547553516079881987}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &3279121283599554398 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 3033326539072260189, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 547553516079881987}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3498709740850186910 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3968978580282938781, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
@@ -509,6 +522,11 @@ Transform:
 --- !u!58 &6330785597954048048 stripped
 CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 5783249674202832691, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 547553516079881987}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &6788803649097035885 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6462632440588988270, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 547553516079881987}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &7074885505999700946 stripped
@@ -547,6 +565,7 @@ MonoBehaviour:
   m_owner: {fileID: 7904626340159565635}
   m_animSlash:
   - {fileID: 8580357974542202070}
+  m_skillRange: {fileID: 0}
 --- !u!114 &8580357974542202070 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8109508588679080917, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

@@ -14,7 +14,7 @@ public abstract class TargetComponent : MonoBehaviour, IValidatable
 
     public virtual void OnManualValidate()
     {
-        m_sortingGroup = transform.GetComponent<SortingGroup>();
+        m_sortingGroup = transform.GetComponent<SortingGroup>("Character");
 
         m_canvas = transform.GetComponent<Canvas>("Character/Canvas");
         if (m_canvas != null)

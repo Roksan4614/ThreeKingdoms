@@ -14,4 +14,10 @@ public class Character_AnimEvent : MonoBehaviour, IValidatable
     {
         m_owner.attack?.EventAttackHit();
     }
+
+    public void EventAttackEnd()
+    {
+        if (m_owner.attack != null)
+            m_owner.attack.isRunningAttack = false;
+    }
 }

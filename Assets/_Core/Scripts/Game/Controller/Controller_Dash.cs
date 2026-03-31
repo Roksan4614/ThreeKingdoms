@@ -19,7 +19,7 @@ public partial class ControllerManager
 
     public void OnButton_Dash(bool _isMouse)
     {
-        if (m_dashRemainCount == 0 || m_mainHero.isLive == false)
+        if (isSwitch == false || m_dashRemainCount == 0 || m_mainHero.isLive == false)
             return;
 
         m_dashRemainCount--;

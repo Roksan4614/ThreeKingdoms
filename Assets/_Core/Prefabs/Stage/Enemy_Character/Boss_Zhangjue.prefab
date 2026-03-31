@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6182821017471498839}
   - component: {fileID: 1080572775049398487}
-  - component: {fileID: 1373827979032907503}
   - component: {fileID: -638875615084983825}
   m_Layer: 0
   m_Name: Boss_Zhangjue
@@ -47,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65bf6a8a371bc1745bc6f4ea9f86f27c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 1373827979032907503}
+  m_sortingGroup: {fileID: 1306652750154072652}
   m_canvas: {fileID: 1844631069813262495}
   m_data:
     key: 
@@ -78,23 +77,20 @@ MonoBehaviour:
     m_effect_canvas: {fileID: 3417134082813307022}
     m_effect_renderer: {fileID: 8712913464254431943}
     m_cameraPos: {fileID: 3980539653630533220}
+    m_skillRage: {fileID: 0}
     m_collider: {fileID: 5794771202197673162}
     m_txtTalk: {fileID: 7322664580016903976}
     m_animationClipData:
       attack: {fileID: 7400000, guid: 22b3407d714a90c4faca359933ee07d9, type: 2}
---- !u!210 &1373827979032907503
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5321107220624196040}
-  m_Enabled: 1
-  m_SortingLayerID: -2006240291
-  m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
+      skill: {fileID: 0}
+    partsRenders:
+    - {fileID: 1520895847076009533}
+    - {fileID: 6451110362788914327}
+    - {fileID: 3040379647822775204}
+    colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
 --- !u!50 &-638875615084983825
 Rigidbody2D:
   serializedVersion: 5
@@ -296,6 +292,16 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+--- !u!210 &1306652750154072652 stripped
+SortingGroup:
+  m_CorrespondingSourceObject: {fileID: 1300197256076429749, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 11561660513192953}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &1520895847076009533 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1527386525559561668, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 11561660513192953}
+  m_PrefabAsset: {fileID: 0}
 --- !u!223 &1844631069813262495 stripped
 Canvas:
   m_CorrespondingSourceObject: {fileID: 1851086561491895142, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
@@ -304,6 +310,11 @@ Canvas:
 --- !u!4 &1875413610791200785 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1886970838021006312, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 11561660513192953}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &3040379647822775204 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 3033326539072260189, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 11561660513192953}
   m_PrefabAsset: {fileID: 0}
 --- !u!224 &3417134082813307022 stripped
@@ -324,6 +335,11 @@ Transform:
 --- !u!58 &5794771202197673162 stripped
 CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 5783249674202832691, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 11561660513192953}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &6451110362788914327 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6462632440588988270, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 11561660513192953}
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &7271813618393996605 stripped

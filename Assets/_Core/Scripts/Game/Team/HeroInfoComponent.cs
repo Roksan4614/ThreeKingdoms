@@ -252,12 +252,16 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
             }
 
             // 퍼센트 구하기!!
-            float progress = (Time.realtimeSinceStartup - m_cooltime_Skill.startTime + addTime) / (m_cooltime_Skill.endTime - m_cooltime_Skill.startTime);
+            float duration = m_cooltime_Skill.endTime - m_cooltime_Skill.startTime;
+            float progress = (Time.realtimeSinceStartup - m_cooltime_Skill.startTime + addTime) / duration;
 
             // 바 이동하기!!
             var pos = bar.anchoredPosition;
             pos.x = width * progress;
             bar.anchoredPosition = pos;
+
+            if(m_hero.isMain == true)
+                ControllerManager.instance.UpdateColltime_Skill(duration, progress);
 
             if (progress > 1f)
             {
@@ -288,7 +292,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
                 m_element.objOnSkill.SetActive(false);
 
                 if (m_statusSkill == StatusType.Success)
-                    yield return m_hero.attack.DoUseSkill();
+                    yield return m_hero.attack.UseSkillAsync().ToCoroutine();
 
                 m_statusSkill = StatusType.Wait;
                 m_cooltime_Skill.startTime = Time.realtimeSinceStartup;

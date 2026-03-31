@@ -7,73 +7,94 @@ using UnityEngine.UI;
 
 public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler, IValidatable
 {
-    [SerializeField] float m_power = 7f;
+    protected float m_power = 2f;
 
-    Vector3 m_posStart;
+    protected Button button;
+    protected Transform m_pointer;
 
-    public Button button;
-    Transform m_pointer;
-    CharacterComponent m_hero;
+    protected CharacterComponent m_hero;
+    CharacterComponent m_target;
 
-    private void Start()
+    protected virtual void Start()
     {
         button = transform.GetComponent<Button>();
         m_pointer = m_element.pointer.transform;
 
         Signal.instance.ConnectMainHero.connectLambda = new(this, _hero => m_hero = _hero);
+
+        m_element.pointer.OnTriggerEnter = SlotTriggerEnter;
+        m_element.pointer.OnTriggerEnter = SlotTriggerExit;
     }
 
-    public void OnDrag(PointerEventData eventData)
+    protected virtual void SlotTriggerEnter(Collider2D _collision)
     {
-        var pos = CameraManager.instance.GetMousePosition();
+        if (_collision.CompareTag("CharacterBody"))
+            m_target = _collision.transform.parent.parent.parent.GetComponent<Character_Enemy>();
+    }
 
-        var dist = (m_posStart - pos);
+    protected virtual void SlotTriggerExit(Collider2D _collision)
+    {
+        if (_collision.CompareTag("CharacterBody"))
+        {
+            if (m_target == _collision.transform.parent.parent.parent.GetComponent<Character_Enemy>())
+                m_target = null;
+        }
+    }
 
-        if (dist.sqrMagnitude > 0.1f || m_pointer.gameObject.activeSelf == true)
+    public virtual void OnDrag(PointerEventData eventData)
+    {
+        var mousePosition = CameraManager.instance.GetMousePosition();
+
+        var dist = (m_element.startPosition.position - mousePosition);
+
+        if (dist.sqrMagnitude > 0.02f || m_pointer.gameObject.activeSelf == true)
         {
             button.interactable = false;
             m_pointer.gameObject.SetActive(true);
 
-            m_pointer.position =
-                m_hero.transform.position + ((pos - m_posStart).normalized * dist.magnitude * m_power);
+            var targetPos = CameraManager.instance.main.transform.position +
+                ((mousePosition - m_element.startPosition.position).normalized * dist.sqrMagnitude * m_power);
+
+            targetPos.z = m_pointer.position.z;
+
+            m_pointer.position = targetPos;
         }
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        m_posStart = CameraManager.instance.GetMousePosition();
+        m_element.startPosition.position = CameraManager.instance.GetMousePosition();
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    public virtual void OnPointerUp(PointerEventData eventData)
     {
         if (button.interactable == false)
         {
-            Utils.AfterSecond(() =>
-            {
-                button.interactable = true;
-            });
+            Utils.AfterSecond(() => button.interactable = true);
 
-            var target = m_element.pointer.enemy;
-            if (target != null && m_hero.target.target != target)
-                m_hero.move.MoveTarget(target, true);
+            if (m_target != null && m_target.isLive && m_hero.target.target != m_target)
+                m_hero.move.MoveTarget(m_target, true);
 
             m_element.pointer.gameObject.SetActive(false);
         }
     }
 
     #region VALIDATE
-    public void OnManualValidate() => m_element.Initialize(transform);
+    public virtual void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
-    ElementData m_element;
+    protected ElementData m_element;
 
     [Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public Controll_Attack_Pointer pointer;
+        public Transform startPosition;
+
         public void Initialize(Transform _transform)
         {
             pointer = _transform.GetComponent<Controll_Attack_Pointer>("MousePosition");
+            startPosition = _transform.Find("StartPosition");
         }
     }
     #endregion VALIDATA

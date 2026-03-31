@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3584069585807504991}
   - component: {fileID: -1999559932846261990}
-  - component: {fileID: 8842319395611416655}
   - component: {fileID: -1588763895784898184}
   m_Layer: 0
   m_Name: Normal
@@ -47,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16058815235ddab44975536181d42901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 8842319395611416655}
+  m_sortingGroup: {fileID: 5676592834823580059}
   m_canvas: {fileID: 5006899927931495240}
   m_data:
     key: 
@@ -78,23 +77,22 @@ MonoBehaviour:
     m_effect_canvas: {fileID: 8325325626858849113}
     m_effect_renderer: {fileID: 2598324622848813328}
     m_cameraPos: {fileID: 7771191375908206003}
+    m_skillRage: {fileID: 0}
     m_collider: {fileID: 904747915223809821}
     m_txtTalk: {fileID: 4141678301698161919}
     m_animationClipData:
       attack: {fileID: 7400000, guid: 4823e54a9a8905d41a75c8d9e8884b77, type: 2}
---- !u!210 &8842319395611416655
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292388667102405614}
-  m_Enabled: 1
-  m_SortingLayerID: -2006240291
-  m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
+      skill: {fileID: 0}
+    partsRenders:
+    - {fileID: 5331743455972589034}
+    - {fileID: 388317174450130752}
+    - {fileID: 8562750223520802931}
+    - {fileID: 4547644855597476213}
+    colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
 --- !u!50 &-1588763895784898184
 Rigidbody2D:
   serializedVersion: 5
@@ -275,6 +273,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+--- !u!212 &388317174450130752 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6462632440588988270, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 6686848874586333230}
+  m_PrefabAsset: {fileID: 0}
 --- !u!58 &904747915223809821 stripped
 CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 5783249674202832691, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
@@ -301,6 +304,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!212 &4547644855597476213 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7192265620144343387, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 6686848874586333230}
+  m_PrefabAsset: {fileID: 0}
 --- !u!223 &5006899927931495240 stripped
 Canvas:
   m_CorrespondingSourceObject: {fileID: 1851086561491895142, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
@@ -309,6 +317,16 @@ Canvas:
 --- !u!4 &5108111557228954566 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1886970838021006312, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 6686848874586333230}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &5331743455972589034 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1527386525559561668, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 6686848874586333230}
+  m_PrefabAsset: {fileID: 0}
+--- !u!210 &5676592834823580059 stripped
+SortingGroup:
+  m_CorrespondingSourceObject: {fileID: 1300197256076429749, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 6686848874586333230}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &7771191375908206003 stripped
@@ -324,5 +342,10 @@ Transform:
 --- !u!224 &8325325626858849113 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3406139770568483703, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 6686848874586333230}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &8562750223520802931 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 3033326539072260189, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 6686848874586333230}
   m_PrefabAsset: {fileID: 0}

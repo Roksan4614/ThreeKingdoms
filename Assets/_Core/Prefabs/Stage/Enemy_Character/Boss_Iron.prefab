@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3221535112732345373}
   - component: {fileID: -7359549936374575866}
-  - component: {fileID: 3918700795164751347}
   - component: {fileID: -7632018751848269093}
   m_Layer: 0
   m_Name: Boss_Iron
@@ -47,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16058815235ddab44975536181d42901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 3918700795164751347}
+  m_sortingGroup: {fileID: 2578102409257777144}
   m_canvas: {fileID: 2917234785464466731}
   m_data:
     key: 
@@ -78,23 +77,20 @@ MonoBehaviour:
     m_effect_canvas: {fileID: 2200416252767001914}
     m_effect_renderer: {fileID: 5264451891873544051}
     m_cameraPos: {fileID: 493386060996996048}
+    m_skillRage: {fileID: 0}
     m_collider: {fileID: 7029628702014841214}
     m_txtTalk: {fileID: 6087247222664454812}
     m_animationClipData:
       attack: {fileID: 7400000, guid: 22b3407d714a90c4faca359933ee07d9, type: 2}
---- !u!210 &3918700795164751347
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4452445336303356712}
-  m_Enabled: 1
-  m_SortingLayerID: -2006240291
-  m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
+      skill: {fileID: 0}
+    partsRenders:
+    - {fileID: 2665608765110150025}
+    - {fileID: 7522024068972024099}
+    - {fileID: 2005494459492873744}
+    colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
 --- !u!50 &-7632018751848269093
 Rigidbody2D:
   serializedVersion: 5
@@ -250,9 +246,24 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3968978580282938781, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 3588376041199828557}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &2005494459492873744 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 3033326539072260189, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 3588376041199828557}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &2200416252767001914 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3406139770568483703, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 3588376041199828557}
+  m_PrefabAsset: {fileID: 0}
+--- !u!210 &2578102409257777144 stripped
+SortingGroup:
+  m_CorrespondingSourceObject: {fileID: 1300197256076429749, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 3588376041199828557}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &2665608765110150025 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1527386525559561668, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 3588376041199828557}
   m_PrefabAsset: {fileID: 0}
 --- !u!223 &2917234785464466731 stripped
@@ -289,5 +300,10 @@ Animator:
 --- !u!58 &7029628702014841214 stripped
 CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 5783249674202832691, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 3588376041199828557}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &7522024068972024099 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6462632440588988270, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 3588376041199828557}
   m_PrefabAsset: {fileID: 0}

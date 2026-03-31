@@ -10,6 +10,7 @@ using UnityEngine.Events;
 public class Character_Worker_Attack : Character_Worker
 {
     public bool isAttack => m_weapon.isAttack;
+    public bool isRunningAttack { get; set; }
 
     public Character_Worker_Attack(CharacterComponent _owner) : base(_owner)
     {
@@ -69,18 +70,32 @@ public class Character_Worker_Attack : Character_Worker
         m_weapon.EventAttackHit(m_owner);
     }
 
+    public void EventAttackEnd()
+    {
+    }
+
     public bool IsValidUseSkill()
         => m_owner.isLive && m_weapon.IsValidUseSkill();
 
     public bool isUseSkill { get; private set; }
-    public IEnumerator DoUseSkill()
+
+    public async UniTask UseSkillAsync()
     {
+        m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
         isUseSkill = true;
-        yield return m_weapon.DoUseSkill();
+        await m_weapon.UseSkillAsync();
     }
 
     public void ShowSlashEffect(bool _isShake = false) => m_weapon.ShowSlashEffect(_isForceShake: _isShake);
 
     public void ResetFX()
         => m_weapon.ResetFX();
+
+    public bool isRunningSlash => m_weapon.isRunningSlash;
+
+    public void OnDrag_ControllSkill(Vector3 _targetPos)
+        => m_weapon.OnDrag_ControllSkill(_targetPos);
+
+    public void OnUp_ControllSkill()
+        => m_weapon.OnUp_ControllSkill();
 }

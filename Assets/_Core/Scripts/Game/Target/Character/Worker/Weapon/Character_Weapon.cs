@@ -1,7 +1,9 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Character_Weapon : MonoBehaviour, IValidatable
@@ -10,14 +12,29 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     public CharacterComponent m_owner;
     [SerializeField]
     public List<SpriteAnimaion> m_animSlash = new();
+    [SerializeField]
+    public Transform m_skillRange;
 
-    bool m_isCritial;
+    protected bool m_isCritial;
     public bool isUseSkill { get; protected set; }
+
+    protected bool isControllSkillPosition { get; private set; }
 
     private void Awake()
     {
         for (int i = 0; i < m_animSlash.Count; i++)
             m_animSlash[i].gameObject.SetActive(false);
+
+        if (m_skillRange != null)
+            m_skillRange.gameObject.SetActive(false);
+        else
+        {
+
+        }
+    }
+
+    protected virtual void Start()
+    {
     }
 
     private void OnDestroy()
@@ -34,6 +51,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     public void OnManualValidate()
     {
         m_owner = transform.parent?.GetComponent<CharacterComponent>();
+        m_skillRange = m_owner.transform.Find("SkillRange");
 
         m_animSlash.Clear();
         var fxAttack = transform.GetComponent<SpriteAnimaion>("Panel/FxAttack");
@@ -68,7 +86,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         m_owner.target.target.isLive &&
         m_owner.buff.IsActive(BuffType.DEBUFF_NO_SKILL) == false;
 
-    public virtual IEnumerator DoUseSkill()
+    public virtual async UniTask UseSkillAsync()
     {
         m_isCritial = false;
         isUseSkill = true;
@@ -78,10 +96,14 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
         CameraManager.instance.Shake();
 
-        yield return null;
+        await UniTask.Yield();
 
         isUseSkill = false;
     }
+
+    //public virtual IEnumerator DoUseSkill()
+    //{
+    //}
 
     public virtual void EventAttackHit(CharacterComponent _owner)
     {
@@ -108,10 +130,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         });
         m_isCritial = false;
 
-        if (target.target.target == null && ControllerManager.instance.IsControll(target) == false)
-            target.move.MoveTarget(m_owner, true);
-
-        if (target.OnDamage(damage))
+        if (target.OnDamage(_owner, damage))
             _owner.target.SetTarget(null);
     }
 
@@ -164,4 +183,20 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         for (int i = 0; i < m_animSlash.Count; i++)
             m_animSlash[i].Stop();
     }
+
+    public bool isRunningSlash
+    {
+        get
+        {
+            for (int i = 0; i < m_animSlash.Count; i++)
+            {
+                if (m_animSlash[i].gameObject.activeSelf == true)
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    public virtual void OnDrag_ControllSkill(Vector3 _targetPos) { }
+    public virtual void OnUp_ControllSkill() { }
 }

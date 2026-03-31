@@ -29,6 +29,7 @@ public enum CharacterAnimType
     Dash,
 
     Attack,
+    Skill,
 
     Die_1,
     Die_2,

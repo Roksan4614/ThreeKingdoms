@@ -24,7 +24,6 @@ public class Character_Worker_Anim : Character_Worker
         }
 
         m_animator.runtimeAnimatorController = overrideAnimator;
-
     }
 
     public bool IsType(CharacterAnimType _animType, int _layerIndex = 0)
@@ -38,8 +37,14 @@ public class Character_Worker_Anim : Character_Worker
 
     public void Play(CharacterAnimType _animType, int _layerIndex)
     {
+        if (_animType == CharacterAnimType.Attack || _animType == CharacterAnimType.Skill)
+            m_owner.attack.isRunningAttack = true;
+
         //m_animator.Play(_animType.ToString(), _layerIndex, 0);
         m_animator.CrossFade(_animType.ToString(), 0, _layerIndex, 0);
+
+        //if (m_owner.isMain == true)
+        //    IngameLog.Add($"[ANIM] PLAY: {_animType}{(_layerIndex == 0 ? "" : $"/{_layerIndex}")}");
     }
 
     public void PlayAttack(bool _isShowFx = false, bool _isShake = false)
@@ -49,24 +54,26 @@ public class Character_Worker_Anim : Character_Worker
             m_owner.attack.ShowSlashEffect(_isShake);
     }
 
-    public void AttackMotionFirstFrame()
+    public void AttackMotionFirstFrame(CharacterAnimType _animType = CharacterAnimType.Attack, int _layerIndex = 0)
     {
         m_animator.speed = 0;
-        Play(CharacterAnimType.Attack);
+        Play(_animType, _layerIndex);
     }
 
     public void AttackMotionEnd() => m_animator.speed = 1;
-}
 
+}
 
 [Serializable]
 public struct CharacterAnimationClipData
 {
     public AnimationClip attack;
+    public AnimationClip skill;
 
     public AnimationClip GetClip(CharacterAnimType _animType) => _animType switch
     {
         CharacterAnimType.Attack => attack,
+        CharacterAnimType.Skill => skill,
         _ => null,
     };
 }

@@ -70,6 +70,7 @@ public class Character_Worker_Move : Character_Worker
     {
         while (_target.isLive)
         {
+            // 컨트롤 중일 땐 그냥 넘어가자.
             if (ControllerManager.instance.IsControll(m_owner))
             {
                 yield return null;
@@ -85,8 +86,6 @@ public class Character_Worker_Move : Character_Worker
 
                 m_owner.target.SetTarget(_target);
                 yield return m_owner.attack.DoAttack();
-                //if (m_owner.target.Contains(_target) == false)
-                //    break;
             }
 
             //공격을 멈췄는데 적이ㅣ 아직 있으면 따라가야하는거 아닌가?
@@ -127,17 +126,10 @@ public class Character_Worker_Move : Character_Worker
             lookAt = m_owner.rig.linearVelocity;
             if (lookAt == Vector3.zero)
                 lookAt = m_owner.move.isFlip ? Vector3.right : Vector3.left;
-
-            //target = m_owner.transform.position + lookAt.normalized * 5;
         }
         else
         {
             lookAt = (_targetPos - m_owner.transform.position);
-            //var sqr = (_targetPos - m_owner.transform.position).sqrMagnitude;
-            //if (sqr > 25)
-            //    target = m_owner.transform.position + lookAt.normalized * 5;
-            //else
-            //    target = _targetPos;
         }
         target = m_owner.transform.position + lookAt.normalized * 5;
 

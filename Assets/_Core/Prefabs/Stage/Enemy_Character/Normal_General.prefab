@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5404998624126433756}
   - component: {fileID: -2577671349289516746}
-  - component: {fileID: 6900326075731652713}
   - component: {fileID: -5309356270895079747}
   m_Layer: 0
   m_Name: Normal_General
@@ -47,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16058815235ddab44975536181d42901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 6900326075731652713}
+  m_sortingGroup: {fileID: 8526430362597523320}
   m_canvas: {fileID: 9072691471389046187}
   m_data:
     key: 
@@ -78,23 +77,22 @@ MonoBehaviour:
     m_effect_canvas: {fileID: 5412701861452305850}
     m_effect_renderer: {fileID: 2061419771657256947}
     m_cameraPos: {fileID: 6002288144559596368}
+    m_skillRage: {fileID: 0}
     m_collider: {fileID: 3754585134027090430}
     m_txtTalk: {fileID: 139200778320243228}
     m_animationClipData:
       attack: {fileID: 7400000, guid: 373ca8d501c6a4b4990c36944ae5dd2d, type: 2}
---- !u!210 &6900326075731652713
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7206921061573547839}
-  m_Enabled: 1
-  m_SortingLayerID: -2006240291
-  m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
+      skill: {fileID: 0}
+    partsRenders:
+    - {fileID: 8172503124479011593}
+    - {fileID: 4465086276359264675}
+    - {fileID: 5638585708920684176}
+    - {fileID: 542897888411271062}
+    colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
 --- !u!50 &-5309356270895079747
 Rigidbody2D:
   serializedVersion: 5
@@ -299,6 +297,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!212 &542897888411271062 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7192265620144343387, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 7230755397922289357}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2061419771657256947 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8701921934893222206, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
@@ -309,9 +312,19 @@ CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 5783249674202832691, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 7230755397922289357}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &4465086276359264675 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6462632440588988270, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 7230755397922289357}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &5412701861452305850 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3406139770568483703, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 7230755397922289357}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &5638585708920684176 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 3033326539072260189, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 7230755397922289357}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &6002288144559596368 stripped
@@ -322,6 +335,16 @@ Transform:
 --- !u!4 &6131699616509136035 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3549084897237301870, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 7230755397922289357}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &8172503124479011593 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1527386525559561668, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 7230755397922289357}
+  m_PrefabAsset: {fileID: 0}
+--- !u!210 &8526430362597523320 stripped
+SortingGroup:
+  m_CorrespondingSourceObject: {fileID: 1300197256076429749, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 7230755397922289357}
   m_PrefabAsset: {fileID: 0}
 --- !u!223 &9072691471389046187 stripped

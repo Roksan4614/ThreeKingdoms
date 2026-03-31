@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -65,15 +66,6 @@ public class CharacterComponent : TargetComponent
             return;
     }
 
-#if UNITY_EDITOR
-    public override void OnManualValidate()
-    {
-        m_element.Initialize(transform);
-
-        base.OnManualValidate();
-    }
-#endif
-
     public virtual void SetHeroData(string _key)
     {
         m_info = DataManager.userInfo.GetHeroInfoData(_key);
@@ -128,7 +120,7 @@ public class CharacterComponent : TargetComponent
         m_stateType = _stateType;
     }
 
-    public virtual bool OnDamage(int _damage)
+    public virtual bool OnDamage(CharacterComponent _attacker, int _damage)
     {
         if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE))
             return m_data.health == 0;
@@ -146,6 +138,12 @@ public class CharacterComponent : TargetComponent
         }
 
         Signal.instance.UpdateHP.Emit(this);
+
+        if (_attacker != null &&
+            target.target == null &&
+            isLive == true &&
+            ControllerManager.instance.IsControll(this) == false)
+            move.MoveTarget(_attacker, true);
 
         return m_data.health == 0;
     }
@@ -174,6 +172,36 @@ public class CharacterComponent : TargetComponent
         Destroy(gameObject);
     }
 
+    public void SetColorParts(Color _color, float _duration = 0)
+    {
+        if (_color == Color.white)
+        {
+            if (_duration == 0)
+                for (int i = 0; i < m_element.partsRenders.Length; i++)
+                    m_element.partsRenders[i].color = m_element.colorParts[i];
+            else
+                for (int i = 0; i < m_element.partsRenders.Length; i++)
+                    m_element.partsRenders[i].DOColor(m_element.colorParts[i], _duration);
+        }
+        else if (_duration == 0)
+        {
+            for (int i = 0; i < m_element.partsRenders.Length; i++)
+                m_element.partsRenders[i].color = _color;
+        }
+        else
+        {
+            for (int i = 0; i < m_element.partsRenders.Length; i++)
+                m_element.partsRenders[i].DOColor(_color, _duration);
+        }
+    }
+
+    public override void OnManualValidate()
+    {
+        m_element.Initialize(transform);
+
+        base.OnManualValidate();
+    }
+
     //[SerializeField, HideInInspector]
     [SerializeField]
     ElementData m_element;
@@ -187,9 +215,13 @@ public class CharacterComponent : TargetComponent
         [SerializeField] Transform m_effect_canvas;
         [SerializeField] Transform m_effect_renderer;
         [SerializeField] Transform m_cameraPos;
+        [SerializeField] Transform m_skillRage;
         [SerializeField] Collider2D m_collider;
         [SerializeField] TextMeshProUGUI m_txtTalk;
         [SerializeField] CharacterAnimationClipData m_animationClipData;
+
+        public SpriteRenderer[] partsRenders;
+        public Color[] colorParts;
 
         public Transform panel => m_panel;
         public Rigidbody2D rig => m_rig;
@@ -197,6 +229,7 @@ public class CharacterComponent : TargetComponent
         public Transform effect_canvas => m_effect_canvas;
         public Transform effect_renderer => m_effect_renderer;
         public Transform cameraPos => m_cameraPos;
+        public Transform skillRange => m_skillRage;
         public Collider2D collider => m_collider;
         public CharacterAnimationClipData animationClipData => m_animationClipData;
         public TextMeshProUGUI txtTalk => m_txtTalk;
@@ -209,8 +242,12 @@ public class CharacterComponent : TargetComponent
             m_effect_canvas = _transform.Find("Character/Canvas/Effect");
             m_effect_renderer = _transform.Find("Character/Effect_Renderer");
             m_cameraPos = panel.Find("CameraPos");
+            m_skillRage = _transform.Find("SkillRange");
             m_txtTalk = _transform.GetComponent<TextMeshProUGUI>("Character/Canvas/Talkbox/txt_talk");
             m_collider = panel.parent.GetComponent<Collider2D>();
+
+            partsRenders = m_animator.transform.GetComponentsInChildren<SpriteRenderer>(true);
+            colorParts = partsRenders.Select(x => x.color).ToArray();
         }
     }
 }

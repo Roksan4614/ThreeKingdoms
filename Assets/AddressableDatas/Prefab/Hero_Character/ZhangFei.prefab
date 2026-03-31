@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6650247311633274573}
   - component: {fileID: 2810551991723445971}
-  - component: {fileID: 6486370696543548981}
   - component: {fileID: 3007626638836024784}
   m_Layer: 0
   m_Name: ZhangFei
@@ -47,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cdd31c9780bd15498608bbb7d9d93d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 6486370696543548981}
+  m_sortingGroup: {fileID: 6934262520569801931}
   m_canvas: {fileID: 7746236346673980952}
   m_data:
     key: 
@@ -78,23 +77,20 @@ MonoBehaviour:
     m_effect_canvas: {fileID: 6734363115494901257}
     m_effect_renderer: {fileID: 789016574147963968}
     m_cameraPos: {fileID: 4982368207049830627}
+    m_skillRage: {fileID: 0}
     m_collider: {fileID: 2482173277590616653}
     m_txtTalk: {fileID: 1695058142500010415}
     m_animationClipData:
       attack: {fileID: 7400000, guid: 22b3407d714a90c4faca359933ee07d9, type: 2}
---- !u!210 &6486370696543548981
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1376400083018018754}
-  m_Enabled: 1
-  m_SortingLayerID: -2006240291
-  m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
+      skill: {fileID: 0}
+    partsRenders:
+    - {fileID: 7422517616611408058}
+    - {fileID: 3143416294934137360}
+    - {fileID: 6352542690347543843}
+    colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
 --- !u!50 &3007626638836024784
 Rigidbody2D:
   serializedVersion: 5
@@ -456,6 +452,7 @@ MonoBehaviour:
   m_owner: {fileID: 2810551991723445971}
   m_animSlash:
   - {fileID: 196621925705027243}
+  m_skillRange: {fileID: 0}
 --- !u!4 &789016574147963968 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8701921934893222206, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
@@ -482,6 +479,11 @@ CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 5783249674202832691, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 8228157341623756158}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &3143416294934137360 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6462632440588988270, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 8228157341623756158}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4859569166556454672 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3549084897237301870, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
@@ -492,14 +494,29 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3968978580282938781, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 8228157341623756158}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &6352542690347543843 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 3033326539072260189, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 8228157341623756158}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6734363115494901257 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3406139770568483703, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 8228157341623756158}
   m_PrefabAsset: {fileID: 0}
+--- !u!210 &6934262520569801931 stripped
+SortingGroup:
+  m_CorrespondingSourceObject: {fileID: 1300197256076429749, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 8228157341623756158}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7418161719816933445 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1495990324304508219, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 8228157341623756158}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &7422517616611408058 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1527386525559561668, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 8228157341623756158}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &7502878760933443222 stripped
