@@ -45,6 +45,39 @@ public class Character_Worker_Attack : Character_Worker
         }
     }
 
+    CancellationTokenSource m_ctsAttackPush;
+    public void CancelAttackPush()
+    {
+        if (m_ctsAttackPush != null)
+        {
+            m_ctsAttackPush.Cancel();
+            m_ctsAttackPush.Dispose();
+            m_ctsAttackPush = null;
+        }
+    }
+    public async UniTask ControlAttackAsync(UnityAction _onAttack)
+    {
+        CancelAttackPush();
+        m_ctsAttackPush = new();
+        var token = m_ctsAttackPush.Token;
+
+        m_timeAttack = -1;
+        while (ControllerManager.instance.isLeftClick == true)
+        {
+            if (m_timeAttack < Time.realtimeSinceStartup && m_weapon.isUseSkill == false)
+            {
+                m_owner.target.SetTargetNearest();
+
+                _onAttack();
+                m_weapon.Attack(true, 1);
+                m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
+            }
+            await UniTask.Yield(token, true);
+        }
+
+        CancelAttackPush();
+    }
+
     public void ControlAttack()
     {
         m_owner.target.SetTargetNearest();
@@ -95,7 +128,8 @@ public class Character_Worker_Attack : Character_Worker
 
     public void OnDrag_ControllSkill(Vector3 _targetPos)
         => m_weapon.OnDrag_ControllSkill(_targetPos);
-
     public void OnUp_ControllSkill()
         => m_weapon.OnUp_ControllSkill();
+    public void OnCancel_ControllSkill()
+        => m_weapon.OnCancel_ControllSkill();
 }

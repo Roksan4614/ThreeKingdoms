@@ -74,9 +74,9 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         isAttack = true;
 
         m_isCritial = _isCritical;
-
         if (m_isCritial)
-            ShowSlashEffect();
+            ShowSlashEffect(
+                _isForceShake: m_owner.isMain == true || ControllerManager.instance.isDoing == false);
 
         m_owner.anim.Play(CharacterAnimType.Attack, _layerIndex);
     }
@@ -199,4 +199,5 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
     public virtual void OnDrag_ControllSkill(Vector3 _targetPos) { }
     public virtual void OnUp_ControllSkill() { }
+    public virtual void OnCancel_ControllSkill() { }
 }

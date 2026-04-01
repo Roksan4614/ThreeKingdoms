@@ -27,7 +27,14 @@ public partial class ControllerManager
 
         var targetPos = Vector3.zero;
         if (_isMouse)
-            targetPos = CameraManager.instance.GetMousePosition();
+        {
+            if (m_isKeyboardMoving == false)
+            {
+                targetPos = CameraManager.instance.GetMousePosition();
+                bool isFlip = targetPos.x > m_mainHero.transform.position.x;
+                m_mainHero.move.SetFlip(isFlip);
+            }
+        }
 
         m_mainHero.move.Dash(targetPos);
 

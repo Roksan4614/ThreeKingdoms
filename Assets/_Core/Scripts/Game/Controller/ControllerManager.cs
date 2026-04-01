@@ -20,12 +20,13 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     bool m_isKeyboardMoving = false;
 
+    bool m_isSkillClick = false;
     bool m_isDashClick = false;
     bool m_isPush = false;
 
     public bool isSwitch { get; set; } = false;
-
     public bool isDoing => m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
+    public bool isKeyboardMode => m_isKeyboardMode;
 
     private void Start()
     {
@@ -40,8 +41,22 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             //dash.position = m_element.posDash.position;
         }
 
+        // ATTACK
+        {
+            m_element.btnAttack.onClick.AddListener(OnButton_Attack);
+            //EventTrigger trigger = m_element.btnAttack.gameObject.AddComponent<EventTrigger>();
+
+            //var entry = new EventTrigger.Entry();
+            //entry.eventID = EventTriggerType.PointerDown;
+            //entry.callback.AddListener((data) =>
+            //{
+            //    OnButton_Attack();
+            //});
+
+            //trigger.triggers.Add(entry);
+        }
+
         m_element.btnDash.onClick.AddListener(() => OnButton_Dash(false));
-        m_element.btnAttack.onClick.AddListener(() => OnButton_Attack());
         m_element.btnCall.onClick.AddListener(() => OnButton_Call());
 
         Signal.instance.ConnectMainHero.connectLambda = new(this, _mainHero => m_mainHero = _mainHero);
@@ -87,18 +102,14 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         {
             if (Input.anyKeyDown)
             {
-                // 공격
-                if (Input.GetKeyDown(KeyCode.X))
-                    OnButton_Attack();
                 // 대쉬
-                else if (Input.GetKeyDown(KeyCode.C))
-                    OnButton_Dash(false);
+                if (Input.GetKeyDown(KeyCode.Space))
+                    OnButton_Dash(true);
                 // 콜
-                else if (Input.GetKeyDown(KeyCode.Z))
+                else if (Input.GetKeyDown(KeyCode.C))
                     OnButton_Call();
-                else if (Input.GetKeyDown(KeyCode.V))
-                    m_element.skill.OnButton_Skill();
-                // 스킬
+
+                // 스킬 번호
                 else
                 {
                     for (var i = KeyCode.Alpha1; i < KeyCode.Alpha4; i++)
@@ -108,19 +119,16 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
                     }
                 }
             }
-            else if (m_isPush)
-            {
-                if (isRightClick && m_isDashClick == false)
-                {
-                    OnButton_Dash(true);
-                    m_isDashClick = true;
-                }
-            }
+            else if (m_isSkillClick == true)
+                m_mainHero.attack.OnDrag_ControllSkill(CameraManager.instance.GetMousePosition());
         }
     }
 
     void OnUpdateMove()
     {
+        if (m_mainHero.move.isDash == true)
+            return;
+
         var lookAt = Vector2.zero;
         if (m_element.pad.gameObject.activeSelf == true)
             lookAt = m_element.padBar.position - m_element.pad.position;
@@ -139,12 +147,28 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
         if (lookAt != Vector2.zero)
         {
-            m_mainHero.OnConrollerMove(lookAt);
+            m_mainHero.OnConrollerMove(lookAt, false);
             m_isKeyboardMoving = true;
+
+            if (m_isKeyboardMode)
+            {
+                bool isFlip = m_mainHero.transform.position.x < CameraManager.instance.GetMousePosition().x;
+
+                if (m_mainHero.move.isFlip != isFlip)
+                {
+                    if (m_mainHero.anim.IsType(CharacterAnimType.Walk_Back) == false)
+                        m_mainHero.anim.Play(CharacterAnimType.Walk_Back);
+                }
+                else if (m_mainHero.anim.IsType(CharacterAnimType.Walk) == false)
+                    m_mainHero.anim.Play(CharacterAnimType.Walk);
+
+                m_mainHero.move.SetFlip(isFlip);
+            }
         }
         else if (m_isKeyboardMoving == true)
         {
             m_isKeyboardMoving = false;
+
             StopControll();
         }
     }
@@ -191,18 +215,31 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     void OnButton_Attack()
     {
-        if (m_mainHero.isLive == false || isSwitch == false)
+        if (m_mainHero.isLive == false)
             return;
 
-        m_element.btnAttack.transform.localScale = Vector3.one;
-        m_element.btnAttack.transform.DOPunchScale(Vector3.one * .05f, 0.1f);
+        m_mainHero.attack.ControlAttackAsync(() =>
+        {
+            m_element.btnAttack.transform.localScale = Vector3.one;
+            m_element.btnAttack.transform.DOPunchScale(Vector3.one * .05f, 0.1f);
+        }).Forget();
 
-        m_mainHero.attack.ControlAttack();
     }
+
+    //void OnButton_Attack()
+    //{
+    //    if (m_mainHero.isLive == false || isSwitch == false)
+    //        return;
+
+    //    m_element.btnAttack.transform.localScale = Vector3.one;
+    //    m_element.btnAttack.transform.DOPunchScale(Vector3.one * .05f, 0.1f);
+
+    //    m_mainHero.attack.ControlAttack();
+    //}
 
     public bool isLeftClick_Down => Input.GetMouseButtonDown(0);
     public bool isRightClick_Down => Input.GetMouseButtonDown(1);
-    public bool isLeftClick => Input.GetMouseButton(0);
+    public bool isLeftClick => Input.GetMouseButton(0) || isTouch;
     public bool isRightClick => Input.GetMouseButton(1);
     public bool isTouch => Input.touchCount > 0;
     public static bool isClick => instance.isLeftClick || instance.isRightClick || instance.isTouch;
@@ -212,10 +249,24 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         m_isPush = true;
 
-        if (isLeftClick == false || isSwitch == false)
+        if (isSwitch == false)
             return;
-        //if (m_isKeyboardMode)
-        //    return;
+
+        if (m_isKeyboardMode)
+        {
+            if (isLeftClick_Down)
+            {
+                if (m_isSkillClick == true)
+                {
+                    m_mainHero.attack.OnCancel_ControllSkill();
+                    m_isSkillClick = false;
+                }
+                OnButton_Attack();
+            }
+            else if (isRightClick_Down && m_element.skill.isReady)
+                m_isSkillClick = true;
+            return;
+        }
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 startPos);
 
@@ -235,6 +286,12 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public void OnPointerUp(PointerEventData _eventData)
     {
         m_isDashClick = m_isPush = false;
+
+        if (m_isSkillClick == true && isRightClick == false)
+        {
+            m_mainHero.attack.OnUp_ControllSkill();
+            m_isSkillClick = false;
+        }
 
         if (isDoing == false)
             return;

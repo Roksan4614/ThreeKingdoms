@@ -26,7 +26,9 @@ public enum CharacterAnimType
 
     Idle,
     Walk,
+    Walk_Back,
     Dash,
+    Dash_Back,
 
     Attack,
     Skill,

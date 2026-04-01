@@ -27,15 +27,19 @@ public class Character_Worker_Move : Character_Worker
         }
     }
 
-    public void OnMoveUpdate(Vector2 _velocity)
+    public void OnMoveUpdate(Vector2 _velocity, bool _isAnim = true)
     {
         if (_velocity == Vector2.zero)
             return;
 
         if (m_tweenDash == null)
         {
-            if (m_owner.anim.IsType(CharacterAnimType.Walk) == false)
+            if (_isAnim == true &&
+                m_owner.anim.IsType(CharacterAnimType.Walk) == false &&
+                m_owner.anim.IsType(CharacterAnimType.Walk_Back) == false)
+            {
                 m_owner.anim.Play(CharacterAnimType.Walk);
+            }
 
             m_owner.rig.linearVelocity = _velocity;
         }
@@ -68,7 +72,7 @@ public class Character_Worker_Move : Character_Worker
 
     public IEnumerator DoMoveTarget(CharacterComponent _target, bool _isAttack)
     {
-        while (_target.isLive)
+        while (_target != null && _target.isLive)
         {
             // 컨트롤 중일 땐 그냥 넘어가자.
             if (ControllerManager.instance.IsControll(m_owner))
@@ -134,10 +138,25 @@ public class Character_Worker_Move : Character_Worker
         target = m_owner.transform.position + lookAt.normalized * 5;
 
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
-        EffectWorker.instance.Dash(m_owner, isFlip);
-        if (lookAt.x != 0)
-            m_owner.move.SetFlip(lookAt.x > 0);
-        m_owner.anim.Play(CharacterAnimType.Dash);
+
+        if (ControllerManager.instance.isKeyboardMode)
+        {
+            if (m_owner.transform.position.x < CameraManager.instance.GetMousePosition().x != lookAt.x > 0)
+            {
+
+                m_owner.anim.Play(CharacterAnimType.Dash_Back);
+            }
+            else
+                m_owner.anim.Play(CharacterAnimType.Dash);
+        }
+        else if (lookAt.x != 0)
+        {
+            m_owner.anim.Play(CharacterAnimType.Dash);
+            SetFlip(lookAt.x > 0);
+        }
+
+        bool isFlipDash = lookAt.x == 0 ? isFlip : lookAt.x > 0;
+        EffectWorker.instance.Dash(m_owner, isFlipDash);
 
         m_tweenDash = DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f);
         await m_tweenDash.OnUpdate(
@@ -145,7 +164,7 @@ public class Character_Worker_Move : Character_Worker
             {
                 if (DateTime.Now > dt)
                 {
-                    EffectWorker.instance.Dash(m_owner, isFlip);
+                    EffectWorker.instance.Dash(m_owner, isFlipDash);
                     dt = DateTime.Now.AddSeconds(10);
                 }
             }).AsyncWaitForCompletion();

@@ -401,12 +401,14 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             m_myHero.AddRange(last);
 
             m_itemList[m_curIndex_List].SetActiveButton(false);
-            m_curIndex_List = -1;
+            //m_curIndex_List = -1;
 
             SetLayout_Batch();
             SetLayout_List();
         }
-        else if (m_curIndex_Batch > -1 && m_itemBatch[m_curIndex_Batch] != _item)
+        else if (m_curIndex_Batch > -1 &&
+            m_itemBatch[m_curIndex_Batch] != _item &&
+            (m_curIndex_Batch != m_curIndex_List || m_curIndex_List != -1))
         {
             int prevIndex = m_myHero.FindIndex(x => x.key == m_itemBatch[m_curIndex_Batch].data.key);
             int nowIndex = m_myHero.FindIndex(x => x.key == _item.data.key);
@@ -425,7 +427,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             UpdateHeroData(data, true);
 
             SetLayout_Batch();
-            m_curIndex_Batch = -1;
+            //m_curIndex_List = m_curIndex_Batch = -1;
 
             SetLayout_List();
         }
@@ -435,7 +437,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
 
         for (int i = 0; i < m_itemList.Count; i++)
             m_itemList[i].SetActiveButton(false);
-        m_curIndex_Batch = -1;
+        //m_curIndex_Batch = -1;
+        m_curIndex_List = m_curIndex_Batch = -1;
     }
 
     void ResetActiveButton_Batch()
@@ -550,10 +553,20 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         //if (_item.data.isMain && StageManager.instance.isClearFirstStage == false)
         //    PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
 
-        for (int i = 0; i < m_itemBatch.Count; i++)
-            m_itemBatch[i].SetActiveButton(m_curIndex_List > -1 && m_itemBatch[i].data.isActive && _item.data.isBatch == false, true);
+        if (m_itemBatch.Count(x => x.data.isActive) > 0)
+        {
+            for (int i = 0; i < m_itemBatch.Count; i++)
+            {
+                bool isSelf = _item.data.key.Equals(m_itemBatch[i].data.key);
+                m_itemBatch[i].SetActiveButton(m_curIndex_List > -1 && m_itemBatch[i].data.isActive,
+                    isSelf == false);
 
-        m_curIndex_Batch = -1;
+                if (isSelf == true)
+                    m_curIndex_Batch = i;
+            }
+        }
+        else
+            m_curIndex_Batch = -1;
     }
 
     void OnButton_ListHeroRemove(HeroIconComponent _item)
@@ -564,6 +577,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         {
             OnButton_BatchHeroRemove(_item);
             _item.SetActiveButton(false);
+            m_curIndex_List = -1;
         }
         else if (m_itemBatch.Count(x => x.data.isBatch) == m_itemBatch.Count)
         {

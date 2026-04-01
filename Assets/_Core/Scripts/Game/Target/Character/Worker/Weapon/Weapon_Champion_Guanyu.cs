@@ -33,7 +33,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
         // 그냥 사용하기를 눌렀다면, 사거리 안에 적이 있어야 사용하도록 하자.
         Vector3 ownerPos = m_owner.transform.position;
-        if (StageManager.instance.enemyList
+        if (StageManager.instance.liveEnemyList
             .Where(x => (x.transform.position - ownerPos).sqrMagnitude < maxSqrMagnitue)
             .Count() > 0)
             return true;
@@ -57,7 +57,8 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
             if ((target.transform.position - m_owner.transform.position).sqrMagnitude < maxSqrMagnitue)
             {
-                TeamManager.instance.heroInfo.UseSkill(0);
+                var index = TeamManager.instance.heroInfo.GetIndex(m_owner.data.key);
+                TeamManager.instance.heroInfo.UseSkill(index);
                 break;
             }
 
@@ -86,7 +87,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
         await DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), targetPos, 0.2f).OnUpdate(() =>
         {
-            UpdateEnemyStatus(true);
+            UpdateEnemyStatus();
 
             if (DateTime.Now > dt)
             {
@@ -100,11 +101,12 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
         bool isTargetting = false;
         var damage = m_owner.data.attackPower * 2;
-        for (int i = 0; i < StageManager.instance.enemyList.Count; i++)
+        var enemyList = StageManager.instance.enemyList;
+        for (int i = 0; i < enemyList.Count; i++)
         {
-            var target = StageManager.instance.enemyList[i];
+            var target = enemyList[i];
 
-            if ((target.transform.position - targetPos).sqrMagnitude < c_maxSqrMagnitudeRange)
+            if (target.isLive == true && (target.transform.position - targetPos).sqrMagnitude < c_maxSqrMagnitudeRange)
             {
                 isTargetting = true;
                 EffectWorker.instance.SlotDamageTakenEffect(new()
@@ -133,6 +135,8 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
     public override void OnDrag_ControllSkill(Vector3 _targetPos)
     {
+        m_skillRange.gameObject.SetActive(true);
+
         var ownerPos = m_owner.transform.position;
         var lookAt = Vector3.ClampMagnitude(_targetPos - ownerPos, m_maxMagnitude);
 
@@ -140,7 +144,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         UpdateEnemyStatus();
     }
 
-    void UpdateEnemyStatus(bool _isForceWhite = false)
+    void UpdateEnemyStatus()
     {
         if (m_colorTargetting == default)
             ColorUtility.TryParseHtmlString("#C3C3C3", out m_colorTargetting);
@@ -152,7 +156,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             bool isTargetting =
                 (e.transform.position - m_skillRange.position).sqrMagnitude < c_maxSqrMagnitudeRange;
 
-            e.SetColorParts(_isForceWhite || isTargetting == false ? Color.white : m_colorTargetting);
+            e.SetColorParts(isTargetting == true ? m_colorTargetting : Color.white);
         }
     }
 
@@ -163,9 +167,20 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         if (m_skillRange.gameObject.activeSelf == true)
         {
             m_isUseSkillControll = true;
-            TeamManager.instance.heroInfo.UseSkill(0);
-
             m_skillRange.gameObject.SetActive(false);
+
+            var index = TeamManager.instance.heroInfo.GetIndex(m_owner.data.key);
+            TeamManager.instance.heroInfo.UseSkill(index);
         }
+    }
+
+    public override void OnCancel_ControllSkill()
+    {
+        m_isUseSkillControll = false;
+        m_skillRange.gameObject.SetActive(false);
+
+        var enemyList = StageManager.instance.enemyList;
+        for (int i = 0; i < enemyList.Count; i++)
+            enemyList[i].SetColorParts(Color.white);
     }
 }

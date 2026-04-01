@@ -73,4 +73,7 @@ public class Team_HeroInfo
         if (info.isActive == true)
             info.OnButton_UseSkill();
     }
+
+    public int GetIndex(string _key)
+        => m_lstHeroInfo.FindIndex(x => x.key == _key);
 }

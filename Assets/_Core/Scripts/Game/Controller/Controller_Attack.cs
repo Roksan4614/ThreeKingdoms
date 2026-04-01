@@ -47,7 +47,7 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
         var dist = (m_element.startPosition.position - mousePosition);
 
-        if (dist.sqrMagnitude > 0.02f || m_pointer.gameObject.activeSelf == true)
+        if (dist.sqrMagnitude > 0.05f || m_pointer.gameObject.activeSelf == true)
         {
             button.interactable = false;
             m_pointer.gameObject.SetActive(true);

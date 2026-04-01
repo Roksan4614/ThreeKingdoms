@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HeroInfoComponent : MonoBehaviour, IValidatable
+public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 {
     CharacterComponent m_hero;
 
@@ -18,7 +18,9 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
 
     private void Awake()
     {
-        transform.GetComponent<Button>("Panel").onClick.AddListener(OnButton_UseSkill);
+        m_element.button.onClick.AddListener(OnButton_UseSkill);
+
+        m_element.startPosition.gameObject.SetActive(false);
     }
 
     public bool isActive => m_hero != null;
@@ -80,8 +82,6 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public void Disable()
     {
-        var panel = m_element.icon.parent;
-
         m_element.icon.gameObject.SetActive(false);
         m_element.Outline.gameObject.SetActive(false);
         m_element.objOnSkill.SetActive(false);
@@ -154,7 +154,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         m_element.imgRespawn.gameObject.SetActive(true);
         var prevAlpha = m_element.imgRespawn.color.a;
 
-        m_element.txtRespawnTimer = transform.GetComponent<TextMeshProUGUI>("Panel/txt_cooltime");
+        //m_element.txtRespawnTimer = transform.GetComponent<TextMeshProUGUI>("Panel/txt_cooltime");
 
         var width = _bar.rect.width;
         var pos = Vector2.zero;
@@ -260,7 +260,7 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
             pos.x = width * progress;
             bar.anchoredPosition = pos;
 
-            if(m_hero.isMain == true)
+            if (m_hero.isMain == true)
                 ControllerManager.instance.UpdateColltime_Skill(duration, progress);
 
             if (progress > 1f)
@@ -316,6 +316,8 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
     [Serializable]
     struct ElementData
     {
+        public Button button;
+
         public Transform icon;
         public GameObject objOnSkill;
         public RectTransform rtBar_Cooltime;
@@ -325,10 +327,14 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtRespawnTimer;
         public GameObject Outline;
 
+        public Transform startPosition;
+
         public Transform panel => icon.parent;
 
         public void Initialize(Transform _transform)
         {
+            button = _transform.GetComponent<Button>();
+
             icon = _transform.Find("Panel/Icon");
             objOnSkill = _transform.Find("Panel/OnSkill").gameObject;
             rtBar_HP = _transform.GetComponent<RectTransform>("HP/img_bar");
@@ -337,6 +343,8 @@ public class HeroInfoComponent : MonoBehaviour, IValidatable
 
             imgRespawn = _transform.GetComponent<Image>("Panel/img_respawn");
             txtRespawnTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_cooltime");
+
+            startPosition = panel.Find("StartPosition");
         }
     }
 }

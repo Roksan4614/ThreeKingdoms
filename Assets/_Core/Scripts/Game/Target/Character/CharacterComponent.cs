@@ -103,12 +103,12 @@ public class CharacterComponent : TargetComponent
         }
     }
 
-    public void OnConrollerMove(Vector2 _lookAt)
+    public void OnConrollerMove(Vector2 _lookAt, bool _isAnim = true)
     {
         if (m_state != null)
             SetState(CharacterStateType.None);
 
-        move.OnMoveUpdate(_lookAt.normalized * m_data.moveSpeed);
+        move.OnMoveUpdate(_lookAt.normalized * m_data.moveSpeed, _isAnim);
     }
 
     public void SetState(CharacterStateType _stateType)
@@ -143,7 +143,9 @@ public class CharacterComponent : TargetComponent
             target.target == null &&
             isLive == true &&
             ControllerManager.instance.IsControll(this) == false)
+        {
             move.MoveTarget(_attacker, true);
+        }
 
         return m_data.health == 0;
     }
@@ -158,6 +160,8 @@ public class CharacterComponent : TargetComponent
 
         m_data.health = m_data.healthMax;
         m_element.collider.enabled = true;
+
+        SetColorParts(Color.white);
     }
 
     public void DeleteElement()
@@ -176,6 +180,9 @@ public class CharacterComponent : TargetComponent
     {
         if (_color == Color.white)
         {
+            if (m_element.partsRenders[0].color == m_element.colorParts[0])
+                return;
+
             if (_duration == 0)
                 for (int i = 0; i < m_element.partsRenders.Length; i++)
                     m_element.partsRenders[i].color = m_element.colorParts[i];
@@ -183,15 +190,21 @@ public class CharacterComponent : TargetComponent
                 for (int i = 0; i < m_element.partsRenders.Length; i++)
                     m_element.partsRenders[i].DOColor(m_element.colorParts[i], _duration);
         }
-        else if (_duration == 0)
-        {
-            for (int i = 0; i < m_element.partsRenders.Length; i++)
-                m_element.partsRenders[i].color = _color;
-        }
         else
         {
-            for (int i = 0; i < m_element.partsRenders.Length; i++)
-                m_element.partsRenders[i].DOColor(_color, _duration);
+            if (m_element.partsRenders[0].color == _color)
+                return;
+
+            if (_duration == 0)
+            {
+                for (int i = 0; i < m_element.partsRenders.Length; i++)
+                    m_element.partsRenders[i].color = _color;
+            }
+            else
+            {
+                for (int i = 0; i < m_element.partsRenders.Length; i++)
+                    m_element.partsRenders[i].DOColor(_color, _duration);
+            }
         }
     }
 
@@ -233,6 +246,8 @@ public class CharacterComponent : TargetComponent
         public Collider2D collider => m_collider;
         public CharacterAnimationClipData animationClipData => m_animationClipData;
         public TextMeshProUGUI txtTalk => m_txtTalk;
+
+        public Transform parts => m_animator.transform;
 
         public void Initialize(Transform _transform)
         {

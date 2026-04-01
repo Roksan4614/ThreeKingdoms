@@ -8,7 +8,10 @@ using UnityEngine.UI;
 
 public class Controller_Skill : Controller_Attack
 {
+    public bool isReady => m_elementSkill.imgTimer.gameObject.activeSelf == false;
+
     float m_magnitude;
+
     protected override void Start()
     {
         button = transform.GetComponent<Button>();
@@ -62,8 +65,9 @@ public class Controller_Skill : Controller_Attack
         var mousePosition = CameraManager.instance.GetMousePosition();
         var dist = (m_element.startPosition.position - mousePosition);
 
-        if (dist.sqrMagnitude > 0.3f)
+        if (dist.sqrMagnitude > 0.5f)
         {
+            m_element.startPosition.gameObject.SetActive(true);
             button.interactable = false;
             m_pointer.gameObject.SetActive(true);
         }
@@ -76,6 +80,7 @@ public class Controller_Skill : Controller_Attack
         {
             Utils.AfterSecond(() => button.interactable = true);
 
+            m_element.startPosition.gameObject.SetActive(false);
             m_hero.attack.OnUp_ControllSkill();
         }
     }

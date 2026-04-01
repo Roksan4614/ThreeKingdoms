@@ -171,8 +171,8 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
     {
         m_element.Initialize(transform);
 
-        //if (m_effectData.duration == 0)
-        m_effectData.duration = 0.03f;
+        if (m_effectData.duration == 0)
+            m_effectData.duration = 0.03f;
     }
 
     [SerializeField, HideInInspector]

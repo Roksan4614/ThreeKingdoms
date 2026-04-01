@@ -154,6 +154,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     e.SetHeroData(e.name);
                     e.transform.SetParent(MapManager.instance.element.pEnemy);
                     e.move.SetFlip(isFlip);
+                    e.SetColorParts(Color.white);
 
                     var scale = e.transform.localScale;
                     if (scale.x < 0)
@@ -325,13 +326,14 @@ public class StageManager : Singleton<StageManager>, IValidatable
         RestartStage();
     }
 
-    public IReadOnlyList<CharacterComponent> enemyList => m_enemyList.Where(_x => _x.isLive).ToList();
+    public IReadOnlyList<CharacterComponent> enemyList => m_enemyList.ToList();
+    public IReadOnlyList<CharacterComponent> liveEnemyList => m_enemyList.Where(_x => _x.isLive).ToList();
 
     public Vector3 centerPosition
     {
         get
         {
-            var enemies = enemyList
+            var enemies = liveEnemyList
                 .OrderBy(_x => (_x.transform.position - TeamManager.instance.mainHero.transform.position).sqrMagnitude).Take(4).ToList();
 
             Vector3 sum = Vector3.zero;
