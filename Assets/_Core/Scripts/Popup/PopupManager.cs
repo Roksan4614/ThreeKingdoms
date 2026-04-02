@@ -6,11 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using TMPro;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
 
 public enum PopupType
 {

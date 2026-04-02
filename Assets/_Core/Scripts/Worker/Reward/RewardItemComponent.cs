@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static UnityEditor.AddressableAssets.Build.Layout.BuildLayout;
-using static UnityEngine.Rendering.DebugUI;
 
 public class RewardItemComponent : TargetComponent, IValidatable
 {

@@ -17,7 +17,6 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
     protected bool m_isCritial;
     public bool isUseSkill { get; protected set; }
-
     protected bool isControllSkillPosition { get; private set; }
 
     private void Awake()
@@ -31,10 +30,6 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         {
 
         }
-    }
-
-    protected virtual void Start()
-    {
     }
 
     private void OnDestroy()
@@ -109,7 +104,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     {
         isAttack = false;
 
-        if (isUseSkill == true)
+        if (isUseSkill == true || _owner.target.isAttackTarget == false)
             return;
 
         var target = _owner.target.target;

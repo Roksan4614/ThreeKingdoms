@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 
 public static class IngameLog
 {
     public static void Add(params object[] _log)
     {
+        var time = DateTime.Now.ToString("ss:ffff");
+
         for (int i = 0; i < _log.Length; i++)
         {
             string msg = _log[i].ToString();
@@ -11,7 +14,7 @@ public static class IngameLog
                 continue;
 
 #if UNITY_EDITOR
-            Debug.Log(msg);
+            Debug.Log($"[{time}] {msg}");
 #else
             Debug.Log("rr: " + msg);
 #endif

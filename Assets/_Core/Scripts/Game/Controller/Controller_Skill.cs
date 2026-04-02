@@ -1,6 +1,5 @@
 using DG.Tweening;
 using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,6 +8,7 @@ using UnityEngine.UI;
 public class Controller_Skill : Controller_Attack
 {
     public bool isReady => m_elementSkill.imgTimer.gameObject.activeSelf == false;
+    public bool isDrag = false;
 
     float m_magnitude;
 
@@ -37,7 +37,7 @@ public class Controller_Skill : Controller_Attack
 
     public void Update()
     {
-        if (m_pointer == null || m_pointer.gameObject.activeSelf == false)
+        if (m_pointer == null || isDrag == false)
             return;
 
         var mousePosition = CameraManager.instance.GetMousePosition();
@@ -52,14 +52,16 @@ public class Controller_Skill : Controller_Attack
             targetPos.z = m_pointer.position.z;
             m_hero.attack.OnDrag_ControllSkill(targetPos);
         }
+        else if (ControllerManager.instance.isRightClick_Down)
+        {
+            m_pointer.gameObject.SetActive(false);
+            OnPointerUp(null);
+        }
     }
 
     public override void OnDrag(PointerEventData eventData)
     {
-        if (m_hero.isLive == false)
-            return;
-
-        if (m_pointer == null)
+        if (m_hero.isLive == false || m_pointer == null)
             return;
 
         var mousePosition = CameraManager.instance.GetMousePosition();
@@ -67,12 +69,17 @@ public class Controller_Skill : Controller_Attack
 
         if (dist.sqrMagnitude > 0.5f)
         {
+            ControllerManager.instance.isSwitch = false;
+            isDrag = true;
             m_element.startPosition.gameObject.SetActive(true);
             button.interactable = false;
             m_pointer.gameObject.SetActive(true);
         }
         else if (m_pointer.gameObject.activeSelf == true)
+        {
             m_pointer.gameObject.SetActive(false);
+            isDrag = false;
+        }
     }
     public override void OnPointerUp(PointerEventData eventData)
     {
@@ -80,6 +87,8 @@ public class Controller_Skill : Controller_Attack
         {
             Utils.AfterSecond(() => button.interactable = true);
 
+            ControllerManager.instance.isSwitch = true;
+            isDrag = false;
             m_element.startPosition.gameObject.SetActive(false);
             m_hero.attack.OnUp_ControllSkill();
         }

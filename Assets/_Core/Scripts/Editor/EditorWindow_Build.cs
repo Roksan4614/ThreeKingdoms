@@ -4,16 +4,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Build;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.Build.Pipeline.Utilities;
 using UnityEditor.Build.Reporting;
-using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.Events;
-using static EditorWindow_Build;
 
 public partial class EditorWindow_Build : EditorWindow
 {
@@ -63,7 +60,6 @@ public partial class EditorWindow_Build : EditorWindow
 
         OnGUI_BUttons();
     }
-
 
     void OnGUI_PlayerSetting()
     {

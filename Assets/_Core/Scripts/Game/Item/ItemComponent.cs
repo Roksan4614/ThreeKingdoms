@@ -1,9 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using TMPro;
-using UnityEditor.Build;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class ItemComponent : MonoBehaviour, IValidatable
 {

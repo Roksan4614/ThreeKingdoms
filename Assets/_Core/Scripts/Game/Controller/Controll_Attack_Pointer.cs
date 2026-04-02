@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using static UnityEngine.GraphicsBuffer;
 
 public class Controll_Attack_Pointer : MonoBehaviour
 {

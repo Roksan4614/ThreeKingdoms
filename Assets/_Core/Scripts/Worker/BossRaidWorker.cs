@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 {

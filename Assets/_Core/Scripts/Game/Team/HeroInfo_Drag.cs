@@ -11,7 +11,7 @@ public partial class HeroInfoComponent : IPointerDownHandler, IPointerUpHandler,
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (m_hero.isLive == false)
+        if (m_hero.isLive == false || m_hero.element.skillRange == null)
             return;
 
         var mousePosition = CameraManager.instance.GetMousePosition();

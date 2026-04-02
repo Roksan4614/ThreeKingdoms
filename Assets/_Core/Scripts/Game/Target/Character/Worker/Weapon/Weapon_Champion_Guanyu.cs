@@ -11,8 +11,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
     const float c_maxSqrMagnitudeRange = 10;
 
     float m_maxMagnitude = 8;
-
-
+    
     float m_maxSqrMagnitue = -1;
     float maxSqrMagnitue
     {

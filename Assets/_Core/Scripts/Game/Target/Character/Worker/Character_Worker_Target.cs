@@ -15,6 +15,12 @@ public class Character_Worker_Target : Character_Worker
 
     public void SetTarget(CharacterComponent _target)
         => target = _target;
+    //{
+    //    if (_target != null)
+    //        IngameLog.Add($"SetTarget: {m_owner.name} : {_target.name}");
+
+    //    target = _target;
+    //}
     public void SetTargetNearest()
         => SetTarget(nearestEnemy);
     public void AddTarget(CharacterComponent _target)
@@ -26,7 +32,10 @@ public class Character_Worker_Target : Character_Worker
     }
 
     public void RemoveAll()
-        => m_targetList.Clear();
+    {
+        m_targetList.Clear();
+        target = null;
+    }
 
     public void RemoveTarget(CharacterComponent _target)
     {

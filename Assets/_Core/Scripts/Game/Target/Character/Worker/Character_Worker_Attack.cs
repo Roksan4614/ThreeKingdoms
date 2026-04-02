@@ -55,14 +55,14 @@ public class Character_Worker_Attack : Character_Worker
             m_ctsAttackPush = null;
         }
     }
-    public async UniTask ControlAttackAsync(UnityAction _onAttack)
+    public async UniTask ControlAttackAsync(UnityAction _onAttack, bool _isPushButton)
     {
         CancelAttackPush();
         m_ctsAttackPush = new();
         var token = m_ctsAttackPush.Token;
 
         m_timeAttack = -1;
-        while (ControllerManager.instance.isLeftClick == true)
+        while (ControllerManager.instance.isLeftClick == true || Input.GetKey(KeyCode.X) || _isPushButton == true)
         {
             if (m_timeAttack < Time.realtimeSinceStartup && m_weapon.isUseSkill == false)
             {
@@ -72,6 +72,7 @@ public class Character_Worker_Attack : Character_Worker
                 m_weapon.Attack(true, 1);
                 m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
             }
+            _isPushButton = false;
             await UniTask.Yield(token, true);
         }
 

@@ -138,9 +138,10 @@ public class StageManager : Singleton<StageManager>, IValidatable
                     continue;
 
                 if (isDisableStart == false)
+                {
                     PopupManager.instance.ShowDimm(false);
-
-                isDisableStart = true;
+                    isDisableStart = true;
+                }
 
                 bool isFlip = TeamManager.instance.mainHero.transform.position.x > 0;
                 var ctsCloseToken = m_stage.StartPhase(phaseIdx, isFlip);
@@ -167,7 +168,8 @@ public class StageManager : Singleton<StageManager>, IValidatable
                 }
 
 #if UNITY_EDITOR
-                await UniTask.WaitUntil(() => m_stopStageStart == false || Input.GetKey(KeyCode.Backspace));
+                if (m_stopStageStart == true)
+                    await UniTask.WaitUntil(() => m_stopStageStart == false || Input.GetKey(KeyCode.Backspace));
 #endif
 
                 Signal.instance.StartPhase.Emit(m_stage.element.phase.childCount - phases.Count);
@@ -416,5 +418,14 @@ public class StageManager : Singleton<StageManager>, IValidatable
 
         //public string GetKey_Tutorial(int _phaseIdx, bool _isStart)
         //    => $"{chapterNumber}.{stageNumber}.{_phaseIdx + 1}_{(_isStart ? "START" : "END")}";
+
+        public bool IsEquals(LoadData_Stage _stage)
+        {
+            if (level != _stage.level ||
+                chapterNumber != _stage.chapterNumber ||
+                stageNumber != _stage.stageNumber)
+                return false;
+            return true;
+        }
     }
 }

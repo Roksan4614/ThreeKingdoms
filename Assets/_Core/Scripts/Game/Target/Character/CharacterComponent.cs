@@ -155,7 +155,7 @@ public class CharacterComponent : TargetComponent
         if (_isSetState)
             SetState(TeamManager.instance.teamState);
 
-        target.SetTarget(null);
+        target.RemoveAll();
         move.MoveStop();
 
         m_data.health = m_data.healthMax;
