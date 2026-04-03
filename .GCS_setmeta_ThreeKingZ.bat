@@ -5,13 +5,13 @@ chcp 65001 >nul
 
 set SET_PATH=D:\_Work\Kingz_ThreeKingdoms
 
-set SET_URL_GS_DEV=dev-static-kingzgambit
-set SET_URL_GS_STAGING=test-static-kingzgambit
-set SET_URL_GS_LIVE=static-kingzgambit
+set SET_URL_GS_DEV=10.10.100.60
+set SET_URL_GS_STAGING=10.10.100.60
+set SET_URL_GS_LIVE=10.10.100.60
 
-set SET_URL_HTML_DEV=dev-static.kingz.games
-set SET_URL_HTML_STAGING=test-static.kingz.games
-set SET_URL_HTML_LIVE=static.kingz.games
+set SET_URL_HTML_DEV=dev-static.kingz.app
+set SET_URL_HTML_STAGING=dev-static.kingz.app
+set SET_URL_HTML_LIVE=dev-static.kingz.app
 
 
 set MSG_ERROR=NONE
@@ -76,13 +76,14 @@ if "%PLATFORM%"=="3" (
 	echo https://%HTTPS_URL%/WebGL/%VERSION%_%BUNDLE_VERION%/index.html
 
 	echo.
-	echo gsutil -m cp -r %SET_PATH%/0_Bin/WebGL/%SERVICE_TYPE% gs://%GS_URL%/WebGL/%VERSION%_%BUNDLE_VERION%
-	echo gsutil -m setmeta -h "Content-Encoding:gzip" gs://%GS_URL%/WebGL/%VERSION%_%BUNDLE_VERION%/**/*.unityweb
+	echo ssh -i .ssh/webgl_key webgl-upload@%GS_URL% "rm -rf /app/static/WebGL/%VERSION%_%BUNDLE_VERION%"
+	echo ssh -i .ssh/webgl_key webgl-upload@%GS_URL% "mkdir -p /app/static/WebGL/%VERSION%_%BUNDLE_VERION%"
+	echo scp -i .ssh/webgl_key -r %SET_PATH%/0_Bin/WebGL/%SERVICE_TYPE%/* webgl-upload@%GS_URL%:/app/static/WebGL/%VERSION%_%BUNDLE_VERION%
 	echo.
 )
 
-echo gsutil -m cp -r %SET_PATH%/Bundle/_Last/%RESULT_PLATFORM%  gs://%GS_URL%/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%
-echo gsutil -m setmeta -h "Content-Encoding:gzip" gs://%GS_URL%/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%/*
+echo ssh -i .ssh/webgl_key webgl-upload@%GS_URL% "mkdir -p /app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%"
+echo scp -i .ssh/webgl_key -r %SET_PATH%/Bundle/_Last/%RESULT_PLATFORM%/* webgl-upload@%GS_URL%:/app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%
 
 :GOTO_FINISH
 

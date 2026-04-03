@@ -1,8 +1,5 @@
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
 using UnityEngine.UI;
 
 public enum LobbyScreenType
@@ -10,10 +7,10 @@ public enum LobbyScreenType
     None = -1,
 
     Heros,
-    Summon,
-    Relic,
-    Boss,
     Castle,
+    Boss,
+    Shop,
+    Summon,
 
     MAX
 }
@@ -37,9 +34,10 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     {
         List<string> screens = new() {
             "Screen_Hero",
-            "Screen_Summon",
-            "",
+            "Screen_Castle",
             "Screen_Boss",
+            "",
+            "Screen_Summon",
         };
 
         for (int i = 0; i < screens.Count; i++)
