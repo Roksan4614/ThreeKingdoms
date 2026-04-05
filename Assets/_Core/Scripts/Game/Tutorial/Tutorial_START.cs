@@ -6,12 +6,6 @@ using UnityEngine.UI;
 
 public class Tutorial_START : TutorialBase
 {
-    private void Update()
-    {
-        if (Input.GetKey(KeyCode.K))
-            RewardWorker.instance.isSwitchReceive = true;
-    }
-
     public override async UniTask StartAsync(TutorialType _type)
     {
         Signal.instance.ActiveHUD.Emit(false);
@@ -180,7 +174,7 @@ public class Tutorial_START : TutorialBase
             bottomButton[(int)LobbyScreenType.Summon].interactable = false;
             bottomButton[(int)LobbyScreenType.Heros].interactable = true;
 
-            rtArrow.anchoredPosition += new Vector2(-200, 0);
+            rtArrow.anchoredPosition += new Vector2(-800, 0);
             rtArrow.gameObject.SetActive(true);
 
             bool isRetry = false;

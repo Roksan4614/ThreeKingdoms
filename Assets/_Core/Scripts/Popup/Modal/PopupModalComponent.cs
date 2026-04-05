@@ -36,10 +36,11 @@ public class PopupModalComponent : BasePopupComponent
         m_element.rt.ForceRebuildLayout();
 
         var size = m_element.rt.sizeDelta;
-        if (Screen.width * 0.8f < size.x)
+        var screenWidth = PopupManager.instance.canvasSize.x;
+        if (screenWidth * 0.8f < size.x)
         {
             m_element.fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            size.x = Screen.width * 0.8f;
+            size.x = screenWidth * 0.8f;
             m_element.rt.sizeDelta = size;
 
             m_element.rt.ForceRebuildLayout();

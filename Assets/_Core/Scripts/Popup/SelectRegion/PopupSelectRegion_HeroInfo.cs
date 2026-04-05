@@ -94,7 +94,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         if (result == StatusType.Success)
         {
             m_regionData.heroComponent.anim.Play(CharacterAnimType.Attack);
-            await UniTask.WaitForSeconds(1f);
+            await UniTask.WaitForSeconds(0.5f);
 
             await DataManager.userInfo.AddHeroAsync(m_regionData.keyMaster, GradeType.Normal, true, true);
             await PopupManager.instance.ShowDimmAsync(true, _durationWait: 0);

@@ -172,7 +172,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     void OnChangeDisplayMode(bool _isLandscape)
     {
-        CanvasScaler canvasScaler = transform.GetComponent<CanvasScaler>();
+        CanvasScaler canvasScaler = m_element.canvasScaler;
 
         var r = canvasScaler.referenceResolution;
         r.x = _isLandscape ? 1920 : 1080;
@@ -181,6 +181,8 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
         canvasScaler.matchWidthOrHeight = _isLandscape ? 1 : 0;
     }
+
+    public Vector2 canvasSize => m_element.canvasScaler.referenceResolution;
 
     #region ALERT
     CancellationTokenSource m_ctsAlert;
@@ -254,10 +256,11 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
             m_rt.ForceRebuildLayout();
 
             var size = m_rt.sizeDelta;
-            if (size.x > Screen.width * 0.9f)
+            var screenWidth = instance.canvasSize.x;
+            if (size.x > screenWidth * 0.9f)
             {
                 m_fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-                size.x = Screen.width * 0.9f;
+                size.x = screenWidth * 0.9f;
                 m_rt.sizeDelta = size;
 
                 m_rt.ForceRebuildLayout();
@@ -341,6 +344,8 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         public Transform pPopup;
         public Transform pModal;
 
+        public CanvasScaler canvasScaler;
+
         public void Initialize(Transform _transform)
         {
             m_canvas = _transform.GetComponent<Canvas>();
@@ -350,6 +355,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
             pPopup = _transform.Find("Popup");
             pModal = _transform.Find("Modal");
+            canvasScaler = _transform.GetComponent<CanvasScaler>();
         }
     }
     #endregion VALIDATE

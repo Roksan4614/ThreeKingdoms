@@ -122,29 +122,29 @@ public class CharacterComponent : TargetComponent
 
     public virtual bool OnDamage(CharacterComponent _attacker, int _damage)
     {
-        if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE))
-            return m_data.health == 0;
-
-        m_data.health -= _damage;
-        if (m_data.health <= 0)
-        {
-            m_data.health = 0;
-            m_state?.Stop();
-            anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
-
-            m_element.collider.enabled = false;
-            StopAllCoroutines();
-            target.RemoveAll();
-        }
-
-        Signal.instance.UpdateHP.Emit(this);
-
         if (_attacker != null &&
             target.target == null &&
             isLive == true &&
             ControllerManager.instance.IsControll(this) == false)
         {
             move.MoveTarget(_attacker, true);
+        }
+
+        if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE) == false)
+        {
+            m_data.health -= _damage;
+            if (m_data.health <= 0)
+            {
+                m_data.health = 0;
+                m_state?.Stop();
+                anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
+
+                m_element.collider.enabled = false;
+                StopAllCoroutines();
+                target.RemoveAll();
+            }
+
+            Signal.instance.UpdateHP.Emit(this);
         }
 
         return m_data.health == 0;

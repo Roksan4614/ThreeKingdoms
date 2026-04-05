@@ -45,10 +45,13 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
 
         m_elementTalk.rtPanel.ForceRebuildLayout();
         var size = m_elementTalk.rtPanel.sizeDelta;
-        if (size.x > Screen.width * 0.95f)
+
+        var screenWidth = PopupManager.instance.canvasSize.x;
+
+        if (size.x > screenWidth * 0.95f)
         {
             m_elementTalk.fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            size.x = Screen.width * 0.95f;
+            size.x = screenWidth * 0.95f;
 
             m_elementTalk.rtPanel.sizeDelta = size;
 

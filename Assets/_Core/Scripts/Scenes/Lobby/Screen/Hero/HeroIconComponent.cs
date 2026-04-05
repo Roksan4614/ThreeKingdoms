@@ -14,7 +14,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     UnityAction<HeroIconComponent, bool> m_onClick;
     UnityAction<HeroIconComponent> m_onClickAction;
 
-    LobbyScreen_Hero m_screenHero;
+    LobbyScreen_Hero_Hero m_screenHero;
 
     bool m_isOpenPopup;
     Coroutine m_coPushHold;
@@ -40,7 +40,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
         if (_onClick != null)
         {
-            m_screenHero = _onClick.Target as LobbyScreen_Hero;
+            m_screenHero = _onClick.Target as LobbyScreen_Hero_Hero;
 
             m_onClick = _onClick;
             m_onClickAction = _onClickAction;

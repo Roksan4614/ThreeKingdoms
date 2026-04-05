@@ -134,7 +134,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
 
         public void Initialize(Transform _transform)
         {
-            sg = _transform.GetComponent<SortingGroup>();
+            sg = _transform.GetComponent<SortingGroup>("Character");
             ps = _transform.GetComponent<ParticleSystem>("RewardEffect");
 
             character = _transform.Find("Character");
