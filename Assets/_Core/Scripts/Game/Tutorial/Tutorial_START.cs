@@ -24,7 +24,11 @@ public class Tutorial_START : TutorialBase
             }
         }
 
+#if !UNITY_EDITOR && UNITY_WEBGL
+        var talk = TableManager.scenarioTalk.GetTalk("TUTORIAL_START", MessageHandler.IsMobileBrowser() == false);
+#else
         var talk = TableManager.scenarioTalk.GetTalk("TUTORIAL_START", true);
+#endif
         var mainHero = TeamManager.instance.mainHero;
         mainHero.move.SetFlip(true);
 
@@ -48,6 +52,7 @@ public class Tutorial_START : TutorialBase
         var hashHero = mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
         var hashEnemy = enemy.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
 
+#if UNITY_EDITOR
         {
             var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
                 "튜토리얼 진행할거야.",
@@ -74,6 +79,7 @@ public class Tutorial_START : TutorialBase
                 }
             }
         }
+#endif
 
         CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
 

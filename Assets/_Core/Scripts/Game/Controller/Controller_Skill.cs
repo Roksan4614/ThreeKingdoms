@@ -52,7 +52,9 @@ public class Controller_Skill : Controller_Attack
             targetPos.z = m_pointer.position.z;
             m_hero.attack.OnDrag_ControllSkill(targetPos);
         }
-        else if (ControllerManager.instance.isRightClick_Down)
+        // 드래그 중에 키보드 모드에서 오른쪽 클릭 하면 취소 누르자
+        else if (ControllerManager.instance.isKeyboardMode == true &&
+            ControllerManager.instance.isRightClick_Down)
         {
             m_pointer.gameObject.SetActive(false);
             OnPointerUp(null);

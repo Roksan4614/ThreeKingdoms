@@ -90,7 +90,16 @@ mergeInto(LibraryManager.library,
 	UnityProgressCall : function(index, per)
 	{
 		UnityProgressCall(index, per);
-	}
+	},
+
+	IsMobileBrowser: function () {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        // 모바일 기기를 나타내는 주요 키워드 체크
+        if (/android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase())) {
+            return true;
+        }
+        return false;
+    }
 });
 
 

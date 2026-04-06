@@ -20,6 +20,9 @@ public class MessageHandler : MonoSingleton<MessageHandler>
     [DllImport("__Internal")]
     public static extern void UnityProgressCall(int index, float per);
 
+    [DllImport("__Internal")]
+    public static extern bool IsMobileBrowser();
+
     public void SetFirebaseTokenFailed(string _errMessage)
     {
         IngameLog.Add("MessageHandler: SetFirebaseTokenFailed: " + _errMessage);

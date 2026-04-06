@@ -32,6 +32,10 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         m_element.pad.gameObject.SetActive(false);
 
+#if !UNITY_EDITOR && UNITY_WEBGL
+        m_isKeyboardMode = MessageHandler.IsMobileBrowser() == false;
+#endif
+
         if (m_isKeyboardMode)
         {
             var dash = m_element.btnDash.transform;
@@ -91,6 +95,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public void SetActive_Action(bool _isActive)
         => m_element.btnAttack.transform.parent.gameObject.SetActive(_isActive);
 
+    bool m_isPushSkillOn_C = false;
     private void Update()
     {
         if (isSwitch == false || m_mainHero?.isLive == false)
@@ -103,7 +108,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             if (Input.anyKeyDown)
             {
                 // 대쉬
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C))
+                //if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C))
+                if (Input.GetKeyDown(KeyCode.Space))
                     OnButton_Dash(true);
                 // 콜
                 else if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -112,8 +118,18 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
                 else if (Input.GetKeyDown(KeyCode.X))
                     OnButton_Attack(true);
                 // 스킬
-                else if (Input.GetKeyDown(KeyCode.V))
-                    m_element.skill.OnButton_Skill();
+                else if (Input.GetKeyDown(KeyCode.C) && m_element.skill.isReady == true)
+                {
+                    //m_element.skill.OnButton_Skill();
+
+                    if (m_isSkillClick == false)
+                        m_isPushSkillOn_C = m_isSkillClick = true;
+                    else
+                    {
+                        m_mainHero.attack.OnCancel_ControllSkill();
+                        m_isPushSkillOn_C = m_isSkillClick = false;
+                    }
+                }
                 // 스킬 번호
                 else
                 {
@@ -127,7 +143,24 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
             if (m_isSkillClick == true)
             {
-                if (isLeftClick_Down)
+                // c 버튼으로 스킬 준비중이면 왼쪽 클릭으로 스킬을 나가게 하자.
+                if (m_isPushSkillOn_C == true)
+                {
+                    if (isLeftClick_Down)
+                    {
+                        m_mainHero.attack.OnUp_ControllSkill();
+                        m_isPushSkillOn_C = m_isSkillClick = false;
+                    }
+                    else if (Input.GetKeyDown(KeyCode.Escape))
+                    {
+                        m_mainHero.attack.OnCancel_ControllSkill();
+                        m_isSkillClick = false;
+                    }
+                    else
+                        m_mainHero.attack.OnDrag_ControllSkill(CameraManager.instance.GetMousePosition());
+                }
+                // 그게 아니면 취소다.
+                else if (isLeftClick_Down)
                 {
                     m_mainHero.attack.OnCancel_ControllSkill();
                     m_isSkillClick = false;
@@ -148,14 +181,24 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             lookAt = m_element.padBar.position - m_element.pad.position;
         else if (Input.anyKey)
         {
-            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+            //if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+            //    lookAt.x = -1;
+            //else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+            //    lookAt.x = 1;
+
+            //if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+            //    lookAt.y = 1;
+            //else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
+            //    lookAt.y = -1;
+
+            if (Input.GetKey(KeyCode.A))
                 lookAt.x = -1;
-            else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+            else if (Input.GetKey(KeyCode.D))
                 lookAt.x = 1;
 
-            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+            if (Input.GetKey(KeyCode.W))
                 lookAt.y = 1;
-            else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
+            else if (Input.GetKey(KeyCode.S))
                 lookAt.y = -1;
         }
 
@@ -168,10 +211,10 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             {
                 bool isFlip = m_mainHero.transform.position.x < CameraManager.instance.GetMousePosition().x;
 
-                if (Input.GetKey(KeyCode.A) ||
-                    Input.GetKey(KeyCode.D) ||
-                    Input.GetKey(KeyCode.W) ||
-                    Input.GetKey(KeyCode.S))
+                //if (Input.GetKey(KeyCode.A) ||
+                //    Input.GetKey(KeyCode.D) ||
+                //    Input.GetKey(KeyCode.W) ||
+                //    Input.GetKey(KeyCode.S))
                 {
                     if (m_mainHero.move.isFlip != isFlip)
                     {
@@ -275,7 +318,10 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         if (m_isKeyboardMode)
         {
             if (isLeftClick_Down && m_isSkillClick == false)
+            {
+                m_mainHero.move.SetFlip(CameraManager.instance.GetMousePosition().x > m_mainHero.transform.position.x);
                 OnButton_Attack(false);
+            }
             if (isRightClick_Down && m_element.skill.isReady)
                 m_isSkillClick = true;
             return;

@@ -62,7 +62,9 @@ public class Character_Worker_Attack : Character_Worker
         var token = m_ctsAttackPush.Token;
 
         m_timeAttack = -1;
-        while (ControllerManager.instance.isLeftClick == true || Input.GetKey(KeyCode.X) || _isPushButton == true)
+        while ((ControllerManager.instance.isKeyboardMode && ControllerManager.instance.isLeftClick == true) ||
+            Input.GetKey(KeyCode.X) ||
+            _isPushButton == true)
         {
             if (m_timeAttack < Time.realtimeSinceStartup && m_weapon.isUseSkill == false)
             {
