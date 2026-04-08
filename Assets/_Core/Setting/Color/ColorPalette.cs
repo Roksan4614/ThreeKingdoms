@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-enum PaletteColorType
+public enum PaletteColorType
 {
     NONE = -1,
 
-    hero_icon_empty,
-    hero_icon_empty2,
+    button_select,
 
     MAX
 }
@@ -49,8 +48,14 @@ public class ColorPalette : ScriptableObject
         }
     }
 
+    public Color Get(PaletteColorType _colorType)
+        => Get(_colorType.ToString());
+
     public Color Get(string _key)
     {
+        if (m_map == null)
+            RebuildCache();
+
         if (_key.IsActive())
             return m_map.GetValueOrDefault(_key);
         else

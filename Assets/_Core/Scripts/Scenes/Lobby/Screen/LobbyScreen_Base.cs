@@ -4,16 +4,18 @@ using System;
 using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 {
-    [SerializeField]
+    [SerializeField, HideInInspector]
     Button m_btnBack;
-
-    [SerializeField]
+    [SerializeField, HideInInspector]
     RectTransform m_panel;
+    [SerializeField, HideInInspector]
+    protected TextMeshProUGUI m_txtTitle;
 
     bool m_isDoing = false;
 
@@ -58,8 +60,9 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 
     public virtual void OnManualValidate()
     {
-        m_btnBack = transform.GetComponent<Button>("Panel/Top/btn_back");
         m_panel = transform.GetComponent<RectTransform>("Panel");
+        m_btnBack = m_panel.GetComponent<Button>("Top/btn_back");
+        m_txtTitle = m_panel.GetComponent<TextMeshProUGUI>("Top/txt_title");
     }
 
     public bool isOpenned => gameObject.activeSelf && m_isDoing == false;

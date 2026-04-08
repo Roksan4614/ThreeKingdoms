@@ -157,6 +157,7 @@ public class CharacterComponent : TargetComponent
 
         target.RemoveAll();
         move.MoveStop();
+        attack.ResetFX();
 
         m_data.health = m_data.healthMax;
         m_element.collider.enabled = true;

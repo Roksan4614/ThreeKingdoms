@@ -385,6 +385,11 @@ public class StageManager : Singleton<StageManager>, IValidatable
         }
     }
 
+    public void AddEnemyList(Character_Enemy _enemy)
+        => m_enemyList.Add(_enemy);
+    public void ClearEnemyList()
+        => m_enemyList.Clear();
+
     public void OnManualValidate()
     {
         m_element.Initialize(transform);

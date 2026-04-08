@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LobbyScreen_Hero_Hero : MonoBehaviour, IValidatable
+public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 {
     PopupHeroFilter m_popupFilter;
     PopupHeroSort m_popupSort;
@@ -28,6 +28,8 @@ public class LobbyScreen_Hero_Hero : MonoBehaviour, IValidatable
 
     private void Awake()
     {
+        tabType = LobbyScreen_Hero.HeroTabType.Hero;
+
         m_element.btn_filter.onClick.AddListener(
             async () =>
             {
@@ -151,7 +153,7 @@ public class LobbyScreen_Hero_Hero : MonoBehaviour, IValidatable
         if (m_popupHeroInfo != null)
             Destroy(m_popupHeroInfo.gameObject);
     }
-    public bool IsCloseScreen()
+    public override bool IsCloseScreen()
     {
         if (gameObject.activeSelf == true)
         {
@@ -168,7 +170,7 @@ public class LobbyScreen_Hero_Hero : MonoBehaviour, IValidatable
         return false;
     }
 
-    public async UniTask CloseAsync()
+    public override async UniTask CloseAsync()
     {
         if (gameObject.activeSelf == false)
             return;
@@ -177,6 +179,8 @@ public class LobbyScreen_Hero_Hero : MonoBehaviour, IValidatable
         for (int i = 0; i < m_itemBatch.Count; i++)
             m_itemBatch[i].SetActiveButton(false);
         m_curIndex_Batch = -1;
+
+        await UniTask.Yield();
     }
 
     public async UniTask SaveDataAsync()

@@ -1,15 +1,10 @@
 using UnityEngine;
 
-public enum ColorType
-{
-
-}
-
 public class Palette
 {
     static Palette m_instance;
 
-    public Palette instance
+    public static Palette instance
     {
         get
         {

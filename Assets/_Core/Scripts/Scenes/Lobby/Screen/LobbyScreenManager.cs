@@ -22,6 +22,8 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     public LobbyScreenType curScreen => m_curScreen;
     public bool isLock { get; set; } = false;
 
+    //public T GetScreen<T>(LobbyScreenType _type) where T: LobbyScreen_Base => m_dicScreen[_type] as T;
+    public LobbyScreen_Hero GetScreenHero() => m_dicScreen[LobbyScreenType.Heros] as LobbyScreen_Hero;
     public LobbyScreen_Summon GetScreenSummon() => m_dicScreen[LobbyScreenType.Summon] as LobbyScreen_Summon;
 
     protected override void OnAwake()

@@ -28,6 +28,9 @@ public class ButtonHelper : MonoBehaviour, IValidatable
         set => m_element.button.interactable = value;
     }
 
+
+    public TextMeshProUGUI TMPText => m_element.txtName;
+
     public bool isTriggerSwitch { get; set; } = true;
     public UnityAction funcEnter { get; set; }
     public UnityAction funcExit { get; set; }

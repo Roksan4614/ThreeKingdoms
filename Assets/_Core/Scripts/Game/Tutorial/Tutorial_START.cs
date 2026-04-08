@@ -33,6 +33,8 @@ public class Tutorial_START : TutorialBase
         mainHero.move.SetFlip(true);
 
         var enemy = m_elementBase.enemy.First();
+        // 이걸 넣어줘야 스킬쓰거나 할 때 정상작동함
+        StageManager.instance.AddEnemyList(enemy);
         enemy.gameObject.SetActive(false);
 
         mainHero.buff.Add(BuffType.DEBUFF_NO_SKILL);
@@ -45,6 +47,7 @@ public class Tutorial_START : TutorialBase
         await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
 
         enemy.gameObject.SetActive(true);
+
         enemy.anim.Play(CharacterAnimType.Attack);
         enemy.SetHeroData("");
 
@@ -223,6 +226,7 @@ public class Tutorial_START : TutorialBase
         for (int i = 0; i < bottomButton.Count; i++)
             bottomButton[i].interactable = true;
 
+        StageManager.instance.ClearEnemyList();
         // 딤 켜주자
         await PopupManager.instance.ShowDimmAsync(true);
     }

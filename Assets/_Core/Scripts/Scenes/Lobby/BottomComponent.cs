@@ -44,6 +44,15 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
         if (LobbyScreenManager.instance.isLock == true)
             return;
 
+        // TODO TEST
+        {
+            if (_screen == LobbyScreenType.Shop)
+            {
+                LobbyScreenManager.instance.GetScreenHero().SetActiveTab(LobbyScreen_Hero.HeroTabType.Relic);
+                _screen = LobbyScreenType.Heros;
+            }
+        }
+
         SelectButton(LobbyScreenManager.instance.curScreen, false);
 
         var screen = LobbyScreenManager.instance.OpenScreen(_screen);
