@@ -15,7 +15,7 @@ public class Data_UserInfo
     public long gold => m_element.gold;
     public long rice => m_element.rice;
 
-    public async UniTask Initialize()
+    public async UniTask InitializeAsync()
     {
         if (PPWorker.HasKey(PlayerPrefsType.USER_DATA))
         {
