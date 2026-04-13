@@ -145,6 +145,11 @@ public struct HeroInfoData
     public bool isMain;
     public bool isMine;
 
+    HeroClassType m_classType;
+    RegionType m_regionType;
+    public HeroClassType classType => m_classType;
+    public RegionType regionType => m_regionType;
+
     public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, string _skin = null,
         int _soulCount = 0, int _enchantLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
     {
@@ -156,10 +161,15 @@ public struct HeroInfoData
         isBatch = _isBatch;
         isMain = _isMain;
         isMine = _isMine;
+
+        var db = TableManager.hero.Get(_key);
+
+        m_classType = db.classType;
+        m_regionType = db.regionType;
     }
 
     public bool isActive => key.IsActive();
-    public string regionKey => $"{TableManager.hero.Get(key).regionType}_{key}".ToUpper();
+    public string regionKey => $"{m_regionType}_{key}".ToUpper();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
     public string gradeName => TableManager.stringHero.GetString($"GRADE_" + grade.ToString().ToUpper());
 }

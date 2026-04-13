@@ -5,29 +5,30 @@ using UnityEngine;
 
 public class Data_Stat_Relic
 {
-    const string key = "PP_Stat_Relic";
+    const string key = "PP_Stat_Relic_Hero";
 
-    Dictionary<string, int> m_data = new();
-    public IReadOnlyDictionary<string, int> data => m_data;
+    Dictionary<string, int> m_dataHero = new();
+    public IReadOnlyDictionary<string, int> dataHero => m_dataHero;
 
     public async UniTask InitializeAsync()
     {
         await UniTask.Yield();
 
-        m_data = PPWorker.Get<Dictionary<string, int>>(key);
+        m_dataHero = PPWorker.Get<Dictionary<string, int>>(key);
 
-        if (m_data.Count == 0)
+        if (m_dataHero == null)
         {
+            m_dataHero = new();
             foreach (var hero in DataManager.userInfo.myHero)
-                m_data.Add(hero.key, 0);
+                m_dataHero.Add(hero.key, 0);
 
-            SaveData();
+            SaveData_Hero();
         }
     }
 
-    void SaveData()
+    void SaveData_Hero()
     {
-        PPWorker.Set(key, m_data);
+        PPWorker.Set(key, m_dataHero);
     }
 
     struct StatRelicLocalData

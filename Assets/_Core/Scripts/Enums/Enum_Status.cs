@@ -18,3 +18,8 @@ public enum DirectionType
 
     MAX
 }
+
+public enum HeroSortType
+{
+    Grade, Level, Power,
+}

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,12 +9,19 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 {
     enum TapType
     {
-        Character, Relic,
+        Hero, Relic,
     }
+
+    TapType m_curTap = TapType.Hero;
+
+    List<TotalStatData> lstTotalStat = new();
 
     void UpdateTotalClass()
     {
-
+        var statClass = DataManager.stat.relic.dataHero;
+        for (var i = HeroClassType.NONE + 1; i < HeroClassType.MAX; i++)
+        {
+        }
     }
 
     void UpdateTotalStat()
@@ -41,6 +49,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             txtTotalClass = panel.Find("Total_Class").GetComponentsInChildren<TextMeshProUGUI>(true);
 
             baseTotalStat = new();
+            baseTotalStat.stat = panel.Find("Total_Stat");
             baseTotalStat.txtName = panel.Find("Total_Stat/Text").GetComponent<TextMeshProUGUI>();
             baseTotalStat.txtValue = panel.Find("Total_Stat/Text/Text").GetComponent<TextMeshProUGUI>();
         }
@@ -49,6 +58,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
     [Serializable]
     struct TotalStatData
     {
+        public Transform stat;
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtValue;
     }

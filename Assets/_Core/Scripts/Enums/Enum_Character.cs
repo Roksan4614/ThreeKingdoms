@@ -68,6 +68,8 @@ public enum HeroClassType
     Archer,
     // รฅป็
     Strategist,
+
+    MAX
 }
 
 public enum TeamPositionType

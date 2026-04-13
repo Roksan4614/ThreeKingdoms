@@ -7,6 +7,7 @@ public enum PlayerPrefsType
 {
     OPTION,
     USER_DATA,
+    HERO_SORTING_DATA,
     TUTORIAL_DATA,
 
     SUMMON_SKIP_ACTION,

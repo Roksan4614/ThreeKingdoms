@@ -456,25 +456,50 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                 m_itemList[indexList].UpdateHeroInfo(_updateInfoData);
         }
 
-        //보유 미보유 전체
-        bool isAll = true;
-        var db = m_itemList.OrderByDescending(x => x.data.isMine || isAll);
+        var sortData = DataManager.userInfo.GetHeroSortData(m_itemList.Select(item => item.data).ToList());
 
-        //정렬
+        var orderMap = sortData
+            .Select((_data, _index) => new { _data, _index })
+            .ToDictionary(x => x._data, x => x._index);
 
-        // 배치된 유저가 앞으로 오기
-        var dbNotBatch = db.Where(x => x.data.isBatch == false).ToList();
-        var dbBatch = db.Where(x => x.data.isBatch).ToList();
-        m_itemList.Clear();
-        for (int i = 0; i < m_itemBatch.Count; i++)
-        {
-            var batchData = m_itemBatch[i];
-            if (batchData.data.isActive == false)
-                continue;
+        m_itemList = m_itemList.OrderBy(x =>
+            orderMap.ContainsKey(x.data) ? orderMap[x.data] : int.MaxValue).ToList();
 
-            m_itemList.Add(dbBatch.Find(x => x.data.key == batchData.data.key));
-        }
-        m_itemList.AddRange(dbNotBatch);
+        List<HeroInfoData> dataList = m_itemList.Select(item => item.data).ToList();
+        var dd = dataList.Select(x => x.key).ToList();
+
+        ////보유 미보유 전체
+        //bool isAll = true;
+        //var db = m_itemList.OrderByDescending(x => x.data.isMine || isAll);
+
+        ////정렬
+        //{
+        //    List<HeroInfoData> dataList = m_itemList.Select(item => item.data).ToList();
+
+        //    dataList = DataManager.userInfo.GetHeroSortData(dataList);
+
+        //    var dd = dataList.Select(x => x.key).ToList();
+        //}
+
+        //// 배치된 유저가 앞으로 오기
+        //var dbNotBatch = db.Where(x => x.data.isBatch == false).ToList();
+        //var dbBatch = db.Where(x => x.data.isBatch).ToList();
+        //m_itemList.Clear();
+        //for (int i = 0; i < m_itemBatch.Count; i++)
+        //{
+        //    var batchData = m_itemBatch[i];
+        //    if (batchData.data.isActive == false)
+        //        continue;
+
+        //    m_itemList.Add(dbBatch.Find(x => x.data.key == batchData.data.key));
+        //}
+        //m_itemList.AddRange(dbNotBatch);
+
+        //{
+        //    List<HeroInfoData> dataList = m_itemList.Select(item => item.data).ToList();
+
+        //    var dd = dataList.Select(x => x.key).ToList();
+        //}
 
         for (int i = m_itemList.Count - 1; i > -1; i--)
             m_itemList[i].transform.SetAsFirstSibling();

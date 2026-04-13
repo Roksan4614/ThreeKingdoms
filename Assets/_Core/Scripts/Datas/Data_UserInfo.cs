@@ -7,6 +7,8 @@ using UnityEngine;
 public class Data_UserInfo
 {
     ElementData m_element;
+    HeroSortData m_sortData;
+    public HeroSortData sortData => m_sortData;
 
     public int uid => m_element.uid;
     public RegionType region => m_element.region;
@@ -43,6 +45,14 @@ public class Data_UserInfo
             m_element.Default();
             SaveData();
         }
+
+        if (PPWorker.HasKey(PlayerPrefsType.HERO_SORTING_DATA))
+            m_sortData = PPWorker.Get<HeroSortData>(PlayerPrefsType.HERO_SORTING_DATA);
+        else
+        {
+            m_sortData.Default();
+            SaveData_SortingData();
+        }
     }
 
     public void SaveData()
@@ -51,6 +61,114 @@ public class Data_UserInfo
             m_element.myHero = m_element.myHero.OrderByDescending(x => x.isMain).ToList();
 
         PPWorker.Set(PlayerPrefsType.USER_DATA, m_element);
+    }
+
+    public void SaveData_SortingData()
+    {
+        PPWorker.Set(PlayerPrefsType.HERO_SORTING_DATA, m_sortData);
+    }
+
+    public void SetFilterData(List<RegionType> _region, List<HeroClassType> _class, List<GradeType> _grade)
+    {
+        m_sortData.filter_region = _region;
+        m_sortData.filter_class = _class;
+        m_sortData.filter_grade = _grade;
+
+        SaveData_SortingData();
+    }
+
+    public void SetSortingData(HeroSortType _sortType, bool _isDescending)
+    {
+        m_sortData.isDescending = _isDescending;
+        m_sortData.sortType = _sortType;
+
+        SaveData_SortingData();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_data"></param>
+    /// <param name="_isWithNotMine">내꺼 외에도 모든 영웅 표기를 할거야?</param>
+    /// <returns></returns>
+    public List<HeroInfoData> GetHeroSortData(List<HeroInfoData> _data = null, bool _isWithNotMine = true)
+    {
+        List<HeroInfoData> result = new();
+        List<HeroInfoData> lstBatch = new();
+        List<HeroInfoData> lstNotBatch = new();
+
+        if (_data == null)
+        {
+            _data = new();
+            _data.AddRange(m_element.myHero);
+        }
+
+        //일단 리스트 다 넣어주자.
+        var dbHero = TableManager.hero.list;
+        for (int i = 0; i < dbHero.Count; i++)
+        {
+            var data = _data.Find(x => x.key == dbHero[i].key);
+
+            if (data.isBatch == true)
+            {
+                lstBatch.Add(data);
+            }
+            else
+            {
+                if (data.isActive == false)
+                {
+                    if (_isWithNotMine == false)
+                        continue;
+
+                    data = new(dbHero[i].key, _isMine: false);
+                }
+
+                lstNotBatch.Add(data);
+            }
+        }
+
+        // 배치중인걸 먼저 넣어주자
+        {
+            // 메인이 전방이 아니면 후방으로 빼주자
+            if (DataManager.option.mainTeamPosition != TeamPositionType.Front)
+            {
+                lstBatch.Add(lstBatch[0]);
+                lstBatch.RemoveAt(0);
+            }
+
+            result.AddRange(lstBatch);
+        }
+
+        // 보유한걸 위로 올려주자
+        if (_isWithNotMine == true)
+            lstNotBatch = lstNotBatch.OrderByDescending(x => x.isMine).ToList();
+
+        result.AddRange(lstNotBatch);
+
+        lstBatch = null;
+        lstNotBatch = null;
+        return result.Where(x =>
+        {
+            if (m_sortData.isAll_Region == false &&
+                m_sortData.filter_region.Contains(x.regionType) == false)
+            {
+                return false;
+            }
+
+            if (m_sortData.isAll_Grade == false &&
+                m_sortData.filter_grade.Contains(x.grade) == false)
+            {
+                return false;
+            }
+
+            if (m_sortData.isAll_Class == false &&
+                m_sortData.filter_class.Contains(x.classType) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }).ToList();
     }
 
     public HeroInfoData GetHeroInfoData(string _key)
@@ -182,5 +300,52 @@ public class Data_UserInfo
             region = RegionType.Shu;
             myHero = new();
         }
+    }
+
+    public struct HeroSortData
+    {
+        public HeroSortType sortType;
+        public bool isDescending;
+
+        public List<RegionType> filter_region;
+        public List<HeroClassType> filter_class;
+        public List<GradeType> filter_grade;
+
+        public void Default()
+        {
+            sortType = HeroSortType.Grade;
+            isDescending = true;
+
+            filter_region = new();
+            filter_class = new();
+            filter_grade = new();
+
+            int i = 0;
+            while (true)
+            {
+                var rt = (RegionType)i;
+                if (rt < RegionType.MAX)
+                    filter_region.Add(rt);
+
+                var ct = (HeroClassType)i;
+                if (ct < HeroClassType.MAX)
+                    filter_class.Add(ct);
+
+                var gt = (GradeType)i;
+                if (gt < GradeType.MAX)
+                    filter_grade.Add(gt);
+
+                if (rt >= RegionType.MAX &&
+                    ct >= HeroClassType.MAX &&
+                    gt >= GradeType.MAX)
+                    break;
+
+                i++;
+            }
+        }
+
+        public bool isAll_Region => filter_region.Count == (int)RegionType.MAX;
+        public bool isAll_Class => filter_class.Count == (int)HeroClassType.MAX;
+        public bool isAll_Grade => filter_grade.Count == (int)GradeType.MAX;
     }
 }
