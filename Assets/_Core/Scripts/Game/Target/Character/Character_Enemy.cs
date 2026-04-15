@@ -7,10 +7,10 @@ public class Character_Enemy : CharacterComponent
     public override void SetHeroData(string _key = null)
     {
         if (_key.IsActive())
-            m_data = TableManager.enemy.GetHeroData(_key);
+            m_stat = TableManager.statEnemy.GetStatData(_key);
 
-        if (m_data.isActive == false)
-            m_data = TableManager.enemy.GetHeroData("Enemy");
+        if (m_stat.isActive == false)
+            m_stat = TableManager.statEnemy.GetStatData("Enemy");
 
         var stageData = StageManager.instance.data;
 
@@ -29,20 +29,20 @@ public class Character_Enemy : CharacterComponent
 
     public void SetBuffStat(float _percent)
     {
-        m_data.attackPower = (int)(m_data.attackPower * _percent);
-        m_data.health = m_data.healthMax = (int)(m_data.healthMax * _percent);
+        m_stat.attackPower *= _percent;
+        m_stat.health = m_stat.healthMax = m_stat.healthMax * _percent;
     }
 
     public void SetBossData(string _key = null)
     {
         if (_key.IsActive())
-            m_data = TableManager.enemy.GetHeroData(_key);
+            m_stat = TableManager.statEnemy.GetStatData(_key);
 
-        if (m_data.isActive == false)
-            m_data = TableManager.enemy.GetHeroData("Enemy");
+        if (m_stat.isActive == false)
+            m_stat = TableManager.statEnemy.GetStatData("Enemy");
 
         SetBuffStat(2);
-        m_data.health = m_data.healthMax = (int)m_data.healthMax * 2;
+        m_stat.health = m_stat.healthMax = m_stat.healthMax * 2;
 
         SetFaction(FactionType.Enemy);
     }

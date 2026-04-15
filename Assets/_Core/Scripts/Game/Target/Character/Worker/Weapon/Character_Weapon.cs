@@ -111,9 +111,9 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         if (target == null || target.isLive == false)
             return;
 
-        var damage = _owner.data.attackPower;
+        var damage = _owner.stat.attackPower;
         if (m_isCritial == true)
-            damage = (int)(damage * _owner.data.criticalDamage);
+            damage = (int)(damage * _owner.stat.criticalDamage);
 
         EffectWorker.instance.SlotDamageTakenEffect(new()
         {

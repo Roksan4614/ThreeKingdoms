@@ -237,6 +237,11 @@ public class Data_UserInfo
 
         SaveData();
     }
+    public void SetRegion(RegionType _region)
+    {
+        m_element.region = _region;
+        SaveData();
+    }
 
     #region ASSETS
     public long GetAssetAmount(ItemType _itemType)

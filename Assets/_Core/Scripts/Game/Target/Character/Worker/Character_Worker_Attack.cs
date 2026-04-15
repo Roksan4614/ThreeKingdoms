@@ -36,7 +36,7 @@ public class Character_Worker_Attack : Character_Worker
                 if (m_timeAttack < Time.realtimeSinceStartup && m_weapon.isUseSkill == false)
                 {
                     m_weapon.Attack(IsCritical());
-                    m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
+                    m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
                 }
             }
             else if (m_timeAttack < Time.realtimeSinceStartup)
@@ -72,7 +72,7 @@ public class Character_Worker_Attack : Character_Worker
 
                 _onAttack();
                 m_weapon.Attack(true, 1);
-                m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
+                m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
             }
             _isPushButton = false;
             await UniTask.Yield(token, true);
@@ -92,7 +92,7 @@ public class Character_Worker_Attack : Character_Worker
             m_weapon.ShowSlashEffect(_isForceShake: m_owner.target.target != null);
 
         if (m_owner.target.isAttackTarget)
-            m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
+            m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
     }
 
     bool IsCritical()
@@ -117,7 +117,7 @@ public class Character_Worker_Attack : Character_Worker
 
     public async UniTask UseSkillAsync()
     {
-        m_timeAttack = Time.realtimeSinceStartup + m_owner.data.attackSpeed;
+        m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
         isUseSkill = true;
         await m_weapon.UseSkillAsync();
     }

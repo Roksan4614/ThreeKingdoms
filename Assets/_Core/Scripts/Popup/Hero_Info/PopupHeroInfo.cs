@@ -54,17 +54,18 @@ public class PopupHeroInfo : BasePopupComponent
 
         m_heroInfoData = _data;
 
-        var dbHeroData = TableManager.hero.Get(_data.key);
+        //var dbHeroData = TableManager.hero.Get(_data.key);
 
         // FRONT PANEL
-        var key = $"{dbHeroData.regionType}_{_data.key}".ToUpper();
+        var key = $"{_data.regionType}_{_data.key}".ToUpper();
         m_element.txtName.text = $"{TableManager.stringHero.GetString("NAME_" + key)}<size=80%><color=#888888> {TableManager.stringHero.GetString("COURTESY_" + key)}";
-        m_element.txtDescTalk.text = dbHeroData.talk;
+        m_element.txtDescTalk.text = _data.talk;
 
+        var dbHeroData = TableManager.hero.Get(_data.key);
         // 고유 능력치
         for (int i = 0; i < m_element.stat.Count; i++)
         {
-            var value = dbHeroData.stat[i];
+            var value = dbHeroData.statPoint[i];
             var txt = m_element.stat[i].content;
             txt.text = value.ToString();
             m_element.stat[i].title.alpha = txt.alpha = value >= 90 ? 1 : value >= 80 ? .9f : value >= 70 ? .8f : value >= 60 ? .7f : .6f;

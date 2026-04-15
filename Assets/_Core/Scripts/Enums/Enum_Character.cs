@@ -83,3 +83,19 @@ public enum TeamPositionType
 
     MAX
 }
+
+public enum StatType
+{
+    attack_power,
+    health_max,
+    defence,
+    move_speed,
+    attack_speed,
+    critical_rate,
+    critical_damage,
+    life_steal,
+    skill_cooldown_rate,
+
+    //skill_cooltime,
+    //percent_start_cooldown //챕터 시작하면 쿨타임 몇퍼부터 시작할지 여부
+}

@@ -56,7 +56,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
             if ((target.transform.position - m_owner.transform.position).sqrMagnitude < maxSqrMagnitue)
             {
-                var index = TeamManager.instance.heroInfo.GetIndex(m_owner.data.key);
+                var index = TeamManager.instance.heroInfo.GetIndex(m_owner.info.key);
                 TeamManager.instance.heroInfo.UseSkill(index);
                 break;
             }
@@ -99,7 +99,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         }).AsyncWaitForCompletion();
 
         bool isTargetting = false;
-        var damage = m_owner.data.attackPower * 2;
+        var damage = m_owner.stat.attackPower * 2;
         var enemyList = StageManager.instance.enemyList;
         for (int i = 0; i < enemyList.Count; i++)
         {
@@ -168,7 +168,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             m_isUseSkillControll = true;
             m_skillRange.gameObject.SetActive(false);
 
-            var index = TeamManager.instance.heroInfo.GetIndex(m_owner.data.key);
+            var index = TeamManager.instance.heroInfo.GetIndex(m_owner.info.key);
             TeamManager.instance.heroInfo.UseSkill(index);
         }
     }

@@ -52,13 +52,13 @@ public class Team_HeroInfo
     public void UpdateHP(CharacterComponent _hero)
     {
         if (_hero.teamPosition > TeamPositionType.NONE)
-            m_lstHeroInfo.Find(x => x.key == _hero.data.key)?.UpdateHP();
+            m_lstHeroInfo.Find(x => x.key == _hero.info.key)?.UpdateHP();
     }
 
     public void StopRespawn(CharacterComponent _hero)
     {
         if (_hero.teamPosition > TeamPositionType.NONE)
-            m_lstHeroInfo.Find(x => x.key == _hero.data.key).StopRespawn();
+            m_lstHeroInfo.Find(x => x.key == _hero.info.key).StopRespawn();
     }
 
     public void StopRespawn()

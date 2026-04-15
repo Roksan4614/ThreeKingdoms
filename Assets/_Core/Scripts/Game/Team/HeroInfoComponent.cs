@@ -11,10 +11,12 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 {
     CharacterComponent m_hero;
 
-    public string key => isActive ? m_hero.data.key : "";
+    public string key => isActive ? m_hero.info.key : "";
 
     CooltimeData m_cooltime_Revive;
     CooltimeData m_cooltime_Skill;
+
+    TableHeroData m_dbHero;
 
     private void Awake()
     {
@@ -41,9 +43,10 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public async void SetHeroInfo(CharacterComponent _hero)
     {
+        m_dbHero = TableManager.hero.Get(_hero.info.key);
         m_hero = _hero;
 
-        var key = DataManager.userInfo.GetHeroInfoData(_hero.data.key).skin;
+        var key = DataManager.userInfo.GetHeroInfoData(_hero.info.key).skin;
 
         int countDestroy = 0;
         for (int i = 0; i < m_element.icon.childCount; i++)
@@ -120,15 +123,15 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public void UpdateHP()
     {
-        var data = m_hero.data;
+        var stat = m_hero.stat;
 
         var bar = m_element.rtBar_HP;
-        float progress = data.health / (float)data.healthMax;
+        float progress = stat.health / (float)stat.healthMax;
         var targetX = bar.rect.width * progress - bar.rect.width;
 
         m_tweenHP?.Kill();
 
-        if (data.health == 0)
+        if (stat.health == 0)
         {
             if (TeamManager.instance.IsAllDie() == false)
             {
@@ -219,11 +222,11 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
     {
         m_element.objOnSkill.SetActive(false);
 
-        var data = m_hero.data;
+        var stat = m_hero.stat;
         m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
-        m_cooltime_Skill.endTime = data.skillCooldown * data.skillCooldownRate + m_cooltime_Skill.startTime;
+        m_cooltime_Skill.endTime = m_dbHero.skillCooltime * (1 - stat.skillCooldownRate) + m_cooltime_Skill.startTime;
 
-        var addTime = data.percent_startCooldownRate * data.skillCooldown;
+        var addTime = m_dbHero.percetnStartCooldown * m_dbHero.skillCooltime;
         var bar = m_element.rtBar_Cooltime;
         bar.gameObject.SetActive(true);
         var width = bar.rect.width;
@@ -246,7 +249,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
             {
                 bar.gameObject.SetActive(true);
                 m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
-                m_cooltime_Skill.endTime = data.skillCooldown * data.skillCooldownRate + m_cooltime_Skill.startTime;
+                m_cooltime_Skill.endTime = m_dbHero.skillCooltime * (1 - stat.skillCooldownRate) + m_cooltime_Skill.startTime;
                 addTime = 0;
                 dieTime = -1;
             }
@@ -296,7 +299,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
                 m_statusSkill = StatusType.Wait;
                 m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
-                m_cooltime_Skill.endTime = data.skillCooldown * data.skillCooldownRate + m_cooltime_Skill.startTime;
+                m_cooltime_Skill.endTime = m_dbHero.skillCooltime * (1 - stat.skillCooldownRate) + m_cooltime_Skill.startTime;
                 addTime = 0;
             }
 

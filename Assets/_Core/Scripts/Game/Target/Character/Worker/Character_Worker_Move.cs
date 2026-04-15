@@ -82,7 +82,7 @@ public class Character_Worker_Move : Character_Worker
             }
 
             var lookAt = _target.transform.position - m_owner.transform.position;
-            OnMoveUpdate(lookAt.normalized * m_owner.data.moveSpeed);
+            OnMoveUpdate(lookAt.normalized * m_owner.stat.moveSpeed);
 
             if (_isAttack && m_owner.target.Contains(_target))
             {

@@ -290,7 +290,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
     async UniTask HeroActionAsync(int _idx)
     {
         var itemComp = m_itemComps[_idx];
-        var dbHeroData = TableManager.hero.GetHeroData(itemComp.data.value);
+        var dbHeroData = TableManager.hero.Get(itemComp.data.value);
         string key = itemComp.data.value;
 
         #region NEW HERO!!

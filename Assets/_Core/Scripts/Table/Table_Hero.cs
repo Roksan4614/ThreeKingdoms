@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,34 +8,32 @@ public class Table_Hero : BaseTable<string, TableHeroData>
     public Table_Hero(List<TableHeroData> _table) : base(_table)
     {
         m_list.RemoveAt(0);
-        for (int i = 0; i < m_list.Count; i++)
-        {
-            var data = m_list[i];
-            data.SetDefault();
-            m_list[i] = data;
-        }
+        //for (int i = 0; i < m_list.Count; i++)
+        //{
+        //    var data = m_list[i];
+        //    m_list[i] = data;
+        //}
 
         SetDictionary(x => x.key);
     }
 
-    public TableHeroData GetHeroData(string _key, GradeType _grade = GradeType.Normal, int _encahntLevel = 0)
-    {
-        if (Exists(_key) == false)
-            return default;
+    //public TableHeroData GetHeroData(string _key, GradeType _grade = GradeType.Normal, int _encahntLevel = 0)
+    //{
+    //    if (Exists(_key) == false)
+    //        return default;
 
-        var data = m_dictionary[_key];
+    //    var data = m_dictionary[_key];
 
-        if (_grade > GradeType.Normal || _encahntLevel > 0)
-        {
-            float percent = (float)(_grade);
-            percent += (_encahntLevel) * 0.3f;
+    //    if (_grade > GradeType.Normal || _encahntLevel > 0)
+    //    {
+    //        float percent = (float)(_grade);
+    //        percent += (_encahntLevel) * 0.3f;
 
-            data.attackPower = (int)(data.attackPower * percent);
-            data.health = data.healthMax = (int)(data.healthMax * percent);
-        }
+    //        data.SetMulitipleStat(percent);
+    //    }
 
-        return data;
-    }
+    //    return data;
+    //}
 
     public int GetNeedSoulNextGrade(GradeType _nowGrade)
     {
@@ -76,61 +75,31 @@ public struct TableHeroData
     public HeroClassType classType;
     public RegionType regionType;
 
-    public int attackPower;
+    [JsonProperty] float percent_start_cooldown;
+    [JsonProperty] float skill_cooltime;
 
-    public float criticalDamage;
+    int LEA;
+    int POW;
+    int INT;
+    int POL;
+    int CHA;
 
-    public int healthMax;
-    public int health;
-
-    public float moveSpeed;
-    public float attackSpeed;
-
-    public float skillCooldown;
-    public float skillCooldownRate;
-
-    public float dashCooldown;
-    public float dashCooldownRate;
-
-    public float percent_startCooldownRate; //챕터 시작하면 쿨타임 몇퍼부터 시작할지 여부
-
-    public int LEA;
-    public int POW;
-    public int INT;
-    public int POL;
-    public int CHA;
-
-    private List<int> m_stat;
-    public List<int> stat
+    private List<int> m_statPoint;
+    public List<int> statPoint
     {
         get
         {
-            if (m_stat == null)
-                m_stat = new() { LEA, POW, INT, POL, CHA };
-            return m_stat;
+            if (m_statPoint == null)
+                m_statPoint = new() { LEA, POW, INT, POL, CHA };
+            return m_statPoint;
         }
     }
 
-    public void SetDefault()
-    {
-        moveSpeed = moveSpeed == 0 ? 10 : moveSpeed;
-        attackSpeed = attackSpeed == 0 ? 1 : attackSpeed;
-        percent_startCooldownRate = percent_startCooldownRate == 0 ? .8f : percent_startCooldownRate;
+    public float percetnStartCooldown => percent_start_cooldown;
+    public float skillCooltime => skill_cooltime;
 
-        skillCooldown = skillCooldown == 0 ? 15 : skillCooldown;
-        skillCooldownRate = 1;
-
-        dashCooldown = dashCooldown == 0 ? 5 : dashCooldown;
-        dashCooldownRate = 1;
-
-        criticalDamage = criticalDamage == 0 ? 1.2f : criticalDamage;
-
-        health = healthMax;
-    }
-
-    public bool isActive => key.IsActive();
-    public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
     public string regionKey => $"{regionType}_{key}".ToUpper();
+    public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
 }
 
@@ -145,8 +114,8 @@ public struct HeroInfoData
     public bool isMain;
     public bool isMine;
 
-    HeroClassType m_classType;
-    RegionType m_regionType;
+    [JsonProperty] HeroClassType m_classType;
+    [JsonProperty] RegionType m_regionType;
     public HeroClassType classType => m_classType;
     public RegionType regionType => m_regionType;
 
@@ -172,4 +141,5 @@ public struct HeroInfoData
     public string regionKey => $"{m_regionType}_{key}".ToUpper();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
     public string gradeName => TableManager.stringHero.GetString($"GRADE_" + grade.ToString().ToUpper());
+    public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
 }

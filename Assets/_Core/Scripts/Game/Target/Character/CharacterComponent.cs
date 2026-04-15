@@ -10,7 +10,7 @@ using UnityEngine;
 public class CharacterComponent : TargetComponent
 {
     [SerializeField]
-    protected TableHeroData m_data;
+    protected TableStatData m_stat;
     [SerializeField]
     FactionType m_faction;
     [SerializeField]
@@ -31,9 +31,9 @@ public class CharacterComponent : TargetComponent
     public Character_Worker_Talkbox talkbox { get; private set; }
     public Transform panel => m_element.panel;
     public Rigidbody2D rig => m_element.rig;
-    public TableHeroData data => m_data;
+    public TableStatData stat => m_stat;
     public HeroInfoData info => m_info;
-    public override bool isLive => gameObject != null && data.health > 0;
+    public override bool isLive => gameObject != null && m_stat.health > 0;
     public bool isMain => m_info.isMain;
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; } = TeamPositionType.NONE;
@@ -53,11 +53,11 @@ public class CharacterComponent : TargetComponent
 
         SetState(CharacterStateType.None);
 
-        if (m_faction == FactionType.Enemy)
-        {
-            m_data.attackPower /= 2;
-            m_data.healthMax = m_data.health /= 2;
-        }
+        //if (m_faction == FactionType.Enemy)
+        //{
+        //    m_stat.attackPower /= 2;
+        //    m_stat.healthMax = m_stat.health /= 2;
+        //}
     }
 
     private void Update()
@@ -69,7 +69,7 @@ public class CharacterComponent : TargetComponent
     public virtual void SetHeroData(string _key)
     {
         m_info = DataManager.userInfo.GetHeroInfoData(_key);
-        m_data = TableManager.hero.GetHeroData(_key, m_info.grade, m_info.enchantLevel);
+        m_stat = TableManager.statHero.GetStatData(_key, m_info.grade, m_info.enchantLevel);
 
         attack.ResetFX();
     }
@@ -108,7 +108,7 @@ public class CharacterComponent : TargetComponent
         if (m_state != null)
             SetState(CharacterStateType.None);
 
-        move.OnMoveUpdate(_lookAt.normalized * m_data.moveSpeed, _isAnim);
+        move.OnMoveUpdate(_lookAt.normalized * m_stat.moveSpeed, _isAnim);
     }
 
     public void SetState(CharacterStateType _stateType)
@@ -120,7 +120,7 @@ public class CharacterComponent : TargetComponent
         m_stateType = _stateType;
     }
 
-    public virtual bool OnDamage(CharacterComponent _attacker, int _damage)
+    public virtual bool OnDamage(CharacterComponent _attacker, float _damage)
     {
         if (_attacker != null &&
             target.target == null &&
@@ -132,10 +132,10 @@ public class CharacterComponent : TargetComponent
 
         if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE) == false)
         {
-            m_data.health -= _damage;
-            if (m_data.health <= 0)
+            m_stat.health -= _damage;
+            if (m_stat.health <= 0)
             {
-                m_data.health = 0;
+                m_stat.health = 0;
                 m_state?.Stop();
                 anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
 
@@ -147,7 +147,7 @@ public class CharacterComponent : TargetComponent
             Signal.instance.UpdateHP.Emit(this);
         }
 
-        return m_data.health == 0;
+        return m_stat.health == 0;
     }
 
     public void Respawn(bool _isSetState = true)
@@ -159,7 +159,7 @@ public class CharacterComponent : TargetComponent
         move.MoveStop();
         attack.ResetFX();
 
-        m_data.health = m_data.healthMax;
+        m_stat.health = m_stat.healthMax;
         m_element.collider.enabled = true;
 
         SetColorParts(Color.white);

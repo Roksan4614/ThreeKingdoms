@@ -11,7 +11,8 @@ public class TableManager
     public static TableManager instance { get; private set; } = new();
 
     public static Table_Hero hero { get; private set; }
-    public static Table_Hero enemy { get; private set; }
+    public static Table_Stat statHero { get; private set; }
+    public static Table_Stat statEnemy { get; private set; }
     public static Table_Region region { get; private set; }
     public static Table_Item item { get; private set; }
     public static Table_Scenario scenario { get; private set; }
@@ -24,7 +25,8 @@ public class TableManager
         await AddressableManager.instance.LoadAssetAsync<TextAsset>(_result =>
         {
             hero = new(LoadList<TableHeroData>(_result, "HeroData"));
-            enemy = new(LoadList<TableHeroData>(_result, "EnemyData"));
+            statHero = new(LoadList<TableStatData>(_result, "HeroStatData"));
+            statEnemy = new(LoadList<TableStatData>(_result, "EnemyStatData"));
             item = new(LoadList<TableItemData>(_result, "ItemData"));
             scenario = new(LoadList<TableScenarioData>(_result, "ScenarioData"));
             region = new(LoadList<TableRegionData>(_result, "RegionData"));

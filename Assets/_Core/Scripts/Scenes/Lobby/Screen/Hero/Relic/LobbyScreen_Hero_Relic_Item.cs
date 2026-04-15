@@ -1,16 +1,17 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LobbyScreen_Hero_Relic_Item : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    RelicInfoData m_relicData;
+
+    public void Bind(UnityAction<RelicInfoData> _onCallback)
     {
-        
+
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetHeroData(RelicInfoData _data)
     {
-        
+        m_relicData = _data;
     }
 }

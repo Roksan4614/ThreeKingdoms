@@ -96,6 +96,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
             m_regionData.heroComponent.anim.Play(CharacterAnimType.Attack);
             await UniTask.WaitForSeconds(0.5f);
 
+            DataManager.userInfo.SetRegion(m_regionData.region);
             await DataManager.userInfo.AddHeroAsync(m_regionData.keyMaster, GradeType.Normal, true, true);
             await PopupManager.instance.ShowDimmAsync(true, _durationWait: 0);
             gameObject.SetActive(false);

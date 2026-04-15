@@ -357,6 +357,10 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             for (int i = 0; i < m_itemBatch.Count; i++)
                 m_itemBatch[i].SetActiveButton(m_curIndex_Batch > -1, i != index);
         }
+        else
+        {
+            m_itemBatch[0].SetActiveButton(false);
+        }
     }
 
     void OnButton_BatchHeroRemove(HeroIconComponent _item)
@@ -465,8 +469,8 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         m_itemList = m_itemList.OrderBy(x =>
             orderMap.ContainsKey(x.data) ? orderMap[x.data] : int.MaxValue).ToList();
 
-        List<HeroInfoData> dataList = m_itemList.Select(item => item.data).ToList();
-        var dd = dataList.Select(x => x.key).ToList();
+        for (int i = m_itemList.Count - 1; i > -1; i--)
+            m_itemList[i].transform.SetAsFirstSibling();
 
         ////보유 미보유 전체
         //bool isAll = true;
@@ -501,8 +505,8 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         //    var dd = dataList.Select(x => x.key).ToList();
         //}
 
-        for (int i = m_itemList.Count - 1; i > -1; i--)
-            m_itemList[i].transform.SetAsFirstSibling();
+        //for (int i = m_itemList.Count - 1; i > -1; i--)
+        //    m_itemList[i].transform.SetAsFirstSibling();
     }
 
     void ResetActiveButton_List()

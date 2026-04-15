@@ -381,7 +381,7 @@ public class StageManager : Singleton<StageManager>, IValidatable
         foreach (var enemy in m_enemyList)
         {
             if (enemy.isBoss == false)
-                enemy.OnDamage(null, enemy.data.healthMax);
+                enemy.OnDamage(null, enemy.stat.healthMax);
         }
     }
 

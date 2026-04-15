@@ -51,7 +51,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         List<HeroInfoData> myHero = DataManager.userInfo.myHero.Where(x => x.isBatch).ToList();
 
         var remove = m_member
-            .Where(x => myHero.Any(y => y.key == x.Value.data.key) == false)
+            .Where(x => myHero.Any(y => y.key == x.Value.info.key) == false)
             .Select(x => x.Key).ToList();
 
         for (int i = 0; i < remove.Count; i++)
@@ -62,7 +62,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         for (int i = 0; i < myHero.Count; i++)
         {
-            if (m_member.Values.Any(x => x.data.key.Equals(myHero[i].key)))
+            if (m_member.Values.Any(x => x.info.key.Equals(myHero[i].key)))
                 continue;
 
             var heroCharacter = (await AddressableManager.instance.GetHeroCharacterAsync(myHero[i].skin))?.GetComponent<CharacterComponent>();
@@ -86,7 +86,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         m_member.Clear();
 
-        var mainIndex = _members.FindIndex(x => x.data.key.Equals(DataManager.userInfo.myHero[0].key));
+        var mainIndex = _members.FindIndex(x => x.info.key.Equals(DataManager.userInfo.myHero[0].key));
 
         if (mainIndex == -1)
             return;
@@ -102,26 +102,26 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             // 주장이 전방일 경우 궁장,책사 중 공격력이 가장 강한 영웅이 뒤로 간다
             if (DataManager.option.mainTeamPosition == TeamPositionType.Front)
             {
-                var backs = _members.Where(x => x.data.classType == HeroClassType.Strategist).ToList();
+                var backs = _members.Where(x => x.info.classType == HeroClassType.Strategist).ToList();
 
                 if (backs.Count == 0)
-                    backs = _members.Where(x => x.data.classType == HeroClassType.Archer).ToList();
+                    backs = _members.Where(x => x.info.classType == HeroClassType.Archer).ToList();
 
                 character = backs.Count > 0
-                    ? backs.OrderByDescending(x => x.data.attackPower).First()
-                    : _members.OrderBy(x => x.data.healthMax).First();
+                    ? backs.OrderByDescending(x => x.stat.attackPower).First()
+                    : _members.OrderBy(x => x.stat.healthMax).First();
 
                 m_member.Add(TeamPositionType.Back, character);
             }
             // 주장이 후방일 경우 용장이거나 체력이 가장 높은 영웅을 앞으로 보낸다
             else
             {
-                var fronts = _members.Where(x => x.data.classType == HeroClassType.Champion).ToList();
+                var fronts = _members.Where(x => x.info.classType == HeroClassType.Champion).ToList();
 
                 if (fronts.Count == 0)
                     fronts = _members;
 
-                character = fronts.OrderByDescending(x => x.data.health).First();
+                character = fronts.OrderByDescending(x => x.stat.health).First();
 
                 m_member.Add(TeamPositionType.Front, character);
             }
@@ -137,7 +137,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         foreach (var member in m_member)
         {
-            member.Value.SetHeroData(member.Value.data.key);
+            member.Value.SetHeroData(member.Value.info.key);
             member.Value.SetTeamPosition(member.Key, m_element.startPos + m_dbPosition[member.Key]);
             member.Value.SetFaction(FactionType.Alliance);
         }
@@ -147,7 +147,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         heroInfo.SetTeamPosition();
     }
 
-    public float teamMoveSpeed => mainHero.data.moveSpeed;
+    public float teamMoveSpeed => mainHero.stat.moveSpeed;
     public CharacterComponent mainHero => m_member[DataManager.option.mainTeamPosition];
 
 
@@ -219,7 +219,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     public CharacterComponent GetHero(TeamPositionType _teamPosition)
      => m_member.ContainsKey(_teamPosition) == false ? null : m_member[_teamPosition];
     public CharacterComponent GetHero(string _key)
-     => m_member.Values.Where(x => x.data.key.Equals(_key)).First();
+     => m_member.Values.Where(x => x.info.key.Equals(_key)).First();
 
     public void RepositionToMain(float _duration = .5f, bool _isForce = false)
     {
