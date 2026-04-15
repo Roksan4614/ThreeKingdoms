@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -39,6 +40,32 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         await m_element.logo.DOFade(1, 0.5f).AsyncWaitForCompletion();
 
         float timeStart = Time.time;
+
+        // 사이에 세팅할것들
+        {
+            // 개발 도중 구조가 바뀌는것땜에 에러가 나는 경우가 있어서. 그거 대응
+            var assetBuild = Resources.Load<TextAsset>("EditorData/BuildData");
+
+            if (assetBuild != null)
+            {
+                string key = "START_TIME";
+
+                if (PPWorker.HasKey(key))
+                {
+                    DateTime dtStart = new DateTime(long.Parse(PPWorker.Get<string>(key)));
+
+                    var build = JObject.Parse(assetBuild.ToString());
+                    DateTime dtBuild = new DateTime((long)build["dt_build"]);
+
+                    if (dtBuild > dtStart)
+                        PlayerPrefs.DeleteAll();
+                }
+                else
+                    PlayerPrefs.DeleteAll();
+
+                PPWorker.Set(key, DateTime.UtcNow.Ticks.ToString());
+            }
+        }
 
         await UniTask.WhenAll(tasks);
 

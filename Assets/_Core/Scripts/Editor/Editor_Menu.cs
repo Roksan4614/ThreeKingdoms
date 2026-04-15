@@ -65,8 +65,8 @@ public class Editor_Menu
             userData.serviceType = _isDev ? ServiceType.Dev : ServiceType.Live;
             userData.isStore = _isStore;
 
-            var fildData = Resources.Load<TextAsset>("EditorData/BuildData");
-            userData.seasonIndex = fildData == null ? 0 : Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, int>>(fildData.ToString())["seasonIndex"];
+            var buildData = Resources.Load<TextAsset>("EditorData/BuildData");
+            userData.seasonIndex = buildData == null ? 0 : Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, int>>(buildData.ToString())["seanson_index"];
 
             var versionInfo = PlayerSettings.bundleVersion.Split(".");
             userData.version = string.Join(".", versionInfo.Take(2));

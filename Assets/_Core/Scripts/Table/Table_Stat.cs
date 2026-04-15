@@ -50,70 +50,86 @@ public struct TableStatData
     [JsonProperty] float move_speed;
     [JsonProperty] float attack_speed;
     [JsonProperty] float skill_cooldown_rate;
+    [JsonProperty] float life_steal;
 
     public bool isActive => key.IsActive();
     public float dashCooldown { get; set; }
     public float dashCooldownRate { get; set; }
     public float health { get; set; }
 
-    Dictionary<StatType, float> m_stat;
-    IReadOnlyDictionary<StatType, float> stat => m_stat;
+    IReadOnlyDictionary<StatType, float> stat
+    {
+        get {
+            Dictionary<StatType, float> result = new();
+
+            result.Add(StatType.attack_power, attack_power);
+            result.Add(StatType.move_speed, move_speed);
+            result.Add(StatType.attack_speed, attack_speed);
+            result.Add(StatType.critical_damage, critical_damage == 0 ? 1.2f : critical_damage);
+            result.Add(StatType.critical_rate, critical_rate);
+            result.Add(StatType.health_max, health_max);
+            result.Add(StatType.skill_cooldown_rate, skill_cooldown_rate);
+            result.Add(StatType.life_steal, life_steal);
+            result.Add(StatType.defence, defence_value);
+
+            return result;
+        }
+    }
 
     public void SetDefault()
     {
-        m_stat = new();
-
-        m_stat.Add(StatType.attack_power, attack_power == 0 ? 100 : attack_power);
-        m_stat.Add(StatType.move_speed, move_speed == 0 ? 10 : move_speed);
-        m_stat.Add(StatType.attack_speed, attack_speed == 0 ? 1 : attack_speed);
-        m_stat.Add(StatType.critical_damage, critical_damage == 0 ? 1.2f : critical_damage);
-        m_stat.Add(StatType.critical_rate, critical_rate == 0 ? 0 : critical_rate);
-        m_stat.Add(StatType.health_max, health_max == 0 ? 2000 : health_max);
-        m_stat.Add(StatType.skill_cooldown_rate, 0);
-        m_stat.Add(StatType.life_steal, 0);
-        m_stat.Add(StatType.defence, defence_value == 0 ? 100 : defence_value);
+        attack_power = attack_power == 0 ? 100 : attack_power;
+        move_speed = move_speed == 0 ? 10 : move_speed;
+        attack_speed = attack_speed == 0 ? 1 : attack_speed;
+        critical_damage = critical_damage == 0 ? 1.2f : critical_damage;
+        critical_rate = critical_rate == 0 ? 0 : critical_rate;
+        health_max = health_max == 0 ? 2000 : health_max;
+        skill_cooldown_rate = 0;
+        life_steal = 0;
+        defence_value = defence_value == 0 ? 100 : defence_value;
 
         health = healthMax;
     }
 
     public void SetMulitipleStat(float _percent)
     {
-        attackPower *= _percent;
-        health = healthMax = health_max * _percent;
+        attack_power *= _percent;
+        health = health_max = health_max * _percent;
     }
 
+    // 어디서 가져다 쓰는지 확인하기 위해
     public float attackPower
     {
-        get => m_stat[StatType.attack_power];
-        set => m_stat[StatType.attack_power] = value;
+        get => attack_power;
+        set => attack_power = Math.Max(1, value);
     }
 
     public float attackSpeed
     {
-        get => m_stat[StatType.attack_speed];
-        set => m_stat[StatType.attack_speed] = value;
+        get => attack_speed;
+        set => attack_speed = value;
     }
 
     public float healthMax
     {
-        get => m_stat[StatType.health_max];
-        set => m_stat[StatType.health_max] = value;
+        get => health_max;
+        set => health_max = value;
     }
 
     public float moveSpeed
     {
-        get => m_stat[StatType.move_speed];
-        set => m_stat[StatType.move_speed] = value;
+        get => move_speed;
+        set => move_speed = value;
     }
 
     public float skillCooldownRate
     {
-        get => m_stat[StatType.skill_cooldown_rate];
-        set => m_stat[StatType.skill_cooldown_rate] = value;
+        get => skill_cooldown_rate;
+        set => skill_cooldown_rate = value;
     }
     public float criticalDamage
     {
-        get => m_stat[StatType.critical_damage];
-        set => m_stat[StatType.critical_damage] = value;
+        get => critical_damage;
+        set => critical_damage = value;
     }
 }

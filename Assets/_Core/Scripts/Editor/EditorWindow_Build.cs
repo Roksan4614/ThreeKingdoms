@@ -648,9 +648,10 @@ public partial class EditorWindow_Build : EditorWindow
 
         filePath += $"/BuildData.json";
 
-        Dictionary<string, int> buildData = new()
+        Dictionary<string, long> buildData = new()
         {
-            {"seansonIndex",  m_userData.seasonIndex}
+            { "seanson_index",  m_userData.seasonIndex },
+            { "dt_build", DateTime.UtcNow.Ticks }
         };
 
         string jsonText = Newtonsoft.Json.JsonConvert.SerializeObject(buildData);

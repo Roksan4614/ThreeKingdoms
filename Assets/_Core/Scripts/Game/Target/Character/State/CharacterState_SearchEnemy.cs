@@ -11,8 +11,16 @@ public class CharacterState_SearchEnemy : CharacterState
     {
         var mainHero = TeamManager.instance.mainHero;
         var posTarget = StageManager.instance.centerPosition;
-        var posNearestEnemy = StageManager.instance.GetNearestEnemy(mainHero.transform.position).transform.position;
 
+        var nearestEnemy = StageManager.instance.GetNearestEnemy(mainHero.transform.position);
+
+        while (nearestEnemy == null)
+        {
+            nearestEnemy = StageManager.instance.GetNearestEnemy(mainHero.transform.position);
+            yield return null;
+        }
+
+        var posNearestEnemy = nearestEnemy.transform.position;
         var teamSpeed = TeamManager.instance.teamMoveSpeed;
 
         while (true)

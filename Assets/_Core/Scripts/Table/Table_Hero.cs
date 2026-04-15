@@ -78,11 +78,11 @@ public struct TableHeroData
     [JsonProperty] float percent_start_cooldown;
     [JsonProperty] float skill_cooltime;
 
-    int LEA;
-    int POW;
-    int INT;
-    int POL;
-    int CHA;
+    [JsonProperty] int LEA;
+    [JsonProperty] int POW;
+    [JsonProperty] int INT;
+    [JsonProperty] int POL;
+    [JsonProperty] int CHA;
 
     private List<int> m_statPoint;
     public List<int> statPoint
