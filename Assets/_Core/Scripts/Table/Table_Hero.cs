@@ -8,32 +8,15 @@ public class Table_Hero : BaseTable<string, TableHeroData>
     public Table_Hero(List<TableHeroData> _table) : base(_table)
     {
         m_list.RemoveAt(0);
-        //for (int i = 0; i < m_list.Count; i++)
-        //{
-        //    var data = m_list[i];
-        //    m_list[i] = data;
-        //}
+        for (int i = 0; i < m_list.Count; i++)
+        {
+            var data = m_list[i];
+            data.SetDefault();
+            m_list[i] = data;
+        }
 
         SetDictionary(x => x.key);
     }
-
-    //public TableHeroData GetHeroData(string _key, GradeType _grade = GradeType.Normal, int _encahntLevel = 0)
-    //{
-    //    if (Exists(_key) == false)
-    //        return default;
-
-    //    var data = m_dictionary[_key];
-
-    //    if (_grade > GradeType.Normal || _encahntLevel > 0)
-    //    {
-    //        float percent = (float)(_grade);
-    //        percent += (_encahntLevel) * 0.3f;
-
-    //        data.SetMulitipleStat(percent);
-    //    }
-
-    //    return data;
-    //}
 
     public int GetNeedSoulNextGrade(GradeType _nowGrade)
     {
@@ -93,6 +76,12 @@ public struct TableHeroData
                 m_statPoint = new() { LEA, POW, INT, POL, CHA };
             return m_statPoint;
         }
+    }
+
+    public void SetDefault()
+    {
+        skill_cooltime = skill_cooltime == 0 ? 15 : skill_cooltime;
+        percent_start_cooldown = percent_start_cooldown == 0 ? .8f : percent_start_cooldown;
     }
 
     public float percetnStartCooldown => percent_start_cooldown;
