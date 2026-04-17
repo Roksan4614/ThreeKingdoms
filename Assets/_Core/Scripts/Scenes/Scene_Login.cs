@@ -17,11 +17,10 @@ public class Scene_Login : SceneBase
         await UniTask.WaitForEndOfFrame();
 
         //await PopupManager.instance.ShowDimmAsync(false);
-
         //await PopupManager.instance.ShowDimmAsync(true);
 
         await TutorialManager.instance.InitializeAsync();
-        await DataManager.InitializeAsync();
+        await DataManager.instance.InitializeAsync();
 
         AddressableManager.instance.LoadScene("02_Lobby");
     }

@@ -19,7 +19,7 @@ public class Scene_Field : SceneBase
         await TableManager.instance.InitializeAsync();
         DataManager.option.Initialize();
         await TutorialManager.instance.InitializeAsync();
-        await DataManager.InitializeAsync();
+        await DataManager.instance.InitializeAsync();
 
 
         var team = transform.Find("Map/Heros/Team");

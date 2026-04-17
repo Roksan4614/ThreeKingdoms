@@ -5,29 +5,42 @@ using UnityEngine;
 
 public class DataManager
 {
-    public static DataManager instance { get; private set; } = new();
+    static DataManager m_instance;
 
-    public static Data_UserInfo userInfo { get; private set; } = new();
-    public static Data_Option option { get; private set; } = new();
-    public static Data_Stat stat { get; private set; } = new();
-
-    public static async UniTask InitializeAsync()
+    public static DataManager instance
     {
-        //List<UniTask> tasks = new();
-        //tasks.Add(userInfo.InitializeAsync());
-        //tasks.Add(stat.InitializeAsync());
+        get
+        {
+            if (m_instance == null)
+                m_instance = new();
+            return m_instance;
+        }
+    }
 
-        //await UniTask.WhenAll(tasks);
+    Data_UserInfo m_userInfo = new();
+    Data_Option m_option = new();
+    Data_Stat m_stat = new();
+    Data_HeroPosition m_heroPosition = new();
 
-        await userInfo.InitializeAsync();
-        await stat.InitializeAsync();
+    public static Data_UserInfo userInfo => instance.m_userInfo;
+    public static Data_Option option => instance.m_option;
+    public static Data_Stat stat => instance.m_stat;
+    public static Data_HeroPosition heroPosition => instance.m_heroPosition;
+
+
+    public async UniTask InitializeAsync()
+    {
+        await m_userInfo.InitializeAsync();
+
+        List<UniTask> tasks = new();
+        tasks.Add(m_stat.InitializeAsync());
+        tasks.Add(m_heroPosition.InitializeAsync());
+
+        await UniTask.WhenAll(tasks);
     }
 
     public static void Release()
     {
-        instance = null;
-        userInfo = null;
-        option = null;
-        stat = null;
+        m_instance = null;
     }
 }

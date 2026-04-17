@@ -9,26 +9,42 @@ public class PopupHeroInfo : BasePopupComponent
 {
     PopupHeroInfo() : base(PopupType.Hero_HeroInfo) { }
 
-    HeroInfoData m_heroInfoData;
+    enum TabType
+    {
+        NONE = -1,
+        stat,
+        attribute,
+        MAX
+    }
 
+    HeroInfoData m_heroInfoData;
     CharacterComponent m_character;
+
     public bool isNeedUpdate { get; private set; }
 
     void Start()
     {
         //m_element.btnCharacter.onClick.AddListener(() => m_character.anim.Play(CharacterAnimType.Attack));
 
-        m_element.btnStatus.onClick.AddListener(() => m_element.popupStatus.Open());
+        m_element.btnStatus.onClick.AddListener(
+            () => m_element.popupPosition.SetActive(m_heroInfoData.key));
 
         for (int i = 0; i < m_element.popup.childCount; i++)
             m_element.popup.GetChild(i).gameObject.SetActive(false);
 
         Utils.WaitEscape(this, Close, _token: destroyCancellationToken);
+
+        for (var i = TabType.NONE + 1; i < TabType.MAX; i++)
+        {
+            var tab = i;
+            m_element.btnTap[(int)i].onClick.AddListener(() => SetActiveTab(tab));
+        }
     }
 
     private void OnEnable()
     {
         Utils.SetActivePunch(m_element.panel, true, false);
+        SetActiveTab(TabType.stat);
     }
 
     // HeroInfoData
@@ -36,6 +52,15 @@ public class PopupHeroInfo : BasePopupComponent
     {
         if (_args.Length > 0)
             SetHeroInfoDataAsync((HeroInfoData)_args[0]).Forget();
+    }
+
+    void SetActiveTab(TabType _tabType)
+    {
+        for (var i = TabType.NONE + 1; i < TabType.MAX; i++)
+            m_element.btnTap[(int)i].SetDrawSelect(i == _tabType);
+
+        m_element.statBattle.SetActive(_tabType == TabType.stat);
+        m_element.statAttribute.SetActive(_tabType == TabType.attribute);
     }
 
     /// <summary>
@@ -152,7 +177,9 @@ public class PopupHeroInfo : BasePopupComponent
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtDescTalk;
 
-        public PopupHeroInfo_PopupStatus popupStatus;
+        public PopupHeroInfo_Popup_Position popupPosition;
+        public PopupHeroInfo_Stat_Battle statBattle;
+        public PopupHeroInfo_Stat_Attribute statAttribute;
 
         public Transform popup;
 
@@ -160,6 +187,8 @@ public class PopupHeroInfo : BasePopupComponent
         public ButtonHelper btnUpgrade;
         public ButtonHelper btnConfirm;
         public TextMeshProUGUI txtTimer_AutoClose;
+
+        public ButtonHelper[] btnTap;
 
         public List<EntryData> stat;
         public void Initialize(Transform _transform)
@@ -174,7 +203,7 @@ public class PopupHeroInfo : BasePopupComponent
             txtDescTalk = frontPanel.GetComponent<TextMeshProUGUI>("txt_desc");
 
             popup = _transform.Find("Popup");
-            popupStatus = popup.GetComponent<PopupHeroInfo_PopupStatus>("Status");
+            popupPosition = popup.GetComponent<PopupHeroInfo_Popup_Position>("Position");
 
             var pStat = panel.Find("Stat");
             stat = new();
@@ -194,6 +223,12 @@ public class PopupHeroInfo : BasePopupComponent
             btnConfirm = panel.GetComponent<ButtonHelper>("btn_confirm");
 
             txtTimer_AutoClose = btnConfirm.transform.GetComponent<TextMeshProUGUI>("txt_timer");
+
+            // TAB
+            btnTap = panel.Find("Tab").GetComponentsInChildren<ButtonHelper>();
+
+            statBattle = panel.GetComponent<PopupHeroInfo_Stat_Battle>("Stat_Battle");
+            statAttribute = panel.GetComponent<PopupHeroInfo_Stat_Attribute>("Stat_Attribute");
         }
 
         //public Transform panelHero => btnCharacter.transform.GetChild(0);

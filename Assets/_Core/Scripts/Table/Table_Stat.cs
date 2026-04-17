@@ -59,7 +59,8 @@ public struct TableStatData
 
     IReadOnlyDictionary<StatType, float> stat
     {
-        get {
+        get
+        {
             Dictionary<StatType, float> result = new();
 
             result.Add(StatType.attack_power, attack_power);
@@ -73,6 +74,22 @@ public struct TableStatData
             result.Add(StatType.defence, defence_value);
 
             return result;
+        }
+    }
+
+    public void SetStatData(StatType _statType, float _value)
+    {
+        switch (_statType)
+        {
+            case StatType.attack_power: attack_power = _value; break;
+            case StatType.defence: defence_value = _value; break;
+            case StatType.critical_damage: critical_damage = _value; break;
+            case StatType.critical_rate: critical_rate = _value; break;
+            case StatType.health_max: health_max = _value; break;
+            case StatType.move_speed: move_speed = _value; break;
+            case StatType.attack_speed: attack_speed = _value; break;
+            case StatType.skill_cooldown_rate: skill_cooldown_rate = _value; break;
+            case StatType.life_steal: life_steal = _value; break;
         }
     }
 

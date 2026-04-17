@@ -40,6 +40,11 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         UpdateTotalClass();
     }
 
+    private void OnEnable()
+    {
+        SetActiveTab(TabType.Hero);
+    }
+
     void SetActiveTab(TabType _tabType)
     {
         if (m_curTab == _tabType)
@@ -48,12 +53,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         m_curTab = _tabType;
 
         for (var i = TabType.NONE + 1; i < TabType.MAX; i++)
-        {
-            m_element.imgTabs[(int)i].color = i == _tabType ?
-                Palette.instance.data.Get(PaletteColorType.button_select) :
-                Color.white;
-            m_element.btnTabs[(int)i].TMPText.color = i == _tabType ? Color.white : Color.black;
-        }
+            m_element.btnTabs[(int)i].SetDrawSelect(i == _tabType);
 
         if (_tabType == TabType.Hero)
             UpdateTotalClass();
@@ -154,7 +154,6 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         public LobbyScreen_Hero_Relic_Item baseScrollItem;
 
         public ButtonHelper[] btnTabs;
-        public Image[] imgTabs;
 
         public void Initialize(Transform _transform)
         {
@@ -170,9 +169,8 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             baseTotalRelic.txtName = panel.Find("Total_Relic/Text").GetComponent<TextMeshProUGUI>();
             baseTotalRelic.txtValue = panel.Find("Total_Relic/Text/Text").GetComponent<TextMeshProUGUI>();
 
-            var menu = _transform.Find("Menu");
-            btnTabs = menu.GetComponentsInChildren<ButtonHelper>();
-            imgTabs = btnTabs.Select(x => x.transform.GetComponent<Image>()).ToArray();
+            var tab = _transform.Find("Tab");
+            btnTabs = tab.GetComponentsInChildren<ButtonHelper>();
         }
 
         public RectTransform rtPanel => (RectTransform)txtRelicCount.transform.parent;

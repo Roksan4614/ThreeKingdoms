@@ -55,11 +55,10 @@ public class Scene_Lobby : SceneBase
         bool isAutoSkill = DataManager.option.isAutoSkill;
 
         var rtAuto = m_element.imgAuto.rectTransform;
-        var txt = m_element.btnAuto.GetTMPText();
 
         ColorUtility.TryParseHtmlString(isAutoSkill ? "#000000" : "#a4a4a4", out Color color);
         m_element.imgAuto.color = color;
-        txt.color = color;
+        m_element.btnAuto.TMPText.color = color;
         m_element.outline.effectColor = color;
 
         if (DataManager.option.isAutoSkill)

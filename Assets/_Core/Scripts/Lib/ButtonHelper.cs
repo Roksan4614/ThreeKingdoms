@@ -28,7 +28,6 @@ public class ButtonHelper : MonoBehaviour, IValidatable
         set => m_element.button.interactable = value;
     }
 
-
     public TextMeshProUGUI TMPText => m_element.txtName;
 
     public bool isTriggerSwitch { get; set; } = true;
@@ -53,10 +52,17 @@ public class ButtonHelper : MonoBehaviour, IValidatable
         }
     }
 
-    public TextMeshProUGUI GetTMPText() => m_element.txtName;
-
     public void SetColliderSize()
         => m_element.SetColliderSize();
+
+    public void SetDrawSelect(bool _isSelect)
+    {
+        m_element.image.color = _isSelect ?
+                Palette.instance.data.Get(PaletteColorType.button_select) :
+                Color.white;
+
+        m_element.txtName.color = _isSelect ? Color.white : Color.black;
+    }
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
@@ -70,6 +76,7 @@ public class ButtonHelper : MonoBehaviour, IValidatable
         public RectTransform rt;
         public Vector3 localScale;
         public Button button;
+        public Image image;
         public TextMeshProUGUI txtName;
 
         public BoxCollider2D collider;
@@ -88,6 +95,7 @@ public class ButtonHelper : MonoBehaviour, IValidatable
                 nav.mode = Navigation.Mode.None;
                 button.navigation = nav;
             }
+            image = _transform.GetComponent<Image>();
             txtName = _transform.GetComponent<TextMeshProUGUI>("Text");
             objCheck = _transform.Find("CheckBox/Check")?.gameObject;
 
@@ -98,7 +106,8 @@ public class ButtonHelper : MonoBehaviour, IValidatable
 
         public void SetColliderSize()
         {
-            collider.size = rt.sizeDelta;
+            if (collider != null)
+                collider.size = rt.sizeDelta;
         }
     }
     #endregion VALIDATA

@@ -89,6 +89,9 @@ public class CharacterComponent : TargetComponent
         {
             var hero = _collision.transform.parent.GetComponent<CharacterComponent>();
             target.AddTarget(hero);
+
+            if (factionType == FactionType.Enemy)
+                IngameLog.Add("OnTriggerEnter2D: " + hero.name);
         }
     }
 
@@ -100,6 +103,9 @@ public class CharacterComponent : TargetComponent
             if (hero == null || target == null)
                 return;
             target.RemoveTarget(hero);
+
+            if (factionType == FactionType.Enemy)
+                IngameLog.Add("OnTriggerExit2D: " + hero.name);
         }
     }
 

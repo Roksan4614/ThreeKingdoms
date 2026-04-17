@@ -40,6 +40,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
     protected override void OnEnable()
     {
         base.OnEnable();
+        SetActiveTab(HeroTabType.Hero);
     }
 
     public void SetActiveTab(HeroTabType _tabType)
@@ -53,10 +54,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         {
             m_tabs[i].gameObject.SetActive(i == _tabType);
 
-            m_element.imgTabs[(int)i].color = i == _tabType ?
-                Palette.instance.data.Get(PaletteColorType.button_select) :
-                Color.white;
-            m_element.btnTabs[(int)i].TMPText.color = i == _tabType ? Color.white : Color.black;
+            m_element.btnTabs[(int)i].SetDrawSelect(i == _tabType);
         }
 
         m_txtTitle.text = _tabType.ToString().ToUpper();
@@ -102,7 +100,6 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         public List<LobbyScreen_Hero_TabBase> tabs;
 
         public ButtonHelper[] btnTabs;
-        public Image[] imgTabs;
 
         public void Initialize(Transform _transform)
         {
@@ -112,9 +109,8 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
             for (var i = HeroTabType.NONE + 1; i < HeroTabType.MAX; i++)
                 tabs.Add(panel.GetComponent<LobbyScreen_Hero_TabBase>(i.ToString()));
 
-            var menu = panel.Find("Menu");
-            btnTabs = menu.GetComponentsInChildren<ButtonHelper>();
-            imgTabs = btnTabs.Select(x => x.transform.GetComponent<Image>()).ToArray();
+            var tab = panel.Find("Tab");
+            btnTabs = tab.GetComponentsInChildren<ButtonHelper>();
         }
     }
 }
