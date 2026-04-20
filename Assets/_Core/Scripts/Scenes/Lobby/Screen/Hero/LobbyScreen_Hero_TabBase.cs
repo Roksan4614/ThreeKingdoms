@@ -5,7 +5,7 @@ public class LobbyScreen_Hero_TabBase : MonoBehaviour
 {
     public LobbyScreen_Hero.HeroTabType tabType { get; protected set; }
 
-    public virtual void Awake() { }
+    protected virtual void Awake() { }
 
     public virtual bool IsCloseScreen() => true;
 

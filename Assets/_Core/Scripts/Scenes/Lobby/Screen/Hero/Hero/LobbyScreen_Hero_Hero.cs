@@ -26,7 +26,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
     bool m_isNeedUpdateLayout;
 
-    private void Awake()
+    protected override void Awake()
     {
         tabType = LobbyScreen_Hero.HeroTabType.Hero;
 
@@ -74,10 +74,11 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
     private void Start()
     {
+        m_myHero.AddRange(DataManager.userInfo.myHero);
+
         m_teamPosition = m_teamPosition == TeamPositionType.Front ? TeamPositionType.Back : TeamPositionType.Front;
         OnButton_TeamPosition();
 
-        m_myHero.AddRange(DataManager.userInfo.myHero);
         SetLayout_Batch();
 
         // 리스트 아이콘 미리 생성
@@ -261,6 +262,8 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             line.SetAsLastSibling();
             m_itemBatch[0].transform.SetAsLastSibling();
         }
+
+        SetLayout_List();
     }
 
     void UpdateHeroData(HeroInfoData _data, bool _isLast = false)
@@ -311,25 +314,30 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     {
         if (_isRightClick)
         {
-            // 다른거 선택한게 없다면
-            if (m_curIndex_Batch > -1)
-            {
-                OnButton_BatchHeroRemove(_item);
-                ResetActiveButton_Batch();
-            }
-            else
-            {
-                //하나 밖에 없는데 리스트도 선택 없었다면 해제인데, 한명은 무조건 있어야 해
-                if (m_itemBatch.Count(x => x.data.isActive) == 1 && m_curIndex_List <= 0)
-                    return;
+            ResetActiveButton_Batch();
+            ResetActiveButton_List();
 
-                m_curIndex_Batch = m_curIndex_List;
+            OnButton_BatchHeroRemove(_item);
 
-                OnButton_BatchHeroRemove(_item);
+            //// 다른거 선택한게 없다면
+            //if (m_curIndex_Batch > -1)
+            //{
+            //    OnButton_BatchHeroRemove(_item);
+            //    ResetActiveButton_Batch();
+            //}
+            //else
+            //{
+            //    //하나 밖에 없는데 리스트도 선택 없었다면 해제인데, 한명은 무조건 있어야 해
+            //    if (m_itemBatch.Count(x => x.data.isActive) == 1 && m_curIndex_List <= 0)
+            //        return;
 
-                ResetActiveButton_Batch();
-                ResetActiveButton_List();
-            }
+            //    m_curIndex_Batch = m_curIndex_List;
+
+            //    OnButton_BatchHeroRemove(_item);
+
+            //    ResetActiveButton_Batch();
+            //    ResetActiveButton_List();
+            //}
 
             return;
         }
@@ -365,14 +373,6 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
     void OnButton_BatchHeroRemove(HeroIconComponent _item)
     {
-        //if (_item.data.isMain == true && StageManager.instance.isClearFirstStage == false)
-        //{
-        //    PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
-        //    return;
-        //}
-
-        var index = m_itemBatch.FindIndex(x => x.data.key == _item.data.key);
-
         // 리스트와 교환하는 경우
         if (m_curIndex_List > -1 && m_itemList[m_curIndex_List].data.isBatch == false)
         {
@@ -406,46 +406,49 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             SetLayout_Batch();
             SetLayout_List();
         }
-        else if (m_curIndex_Batch > -1 &&
-            m_itemBatch[m_curIndex_Batch] != _item &&
-            (m_curIndex_Batch != m_curIndex_List || m_curIndex_List != -1))
-        {
-            int prevIndex = m_myHero.FindIndex(x => x.key == m_itemBatch[m_curIndex_Batch].data.key);
-            int nowIndex = m_myHero.FindIndex(x => x.key == _item.data.key);
-
-            var temp = m_myHero[prevIndex];
-            m_myHero[prevIndex] = m_myHero[nowIndex];
-            m_myHero[nowIndex] = temp;
-
-            SetLayout_Batch();
-            SetLayout_List();
-        }
         else
         {
-            var data = m_itemList[index].data;
-            data.isBatch = false;
-            UpdateHeroData(data, true);
+            int idxBatchFromList = m_curIndex_List == -1 ? -1
+                : m_itemBatch.FindIndex(x => x.data.key.Equals(m_itemList[m_curIndex_List].data.key));
 
-            SetLayout_Batch();
+            if (m_curIndex_Batch > -1 &&
+                m_itemBatch[m_curIndex_Batch].data.key != _item.data.key &&
+                (m_curIndex_Batch != idxBatchFromList || idxBatchFromList != -1))
+            {
+                int prevIndex = m_myHero.FindIndex(x => x.key == m_itemBatch[m_curIndex_Batch].data.key);
+                int nowIndex = m_myHero.FindIndex(x => x.key == _item.data.key);
 
-            SetLayout_List();
+                var temp = m_myHero[prevIndex];
+                m_myHero[prevIndex] = m_myHero[nowIndex];
+                m_myHero[nowIndex] = temp;
+
+                SetLayout_Batch();
+                SetLayout_List();
+            }
+            else
+            {
+                if (m_itemBatch.Count(x => x.data.isMine) > 1)
+                {
+                    var index = m_itemBatch.FindIndex(x => x.data.key == _item.data.key);
+                    var data = m_itemBatch[index].data;
+                    data.isBatch = false;
+                    UpdateHeroData(data, true);
+
+                    SetLayout_Batch();
+                    SetLayout_List();
+                }
+            }
         }
 
-        for (int i = 0; i < m_itemBatch.Count; i++)
-            m_itemBatch[i].SetActiveButton(false);
-
-        for (int i = 0; i < m_itemList.Count; i++)
-            m_itemList[i].SetActiveButton(false);
-        m_curIndex_List = m_curIndex_Batch = -1;
+        ResetActiveButton_Batch();
+        ResetActiveButton_List();
     }
 
     void ResetActiveButton_Batch()
     {
-        if (m_curIndex_Batch > -1)
-        {
-            m_itemList[m_curIndex_Batch].SetActiveButton(false);
-            m_curIndex_Batch = -1;
-        }
+        for (int i = 0; i < m_itemBatch.Count; i++)
+            m_itemBatch[i].SetActiveButton(false);
+        m_curIndex_Batch = -1;
     }
     #endregion BATCH
 
@@ -460,14 +463,26 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                 m_itemList[indexList].UpdateHeroInfo(_updateInfoData);
         }
 
-        var sortData = DataManager.userInfo.GetHeroSortData(m_itemList.Select(item => item.data).ToList());
+        var mainTeamPos = DataManager.option.mainTeamPosition;
+        if (mainTeamPos != m_teamPosition)
+            DataManager.option.mainTeamPosition = m_teamPosition;
+
+        var sortData = DataManager.userInfo.GetHeroSortData(m_myHero);
+
+        if (mainTeamPos != m_teamPosition)
+            DataManager.option.mainTeamPosition = mainTeamPos;
 
         var orderMap = sortData
             .Select((_data, _index) => new { _data, _index })
-            .ToDictionary(x => x._data, x => x._index);
+            .ToDictionary(x => x._data.key, x => x._index);
 
         m_itemList = m_itemList.OrderBy(x =>
-            orderMap.ContainsKey(x.data) ? orderMap[x.data] : int.MaxValue).ToList();
+        {
+            string key = x.data.key;
+            int result = orderMap.ContainsKey(key) ? orderMap[key] : int.MaxValue;
+            return result;
+        }
+            ).ToList();
 
         for (int i = m_itemList.Count - 1; i > -1; i--)
             m_itemList[i].transform.SetAsFirstSibling();
@@ -511,11 +526,14 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
     void ResetActiveButton_List()
     {
-        if (m_curIndex_List > -1)
+        for (int i = 0; i < m_itemList.Count; i++)
         {
-            m_itemList[m_curIndex_List].SetActiveButton(false);
-            m_curIndex_List = -1;
+            if (m_itemList[i].data.isMine == false)
+                break;
+
+            m_itemList[i].SetActiveButton(false);
         }
+        m_curIndex_List = -1;
     }
 
     void OnButton_ListHero(HeroIconComponent _item, bool _isRightClick)
@@ -524,61 +542,75 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         if (_isRightClick)
         {
+            ResetActiveButton_Batch();
+            ResetActiveButton_List();
+
             int idxSbling = _item.transform.GetSiblingIndex();
 
             // 이미 출진 중이라면?
             if (_item.data.isBatch == true)
-            {
-                if (m_curIndex_Batch > -1)
-                {
-                    m_curIndex_List = m_curIndex_Batch;
-                    m_curIndex_Batch = -1;
-                }
-
-                // 나 자신을 클릭한거라면
-                if (idxSbling == m_curIndex_List || m_curIndex_List == -1)
-                {
-                    if (m_itemBatch.Count(x => x.data.isActive) == 1 && m_curIndex_List <= 0)
-                    {
-                        m_curIndex_List = -1;
-                        return;
-                    }
-
-                    OnButton_ListHeroRemove(_item);
-                }
-                // 먼저 클릭한 영웅이 있다면,
-                else if (m_curIndex_List > -1)
-                {
-                    m_curIndex_Batch = idxSbling;
-
-                    if (m_itemList[m_curIndex_List].data.isBatch == false)
-                        OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_Batch]);
-                    else
-                        OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_List]);
-                }
-            }
-            // 먼저 선택한 영웅이 배치중이라면,
-            else if (m_curIndex_List > -1 && m_itemList[m_curIndex_List].data.isBatch == true)
-            {
-                m_curIndex_Batch = m_curIndex_List;
-                m_curIndex_List = idxSbling;
-                OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_Batch]);
-            }
-            // 배치에서 선택한게 있다면
-            else if (m_curIndex_Batch > -1)
-            {
-                m_curIndex_List = idxSbling;
-                OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_Batch]);
-            }
+                OnButton_BatchHeroRemove(m_itemBatch.Find(x => x.data.isBatch == true && x.data.key == _item.data.key));
             // 빈공간이 있으면?
             else if (m_itemBatch.Any(x => x.data.isActive == false))
             {
                 if (_item.data.isMine == true)
                     OnButton_ListHeroRemove(_item);
-
-                ResetActiveButton_Batch();
-                ResetActiveButton_List();
             }
+            //int idxSbling = _item.transform.GetSiblingIndex();
+
+            //// 이미 출진 중이라면?
+            //if (_item.data.isBatch == true)
+            //{
+            //    if (m_curIndex_Batch > -1)
+            //    {
+            //        m_curIndex_List = m_curIndex_Batch;
+            //        m_curIndex_Batch = -1;
+            //    }
+
+            //    // 나 자신을 클릭한거라면
+            //    if (idxSbling == m_curIndex_List || m_curIndex_List == -1)
+            //    {
+            //        if (m_itemBatch.Count(x => x.data.isActive) == 1 && m_curIndex_List <= 0)
+            //        {
+            //            m_curIndex_List = -1;
+            //            return;
+            //        }
+
+            //        OnButton_ListHeroRemove(_item);
+            //    }
+            //    // 먼저 클릭한 영웅이 있다면,
+            //    else if (m_curIndex_List > -1)
+            //    {
+            //        m_curIndex_Batch = idxSbling;
+
+            //        if (m_itemList[m_curIndex_List].data.isBatch == false)
+            //            OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_Batch]);
+            //        else
+            //            OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_List]);
+            //    }
+            //}
+            //// 먼저 선택한 영웅이 배치중이라면,
+            //else if (m_curIndex_List > -1 && m_itemList[m_curIndex_List].data.isBatch == true)
+            //{
+            //    m_curIndex_Batch = m_curIndex_List;
+            //    m_curIndex_List = idxSbling;
+            //    OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_Batch]);
+            //}
+            //// 배치에서 선택한게 있다면
+            //else if (m_curIndex_Batch > -1)
+            //{
+            //    m_curIndex_List = idxSbling;
+            //    OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_Batch]);
+            //}
+            //// 빈공간이 있으면?
+            //else if (m_itemBatch.Any(x => x.data.isActive == false))
+            //{
+            //    if (_item.data.isMine == true)
+            //        OnButton_ListHeroRemove(_item);
+
+            //    ResetActiveButton_Batch();
+            //    ResetActiveButton_List();
+            //}
             return;
         }
 
@@ -617,6 +649,9 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                 bool isSelf = _item.data.key.Equals(m_itemBatch[i].data.key);
                 m_itemBatch[i].SetActiveButton(m_curIndex_List > -1 && m_itemBatch[i].data.isActive,
                     isSelf == false);
+
+                if (isSelf)
+                    m_curIndex_Batch = i;
             }
         }
     }

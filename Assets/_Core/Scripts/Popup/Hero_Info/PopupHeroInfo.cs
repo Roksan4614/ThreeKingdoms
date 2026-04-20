@@ -39,6 +39,9 @@ public class PopupHeroInfo : BasePopupComponent
             var tab = i;
             m_element.btnTap[(int)i].onClick.AddListener(() => SetActiveTab(tab));
         }
+
+        m_element.btnEnchant.onClick.AddListener(() => OnButtonAsync_Upgrade(false).Forget());
+        m_element.btnUpgrade.onClick.AddListener(() => OnButtonAsync_Upgrade(true).Forget());
     }
 
     private void OnEnable()
@@ -125,6 +128,11 @@ public class PopupHeroInfo : BasePopupComponent
         m_element.btnConfirm.onClick.AddListener(Close);
     }
 
+    async UniTask OnButtonAsync_Upgrade(bool _isUpgrade)
+    {
+        await m_element.popupUpgrade.OpenAsyn(_isUpgrade);
+    }
+
     public async UniTask AutoCloseAsync(float _duration)
     {
         m_element.btnEnchant.transform.parent.gameObject.SetActive(false);
@@ -164,7 +172,7 @@ public class PopupHeroInfo : BasePopupComponent
     public override void OnManualValidate()
         => m_element.Initialize(transform);
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     ElementData m_element;
     [Serializable]
     struct ElementData
@@ -178,6 +186,8 @@ public class PopupHeroInfo : BasePopupComponent
         public TextMeshProUGUI txtDescTalk;
 
         public PopupHeroInfo_Popup_Position popupPosition;
+        public PopupHeroInfo_Popup_Upgrade popupUpgrade;
+
         public PopupHeroInfo_Stat_Battle statBattle;
         public PopupHeroInfo_Stat_Attribute statAttribute;
 
@@ -202,8 +212,11 @@ public class PopupHeroInfo : BasePopupComponent
             txtName = frontPanel.GetComponent<TextMeshProUGUI>("txt_name");
             txtDescTalk = frontPanel.GetComponent<TextMeshProUGUI>("txt_desc");
 
-            popup = _transform.Find("Popup");
-            popupPosition = popup.GetComponent<PopupHeroInfo_Popup_Position>("Position");
+            {
+                popup = _transform.Find("Popup");
+                popupPosition = popup.GetComponent<PopupHeroInfo_Popup_Position>("Position");
+                popupUpgrade = popup.GetComponent<PopupHeroInfo_Popup_Upgrade>("Upgrade");
+            }
 
             var pStat = panel.Find("Stat");
             stat = new();

@@ -127,7 +127,6 @@ public class Tutorial_START : TutorialBase
         }
 
         enemy.target.SetTarget(null);
-        enemy.Respawn(false);
         enemy.move.MoveTarget(mainHero, true);
         mainHero.move.MoveTarget(enemy, true);
 

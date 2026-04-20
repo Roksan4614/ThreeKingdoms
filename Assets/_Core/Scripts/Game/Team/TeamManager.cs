@@ -366,7 +366,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         public void Initialize(Transform _transform)
         {
             startPos = _transform.GetChild(0).position;
-            heroInfo = GameObject.Find("Canvas/HeroInfo/Panel").transform;
+            heroInfo = GameObject.Find("Canvas/HeroInfo").transform;
         }
     }
 }

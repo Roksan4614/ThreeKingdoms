@@ -101,6 +101,8 @@ public class Character_Worker_Move : Character_Worker
                     m_owner.target.SetTarget(nt);
                     _target = nt;
                 }
+                //else if (_target != null)
+                //    m_owner.target.SetTarget(_target);
             }
 
             yield return null;
@@ -141,11 +143,8 @@ public class Character_Worker_Move : Character_Worker
 
         if (ControllerManager.instance.isKeyboardMode)
         {
-            if (m_owner.transform.position.x < CameraManager.instance.GetMousePosition().x != lookAt.x > 0)
-            {
-
+            if (lookAt.x != 0 && m_owner.transform.position.x < CameraManager.instance.GetMousePosition().x != lookAt.x > 0)
                 m_owner.anim.Play(CharacterAnimType.Dash_Back);
-            }
             else
                 m_owner.anim.Play(CharacterAnimType.Dash);
         }

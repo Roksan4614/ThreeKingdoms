@@ -269,7 +269,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             float progress = (Time.time - startTime) / (endTime - startTime);
             m_element.imgDashTimer.fillAmount = 1 - progress;
 
-            await UniTask.Yield();
+            await UniTask.Yield(cancellationToken:destroyCancellationToken);
         }
 
         m_element.imgCallTimer.gameObject.SetActive(false);
@@ -376,16 +376,15 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             m_mainHero.SetState(TeamManager.instance.teamState);
     }
 
-    Tween m_tweenMoveAction;
-    public void SetMoveActionArea(bool _isBottom, bool _isTween = true)
+    public void SetMoveActionArea(bool _isBottom, bool _isTween = true, float _duration = .2f)
     {
-        m_tweenMoveAction?.Kill();
-
         var target = m_element.rt.offsetMin;
-        target.y = _isBottom ? 250 : 455;
+        target.y = _isBottom ? 300 : 455;
 
-        DOTween.To(() => target, _offsetMin => m_element.rt.offsetMin = _offsetMin, target, _isTween ? 0.2f : 0f);
-        //m_tweenMoveAction = m_element.rtAction.DOAnchorPosY(_isBottom ? -50f : 130f, _isTween ? 0.1f : 0f);
+        DOTween.To(() => m_element.rt.offsetMin,
+            _offsetMin => m_element.rt.offsetMin = _offsetMin,
+            target,
+            _isTween ? _duration : 0f);
     }
 
     public void UpdateColltime_Skill(float _duration, float _progress)

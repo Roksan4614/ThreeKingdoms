@@ -22,7 +22,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 
     TabType m_curTab = TabType.Hero;
 
-    public override void Awake()
+    protected override void Awake()
     {
         m_element.baseScrollItem.transform.SetParent(m_element.scroll.viewport);
         m_element.baseScrollItem.gameObject.SetActive(false);

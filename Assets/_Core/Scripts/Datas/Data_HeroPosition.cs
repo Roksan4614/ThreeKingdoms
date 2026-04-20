@@ -10,7 +10,6 @@ public class Data_HeroPosition : MonoBehaviour
 
     public async UniTask InitializeAsync()
     {
-        await UniTask.WaitForSeconds(1f);
         // TODO TEST DATA
         List<TableHeroPositionData> db = new();
         db.Add(new() { position = HeroPositionType.GENERAL_WU, statType = StatType.attack_power, value = .1f });

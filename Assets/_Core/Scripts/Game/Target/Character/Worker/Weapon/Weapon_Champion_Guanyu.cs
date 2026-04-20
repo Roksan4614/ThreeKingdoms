@@ -11,7 +11,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
     const float c_maxSqrMagnitudeRange = 10;
 
     float m_maxMagnitude = 8;
-    
+
     float m_maxSqrMagnitue = -1;
     float maxSqrMagnitue
     {
@@ -54,14 +54,14 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
                 m_owner.move.MoveTarget(target, true);
             }
 
-            if ((target.transform.position - m_owner.transform.position).sqrMagnitude < maxSqrMagnitue)
+            if (target != null && (target.transform.position - m_owner.transform.position).sqrMagnitude < maxSqrMagnitue)
             {
                 var index = TeamManager.instance.heroInfo.GetIndex(m_owner.info.key);
                 TeamManager.instance.heroInfo.UseSkill(index);
                 break;
             }
 
-            await UniTask.Yield();
+            await UniTask.Yield(cancellationToken: destroyCancellationToken);
         }
     }
 

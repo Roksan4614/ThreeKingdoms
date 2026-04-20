@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
-using System.Collections;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -23,6 +22,11 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         m_element.button.onClick.AddListener(OnButton_UseSkill);
 
         m_element.startPosition.gameObject.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        CTSRelease_CooldownSkill();
     }
 
     public bool isActive => m_hero != null;
@@ -93,7 +97,9 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         m_element.rtBar_HP.parent.gameObject.SetActive(false);
 
         StopAllCoroutines();
-        m_coCooltimeSkill = null;
+
+        CTSRelease_CooldownSkill();
+        //m_coCooltimeSkill = null;
         StopRespawn();
 
         m_hero = null;
@@ -105,7 +111,8 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         {
             UpdateHP();
             StopRespawn();
-            StartCooldownSkill();
+            CooldownSkillAsync().Forget();
+            //StartCooldownSkill();
         }
     }
 
@@ -207,19 +214,24 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         m_cooltime_Revive.endTime -= (m_cooltime_Revive.endTime - Time.realtimeSinceStartup) * _percent;
     }
 
-    public void StartCooldownSkill()
+    public void CTSRelease_CooldownSkill()
     {
-        if (m_coCooltimeSkill != null)
-            StopCoroutine(m_coCooltimeSkill);
-
-        m_coCooltimeSkill = StartCoroutine(DoCooldownSkill());
+        if (m_ctsCooldownSkill != null)
+        {
+            m_ctsCooldownSkill.Cancel();
+            m_ctsCooldownSkill.Dispose();
+            m_ctsCooldownSkill = null;
+        }
     }
 
-    Coroutine m_coCooltimeSkill;
+    CancellationTokenSource m_ctsCooldownSkill;
     StatusType m_statusSkill = StatusType.Wait;
 
-    public IEnumerator DoCooldownSkill()
+    async UniTask CooldownSkillAsync()
     {
+        CTSRelease_CooldownSkill();
+        m_ctsCooldownSkill = new();
+
         m_element.objOnSkill.SetActive(false);
 
         var stat = m_hero.stat;
@@ -242,7 +254,8 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
                     bar.gameObject.SetActive(false);
                     dieTime = Time.realtimeSinceStartup;
                 }
-                yield return null;
+
+                await UniTask.Yield(cancellationToken: m_ctsCooldownSkill.Token);
                 continue;
             }
             else if (dieTime > 0)
@@ -288,14 +301,14 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
                     if (DataManager.option.isAutoSkill)
                         OnButton_UseSkill();
 
-                    yield return null;
+                    await UniTask.Yield(cancellationToken: m_ctsCooldownSkill.Token);
                 }
 
                 // 스킬 사용하기!!
                 m_element.objOnSkill.SetActive(false);
 
                 if (m_statusSkill == StatusType.Success)
-                    yield return m_hero.attack.UseSkillAsync().ToCoroutine();
+                    await m_hero.attack.UseSkillAsync();
 
                 m_statusSkill = StatusType.Wait;
                 m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
@@ -303,7 +316,10 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
                 addTime = 0;
             }
 
-            yield return null;
+            if (m_ctsCooldownSkill == null)
+                break;
+
+            await UniTask.Yield(cancellationToken: m_ctsCooldownSkill.Token);
         }
     }
 

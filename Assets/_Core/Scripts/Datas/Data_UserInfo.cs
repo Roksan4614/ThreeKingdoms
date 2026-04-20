@@ -104,25 +104,28 @@ public class Data_UserInfo
         }
 
         //일단 리스트 다 넣어주자.
-        var dbHero = TableManager.hero.list;
-        for (int i = 0; i < dbHero.Count; i++)
+
+        for (int i = 0; i < _data.Count; i++)
         {
-            var data = _data.Find(x => x.key == dbHero[i].key);
+            var data = _data[i];
 
             if (data.isBatch == true)
             {
                 lstBatch.Add(data);
             }
-            else
+            else if (_isWithNotMine == true || data.isMine == true)
+                lstNotBatch.Add(data);
+        }
+
+        var dbHero = TableManager.hero.list;
+
+        if (_isWithNotMine == true && dbHero.Count > _data.Count)
+        {
+            dbHero = dbHero.Where(x => _data.Any(_x => _x.key.Equals(x.key) == false) == false).ToList();
+
+            for (int i = 0; i < dbHero.Count; i++)
             {
-                if (data.isActive == false)
-                {
-                    if (_isWithNotMine == false)
-                        continue;
-
-                    data = new(dbHero[i].key, _isMine: false);
-                }
-
+                HeroInfoData data = new(dbHero[i].key, _isMine: false);
                 lstNotBatch.Add(data);
             }
         }
