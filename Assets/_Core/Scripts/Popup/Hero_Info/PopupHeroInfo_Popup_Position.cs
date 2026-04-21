@@ -9,7 +9,7 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
 
     private void Start()
     {
-        transform.GetComponent<Button>("Dimm").onClick.AddListener(OnClose);
+        transform.GetComponent<Button>("Dimm").onClick.AddListener(Close);
 
         foreach (var category in DataManager.heroPosition.data)
         {
@@ -32,7 +32,7 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
         IngameLog.Add("OnButton: " + _heroPositionType);
     }
 
-    void OnClose()
+    public void Close()
     {
         gameObject.SetActive(false);
     }

@@ -40,12 +40,20 @@ public class PopupHeroInfo : BasePopupComponent
             m_element.btnTap[(int)i].onClick.AddListener(() => SetActiveTab(tab));
         }
 
+        m_element.btnConfirm.onClick.AddListener(Close);
         m_element.btnEnchant.onClick.AddListener(() => OnButtonAsync_Upgrade(false).Forget());
         m_element.btnUpgrade.onClick.AddListener(() => OnButtonAsync_Upgrade(true).Forget());
+
+        // POPUP UPGRADE
+        {
+            m_element.popupUpgrade.btnUpgradeLeft.onClick.AddListener(() => OnButton_UpgradeArrow(true));
+            m_element.popupUpgrade.btnUpgradeRight.onClick.AddListener(() => OnButton_UpgradeArrow(false));
+        }
     }
 
     private void OnEnable()
     {
+        isNeedUpdate = false;
         Utils.SetActivePunch(m_element.panel, true, false);
         SetActiveTab(TabType.stat);
     }
@@ -74,7 +82,16 @@ public class PopupHeroInfo : BasePopupComponent
     /// <returns></returns>
     public async UniTask SetHeroInfoDataAsync(HeroInfoData _data, bool _isJustWatch = false)
     {
-        isNeedUpdate = false;
+        // 하단 버튼 세팅
+        {
+            if (_data.isMine == false && _isJustWatch == false)
+                _isJustWatch = true;
+
+            m_element.btnEnchant.transform.parent.gameObject.SetActive(_isJustWatch == false);
+            m_element.btnConfirm.transform.gameObject.SetActive(_isJustWatch == true);
+            m_element.txtTimer_AutoClose.text = "";
+        }
+
         gameObject.SetActive(true);
 
         if (_data.key == m_heroInfoData.key)
@@ -99,8 +116,14 @@ public class PopupHeroInfo : BasePopupComponent
             m_element.stat[i].title.alpha = txt.alpha = value >= 90 ? 1 : value >= 80 ? .9f : value >= 70 ? .8f : value >= 60 ? .7f : .6f;
         }
 
+        //전투능력치
+        {
+            m_element.statBattle.SetStatData(m_heroInfoData);
+        }
+
         // CHARACTER 
         {
+
             var parent = m_element.panelHero;
             bool isFinded = false;
             for (int i = 0; i < parent.childCount; i++)
@@ -123,21 +146,53 @@ public class PopupHeroInfo : BasePopupComponent
                 m_character.DeleteElement();
             }
         }
-
-        // 버튼확인용
-        m_element.btnConfirm.onClick.AddListener(Close);
     }
 
     async UniTask OnButtonAsync_Upgrade(bool _isUpgrade)
     {
-        await m_element.popupUpgrade.OpenAsyn(_isUpgrade);
+        var heroData = m_heroInfoData;
+        if (_isUpgrade)
+        {
+            heroData.grade++;
+
+            if (heroData.grade >= GradeType.MAX)
+            {
+                PopupManager.instance.AlertShow("이미_최대_등급입니다.");
+                return;
+            }
+        }
+        else
+        {
+            heroData.enchantLevel++;
+
+            if (heroData.enchantLevel > 20)
+            {
+                PopupManager.instance.AlertShow("이미_최대_레벨입니다.");
+                return;
+            }
+        }
+
+        m_element.statBattle.SetCompareData(heroData);
+
+        await m_element.popupUpgrade.OpenAsyn(heroData, _isUpgrade);
+
+        if (m_element.popupUpgrade.isNeedUpdate)
+        {
+            m_heroInfoData = m_element.popupUpgrade.heroInfoData;
+            isNeedUpdate = true;
+        }
+
+        m_element.statBattle.SetStatData(m_heroInfoData);
+    }
+
+    void OnButton_UpgradeArrow(bool _isPrev)
+    {
+        m_element.popupUpgrade.OnButton_UpgradeArrow(_isPrev);
+        m_element.statBattle.SetCompareData(m_element.popupUpgrade.heroInfoData);
     }
 
     public async UniTask AutoCloseAsync(float _duration)
     {
-        m_element.btnEnchant.transform.parent.gameObject.SetActive(false);
-        m_element.btnConfirm.transform.gameObject.SetActive(true);
-
         string key = "{0}초후_닫힘._터치하면_취소됩니다.";
 
         DateTime dtClose = DateTime.Now.AddSeconds(_duration);
@@ -160,6 +215,17 @@ public class PopupHeroInfo : BasePopupComponent
 
     public override void Close()
     {
+        if (m_element.popupPosition.gameObject.activeSelf)
+        {
+            m_element.popupPosition.Close();
+            return;
+        }
+        if (m_element.popupUpgrade.gameObject.activeSelf)
+        {
+            m_element.popupUpgrade.Close();
+            return;
+        }
+
         CloseAsync().Forget();
     }
 

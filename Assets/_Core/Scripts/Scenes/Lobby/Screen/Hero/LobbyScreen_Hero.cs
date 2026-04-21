@@ -64,11 +64,11 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
     {
         for (var i = HeroTabType.NONE + 1; i < HeroTabType.MAX; i++)
         {
-            if (m_tabs[i].IsCloseScreen())
-                return true;
+            if (m_tabs[i].IsCloseScreen() == false)
+                return false;
         }
 
-        return false;
+        return true;
     }
 
     protected override async UniTask CloseAsync()

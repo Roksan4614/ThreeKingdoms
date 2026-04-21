@@ -140,6 +140,8 @@ public static class Extenssions
         => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT);
     public static string AmountKMBT(this long _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
         => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT);
+    public static string AmountKMBT(this float _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
+            => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT);
 
     public static string AmountKMBT(this double _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
     {
@@ -147,12 +149,12 @@ public static class Extenssions
 
         if ((_isMBT && _value < 1000000) ||
             (_isMBT == false && _value < 1000))
-            return _isDot ? _isFullDot ? $"{_value:#,##0.#0}" : amount : $"{Math.Floor(_value):#,##0}";
+            return _isDot ? (_isFullDot && _value >= 1000) ? $"{_value:#,##0.#0}" : amount : $"{Math.Floor(_value):#,##0}";
 
         switch (DataManager.option.language)
         {
             case LanguageType.Korean:
-                return AmountKMBT_EastAsia(_value);
+                return AmountKMBT_EastAsia(_value, _isDot, _isFullDot);
         }
 
         var amount_point = amount.Split('.');
@@ -214,4 +216,7 @@ public static class Extenssions
         return amount;
     }
     #endregion AMOUNT
+
+    public static bool Approximately(this float _float, float _value, float _gap = 0.0001f)
+        => Mathf.Abs(_float - _value) <= _gap;
 }

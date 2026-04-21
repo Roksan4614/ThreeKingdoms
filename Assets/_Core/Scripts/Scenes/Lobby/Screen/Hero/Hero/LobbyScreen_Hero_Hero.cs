@@ -153,17 +153,17 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             Destroy(m_popupSort.gameObject);
         if (m_popupHeroInfo != null)
             Destroy(m_popupHeroInfo.gameObject);
+
+        m_popupSort = null; m_popupHeroInfo = null; m_popupFilter = null;
     }
     public override bool IsCloseScreen()
     {
         if (gameObject.activeSelf == true)
         {
-            if (m_popupFilter?.gameObject.activeSelf == true)
-                m_popupFilter.Close();
-            else if (m_popupSort?.gameObject.activeSelf == true)
-                m_popupSort.Close();
-            else if (m_popupHeroInfo?.gameObject.activeSelf == true)
-                m_popupHeroInfo.Close();
+            if (m_popupFilter?.gameObject.activeSelf == true ||
+                m_popupSort?.gameObject.activeSelf == true ||
+                m_popupHeroInfo?.gameObject.activeSelf == true)
+                return false;
             else
                 return true;
         }
@@ -286,9 +286,9 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     public async UniTask OpenHeroInfoPopup(HeroInfoData _data)
     {
         if (m_popupHeroInfo == null)
-            m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo);
-
-        await m_popupHeroInfo.SetHeroInfoDataAsync(_data);
+            m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo, _data);
+        else
+            await m_popupHeroInfo.SetHeroInfoDataAsync(_data);
 
         await UniTask.WaitUntil(() => m_popupHeroInfo.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
 

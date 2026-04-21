@@ -45,7 +45,6 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
     protected virtual void OnDisable()
         => Release_CTS();
 
-
     void Release_CTS()
     {
         if (m_cts != null)
