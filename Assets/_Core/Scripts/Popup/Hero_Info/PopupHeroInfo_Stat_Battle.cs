@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class PopupHeroInfo_Stat_Battle : MonoBehaviour, IValidatable
 {
-    Dictionary<StatType, StatData> m_dbStat = new();
+    Dictionary<BattleStatType, StatData> m_dbStat = new();
     HeroInfoData m_heroInfoData;
 
     private void Awake()
@@ -55,7 +55,7 @@ public class PopupHeroInfo_Stat_Battle : MonoBehaviour, IValidatable
         {
             lstStat = new();
 
-            for (var i = StatType.NONE + 1; i < StatType.MAX; i++)
+            for (var i = BattleStatType.NONE + 1; i < BattleStatType.MAX; i++)
             {
                 int idx = (int)i;
                 var comp = _transform.GetChild(idx);
@@ -74,7 +74,7 @@ public class PopupHeroInfo_Stat_Battle : MonoBehaviour, IValidatable
     [Serializable]
     struct StatData
     {
-        public StatType type;
+        public BattleStatType type;
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtValue;
     }

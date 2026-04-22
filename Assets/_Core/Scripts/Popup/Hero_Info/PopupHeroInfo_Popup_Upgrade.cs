@@ -78,6 +78,10 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
 
         await UniTask.WaitForEndOfFrame();
 
+        DataManager.userInfo.Update(m_heroInfoData);
+        Signal.instance.UpdateHeroStat.Emit(m_heroInfoData.key);
+
+        Close();
         m_status = StatusType.Success;
     }
 

@@ -99,31 +99,21 @@ public class PopupHeroInfo : BasePopupComponent
 
         m_heroInfoData = _data;
 
-        //var dbHeroData = TableManager.hero.Get(_data.key);
-
         // FRONT PANEL
         var key = $"{_data.regionType}_{_data.key}".ToUpper();
         m_element.txtName.text = $"{TableManager.stringHero.GetString("NAME_" + key)}<size=80%><color=#888888> {TableManager.stringHero.GetString("COURTESY_" + key)}";
         m_element.txtDescTalk.text = _data.talk;
+        m_element.txtEnchantLevel.text = $"(+{_data.enchantLevel})";
+        m_element.txtGrade.text = $"등급:_{_data.gradeClass}";
 
-        var dbHeroData = TableManager.hero.Get(_data.key);
         // 고유 능력치
-        for (int i = 0; i < m_element.stat.Count; i++)
-        {
-            var value = dbHeroData.statPoint[i];
-            var txt = m_element.stat[i].content;
-            txt.text = value.ToString();
-            m_element.stat[i].title.alpha = txt.alpha = value >= 90 ? 1 : value >= 80 ? .9f : value >= 70 ? .8f : value >= 60 ? .7f : .6f;
-        }
+        SetHeroInfo_CoreStat(m_heroInfoData);
 
-        //전투능력치
-        {
-            m_element.statBattle.SetStatData(m_heroInfoData);
-        }
+        // 전투 능력치
+        m_element.statBattle.SetStatData(m_heroInfoData);
 
         // CHARACTER 
         {
-
             var parent = m_element.panelHero;
             bool isFinded = false;
             for (int i = 0; i < parent.childCount; i++)
@@ -148,33 +138,56 @@ public class PopupHeroInfo : BasePopupComponent
         }
     }
 
+    void SetHeroInfo_CoreStat(HeroInfoData _heroInfoData, bool _isCompare = false)
+    {
+        var coreStat = _heroInfoData.resultCoreStat;
+        for (int i = 0; i < m_element.stat.Count; i++)
+        {
+            var value = coreStat[(CoreStatType)i];
+            var txt = m_element.stat[i].content;
+
+            txt.text = value.ToString();
+            if (_isCompare)
+                txt.text = "<color=#BA0700>" + txt.text;
+
+            m_element.stat[i].title.alpha = txt.alpha = value >= 90 ? 1 : value >= 80 ? .9f : value >= 70 ? .8f : value >= 60 ? .7f : .6f;
+        }
+    }
+
     async UniTask OnButtonAsync_Upgrade(bool _isUpgrade)
     {
-        var heroData = m_heroInfoData;
+        var heroInfoData = m_heroInfoData;
         if (_isUpgrade)
         {
-            heroData.grade++;
+            heroInfoData.grade++;
 
-            if (heroData.grade >= GradeType.MAX)
+            if (heroInfoData.grade >= GradeType.MAX)
             {
                 PopupManager.instance.AlertShow("이미_최대_등급입니다.");
                 return;
             }
+
+            m_element.txtGrade.text = $"등급:_<color=#BA0700>{heroInfoData.gradeClass}";
         }
         else
         {
-            heroData.enchantLevel++;
+            heroInfoData.enchantLevel++;
 
-            if (heroData.enchantLevel > 20)
+            if (heroInfoData.enchantLevel > 20)
             {
                 PopupManager.instance.AlertShow("이미_최대_레벨입니다.");
                 return;
             }
+
+            m_element.txtEnchantLevel.text = $"<color=#BA0700>(+{heroInfoData.enchantLevel})";
         }
 
-        m_element.statBattle.SetCompareData(heroData);
+        //고유 능력치
+        SetHeroInfo_CoreStat(heroInfoData, true);
+        //전투 능력치 비교
+        m_element.statBattle.SetCompareData(heroInfoData);
 
-        await m_element.popupUpgrade.OpenAsyn(heroData, _isUpgrade);
+        await m_element.popupUpgrade.OpenAsyn(heroInfoData, _isUpgrade);
 
         if (m_element.popupUpgrade.isNeedUpdate)
         {
@@ -183,12 +196,24 @@ public class PopupHeroInfo : BasePopupComponent
         }
 
         m_element.statBattle.SetStatData(m_heroInfoData);
+        SetHeroInfo_CoreStat(m_heroInfoData);
+
+        if(_isUpgrade)
+            m_element.txtGrade.text = $"등급:_{m_heroInfoData.gradeClass}";
+        else
+            m_element.txtEnchantLevel.text = $"(+{m_heroInfoData.enchantLevel})";
     }
 
     void OnButton_UpgradeArrow(bool _isPrev)
     {
         m_element.popupUpgrade.OnButton_UpgradeArrow(_isPrev);
-        m_element.statBattle.SetCompareData(m_element.popupUpgrade.heroInfoData);
+
+        var heroInfoData = m_element.popupUpgrade.heroInfoData;
+
+        SetHeroInfo_CoreStat(heroInfoData, true);
+        m_element.statBattle.SetCompareData(heroInfoData);
+
+        m_element.txtGrade.text = $"등급:_<color=#BA0700>{heroInfoData.gradeClass}";
     }
 
     public async UniTask AutoCloseAsync(float _duration)
@@ -249,6 +274,8 @@ public class PopupHeroInfo : BasePopupComponent
         public Button btnStatus;
 
         public TextMeshProUGUI txtName;
+        public TextMeshProUGUI txtGrade;
+        public TextMeshProUGUI txtEnchantLevel;
         public TextMeshProUGUI txtDescTalk;
 
         public PopupHeroInfo_Popup_Position popupPosition;
@@ -276,6 +303,8 @@ public class PopupHeroInfo : BasePopupComponent
             var frontPanel = panel.Find("FrontPanel");
             btnStatus = frontPanel.GetComponent<Button>("btn_status");
             txtName = frontPanel.GetComponent<TextMeshProUGUI>("txt_name");
+            txtGrade = frontPanel.GetComponent<TextMeshProUGUI>("txt_class");
+            txtEnchantLevel = frontPanel.GetComponent<TextMeshProUGUI>("txt_level");
             txtDescTalk = frontPanel.GetComponent<TextMeshProUGUI>("txt_desc");
 
             {

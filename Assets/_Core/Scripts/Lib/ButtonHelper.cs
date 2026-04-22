@@ -4,9 +4,10 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ButtonHelper : MonoBehaviour, IValidatable
+public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IPointerUpHandler
 {
     public Button.ButtonClickedEvent onClick
         => m_element.button.onClick;
@@ -31,8 +32,12 @@ public class ButtonHelper : MonoBehaviour, IValidatable
     public TextMeshProUGUI TMPText => m_element.txtName;
 
     public bool isTriggerSwitch { get; set; } = true;
+
     public UnityAction funcEnter { get; set; }
     public UnityAction funcExit { get; set; }
+    public UnityAction funcDown { get; set; }
+    public UnityAction funcUp { get; set; }
+
 
     private void OnTriggerEnter2D(Collider2D _collision)
     {
@@ -67,7 +72,13 @@ public class ButtonHelper : MonoBehaviour, IValidatable
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField]
+    public void OnPointerDown(PointerEventData eventData)
+        => funcDown?.Invoke();
+
+    public void OnPointerUp(PointerEventData eventData)
+        => funcUp?.Invoke();
+
+    [SerializeField, HideInInspector]
     ElementData m_element;
 
     [Serializable]

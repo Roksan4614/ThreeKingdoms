@@ -63,7 +63,7 @@ public enum HeroClassType
     // 선봉장
     Vanguard,
     // 추격자
-    Sentinel,
+    Chaser,
     // 궁장
     Archer,
     // 책사
@@ -84,7 +84,20 @@ public enum TeamPositionType
     MAX
 }
 
-public enum StatType
+public enum CoreStatType
+{
+    NONE = -1,
+
+    Leadership,
+    Strength,
+    Intellect,
+    Politics,
+    Charisma,
+
+    MAX
+}
+
+public enum BattleStatType
 {
     NONE = -1,
 
@@ -95,12 +108,9 @@ public enum StatType
     move_speed,
     life_steal,
     critical_rate,
-    skill_cooldown_rate,
+    cooldown_rate,
     critical_damage,
-    boss_bonus_damage,
+    boss_damage,
 
     MAX
-
-    //skill_cooltime,
-    //percent_start_cooldown //챕터 시작하면 쿨타임 몇퍼부터 시작할지 여부
 }

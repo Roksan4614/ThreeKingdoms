@@ -12,12 +12,11 @@ public class Data_HeroPosition : MonoBehaviour
     {
         // TODO TEST DATA
         List<TableHeroPositionData> db = new();
-        db.Add(new() { position = HeroPositionType.GENERAL_WU, statType = StatType.attack_power, value = .1f });
-        db.Add(new() { position = HeroPositionType.GENERAL_WU, statType = StatType.health_max, value = .1f });
-        db.Add(new() { position = HeroPositionType.GENERAL_WU, statType = StatType.defence, value = .1f });
-        db.Add(new() { position = HeroPositionType.GENERAL_PYO, statType = StatType.attack_power, value = .1f });
-        db.Add(new() { category = CategoryType_HeroPositon.ETC, position = HeroPositionType.ETC_HOO, statType = StatType.health_max, value = .1f });
-
+        db.Add(new() { position = HeroPositionType.GENERAL_WU, battleStatType = BattleStatType.attack_power, value = .1f });
+        db.Add(new() { position = HeroPositionType.GENERAL_WU, battleStatType = BattleStatType.health_max, value = .1f });
+        db.Add(new() { position = HeroPositionType.GENERAL_WU, battleStatType = BattleStatType.defence, value = .1f });
+        db.Add(new() { position = HeroPositionType.GENERAL_PYO, battleStatType = BattleStatType.attack_power, value = .1f });
+        db.Add(new() { category = CategoryType_HeroPositon.ETC, position = HeroPositionType.ETC_HOO, battleStatType = BattleStatType.health_max, value = .1f });
         data = db.GroupBy(x => x.category).ToDictionary(x => x.Key, x =>
         {
             return x.GroupBy(x => x.position).Select(_group =>
@@ -25,7 +24,7 @@ public class Data_HeroPosition : MonoBehaviour
                 return new HeroPositionData()
                 {
                     key = _group.Key,
-                    bonusStat = _group.ToDictionary(x => x.statType, x => x.value)
+                    bonusStat = _group.ToDictionary(x => x.battleStatType, x => x.value)
                 };
             }).ToList();
         });
@@ -77,7 +76,7 @@ public struct TableHeroPositionData
 {
     public CategoryType_HeroPositon category;
     public HeroPositionType position;
-    public StatType statType;
+    public BattleStatType battleStatType;
     public float value;
 }
 
@@ -86,7 +85,7 @@ public struct TableHeroPositionData
 public struct HeroPositionData
 {
     public HeroPositionType key;
-    public Dictionary<StatType, float> bonusStat;
+    public Dictionary<BattleStatType, float> bonusStat;
 
     //custom
     string m_heroKey;

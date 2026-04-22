@@ -53,35 +53,29 @@ public class CharacterComponent : TargetComponent
 
         SetState(CharacterStateType.None);
 
-        //if (m_faction == FactionType.Enemy)
-        //{
-        //    m_stat.attackPower /= 2;
-        //    m_stat.healthMax = m_stat.health /= 2;
-        //}
-
-        Signal.instance.UpdateBonusStat.connect = SlotUpdateBonusStat;
+        Signal.instance.UpdateHeroStat.connect = SlotUpdateHeroStat;
     }
 
-    private void Update()
-    {
-        if (isMain == false)
-            return;
-    }
+    //private void Update()
+    //{
+    //    if (isMain == false)
+    //        return;
+    //}
 
     public virtual void SetHeroData(string _key)
     {
         m_info = DataManager.userInfo.GetHeroInfoData(_key);
-        SlotUpdateBonusStat(_key);
+        m_stat = DataManager.stat.GetResultStat(m_info);
 
         attack.ResetFX();
     }
 
-    public void SlotUpdateBonusStat(string _key)
+    public void SlotUpdateHeroStat(string _key)
     {
-        if (_key.IsActive() == false && m_info.key.Equals(_key) == false)
+        if (_key.Equals(m_info.key) == false)
             return;
 
-        DataManager.stat.GetResultStat(m_info);
+        SetHeroData(_key);
     }
 
     public void SetFaction(FactionType _factionType) => m_faction = _factionType;

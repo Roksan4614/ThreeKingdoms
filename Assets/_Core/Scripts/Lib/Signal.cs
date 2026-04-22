@@ -284,7 +284,7 @@ public class Signal
     public SignalObject Attack = new();
 
     public SignalObject<bool> ActiveHUD = new();
-    public SignalObject<string> UpdateBonusStat = new(); //Hero Key
+    public SignalObject<string> UpdateHeroStat = new(); //Hero Key
 
     #endregion
 }

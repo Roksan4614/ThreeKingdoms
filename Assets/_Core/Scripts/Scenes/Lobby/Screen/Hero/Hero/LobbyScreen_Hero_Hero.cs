@@ -292,6 +292,9 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         await UniTask.WaitUntil(() => m_popupHeroInfo.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
 
+        ResetActiveButton_Batch();
+        ResetActiveButton_List();
+
         if (m_popupHeroInfo.isNeedUpdate)
             SetLayout_List(DataManager.userInfo.GetHeroInfoData(_data.key));
     }

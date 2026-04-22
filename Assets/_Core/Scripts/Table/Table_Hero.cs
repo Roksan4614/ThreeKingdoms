@@ -1,3 +1,4 @@
+using DG.Tweening.Plugins;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -62,19 +63,19 @@ public struct TableHeroData
     [JsonProperty] float skill_cooltime;
 
     [JsonProperty] int LEA;
-    [JsonProperty] int POW;
+    [JsonProperty] int STR;
     [JsonProperty] int INT;
     [JsonProperty] int POL;
     [JsonProperty] int CHA;
 
-    private List<int> m_statPoint;
-    public List<int> statPoint
+    private List<int> m_coreStatPoint;
+    public List<int> coreStatPoint
     {
         get
         {
-            if (m_statPoint == null)
-                m_statPoint = new() { LEA, POW, INT, POL, CHA };
-            return m_statPoint;
+            if (m_coreStatPoint == null)
+                m_coreStatPoint = new() { LEA, STR, INT, POL, CHA };
+            return m_coreStatPoint;
         }
     }
 
@@ -130,5 +131,22 @@ public struct HeroInfoData
     public string regionKey => $"{m_regionType}_{key}".ToUpper();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
     public string gradeName => TableManager.stringHero.GetString($"GRADE_" + grade.ToString().ToUpper());
+    public string className => TableManager.stringHero.GetString($"CLASSTYPE_" + m_classType.ToString().ToUpper());
+    public string gradeClass => $"{gradeName} {className}";
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
+
+    public Dictionary<CoreStatType, int> resultCoreStat
+    {
+        get
+        {
+            Dictionary<CoreStatType, int> result = new();
+            var heroData = TableManager.hero.Get(key);
+            for (int i = 0; i < heroData.coreStatPoint.Count; i++)
+            {
+                var statType = (CoreStatType)i;
+                result[statType] = heroData.coreStatPoint[i] + (int)(grade) * 10 + enchantLevel;
+            }
+            return result;
+        }
+    }
 }
