@@ -13,8 +13,6 @@ using UnityEngine.UI;
 public partial class ControllerManager : Singleton<ControllerManager>, IPointerDownHandler, IPointerUpHandler, IDragHandler, IValidatable
 {
     [SerializeField] bool m_isKeyboardMode = true;
-    [SerializeField] float m_maxRadiusBar = 150;
-    [SerializeField] float m_startRotZ = 20;
 
     CharacterComponent m_mainHero;
 
@@ -98,6 +96,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     bool m_isPushSkillOn_C = false;
     private void Update()
     {
+
+
         if (isSwitch == false || m_mainHero?.isLive == false)
             return;
 
@@ -157,7 +157,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
                         m_isSkillClick = false;
                     }
                     else
-                        m_mainHero.attack.OnDrag_ControllSkill(CameraManager.instance.GetMousePosition());
+                        m_mainHero.attack.OnDrag_ControllSkill(CameraManager.posPointer);
                 }
                 // 그게 아니면 취소다.
                 else if (isLeftClick_Down)
@@ -166,7 +166,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
                     m_isSkillClick = false;
                 }
                 else
-                    m_mainHero.attack.OnDrag_ControllSkill(CameraManager.instance.GetMousePosition());
+                    m_mainHero.attack.OnDrag_ControllSkill(CameraManager.posPointer);
             }
         }
     }
@@ -209,7 +209,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
             if (m_isKeyboardMode)
             {
-                bool isFlip = m_mainHero.transform.position.x < CameraManager.instance.GetMousePosition().x;
+                bool isFlip = m_mainHero.transform.position.x < CameraManager.posPointer.x;
 
                 //if (Input.GetKey(KeyCode.A) ||
                 //    Input.GetKey(KeyCode.D) ||
@@ -319,7 +319,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         {
             if (isLeftClick_Down && m_isSkillClick == false)
             {
-                m_mainHero.move.SetFlip(CameraManager.instance.GetMousePosition().x > m_mainHero.transform.position.x);
+                m_mainHero.move.SetFlip(CameraManager.posPointer.x > m_mainHero.transform.position.x);
                 OnButton_Attack(false);
             }
             if (isRightClick_Down && m_element.skill.isReady)
@@ -332,7 +332,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         m_element.pad.anchoredPosition = startPos;
         m_element.pad.gameObject.SetActive(true);
 
-        m_element.pad.rotation = Quaternion.Euler(0, 0, m_startRotZ);
+        m_element.pad.rotation = Quaternion.Euler(0, 0, 20);
         m_element.pad.DORotate(Vector3.zero, 0.1f).SetEase(Ease.OutBack);
 
         m_element.padBar.localPosition = Vector3.zero;
@@ -367,7 +367,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 targetPos);
 
-        m_element.padBar.anchoredPosition = Vector2.ClampMagnitude(targetPos - m_element.pad.anchoredPosition, m_maxRadiusBar);
+        m_element.padBar.anchoredPosition = Vector2.ClampMagnitude(targetPos - m_element.pad.anchoredPosition, 150);
     }
 
     void StopControll()

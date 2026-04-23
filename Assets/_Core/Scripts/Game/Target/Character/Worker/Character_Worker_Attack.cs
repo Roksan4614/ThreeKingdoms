@@ -33,7 +33,9 @@ public class Character_Worker_Attack : Character_Worker
         {
             if (m_owner.target.isAttackTarget)
             {
-                if (m_timeAttack < Time.realtimeSinceStartup && m_weapon.isUseSkill == false)
+                if (m_ctsAttackPush == null &&
+                    m_timeAttack < Time.realtimeSinceStartup &&
+                    m_weapon.isUseSkill == false)
                 {
                     m_weapon.Attack(IsCritical());
                     m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
@@ -55,13 +57,22 @@ public class Character_Worker_Attack : Character_Worker
             m_ctsAttackPush = null;
         }
     }
+
     public async UniTask ControlAttackAsync(UnityAction _onAttack, bool _isPushButton)
     {
         CancelAttackPush();
         m_ctsAttackPush = new();
         var token = m_ctsAttackPush.Token;
 
+        if (m_timeAttack - m_owner.stat.attackSpeed * 0.5f > Time.realtimeSinceStartup)
+        {
+            while (m_timeAttack > Time.realtimeSinceStartup)
+                await UniTask.Yield(token, true);
+            _isPushButton = false;
+        }
+
         m_timeAttack = -1;
+
         while ((ControllerManager.instance.isKeyboardMode && ControllerManager.instance.isLeftClick == true) ||
             Input.GetKey(KeyCode.X) ||
             _isPushButton == true)
@@ -71,7 +82,13 @@ public class Character_Worker_Attack : Character_Worker
                 m_owner.target.SetTargetNearest();
 
                 _onAttack();
-                m_weapon.Attack(true, 1);
+
+                bool isCritical = m_owner.target.target != null && IsCritical();
+                if (isCritical == false || m_timeAttack == -1)
+                    ShowSlashEffect(true);
+
+                m_weapon.Attack(isCritical, 1);
+
                 m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
             }
             _isPushButton = false;
@@ -81,19 +98,20 @@ public class Character_Worker_Attack : Character_Worker
         CancelAttackPush();
     }
 
-    public void ControlAttack()
-    {
-        m_owner.target.SetTargetNearest();
+    //public void ControlAttack()
+    //{
 
-        bool isCritical = m_owner.target.target != null && IsCritical();
-        m_weapon.Attack(isCritical, 1);
+    //    m_owner.target.SetTargetNearest();
 
-        if (isCritical == false)
-            m_weapon.ShowSlashEffect(_isForceShake: m_owner.target.target != null);
+    //    bool isCritical = m_owner.target.target != null && IsCritical();
+    //    m_weapon.Attack(isCritical, 1);
 
-        if (m_owner.target.isAttackTarget)
-            m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
-    }
+    //    if (isCritical == false)
+    //        m_weapon.ShowSlashEffect(_isForceShake: m_owner.target.target != null);
+
+    //    //if (m_owner.target.isAttackTarget)
+    //    m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
+    //}
 
     bool IsCritical()
     {

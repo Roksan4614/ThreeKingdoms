@@ -46,7 +46,7 @@ public class PopupModalComponent : BasePopupComponent
             m_element.rt.ForceRebuildLayout();
         }
 
-        m_element.rt.position = CameraManager.instance.GetMousePosition();
+        m_element.rt.position = CameraManager.posPointer;
 
         var hw = m_element.rt.rect.width * 0.5f;
         var anchPos = m_element.rt.anchoredPosition;

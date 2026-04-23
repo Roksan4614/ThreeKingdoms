@@ -43,7 +43,7 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public virtual void OnDrag(PointerEventData eventData)
     {
-        var mousePosition = CameraManager.instance.GetMousePosition();
+        var mousePosition = CameraManager.posPointer;
 
         var dist = (m_element.startPosition.position - mousePosition);
 
@@ -63,7 +63,7 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        m_element.startPosition.position = CameraManager.instance.GetMousePosition();
+        m_element.startPosition.position = CameraManager.posPointer;
     }
 
     public virtual void OnPointerUp(PointerEventData eventData)

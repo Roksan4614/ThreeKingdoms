@@ -6,6 +6,9 @@ public class CameraManager : MonoSingleton<CameraManager>
 {
     [SerializeField]
     Camera m_camera;
+
+    Transform m_pointer;
+
     public Camera main => m_camera;
     const float c_smoothFactor = 5f;
 
@@ -18,16 +21,32 @@ public class CameraManager : MonoSingleton<CameraManager>
 
     private void Start()
     {
+        m_pointer = transform.Find("Pointer");
+
         DontDestroyOnLoad(this);
 
         Signal.instance.ConnectMainHero.connectLambda =
             new(this, _ => m_playerCameraPos = _.element.cameraPos);
 
         Signal.instance.ChangeDisplayMode.connectLambda =
-            new(this, _isLandscape => {
+            new(this, _isLandscape =>
+            {
                 m_camera.fieldOfView = _isLandscape ? 100 : 110;
                 m_addPosY_Landscape = _isLandscape ? 1 : 0;
             });
+    }
+
+    private void Update()
+    {
+        if (m_camera == null)
+            return;
+
+        var mousePos = Input.touchCount > 1 ? (Vector3)Input.GetTouch(Input.touchCount - 1).position : Input.mousePosition;
+        mousePos.z = -m_camera.transform.position.z;
+        var pos = m_camera.ScreenToWorldPoint(mousePos);
+        pos.z = 0;
+
+        m_pointer.position = pos;
     }
 
     private void LateUpdate()
@@ -96,18 +115,21 @@ public class CameraManager : MonoSingleton<CameraManager>
         m_isShake = false;
     }
 
-    public Vector3 GetMousePosition()
-    {
-        if (m_camera == null)
-            return Vector3.zero;
+    public static Vector3 posPointer => m_instance.m_pointer.position;
+    public static Transform pointer => m_instance.m_pointer;
 
-        var mousePos = Input.touchCount > 1 ? (Vector3)Input.GetTouch(Input.touchCount - 1).position : Input.mousePosition;
-        mousePos.z = -m_camera.transform.position.z;
-        var pos = m_camera.ScreenToWorldPoint(mousePos);
-        pos.z = 0;
+    //public Vector3 GetMousePosition()
+    //{
+    //    if (m_camera == null)
+    //        return Vector3.zero;
 
-        return pos;
-    }
+    //    var mousePos = Input.touchCount > 1 ? (Vector3)Input.GetTouch(Input.touchCount - 1).position : Input.mousePosition;
+    //    mousePos.z = -m_camera.transform.position.z;
+    //    var pos = m_camera.ScreenToWorldPoint(mousePos);
+    //    pos.z = 0;
+
+    //    return pos;
+    //}
 
     public void SetAddPosY(float _addPosY, float _addSmoothFactor)
     {

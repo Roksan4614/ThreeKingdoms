@@ -56,13 +56,18 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         m_element.btnConfirm.text = $"_{_type}";
 
         m_element.parentUpgrade.gameObject.SetActive(_type == UpgradeType.Upgrade);
+        m_element.parentEnchant.gameObject.SetActive(_type == UpgradeType.Enchant);
 
         if (_type == UpgradeType.Upgrade)
         {
-            m_element.txtGrade.text = m_heroInfoData.gradeName;
+            m_element.txtTitle.text = m_heroInfoData.gradeName;
 
             m_element.btnArrowLeft.gameObject.SetActive(m_heroInfoData.grade > m_prevHeroData.grade);
             m_element.btnArrowRight.gameObject.SetActive(m_heroInfoData.grade < GradeType.MAX - 1);
+        }
+        else
+        {
+            m_element.txtTitle.text = $"{m_heroInfoData.enchantLevel - 1}_>_{m_heroInfoData.enchantLevel}";
         }
     }
 
@@ -141,12 +146,15 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         public ButtonHelper btnConfirm;
         public ScrollRect scroll;
 
+        public TextMeshProUGUI txtTitle;
+
         public ButtonHelper btnArrowLeft;
         public ButtonHelper btnArrowRight;
-
-        public TextMeshProUGUI txtGrade;
-
         public Transform parentUpgrade => btnArrowLeft.transform.parent;
+
+        public RectTransform rtBar;
+        public Transform parentEnchant => rtBar.parent.parent;
+
 
         public void Initialize(Transform _transform)
         {
@@ -155,11 +163,17 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
             scroll = panel.GetComponent<ScrollRect>();
             btnConfirm = scroll.content.GetComponent<ButtonHelper>("btn_confirm");
 
+            txtTitle = scroll.content.GetComponent<TextMeshProUGUI>("txt_grade");
+
             var parentUpgrade = scroll.content.Find("Upgrade");
             {
                 btnArrowLeft = parentUpgrade.GetComponent<ButtonHelper>("btn_left");
                 btnArrowRight = parentUpgrade.GetComponent<ButtonHelper>("btn_right");
-                txtGrade = parentUpgrade.GetComponent<TextMeshProUGUI>("txt_grade");
+            }
+
+            var parentEnchant = scroll.content.Find("Enchant");
+            {
+                rtBar = parentEnchant.GetComponent<RectTransform>("Mileage/img_bar");
             }
         }
     }

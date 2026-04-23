@@ -30,7 +30,7 @@ public partial class ControllerManager
         {
             if (m_isKeyboardMoving == false)
             {
-                targetPos = CameraManager.instance.GetMousePosition();
+                targetPos = CameraManager.posPointer;
                 bool isFlip = targetPos.x > m_mainHero.transform.position.x;
                 m_mainHero.move.SetFlip(isFlip);
             }

@@ -40,7 +40,7 @@ public class Controller_Skill : Controller_Attack
         if (m_pointer == null || isDrag == false)
             return;
 
-        var mousePosition = CameraManager.instance.GetMousePosition();
+        var mousePosition = CameraManager.posPointer;
         var dist = (m_element.startPosition.position - mousePosition);
 
         if (Mathf.Approximately(m_magnitude, dist.sqrMagnitude) == false)
@@ -66,7 +66,7 @@ public class Controller_Skill : Controller_Attack
         if (m_hero.isLive == false || m_pointer == null)
             return;
 
-        var mousePosition = CameraManager.instance.GetMousePosition();
+        var mousePosition = CameraManager.posPointer;
         var dist = (m_element.startPosition.position - mousePosition);
 
         if (dist.sqrMagnitude > 0.5f)

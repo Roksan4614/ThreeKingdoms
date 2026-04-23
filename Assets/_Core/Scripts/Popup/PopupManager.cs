@@ -184,6 +184,9 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     public Vector2 canvasSize => m_element.canvasScaler.referenceResolution;
 
+    public Vector2 lt => m_element.lt.position;
+    public Vector2 rb => m_element.rb.position;
+
     #region ALERT
     CancellationTokenSource m_ctsAlert;
     public void AlertShow(string _message, float _posY = 0, bool _isTyping = false, float _duration = 3f)
@@ -346,6 +349,9 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
         public CanvasScaler canvasScaler;
 
+        public Transform lt;
+        public Transform rb;
+
         public void Initialize(Transform _transform)
         {
             m_canvas = _transform.GetComponent<Canvas>();
@@ -356,6 +362,9 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
             pPopup = _transform.Find("Popup");
             pModal = _transform.Find("Modal");
             canvasScaler = _transform.GetComponent<CanvasScaler>();
+
+            lt = _transform.Find("lt");
+            rb = _transform.Find("rb");
         }
     }
     #endregion VALIDATE

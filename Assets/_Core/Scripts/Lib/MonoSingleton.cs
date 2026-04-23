@@ -20,7 +20,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
 
 public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T>
 {
-    static T m_instance;
+    protected static T m_instance;
     public static T instance
     {
         get

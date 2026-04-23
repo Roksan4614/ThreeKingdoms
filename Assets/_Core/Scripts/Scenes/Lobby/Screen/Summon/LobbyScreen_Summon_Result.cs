@@ -210,7 +210,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     resultSoul[data.value] += data.count;
                 else
                 {
-                    data.isNew = DataManager.userInfo.GetHeroInfoData(data.value).isActive == false;
+                    data.isNew = DataManager.userInfo.GetHeroInfoData(data.value).isMine == false;
                     resultSoul.Add(data.value, data.count);
                 }
             }
@@ -359,7 +359,35 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         if (itemComp.data.isNew)
         {
             itemComp.SetSoulCount(0);
+            Utils.Shake(LobbyScreenManager.instance.GetScreenSummon().transform, true);
 
+            await AfterNextStepAsync(1f);
+
+            GradeType grade = GradeType.Normal;
+            var soulCount = TableManager.hero.GetNeedSoul(grade);
+
+            while (itemComp.data.count > soulCount)
+                soulCount = TableManager.hero.GetNeedSoul(grade++);
+
+            var stringGrade = TableManager.stringHero.GetString($"GRADE_" + grade.ToString().ToUpper());
+
+            PopupManager.instance.AlertShow(
+                $"[{stringGrade}] {dbHeroData.name.WithJosa()} 진영에 합류합니다.", 55);
+
+            PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo);
+            popupHeroInfo.AutoCloseAsync(5f).Forget();
+
+            var heroInfoData = DataManager.userInfo.GetHeroInfoData(itemComp.data.value);
+
+            if (heroInfoData.isActive == false)
+                heroInfoData = new(itemComp.data.value, grade);
+
+            await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true);
+            await UniTask.WaitUntil(() => popupHeroInfo.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+
+            await UniTask.WaitForSeconds(.5f);
+
+            /*
             GradeType grade = GradeType.Normal;
             var soulCount = TableManager.hero.GetNeedSoul(grade);
 
@@ -408,6 +436,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                 hero.attack.ShowSlashEffect(true);
                 await PopupManager.instance.AlertDisableAsync();
             }
+            */
         }
         else
             itemComp.SetSoulCount(itemComp.data.count);

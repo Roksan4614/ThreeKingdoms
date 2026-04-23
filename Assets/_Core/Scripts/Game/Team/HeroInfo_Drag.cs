@@ -14,7 +14,7 @@ public partial class HeroInfoComponent : IPointerDownHandler, IPointerUpHandler,
         if (m_hero.isLive == false || m_hero.element.skillRange == null)
             return;
 
-        var mousePosition = CameraManager.instance.GetMousePosition();
+        var mousePosition = CameraManager.posPointer;
         var dist = (m_element.startPosition.position - mousePosition);
 
         if (dist.sqrMagnitude > 0.5f)
@@ -32,7 +32,7 @@ public partial class HeroInfoComponent : IPointerDownHandler, IPointerUpHandler,
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        m_element.startPosition.position = CameraManager.instance.GetMousePosition();
+        m_element.startPosition.position = CameraManager.posPointer;
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -53,7 +53,7 @@ public partial class HeroInfoComponent : IPointerDownHandler, IPointerUpHandler,
             return;
 
         var startPosition = m_element.startPosition.position;
-        var mousePosition = CameraManager.instance.GetMousePosition();
+        var mousePosition = CameraManager.posPointer;
         var dist = (startPosition - mousePosition);
 
         if (Mathf.Approximately(m_magnitude, dist.sqrMagnitude) == false)

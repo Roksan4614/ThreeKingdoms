@@ -18,7 +18,7 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
 
     protected override void Update()
     {
-        m_elementTalk.mouse.position = CameraManager.instance.GetMousePosition();
+        m_elementTalk.mouse.position = CameraManager.posPointer;
     }
 
     // ModalTalkData

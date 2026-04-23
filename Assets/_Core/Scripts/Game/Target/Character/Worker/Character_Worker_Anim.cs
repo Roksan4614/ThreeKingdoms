@@ -29,7 +29,6 @@ public class Character_Worker_Anim : Character_Worker
     public bool IsType(CharacterAnimType _animType, int _layerIndex = 0)
         => m_animator.GetCurrentAnimatorStateInfo(_layerIndex).IsName(_animType.ToString());
 
-
     public void Play(CharacterAnimType _animType)
     {
         Play(_animType, 0);
