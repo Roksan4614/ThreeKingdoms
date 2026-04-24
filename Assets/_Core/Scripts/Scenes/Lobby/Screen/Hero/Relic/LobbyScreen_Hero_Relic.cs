@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Linq;
@@ -66,9 +67,10 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         }
     }
 
-    public void Start()
+    private void Start()
     {
-        UpdateTotalClass();
+        m_curTab = TabType.Hero - 1;
+        SetActiveTab(TabType.Hero);
     }
 
     private void OnEnable()
@@ -144,14 +146,14 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 
     void UpdateTotalClass()
     {
-        var dbMyHero = DataManager.userInfo.GetHeroSortData().Where(
+        var myHero = DataManager.userInfo.GetHeroSortData().Where(
             x => DataManager.userInfo.GetHeroInfoData(x.key).isMine == true).ToArray();
 
         int i = 0;
         var scroll = m_element.scroll;
-        for (; i < dbMyHero.Length; i++)
+        for (; i < myHero.Length; i++)
         {
-            var heroInfo = dbMyHero[i];
+            var heroInfo = myHero[i];
             LobbyScreen_Hero_Relic_Item item = null;
             if (i == scroll.content.childCount)
             {
@@ -161,16 +163,13 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             else
                 item = scroll.content.GetChild(i).GetComponent<LobbyScreen_Hero_Relic_Item>();
 
-            RelicInfoData relicData = new()
-            {
-                key = heroInfo.key,
-                level = DataManager.stat.relic.dataHero[heroInfo.key]
-            };
+            heroInfo.enchantLevel = DataManager.stat.relic.dataHero[heroInfo.key];
 
             item.gameObject.SetActive(true);
-            item.SetHeroData(relicData);
+            item.SetHeroDataAsync(heroInfo).Forget();
         }
 
+        // 나머지 숨기기
         for (; i < scroll.content.childCount; i++)
             scroll.content.GetChild(i).gameObject.SetActive(false);
 
@@ -179,12 +178,41 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         m_element.txtRelicCount.gameObject.SetActive(false);
 
         RebuildLayout();
+
+        // 보너스 스탯 넣어주자
+        // 지휘관 <color=#BA0700>+000.00K%
+        for (var t = HeroClassType.NONE + 1; t < HeroClassType.MAX; t++)
+            SetTextTotalClass(t);
+    }
+
+    void SetTextTotalClass(HeroClassType _classType)
+    {
+        var db = DataManager.stat.relic.bonusClassBonus;
+        var txt = m_element.txtTotalClass[(int)_classType];
+        var amount = db.ContainsKey(_classType) ? db[_classType] : 0;
+
+        txt.text = $"{TableManager.stringHero.GetString("CLASSTYPE_" + _classType.ToString().ToUpper())}_<color=#BA0700>+{amount.AmountKMBT()}%";
     }
 
     void UpdateTotalStat()
     {
         int i = 0;
         var scroll = m_element.scroll;
+
+        for (; i < 4; i++)
+        {
+            LobbyScreen_Hero_Relic_Item item = null;
+            if (i == scroll.content.childCount)
+            {
+                item = Instantiate(m_element.baseScrollItem, scroll.content);
+                item.Bind(_data => { OnButton_Item(TabType.Relic, _data); });
+            }
+            else
+                item = scroll.content.GetChild(i).GetComponent<LobbyScreen_Hero_Relic_Item>();
+
+            item.gameObject.SetActive(true);
+            item.SetRelicDataAsync(i.ToString()).Forget();
+        }
 
         for (; i < scroll.content.childCount; i++)
             scroll.content.GetChild(i).gameObject.SetActive(false);
@@ -213,9 +241,12 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         rtLayout.sizeDelta = sizeLayout;
     }
 
-    void OnButton_Item(TabType _tapType, RelicInfoData _relicData)
+    void OnButton_Item(TabType _tapType, HeroInfoData _heroInfoData)
     {
-
+        if (_tapType == TabType.Hero)
+        {
+            SetTextTotalClass(_heroInfoData.classType);
+        }
     }
 
     #region VALIDATE

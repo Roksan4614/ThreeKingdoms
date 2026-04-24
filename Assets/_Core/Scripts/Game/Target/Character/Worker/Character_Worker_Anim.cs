@@ -20,7 +20,11 @@ public class Character_Worker_Anim : Character_Worker
             if (prevAc == null)
                 continue;
 
-            overrideAnimator[key] = m_owner.element.animationClipData.GetClip(i) ?? prevAc;
+            var clip = m_owner.element.animationClipData.GetClip(i);
+            if (i == CharacterAnimType.Attack_Move && clip != null)
+                clip = m_owner.element.animationClipData.GetClip(CharacterAnimType.Attack_Move);
+
+            overrideAnimator[key] = clip ?? prevAc;
         }
 
         m_animator.runtimeAnimatorController = overrideAnimator;
@@ -36,7 +40,9 @@ public class Character_Worker_Anim : Character_Worker
 
     public void Play(CharacterAnimType _animType, int _layerIndex)
     {
-        if (_animType == CharacterAnimType.Attack || _animType == CharacterAnimType.Skill)
+        if (_animType == CharacterAnimType.Attack ||
+            _animType == CharacterAnimType.Attack_Move ||
+            _animType == CharacterAnimType.Skill)
             m_owner.attack.isRunningAttack = true;
 
         //m_animator.Play(_animType.ToString(), _layerIndex, 0);
@@ -67,11 +73,13 @@ public class Character_Worker_Anim : Character_Worker
 public struct CharacterAnimationClipData
 {
     public AnimationClip attack;
+    public AnimationClip attack_move;
     public AnimationClip skill;
 
     public AnimationClip GetClip(CharacterAnimType _animType) => _animType switch
     {
         CharacterAnimType.Attack => attack,
+        CharacterAnimType.Attack_Move => attack_move,
         CharacterAnimType.Skill => skill,
         _ => null,
     };

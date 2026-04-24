@@ -87,7 +87,7 @@ public class Character_Worker_Attack : Character_Worker
                 if (isCritical == false || m_timeAttack == -1)
                     ShowSlashEffect(true);
 
-                m_weapon.Attack(isCritical, 1);
+                m_weapon.Attack(isCritical);
 
                 m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
             }

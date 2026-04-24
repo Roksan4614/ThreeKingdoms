@@ -31,6 +31,7 @@ public enum CharacterAnimType
     Dash_Back,
 
     Attack,
+    Attack_Move,
     Skill,
 
     Die_1,

@@ -64,7 +64,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     }
 
     public bool isAttack { get; private set; } = false;
-    public void Attack(bool _isCritical, int _layerIndex = 0)
+    public void Attack(bool _isCritical)
     {
         isAttack = true;
 
@@ -73,7 +73,10 @@ public class Character_Weapon : MonoBehaviour, IValidatable
             ShowSlashEffect(
                 _isForceShake: m_owner.isMain == true || ControllerManager.instance.isDoing == false);
 
-        m_owner.anim.Play(CharacterAnimType.Attack, _layerIndex);
+        if( m_owner.move.isMoving)
+            m_owner.anim.Play(CharacterAnimType.Attack_Move, 1);
+        else
+            m_owner.anim.Play(CharacterAnimType.Attack, 0);
     }
 
     public virtual bool IsValidUseSkill() =>

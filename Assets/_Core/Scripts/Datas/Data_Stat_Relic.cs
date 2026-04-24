@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class Data_Stat_Relic
 {
@@ -8,6 +7,10 @@ public class Data_Stat_Relic
 
     Dictionary<string, int> m_dataHero;
     public IReadOnlyDictionary<string, int> dataHero => m_dataHero;
+
+
+    Dictionary<HeroClassType, float> m_bonusClassBonus = new();
+    public IReadOnlyDictionary<HeroClassType, float> bonusClassBonus => m_bonusClassBonus;
 
     public async UniTask InitializeAsync()
     {
@@ -24,6 +27,32 @@ public class Data_Stat_Relic
 
             SaveData_Hero();
         }
+
+        for (var t = HeroClassType.NONE + 1; t < HeroClassType.MAX; t++)
+            m_bonusClassBonus.Add(t, 0);
+
+        foreach (var d in m_dataHero)
+        {
+            if (d.Value == 0)
+                continue;
+
+            var classType = TableManager.hero.Get(d.Key).classType;
+            m_bonusClassBonus[classType] += d.Value * 0.1f;
+        }
+    }
+
+    public void Upgrade_HeroRelic(HeroInfoData _heroInfoData)
+    {
+        var key = _heroInfoData.key;
+        var classType = _heroInfoData.classType;
+
+        int level = m_dataHero[key];
+        m_bonusClassBonus[classType] -= level * 0.1f;
+
+        m_dataHero[key]++;
+        m_bonusClassBonus[classType] += m_dataHero[key] * 0.1f;
+
+        SaveData_Hero();
     }
 
     void SaveData_Hero()

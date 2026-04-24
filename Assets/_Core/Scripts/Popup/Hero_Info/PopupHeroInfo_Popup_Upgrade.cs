@@ -53,13 +53,21 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
 
     void SetInfo(UpgradeType _type)
     {
-        m_element.btnConfirm.text = $"_{_type}";
+        bool isUpgrade = _type == UpgradeType.Upgrade;
 
         m_element.parentUpgrade.gameObject.SetActive(_type == UpgradeType.Upgrade);
         m_element.parentEnchant.gameObject.SetActive(_type == UpgradeType.Enchant);
 
-        if (_type == UpgradeType.Upgrade)
+        var iconConfirm = m_element.btnConfirm.transform.Find("Amount/Icon");
+        iconConfirm.Find("Gold").gameObject.SetActive(isUpgrade == false);
+        iconConfirm.Find("Soul").gameObject.SetActive(isUpgrade);
+
+        var txtAmount = iconConfirm.parent.GetComponent<TextMeshProUGUI>("Text");
+
+        if (isUpgrade)
         {
+            m_element.btnConfirm.text = $"_½Â±Þ_";
+
             m_element.txtTitle.text = m_heroInfoData.gradeName;
 
             m_element.btnArrowLeft.gameObject.SetActive(m_heroInfoData.grade > m_prevHeroData.grade);
@@ -67,8 +75,10 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         }
         else
         {
-            m_element.txtTitle.text = $"{m_heroInfoData.enchantLevel - 1}_>_{m_heroInfoData.enchantLevel}";
+            m_element.btnConfirm.text = $"+{m_heroInfoData.enchantLevel}_{"¼ºÀå"}";
+            m_element.txtTitle.text = $"<size=90%>¼ºÀå_¼º°ø_È®·ü:</size> 100%";
         }
+
     }
 
     public void OnButton_UpgradeArrow(bool _isLeft)
@@ -163,7 +173,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
             scroll = panel.GetComponent<ScrollRect>();
             btnConfirm = scroll.content.GetComponent<ButtonHelper>("btn_confirm");
 
-            txtTitle = scroll.content.GetComponent<TextMeshProUGUI>("txt_grade");
+            txtTitle = scroll.content.GetComponent<TextMeshProUGUI>("txt_title");
 
             var parentUpgrade = scroll.content.Find("Upgrade");
             {

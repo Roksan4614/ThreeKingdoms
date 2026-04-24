@@ -10,6 +10,8 @@ public class MissionComponent : Singleton<MissionComponent>, IValidatable
     protected override void OnAwake()
     {
         m_startPosY = m_element.rt.anchoredPosition.y;
+
+        m_element.panel.gameObject.SetActive(false);
     }
 
     Tween m_tweenMovePanel;
@@ -31,10 +33,12 @@ public class MissionComponent : Singleton<MissionComponent>, IValidatable
     struct ElementData
     {
         public RectTransform rt;
+        public Transform panel;
 
         public void Initialize(Transform _transform)
         {
             rt = (RectTransform)_transform;
+            panel = rt.Find("Panel");
         }
     }
     #endregion VALIDATE

@@ -19,12 +19,6 @@ public class TooltipWorker : MonoBehaviour, IValidatable
 
     private void Start()
     {
-        if(ControllerManager.instance.isKeyboardMode == false)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         if (m_key.IsActive() == true)
             text = TableManager.stringTable.GetString(m_key);
         else
@@ -123,13 +117,13 @@ public class TooltipWorker : MonoBehaviour, IValidatable
 
     private void OnTriggerEnter2D(Collider2D _collision)
     {
-        if (_collision.tag == "Pointer")
+        if (_collision.tag == "Pointer" && ControllerManager.instance.isKeyboardMode)
             ShowAsync().Forget();
     }
 
     private void OnTriggerExit2D(Collider2D _collision)
     {
-        if (_collision.tag == "Pointer" && m_cts != null)
+        if (_collision.tag == "Pointer" && m_cts != null && ControllerManager.instance.isKeyboardMode)
         {
             m_element.rtBox.gameObject.SetActive(false);
             ReleaseCTS();
