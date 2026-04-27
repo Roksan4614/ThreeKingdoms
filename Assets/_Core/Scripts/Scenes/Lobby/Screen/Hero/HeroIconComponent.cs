@@ -47,7 +47,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         }
 
         m_element.icon.parent.gameObject.SetActive(true);
-        m_element.btnAction.gameObject.SetActive(false);
+        m_element.btnAction?.gameObject.SetActive(false);
 
         m_element.btnHero.interactable = true;
 
@@ -62,12 +62,18 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     {
         data = _data;
 
-        m_element.badge.SetActive(_data.isBatch);
+        if (m_element.badge)
+            m_element.badge.SetActive(_data.isBatch);
 
-        m_element.txtLevel.text = _data.enchantLevel.ToString();
-        m_element.txtName.text = _data.name;
+        if (m_element.txtLevel)
+            m_element.txtLevel.text = _data.enchantLevel.ToString();
 
-        m_element.dimm.SetActive(_data.isMine == false);
+        if (m_element.txtName)
+            m_element.txtName.text = _data.name;
+
+        if (m_element.dimm)
+            m_element.dimm.SetActive(_data.isMine == false);
+
         m_element.outline.color = _data.isMine ? Color.black : Color.gray;
 
         bool isFinded = false;
@@ -131,7 +137,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     private CancellationTokenSource m_cts;
     public async void OnPointerDown(PointerEventData eventData)
     {
-        if (m_screenHero == null)
+        if (m_screenHero == null && m_onClick == null)
             return;
 
         if (ControllerManager.instance.isRightClick == true)
@@ -151,11 +157,17 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
             if (isCanceled == true)
                 return;
         }
-
-        m_isOpenPopup = true;
-        await m_screenHero.OpenHeroInfoPopup(data);
-        m_isOpenPopup = false;
-        SetActiveButton(false);
+        if (m_screenHero == null && m_onClick != null)
+        {
+            m_onClick(this, true);
+        }
+        else
+        {
+            m_isOpenPopup = true;
+            await m_screenHero.OpenHeroInfoPopup(data);
+            m_isOpenPopup = false;
+            SetActiveButton(false);
+        }
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -198,19 +210,22 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         {
             var panel = _transform.Find("Panel");
             icon = panel.Find("Icon/Panel");
-            txtName = panel.Find("txt_name").GetComponent<TextMeshProUGUI>();
-            txtLevel = panel.Find("txt_level").GetComponent<TextMeshProUGUI>();
+            txtName = panel.Find("txt_name")?.GetComponent<TextMeshProUGUI>();
+            txtLevel = panel.Find("txt_level")?.GetComponent<TextMeshProUGUI>();
 
             btnHero = _transform.GetComponent<Button>();
             btnAction = panel.GetComponent<Button>("btn_action");
 
-            objActionChange = btnAction.transform.Find("Image").gameObject;
-            objActionText = btnAction.transform.Find("Text").gameObject;
+            if (btnAction != null)
+            {
+                objActionChange = btnAction.transform.Find("Image").gameObject;
+                objActionText = btnAction.transform.Find("Text").gameObject;
+            }
 
-            dimm = panel.Find("Icon/Dimm").gameObject;
+            dimm = panel.Find("Icon/Dimm")?.gameObject;
             outline = panel.GetComponent<Image>("Icon/Outline");
 
-            badge = panel.Find("Badge").gameObject;
+            badge = panel.Find("Badge")?.gameObject;
         }
 
         public void SetActiveName(bool _isActive)

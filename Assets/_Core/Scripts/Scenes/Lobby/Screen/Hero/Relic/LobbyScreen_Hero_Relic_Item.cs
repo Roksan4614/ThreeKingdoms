@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Drawing;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -43,18 +44,52 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
     {
         await UniTask.Yield();
 
+        m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
+        DataManager.stat.relic.SetRelicStatus(m_heroInfoData.skin, m_heroInfoData.isBatch);
+
+        m_element.btn_select.SetDrawSelect(m_heroInfoData.isBatch);
+        m_element.btn_select.text = m_heroInfoData.isBatch ? "_선택중_" : "선택_하기";
+
         _onCallback(m_heroInfoData);
     }
 
-    public async UniTask SetRelicDataAsync(string _key)
+    public async UniTask SetRelicDataAsync(TableRelicData _relicData)
     {
+        var myRelicData = DataManager.stat.relic.dataRelic.Where(x => x.key == _relicData.key).FirstOrDefault();
+
         m_heroInfoData = new();
-        m_heroInfoData.key = _key;
+        m_heroInfoData.skin = _relicData.key;
+        m_element.btn_select.interactable = m_heroInfoData.isMine = myRelicData.key.IsActive();
+        m_heroInfoData.isBatch = m_heroInfoData.isMine && myRelicData.isBatch;
 
         m_element.btn_enchant.gameObject.SetActive(false);
         m_element.btn_select.gameObject.SetActive(true);
 
-        m_element.txt_title.text = $"{_key}";
+        m_element.txt_title.text = $"{_relicData.key}";
+
+        m_element.txt_stat.text = "";
+
+        if (m_heroInfoData.isMine == true)
+        {
+            for (int i = 0; i < _relicData.statData.Count; i++)
+            {
+                var data = _relicData.statData[i];
+
+                m_element.txt_stat.text += $"{data.statName} {data.stringPercent}";
+
+                if (i < _relicData.statData.Count - 1)
+                    m_element.txt_stat.text += "\n";
+            }
+
+            m_element.btn_select.text = myRelicData.isBatch ? "_선택중_" : "선택_하기";
+        }
+        else
+        {
+            m_element.txt_stat.text = "?";
+            m_element.btn_select.text = "_잠김_";
+        }
+
+        m_element.btn_select.SetDrawSelect(myRelicData.isBatch);
 
         await UniTask.Yield();
     }

@@ -24,10 +24,10 @@ public class PopupHeroInfo_Stat_Battle : MonoBehaviour, IValidatable
     public void SetStatData(HeroInfoData _heroData)
     {
         m_heroInfoData = _heroData;
-        var statString = DataManager.stat.GetResultStat(_heroData).statString;
+        var statString = DataManager.stat.GetResultStat(_heroData).battleStat;
 
         foreach (var s in statString)
-            m_dbStat[s.Key].txtValue.text = s.Value;
+            m_dbStat[s.statType].txtValue.text = s.stringPoint;
     }
 
     public void SetCompareData(HeroInfoData _next)
@@ -38,7 +38,7 @@ public class PopupHeroInfo_Stat_Battle : MonoBehaviour, IValidatable
         var compareData = prev.GetCompareResult(next);
 
         foreach (var d in compareData)
-            m_dbStat[d.Key].txtValue.text = $"<color=#BA0700>{d.Value.message}";
+            m_dbStat[d.Key].txtValue.text = $"<color=#BA0700>{d.Value.stringPoint}";
     }
 
     #region VALIDATE
