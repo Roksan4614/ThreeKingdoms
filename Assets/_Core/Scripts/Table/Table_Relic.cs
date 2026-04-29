@@ -35,6 +35,11 @@ public class Table_Relic : BaseTable<string, TableRelicOriginData>
                     value = 10,
                 },
                 new() {
+                    key = "손자병법서",
+                    statType = BattleStatType.life_steal,
+                    value = 5,
+                },
+                new() {
                     key = "청낭서",
                     statType = BattleStatType.life_steal,
                     value = 10,
@@ -79,9 +84,20 @@ public struct BattleStatData
     public BattleStatType statType;
     public float value;
 
+    //string m_statName;
+
     public float percent => value * 0.01f;
     public string stringPercent => $"+{value.AmountKMBT()}%";
-    public string statName => statType.ToString().ToUpper();
+    public string statName
+        => TableManager.stringTable.GetString("BATTLESTAT_" + statType.ToString().ToUpper());
+    //{
+    //    get
+    //    {
+    //        if (m_statName.IsActive() == false)
+    //            m_statName = TableManager.stringTable.GetString("BATTLESTAT_" + statType.ToString().ToUpper());
+    //        return m_statName;
+    //    }
+    //}
     public string stringPoint
     {
         get

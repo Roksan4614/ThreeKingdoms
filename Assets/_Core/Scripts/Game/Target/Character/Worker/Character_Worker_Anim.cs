@@ -21,8 +21,8 @@ public class Character_Worker_Anim : Character_Worker
                 continue;
 
             var clip = m_owner.element.animationClipData.GetClip(i);
-            if (i == CharacterAnimType.Attack_Move && clip != null)
-                clip = m_owner.element.animationClipData.GetClip(CharacterAnimType.Attack_Move);
+            if (i == CharacterAnimType.Attack_Move && clip == null)
+                clip = m_owner.element.animationClipData.GetClip(CharacterAnimType.Attack);
 
             overrideAnimator[key] = clip ?? prevAc;
         }

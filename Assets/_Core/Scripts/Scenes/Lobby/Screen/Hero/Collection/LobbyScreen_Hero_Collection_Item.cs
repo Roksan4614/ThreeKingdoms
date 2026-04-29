@@ -13,15 +13,16 @@ public class LobbyScreen_Hero_Collection_Item : MonoBehaviour, IValidatable
         m_baseIcon = m_element.icons.GetChild(0).GetComponent<HeroIconComponent>();
         m_baseIcon.gameObject.SetActive(false);
         m_baseIcon.transform.SetParent(transform);
-
     }
 
     public void SetData(TableFriendShipData _data)
     {
         gameObject.SetActive(true);
 
-        m_element.txtTitle.text = _data.title;
+        // TITLE
+        m_element.txtTitle.text = $"Lv.{(int)_data.minGrade + 1} {_data.title}"; ;
 
+        // ICON
         var parent = m_element.icons;
         int i = 0;
         for (; i < _data.splitHero.Length; i++)
@@ -40,14 +41,30 @@ public class LobbyScreen_Hero_Collection_Item : MonoBehaviour, IValidatable
         for (; i < parent.childCount; i++)
             parent.GetChild(i).gameObject.SetActive(false);
 
+        // ATTRIBUTE
+        var stats = transform.Find("Panel/Stats");
 
+        for (i = 0; i < _data.statData.Count; i++)
+        {
+            if (i == stats.childCount)
+                Instantiate(stats.GetChild(0), stats);
+
+            var statData = _data.statData[i];
+            statData.value = statData.value + statData.value * ((int)_data.minGrade * 0.1f);
+            stats.GetChild(i).GetComponent<TextMeshProUGUI>().text
+                = statData.statName + $" <color=#BA0700>{statData.stringPercent}";
+        }
+
+        stats.ForceRebuildLayout();
     }
 
     async UniTask OnButtonAsync_Hero(HeroInfoData _heroInfoData)
     {
         var popup = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo);
 
-        popup.SetHeroInfoDataAsync(_heroInfoData, DataManager.userInfo.GetHeroInfoData(_heroInfoData.key).isMine == false).Forget();
+        _heroInfoData = DataManager.userInfo.GetHeroInfoData(_heroInfoData.key);
+
+        popup.SetHeroInfoDataAsync(_heroInfoData, _heroInfoData.isMine == false).Forget();
     }
 
     #region VALIDATE

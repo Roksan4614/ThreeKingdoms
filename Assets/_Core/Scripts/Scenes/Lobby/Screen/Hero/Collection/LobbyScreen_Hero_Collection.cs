@@ -80,6 +80,7 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
         for (; i < m_totalStat.Count; i++)
             m_totalStat[i].SetActive(false);
 
+        pTotalStat.ForceRebuildLayout();
         RebuildLayout();
     }
 
@@ -92,10 +93,10 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
 
         rtPanel.ForceRebuildLayout();
 
-        var heightPanel = rtPanel.rect.height;
-        var posY_Layout = rtLayout.anchoredPosition.y;
+        var heightPanel = rtPanel.rect.height;          //1407
+        var posY_Layout = rtLayout.anchoredPosition.y;  //-110
 
-        var sizeLayout = rtLayout.sizeDelta;
+        var sizeLayout = rtLayout.sizeDelta;            //1296
         sizeLayout.y = heightPanel + posY_Layout;
         rtLayout.sizeDelta = sizeLayout;
     }
