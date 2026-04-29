@@ -168,7 +168,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                 return true;
         }
 
-        return false;
+        return true;
     }
 
     public override async UniTask CloseAsync()

@@ -13,12 +13,18 @@ public class TableManager
     public static Table_Hero hero { get; private set; }
     public static Table_Stat statHero { get; private set; }
     public static Table_Stat statEnemy { get; private set; }
+
     public static Table_Region region { get; private set; }
     public static Table_Item item { get; private set; }
     public static Table_Scenario scenario { get; private set; }
+
     public static Table_String stringTable { get; private set; }
     public static Table_String stringHero { get; private set; }
     public static Table_StringTalk scenarioTalk { get; private set; }
+
+    public static Table_Relic relic { get; private set; }
+    public static Table_FriendShip friendShip { get; private set; }
+
 
     public async UniTask InitializeAsync()
     {
@@ -34,6 +40,9 @@ public class TableManager
             stringTable = new(LoadList<TableStringData>(_result, "String"));
             stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
             scenarioTalk = new(LoadList<TableStringData>(_result, "String_ScenarioTalk"));
+
+            relic = new(new());
+            friendShip = new(new());
 
             foreach (var h in _result)
                 h.Value.Release();

@@ -1,16 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
-public struct RelicInfoData
-{
-    public string key;
-    public int level;
-}
 
 public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 {
@@ -34,10 +29,16 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 
     const string c_keyHeroCountType = "pp_HeroCountType";
 
+    List<TotalRelicData> m_totalRelic = new();
+
     protected override void Awake()
     {
         m_element.baseScrollItem.transform.SetParent(m_element.scroll.viewport);
         m_element.baseScrollItem.gameObject.SetActive(false);
+
+        TotalRelicData baseData = new();
+        baseData.Create(m_element.pTotalRelic.GetChild(0));
+        m_totalRelic.Add(baseData);
 
         for (var i = TabType.NONE + 1; i < TabType.MAX; i++)
         {
@@ -158,7 +159,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             if (i == scroll.content.childCount)
             {
                 item = Instantiate(m_element.baseScrollItem, scroll.content);
-                item.Bind(_data => { OnButton_Item(TabType.Hero, _data); });
+                item.Bind(_data => { OnButton_Item(_data.key.IsActive() ? TabType.Hero : TabType.Relic, _data); });
             }
             else
                 item = scroll.content.GetChild(i).GetComponent<LobbyScreen_Hero_Relic_Item>();
@@ -199,19 +200,22 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         int i = 0;
         var scroll = m_element.scroll;
 
-        for (; i < 4; i++)
+        var dbRelic = TableManager.relic.dbList;
+        var myRelic = DataManager.stat.relic.dataRelic;
+
+        for (; i < dbRelic.Count; i++)
         {
             LobbyScreen_Hero_Relic_Item item = null;
             if (i == scroll.content.childCount)
             {
                 item = Instantiate(m_element.baseScrollItem, scroll.content);
-                item.Bind(_data => { OnButton_Item(TabType.Relic, _data); });
+                item.Bind(_data => { OnButton_Item(_data.key.IsActive() ? TabType.Hero : TabType.Relic, _data); });
             }
             else
                 item = scroll.content.GetChild(i).GetComponent<LobbyScreen_Hero_Relic_Item>();
 
             item.gameObject.SetActive(true);
-            item.SetRelicDataAsync(i.ToString()).Forget();
+            item.SetRelicDataAsync(dbRelic[i]).Forget();
         }
 
         for (; i < scroll.content.childCount; i++)
@@ -220,6 +224,45 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         m_element.pTotalClass.gameObject.SetActive(false);
         m_element.pTotalRelic.gameObject.SetActive(true);
         m_element.txtRelicCount.gameObject.SetActive(true);
+
+        SetTextTotalRelic();
+    }
+
+    void SetTextTotalRelic()
+    {
+        var dbBonusRelic = DataManager.stat.relic.bonusRelicBonus;
+        var pTotalRelic = m_element.pTotalRelic;
+
+        //baseTotalRelic.txtName = panel.Find("Total_Relic/Text").GetComponent<TextMeshProUGUI>();
+        int i = 0;
+        foreach (var d in dbBonusRelic)
+        {
+            if (i == m_totalRelic.Count)
+            {
+                TotalRelicData newData = new();
+                newData.Create(Instantiate(m_totalRelic[0].txtTitle, pTotalRelic).transform);
+                m_totalRelic.Add(newData);
+            }
+
+            TotalRelicData data = m_totalRelic[i];
+            data.txtTitle.text = d.Value.statName;
+            data.txtValue.text = $"{d.Value.stringPercent}";
+            m_totalRelic[i].SetActive(true);
+            i++;
+        }
+
+        for (; i < m_totalRelic.Count; i++)
+            m_totalRelic[i].SetActive(false);
+
+        var countBatchRelic = DataManager.stat.relic.dataRelic.Count(x => x.isBatch == true);
+        m_element.txtRelicCount.text = $"선택한_보물: ({countBatchRelic}/3)";
+        if (countBatchRelic > 0)
+        {
+            m_element.pTotalRelic.gameObject.SetActive(true);
+            m_element.pTotalRelic.ForceRebuildLayout();
+        }
+        else
+            m_element.pTotalRelic.gameObject.SetActive(false);
 
         RebuildLayout();
     }
@@ -244,9 +287,9 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
     void OnButton_Item(TabType _tapType, HeroInfoData _heroInfoData)
     {
         if (_tapType == TabType.Hero)
-        {
             SetTextTotalClass(_heroInfoData.classType);
-        }
+        else
+            SetTextTotalRelic();
     }
 
     #region VALIDATE
@@ -260,7 +303,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
     {
         public TextMeshProUGUI txtRelicCount;
         public TextMeshProUGUI[] txtTotalClass;
-        public TotalRelicStatData baseTotalRelic;
+        public Transform pTotalRelic;
 
         public ScrollRect scroll;
         public LobbyScreen_Hero_Relic_Item baseScrollItem;
@@ -278,10 +321,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             scroll = panel.Find("List/Scroll").GetComponent<ScrollRect>();
             baseScrollItem = scroll.content.GetChild(0).GetComponent<LobbyScreen_Hero_Relic_Item>();
 
-            baseTotalRelic = new();
-            baseTotalRelic.parent = panel.Find("Total_Relic");
-            baseTotalRelic.txtName = panel.Find("Total_Relic/Text").GetComponent<TextMeshProUGUI>();
-            baseTotalRelic.txtValue = panel.Find("Total_Relic/Text/Text").GetComponent<TextMeshProUGUI>();
+            pTotalRelic = panel.Find("Total_Relic");
 
             var tab = _transform.Find("Tab");
             btnTabs = tab.GetComponentsInChildren<ButtonHelper>();
@@ -295,15 +335,6 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         public RectTransform rtPanel => (RectTransform)txtRelicCount.transform.parent;
         public RectTransform rtLayout => (RectTransform)scroll.transform.parent;
         public Transform pTotalClass => txtTotalClass[0].transform.parent;
-        public Transform pTotalRelic => baseTotalRelic.parent;
-    }
-
-    [Serializable]
-    struct TotalRelicStatData
-    {
-        public Transform parent;
-        public TextMeshProUGUI txtName;
-        public TextMeshProUGUI txtValue;
     }
 
     [Serializable]
@@ -319,5 +350,20 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             btnOpen = null; btnCount = null;
         }
     }
+
+    struct TotalRelicData
+    {
+        public TextMeshProUGUI txtTitle;
+        public TextMeshProUGUI txtValue;
+
+        public void Create(Transform _transform)
+        {
+            txtTitle = _transform.GetComponent<TextMeshProUGUI>("");
+            txtValue = _transform.GetComponent<TextMeshProUGUI>("Text");
+        }
+
+        public void SetActive(bool _isActive) => txtTitle.gameObject.SetActive(_isActive);
+    }
+
     #endregion VALIDATA
 }

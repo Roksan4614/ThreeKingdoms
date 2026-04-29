@@ -104,6 +104,30 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         return popup;
     }
 
+    public bool IsOpenPopup(params PopupType[] _popupType)
+    {
+        if (_popupType.Length == 0)
+        {
+            for (int i = 0; i < m_element.pPopup.childCount; i++)
+            {
+                if (m_element.pPopup.GetChild(i).gameObject.activeSelf)
+                    return true;
+            }
+        }
+        else
+        {
+            List<PopupType> popups = _popupType.ToList();
+            for (int i = 0; i < m_element.pPopup.childCount; i++)
+            {
+                var popup = m_element.pPopup.GetChild(i).GetComponent<BasePopupComponent>();
+                if (popup.gameObject.activeSelf == true && popups.Contains(popup.popupType) == true)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     public bool isOpenModal => m_element.pModal.childCount > 0;
     public PopupModalComponent lastPopupModal => isOpenModal ?
         m_element.pModal.GetChild(m_element.pModal.childCount - 1).GetComponent<PopupModalComponent>() : null;

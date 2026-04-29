@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Table_Stat : BaseTable<string, TableStatData>
@@ -61,59 +62,40 @@ public struct TableStatData
     public float dashCooldownRate { get; set; }
     public float health { get; set; }
 
-    public IReadOnlyDictionary<BattleStatType, float> stat
+    public IReadOnlyList<BattleStatData> battleStat
     {
         get
         {
-            Dictionary<BattleStatType, float> result = new();
+            List<BattleStatData> result = new();
 
-            result.Add(BattleStatType.attack_power, attack_power);
-            result.Add(BattleStatType.defence, defence);
-            result.Add(BattleStatType.health_max, health_max);
-            result.Add(BattleStatType.attack_speed, attack_speed);
-            result.Add(BattleStatType.move_speed, move_speed);
-            result.Add(BattleStatType.critical_damage, critical_damage == 0 ? 1.2f : critical_damage);
-            result.Add(BattleStatType.critical_rate, critical_rate);
-            result.Add(BattleStatType.cooldown_rate, cooldown_rate);
-            result.Add(BattleStatType.life_steal, life_steal);
-            result.Add(BattleStatType.boss_damage, boss_damage);
-
-            return result;
-        }
-    }
-    public IReadOnlyDictionary<BattleStatType, string> statString
-    {
-        get
-        {
-            Dictionary<BattleStatType, string> result = new();
-
-            result.Add(BattleStatType.attack_power, Mathf.RoundToInt(attack_power).AmountKMBT());
-            result.Add(BattleStatType.defence, Mathf.RoundToInt(defence).AmountKMBT());
-            result.Add(BattleStatType.health_max, Mathf.RoundToInt(health_max).AmountKMBT());
-            result.Add(BattleStatType.attack_speed, $"{attack_speed:0.0}/s");
-            result.Add(BattleStatType.move_speed, $"{Mathf.RoundToInt(move_speed * 100)}");
-            result.Add(BattleStatType.critical_damage, $"{Math.Truncate(critical_damage * 100)}%");
-            result.Add(BattleStatType.critical_rate, $"{Math.Truncate(critical_rate * 100)}%");
-            result.Add(BattleStatType.cooldown_rate, $"{Math.Truncate(cooldown_rate * 100)}%");
-            result.Add(BattleStatType.life_steal, $"{Math.Truncate(life_steal * 100)}%");
-            result.Add(BattleStatType.boss_damage, $"{Math.Truncate(boss_damage * 100)}%");
+            result.Add(new() { statType = BattleStatType.attack_power, value = attack_power });
+            result.Add(new() { statType = BattleStatType.defence, value = defence });
+            result.Add(new() { statType = BattleStatType.health_max, value = health_max });
+            result.Add(new() { statType = BattleStatType.attack_speed, value = attack_speed });
+            result.Add(new() { statType = BattleStatType.move_speed, value = move_speed });
+            result.Add(new() { statType = BattleStatType.critical_damage, value = critical_damage });
+            result.Add(new() { statType = BattleStatType.critical_rate, value = critical_rate });
+            result.Add(new() { statType = BattleStatType.cooldown_rate, value = cooldown_rate });
+            result.Add(new() { statType = BattleStatType.life_steal, value = life_steal });
+            result.Add(new() { statType = BattleStatType.boss_damage, value = boss_damage });
 
             return result;
         }
     }
 
-    public IReadOnlyDictionary<BattleStatType, (float value, string message)> GetCompareResult(TableStatData _statData)
+    public IReadOnlyDictionary<BattleStatType, BattleStatData> GetCompareResult(TableStatData _statData)
     {
-        var orinData = stat;
-        var nextData = _statData.stat;
+        var orinData = battleStat;
+        var nextData = _statData.battleStat.ToDictionary(x => x.statType, x => x);
 
-        var result = new Dictionary<BattleStatType, (float value, string message)>();
+        var result = new Dictionary<BattleStatType, BattleStatData>();
 
         foreach (var s in orinData)
         {
-            if (s.Value.Approximately(nextData[s.Key]) == false)
+            var nd = nextData[s.statType];
+            if (s.value.Approximately(nd.value) == false)
             {
-                result.Add(s.Key, new() { value = nextData[s.Key], message = _statData.statString[s.Key] });
+                result.Add(s.statType, nd);
             }
         }
 

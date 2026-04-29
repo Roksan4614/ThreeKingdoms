@@ -103,7 +103,7 @@ public class PopupHeroInfo : BasePopupComponent
         var key = $"{_data.regionType}_{_data.key}".ToUpper();
         m_element.txtName.text = $"{TableManager.stringHero.GetString("NAME_" + key)}<size=80%><color=#888888> {TableManager.stringHero.GetString("COURTESY_" + key)}";
         m_element.txtDescTalk.text = _data.talk;
-        m_element.txtEnchantLevel.text = $"(+{_data.enchantLevel})";
+        m_element.txtEnchantLevel.text = _isJustWatch ? "" : $"(+{_data.enchantLevel})";
         m_element.txtGrade.text = $"등급:_{_data.gradeClass}";
 
         // 고유 능력치
@@ -198,7 +198,7 @@ public class PopupHeroInfo : BasePopupComponent
         m_element.statBattle.SetStatData(m_heroInfoData);
         SetHeroInfo_CoreStat(m_heroInfoData);
 
-        if(_isUpgrade)
+        if (_isUpgrade)
             m_element.txtGrade.text = $"등급:_{m_heroInfoData.gradeClass}";
         else
             m_element.txtEnchantLevel.text = $"(+{m_heroInfoData.enchantLevel})";

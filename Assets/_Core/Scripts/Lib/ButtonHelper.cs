@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IPointerUpHandler
 {
+    [SerializeField] Color m_clrPrevButton;
+    [SerializeField] Color m_clrPrevText;
+
     public Button.ButtonClickedEvent onClick
         => m_element.button.onClick;
 
@@ -64,9 +67,9 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
     {
         m_element.image.color = _isSelect ?
                 Palette.instance.data.Get(PaletteColorType.button_select) :
-                Color.white;
+                m_clrPrevButton == default ? Color.white : m_clrPrevButton;
 
-        m_element.txtName.color = _isSelect ? Color.white : Color.black;
+        m_element.txtName.color = _isSelect ? Color.white : m_clrPrevText == default ? Color.black : m_clrPrevText;
     }
 
     #region VALIDATE

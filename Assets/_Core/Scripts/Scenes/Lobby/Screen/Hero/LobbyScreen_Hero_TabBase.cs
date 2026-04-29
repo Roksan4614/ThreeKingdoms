@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using UnityEngine;
 
 public class LobbyScreen_Hero_TabBase : MonoBehaviour
@@ -10,5 +11,4 @@ public class LobbyScreen_Hero_TabBase : MonoBehaviour
     public virtual bool IsCloseScreen() => true;
 
     public virtual async UniTask CloseAsync() => await UniTask.Yield();
-
 }
