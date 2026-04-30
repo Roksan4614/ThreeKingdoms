@@ -79,7 +79,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
         m_owner.move.MoveStop();
         m_owner.move.SetFlip(targetPos.x > m_owner.transform.position.x);
-        m_owner.anim.AttackMotionFirstFrame(_layerIndex: 1);
+        m_owner.anim.AttackMotionFirstFrame(CharacterAnimType.Attack_Move, 1);
 
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
         EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);

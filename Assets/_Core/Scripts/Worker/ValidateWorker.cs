@@ -1,12 +1,30 @@
-using Cysharp.Threading.Tasks;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
+
 public interface IValidatable
 {
     void OnManualValidate();
 }
+
+/*
+#region VALIDATE
+public override void OnManualValidate() => m_element.Initialize(transform);
+
+[SerializeField, HideInInspector]
+ElementData m_element;
+
+[Serializable]
+struct ElementData
+{
+    public void Initialize(Transform _trnsform)
+    {
+
+    }
+}
+#endregion VALIDATE
+*/
+
 
 #if UNITY_EDITOR
 public static class ValidateWorker
