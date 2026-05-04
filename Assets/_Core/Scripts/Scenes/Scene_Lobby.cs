@@ -91,9 +91,9 @@ public class Scene_Lobby : SceneBase
         public Image imgAuto;
         public Outline outline;
 
-        public void Initialize(Transform _trnsform)
+        public void Initialize(Transform _transform)
         {
-            heroInfo = _trnsform.Find("Canvas/HeroInfo");
+            heroInfo = _transform.Find("Canvas/HeroInfo");
 
             btnAuto = heroInfo.GetComponent<ButtonHelper>("btn_auto");
             imgAuto = btnAuto.transform.GetComponent<Image>("img_auto");

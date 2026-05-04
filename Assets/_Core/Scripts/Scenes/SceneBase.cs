@@ -29,9 +29,9 @@ public abstract class SceneBase : Singleton<SceneBase>, IValidatable
         Canvas m_canvas;
         public Canvas canvas => m_canvas;
 
-        public void Initialize(Transform _trnsform)
+        public void Initialize(Transform _transform)
         {
-            m_canvas = _trnsform.GetComponent<Canvas>("Canvas");
+            m_canvas = _transform.GetComponent<Canvas>("Canvas");
         }
     }
 }

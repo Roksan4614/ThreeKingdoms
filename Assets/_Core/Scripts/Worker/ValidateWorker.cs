@@ -9,7 +9,7 @@ public interface IValidatable
 
 /*
 #region VALIDATE
-public override void OnManualValidate() => m_element.Initialize(transform);
+public void OnManualValidate() => m_element.Initialize(transform);
 
 [SerializeField, HideInInspector]
 ElementData m_element;
@@ -17,7 +17,7 @@ ElementData m_element;
 [Serializable]
 struct ElementData
 {
-    public void Initialize(Transform _trnsform)
+    public void Initialize(Transform _transform)
     {
 
     }
