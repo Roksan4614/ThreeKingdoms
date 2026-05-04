@@ -8,6 +8,7 @@ public interface IValidatable
 }
 
 /*
+
 #region VALIDATE
 public void OnManualValidate() => m_element.Initialize(transform);
 
@@ -19,10 +20,10 @@ struct ElementData
 {
     public void Initialize(Transform _transform)
     {
-
     }
 }
 #endregion VALIDATE
+
 */
 
 

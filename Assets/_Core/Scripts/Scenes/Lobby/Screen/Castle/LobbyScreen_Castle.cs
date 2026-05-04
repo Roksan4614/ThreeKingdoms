@@ -13,10 +13,14 @@ public class LobbyScreen_Castle : LobbyScreen_Base
     LobbyScreen_Castle_Popup_Setting m_popupSetting;
     LobbyScreen_Castle_Popup_Menu m_popupMenu;
 
-    Vector2 m_posPrevMap;
+    //Vector2 m_posPrevMap;
 
     protected override void Awake()
     {
+        var panel = transform.Find("Panel");
+        m_btnBack.transform.SetParent(panel);
+        m_txtTitle.transform.SetParent(panel);
+
         base.Awake();
 
         var popup = transform.Find("Popup");
@@ -35,28 +39,41 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             btn.onClick.AddListener(()
                 => OnButtonAsync_Object(type).Forget());
 
-            var parent = m_element.pMap.Find($"Panel/{type.ToString()}");
+            var parent = m_element.panelMap.Find(type.ToString());
             btn.transform.SetParent(parent);
             btn.transform.SetAsLastSibling();
         }
 
-        m_posPrevMap = new Vector2(0, 100);
-
+        //m_posPrevMap = new Vector2(0, 100);
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
         m_element.scroll.content.anchoredPosition = Vector2.zero;
-        m_element.pMap.anchoredPosition = m_posPrevMap;
+        //m_element.pMap.anchoredPosition = m_posPrevMap;
+    }
+    protected override bool IsCloseScreen()
+    {
+        if (m_popupMenu.gameObject.activeSelf == true)
+        {
+            m_popupMenu.Close();
+            return false;
+        }
+
+        if (m_popupSetting.CloseEscape() == false)
+            return false;
+
+        return true;
     }
 
     async UniTask OnButtonAsync_Object(CastleObjectType _objectType)
     {
+        int idx = (int)_objectType;
         for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
             m_element.btnObject[(int)i].gameObject.SetActive(i == _objectType);
 
-        m_popupMenu.Open(m_element.btnObject[(int)_objectType].transform, _objectType);
+        m_popupMenu.Open(m_element.btnObject[idx].transform, _objectType);
 
         await UniTask.WaitUntil(() => m_popupMenu.statusType != StatusType.Wait);
 
@@ -64,19 +81,18 @@ public class LobbyScreen_Castle : LobbyScreen_Base
         {
             m_element.scroll.enabled = false;
 
-            var rtObject = (RectTransform)m_element.pMap.Find($"Panel/{_objectType.ToString()}");
-            var targetPos = rtObject.anchoredPosition * -1;
+            var rtObject = (RectTransform)m_element.panelMap.Find(_objectType.ToString());
 
-            m_element.pMap.DOScale(new Vector3(1.2f, 1.2f, 1.2f), 0.1f);
-            m_element.pMap.DOAnchorPos(targetPos, 0.1f);
+            m_element.panelMap.DOScale(Vector3.one * (_objectType == CastleObjectType.Gate ? 1.5f : 2), 0.1f);
+            m_element.scroll.content.DOAnchorPos(m_element.objectPosition[idx], 0.1f);
 
-            var objButton = m_element.btnObject[(int)_objectType].gameObject;
+            var objButton = m_element.btnObject[idx].gameObject;
             objButton.SetActive(false);
 
             await m_popupSetting.OpenAsync(_objectType, m_cts.Token);
 
-            m_element.pMap.DOScale(Vector3.one, 0.1f);
-            await m_element.pMap.DOAnchorPos(m_posPrevMap, 0.1f).AsyncWaitForCompletion();
+            m_element.panelMap.DOScale(Vector3.one, 0.1f);
+            await m_element.scroll.content.DOAnchorPos(Vector3.zero, 0.1f).AsyncWaitForCompletion();
 
             objButton.SetActive(true);
             m_element.scroll.enabled = true;
@@ -105,7 +121,7 @@ public class LobbyScreen_Castle : LobbyScreen_Base
     }
     async UniTask OpenPopup_Office()
     {
-        await UniTask.Yield();
+        await PopupManager.instance.OpenPopupAndWait(PopupType.Castle_Mission);
     }
 
     #region VALIDATE
@@ -121,14 +137,14 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
         public ScrollRect scroll;
 
-        public RectTransform pMap;
+        public RectTransform panelMap;
         public Transform pButtons;
         public ButtonHelper[] btnObject;
         public void Initialize(Transform _transform)
         {
             scroll = _transform.GetComponent<ScrollRect>("Panel/Scroll");
 
-            pMap = scroll.content.GetComponent<RectTransform>("Map");
+            panelMap = scroll.content.GetComponent<RectTransform>("Map/Panel");
             pButtons = scroll.content.Find("Buttons");
             btnObject = pButtons.GetComponentsInChildren<ButtonHelper>();
         }

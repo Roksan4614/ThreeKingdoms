@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 {
     [SerializeField, HideInInspector]
-    Button m_btnBack;
+    protected Button m_btnBack;
     [SerializeField, HideInInspector]
     RectTransform m_panel;
     [SerializeField, HideInInspector]

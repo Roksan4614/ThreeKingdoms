@@ -18,6 +18,9 @@ public enum PopupType
     Hero_Sort,
     Hero_HeroInfo,
     SelectRegion,
+    Castle_Mission,
+    Castle_HeroList,
+
 
     Modal_Start,
     Modal,
