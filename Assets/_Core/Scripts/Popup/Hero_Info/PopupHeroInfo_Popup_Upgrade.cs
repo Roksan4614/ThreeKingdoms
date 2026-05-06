@@ -26,8 +26,10 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
     {
         m_startPosY = m_element.panel.anchoredPosition.y;
 
+        var ratio = Screen.height / (Screen.width * 1920 / 1080f);
+
         var size = m_element.panel.sizeDelta;
-        size.y = Screen.height * 0.5f + m_startPosY;
+        size.y = PopupManager.instance.canvasSize.y * ratio * 0.5f + m_startPosY;
         m_element.panel.sizeDelta = size;
 
         m_element.dimm.onClick.AddListener(() => Close());

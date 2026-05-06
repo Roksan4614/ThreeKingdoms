@@ -180,7 +180,7 @@ public class Tutorial_START : TutorialBase
             await UniTask.WaitForSeconds(.5f);
 
             bottomButton[(int)LobbyScreenType.Summon].interactable = false;
-            bottomButton[(int)LobbyScreenType.Heros].interactable = true;
+            bottomButton[(int)LobbyScreenType.Hero].interactable = true;
 
             rtArrow.anchoredPosition += new Vector2(-800, 0);
             rtArrow.gameObject.SetActive(true);
@@ -189,11 +189,11 @@ public class Tutorial_START : TutorialBase
             while (true)
             {
                 // 영웅 창 기다리기
-                await UniTask.WaitUntil(() => LobbyScreenManager.instance.curScreen == LobbyScreenType.Heros);
+                await UniTask.WaitUntil(() => LobbyScreenManager.instance.curScreen == LobbyScreenType.Hero);
 
                 // 꺼질 때가지 기다리기
                 // 영웅 창 기다리기
-                await UniTask.WaitUntil(() => LobbyScreenManager.instance.curScreen != LobbyScreenType.Heros);
+                await UniTask.WaitUntil(() => LobbyScreenManager.instance.curScreen != LobbyScreenType.Hero);
 
                 //배치 영웅 세명 검색
                 if (DataManager.userInfo.myHero.Count(x => x.isBatch) == 3)

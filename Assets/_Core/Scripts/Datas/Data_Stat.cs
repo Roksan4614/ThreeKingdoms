@@ -8,7 +8,7 @@ public class Data_Stat
 
     public async UniTask InitializeAsync()
     {
-        List < UniTask > tasks = new();
+        List<UniTask> tasks = new();
 
         tasks.Add(relic.InitializeAsync());
         tasks.Add(friendShip.InitializeAsync());

@@ -8,6 +8,7 @@ public class Table_FriendShip : BaseTable<string, TableFriendShipOriginData>
 
     Dictionary<string, TableFriendShipData> m_dbFriendShip = new();
     public IReadOnlyList<TableFriendShipData> dbList => m_dbList;
+
     public Table_FriendShip(List<TableFriendShipOriginData> _table) : base(_table)
     {
         List<TableFriendShipOriginData> list = new();
@@ -15,7 +16,7 @@ public class Table_FriendShip : BaseTable<string, TableFriendShipOriginData>
         list.Add(new()
         {
             key = "µµø¯∞·¿«",
-            heros = "LiuBei, GuanYu, ZhangFei",
+            heroes = "LiuBei, GuanYu, ZhangFei",
             statType = BattleStatType.attack_power,
             value = 10
         });
@@ -30,7 +31,7 @@ public class Table_FriendShip : BaseTable<string, TableFriendShipOriginData>
         list.Add(new()
         {
             key = "√À¿« ±‚µ’",
-            heros = "GuanYu, ZhangFei, ZhaYun",
+            heroes = "GuanYu, ZhangFei, ZhaYun",
             statType = BattleStatType.move_speed,
             value = 5
         });
@@ -39,7 +40,7 @@ public class Table_FriendShip : BaseTable<string, TableFriendShipOriginData>
         {
             TableFriendShipData data = new();
             data.key = x.Key;
-            data.heros = x.Select(s => s.heros).First();
+            data.heroes = x.Select(s => s.heroes).First();
             data.statData = x.Select(s => new BattleStatData()
             {
                 statType = s.statType,
@@ -57,7 +58,7 @@ public class Table_FriendShip : BaseTable<string, TableFriendShipOriginData>
 public struct TableFriendShipOriginData
 {
     public string key;
-    public string heros;
+    public string heroes;
     public BattleStatType statType;
     public float value;
 }
@@ -65,7 +66,7 @@ public struct TableFriendShipOriginData
 public struct TableFriendShipData
 {
     public string key;
-    public string heros;
+    public string heroes;
     public List<BattleStatData> statData;
 
     // CUSTOM
@@ -78,7 +79,7 @@ public struct TableFriendShipData
         get
         {
             if (m_splitHero == null)
-                m_splitHero = heros.Replace(" ", "").Split(",");
+                m_splitHero = heroes.Replace(" ", "").Split(",");
 
             return m_splitHero;
         }

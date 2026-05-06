@@ -49,7 +49,7 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
             if (_screen == LobbyScreenType.Shop)
             {
                 LobbyScreenManager.instance.GetScreenHero().SetActiveTab(LobbyScreen_Hero.HeroTabType.Relic);
-                _screen = LobbyScreenType.Heros;
+                _screen = LobbyScreenType.Hero;
             }
         }
 
@@ -77,7 +77,7 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
         => m_dbScreen[_itemType switch
         {
             ItemType.Scroll_Party => LobbyScreenType.Summon,
-            _ => LobbyScreenType.Heros
+            _ => LobbyScreenType.Hero
         }].icon;
 
     #region VALIDATA

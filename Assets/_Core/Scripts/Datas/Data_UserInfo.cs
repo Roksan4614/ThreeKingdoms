@@ -28,12 +28,12 @@ public class Data_UserInfo
 
             if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
             {
-                var heros = m_element.myHero.FindAll(x => x.isMain == false && x.isBatch == true).ToList();
-                if (heros.Count > 0)
+                var heroes = m_element.myHero.FindAll(x => x.isMain == false && x.isBatch == true).ToList();
+                if (heroes.Count > 0)
                 {
-                    for (int i = 0; i < heros.Count; i++)
+                    for (int i = 0; i < heroes.Count; i++)
                     {
-                        var h = heros[i];
+                        var h = heroes[i];
                         h.isBatch = false;
                         Update(h);
                     }
@@ -234,6 +234,7 @@ public class Data_UserInfo
             return;
 
         m_element.myHero.Add(new(_key, _isMain: _isMain, _isBatch: _isBatch));
+        DataManager.stat.friendShip.Reload();
 
         await AddressableManager.instance.Load_HeroIconAsync(_key);
         await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());

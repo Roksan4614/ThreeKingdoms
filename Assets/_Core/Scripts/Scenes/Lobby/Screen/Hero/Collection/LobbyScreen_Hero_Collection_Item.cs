@@ -8,13 +8,6 @@ public class LobbyScreen_Hero_Collection_Item : MonoBehaviour, IValidatable
 {
     HeroIconComponent m_baseIcon;
 
-    private void Awake()
-    {
-        m_baseIcon = m_element.icons.GetChild(0).GetComponent<HeroIconComponent>();
-        m_baseIcon.gameObject.SetActive(false);
-        m_baseIcon.transform.SetParent(transform);
-    }
-
     public void SetData(TableFriendShipData _data)
     {
         gameObject.SetActive(true);
@@ -24,6 +17,14 @@ public class LobbyScreen_Hero_Collection_Item : MonoBehaviour, IValidatable
 
         // ICON
         var parent = m_element.icons;
+
+        if (m_baseIcon == null)
+        {
+            m_baseIcon = m_element.icons.GetChild(0).GetComponent<HeroIconComponent>();
+            m_baseIcon.gameObject.SetActive(false);
+            m_baseIcon.transform.SetParent(transform);
+        }
+
         int i = 0;
         for (; i < _data.splitHero.Length; i++)
         {
@@ -78,12 +79,17 @@ public class LobbyScreen_Hero_Collection_Item : MonoBehaviour, IValidatable
     {
         public Transform icons;
         public TextMeshProUGUI txtTitle;
+
+        //public Transform trnsBaseItem;
+
         public void Initialize(Transform _transform)
         {
             var panel = _transform.Find("Panel");
 
             txtTitle = panel.GetComponent<TextMeshProUGUI>("txt_title");
             icons = panel.Find("Icons");
+
+            //trnsBaseItem = icons.GetChild(0);
         }
     }
     #endregion VALIDATE

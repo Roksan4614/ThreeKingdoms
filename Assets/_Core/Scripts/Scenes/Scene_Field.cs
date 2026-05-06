@@ -22,7 +22,7 @@ public class Scene_Field : SceneBase
         await DataManager.instance.InitializeAsync();
 
 
-        var team = transform.Find("Map/Heros/Team");
+        var team = transform.Find("Map/Heroes/Team");
         for (int i = 0; i < team.childCount; i++)
             Destroy(team.GetChild(i).gameObject);
 

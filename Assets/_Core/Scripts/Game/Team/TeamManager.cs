@@ -344,7 +344,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         return true;
     }
 
-    public void ShowHeros(bool _isShow)
+    public void ShowHeroes(bool _isShow)
     {
         foreach (var hero in m_member.Values)
             hero.gameObject.SetActive(_isShow);

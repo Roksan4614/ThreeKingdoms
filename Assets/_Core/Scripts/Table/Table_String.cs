@@ -8,6 +8,7 @@ public class Table_String : BaseTable<string, TableStringData>
     public Table_String(List<TableStringData> _table) : base(_table)
     {
         SetDictionary(x => x.key);
+        m_list.Clear();
     }
 
     public string GetString(string _key, params string[] _args)

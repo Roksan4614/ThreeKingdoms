@@ -42,6 +42,7 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         float timeStart = Time.time;
 
         // 사이에 세팅할것들
+#if !UNITY_EDITOR
         {
             // 개발 도중 구조가 바뀌는것땜에 에러가 나는 경우가 있어서. 그거 대응
             var assetBuild = Resources.Load<TextAsset>("EditorData/BuildData");
@@ -66,6 +67,7 @@ public class Scene_Boot : MonoBehaviour, IValidatable
                 PPWorker.Set(key, DateTime.UtcNow.Ticks.ToString());
             }
         }
+#endif
 
         await UniTask.WhenAll(tasks);
 

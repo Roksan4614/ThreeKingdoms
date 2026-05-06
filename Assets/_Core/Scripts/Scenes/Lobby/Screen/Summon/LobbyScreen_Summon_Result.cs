@@ -95,12 +95,12 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         #region 영웅 불러오기
         {
             await UniTask.WaitForEndOfFrame();
-            List<TableHeroData> dbHeros = new();
-            dbHeros.AddRange(TableManager.hero.list);
+            List<TableHeroData> dbHeroes = new();
+            dbHeroes.AddRange(TableManager.hero.list);
 
             // 특정 국가면 하나 더 넣자
             if (_regionType > RegionType.NONE)
-                dbHeros.AddRange(TableManager.hero.list
+                dbHeroes.AddRange(TableManager.hero.list
                     .Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false).ToList());
 
             int i = 0;
@@ -143,9 +143,9 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                         itemData.value = _hostKey;
                     else
                     {
-                        var randomIdx = UnityEngine.Random.Range(0, dbHeros.Count);
-                        itemData.value = dbHeros[randomIdx].key;
-                        dbHeros.RemoveAt(randomIdx);
+                        var randomIdx = UnityEngine.Random.Range(0, dbHeroes.Count);
+                        itemData.value = dbHeroes[randomIdx].key;
+                        dbHeroes.RemoveAt(randomIdx);
                     }
 
                     GradeType grade = GradeType.Normal;

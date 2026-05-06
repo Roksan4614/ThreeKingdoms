@@ -92,8 +92,8 @@ public class MapManager : Singleton<MapManager>, IValidatable
         {
             bounceLayer = LayerMask.GetMask("BounceCamera");
 
-            hero = _transform.Find("Heros/Team");
-            enemy = _transform.Find("Heros/Enemy");
+            hero = _transform.Find("Heroes/Team");
+            enemy = _transform.Find("Heroes/Enemy");
 
             dimm = GameObject.Find("Canvas/DimmMap").GetComponent<Image>();
         }

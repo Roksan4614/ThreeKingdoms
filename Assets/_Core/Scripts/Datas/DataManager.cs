@@ -21,12 +21,13 @@ public class DataManager
     Data_Option m_option = new();
     Data_Stat m_stat = new();
     Data_HeroPosition m_heroPosition = new();
+    Data_Castle m_castle = new();
 
     public static Data_UserInfo userInfo => instance.m_userInfo;
     public static Data_Option option => instance.m_option;
     public static Data_Stat stat => instance.m_stat;
     public static Data_HeroPosition heroPosition => instance.m_heroPosition;
-
+    public static Data_Castle castle => instance.m_castle;
 
     public async UniTask InitializeAsync()
     {
@@ -35,6 +36,7 @@ public class DataManager
         List<UniTask> tasks = new();
         tasks.Add(m_stat.InitializeAsync());
         tasks.Add(m_heroPosition.InitializeAsync());
+        tasks.Add(m_castle.InitializeAsync());
 
         await UniTask.WhenAll(tasks);
     }

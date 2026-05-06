@@ -13,8 +13,6 @@ public class LobbyScreen_Castle : LobbyScreen_Base
     LobbyScreen_Castle_Popup_Setting m_popupSetting;
     LobbyScreen_Castle_Popup_Menu m_popupMenu;
 
-    //Vector2 m_posPrevMap;
-
     protected override void Awake()
     {
         var panel = transform.Find("Panel");
@@ -43,16 +41,14 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             btn.transform.SetParent(parent);
             btn.transform.SetAsLastSibling();
         }
-
-        //m_posPrevMap = new Vector2(0, 100);
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
         m_element.scroll.content.anchoredPosition = Vector2.zero;
-        //m_element.pMap.anchoredPosition = m_posPrevMap;
     }
+
     protected override bool IsCloseScreen()
     {
         if (m_popupMenu.gameObject.activeSelf == true)
@@ -150,18 +146,4 @@ public class LobbyScreen_Castle : LobbyScreen_Base
         }
     }
     #endregion VALIDATE
-}
-
-public enum CastleObjectType
-{
-    NONE = -1,
-
-    Palace,
-    Market,
-    Farm,
-    Office,
-    Merchant,
-    Gate,
-    //Wall,
-    MAX
 }

@@ -9,10 +9,13 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
 {
     List<TotalStatData> m_totalStat = new();
 
+    public LobbyScreen_Hero_Collection_Item m_baseScrollItem;
+
     protected override void Awake()
     {
-        m_element.baseScrollItem.transform.SetParent(m_element.scroll.viewport);
-        m_element.baseScrollItem.gameObject.SetActive(false);
+        m_baseScrollItem = m_element.scroll.content.GetChild(0).GetComponent<LobbyScreen_Hero_Collection_Item>();
+        m_baseScrollItem.transform.SetParent(m_element.scroll.viewport);
+        m_baseScrollItem.gameObject.SetActive(false);
 
         TotalStatData baseData = new();
         baseData.Create(m_element.pTotalStat.GetChild(0));
@@ -42,7 +45,7 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
         for (; i < dbList.Count; i++)
         {
             var item = i == content.childCount ?
-                Instantiate(m_element.baseScrollItem, content) :
+                Instantiate(m_baseScrollItem, content) :
                 content.GetChild(i).GetComponent<LobbyScreen_Hero_Collection_Item>();
 
             item.SetData(dbList[i]);
@@ -113,7 +116,6 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
         public Transform pTotalStat;
 
         public ScrollRect scroll;
-        public LobbyScreen_Hero_Collection_Item baseScrollItem;
 
         public void Initialize(Transform _transform)
         {
@@ -122,7 +124,6 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
             pTotalStat = panel.Find("Total_Stat");
 
             scroll = panel.Find("List/Scroll").GetComponent<ScrollRect>();
-            baseScrollItem = scroll.content.GetChild(0).GetComponent<LobbyScreen_Hero_Collection_Item>();
         }
 
         public RectTransform rtPanel => (RectTransform)pTotalStat.parent;

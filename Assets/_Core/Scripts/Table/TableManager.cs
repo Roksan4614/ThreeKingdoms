@@ -24,6 +24,7 @@ public class TableManager
 
     public static Table_Relic relic { get; private set; }
     public static Table_FriendShip friendShip { get; private set; }
+    public static Table_Castle castle { get; private set; }
 
 
     public async UniTask InitializeAsync()
@@ -41,8 +42,10 @@ public class TableManager
             stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
             scenarioTalk = new(LoadList<TableStringData>(_result, "String_ScenarioTalk"));
 
+            // TODO
             relic = new(new());
             friendShip = new(new());
+            castle = new(new());
 
             foreach (var h in _result)
                 h.Value.Release();
