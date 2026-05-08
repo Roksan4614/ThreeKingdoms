@@ -182,12 +182,16 @@ public class Data_UserInfo
         var index = m_element.myHero.FindIndex(x => x.key.Equals(_heroData.key));
         m_element.myHero[index] = _heroData;
         SaveData();
+
+        DataManager.castle.OnUpdateClaim();
     }
 
     public void UpdateAll(List<HeroInfoData> _heroList)
     {
         m_element.myHero = _heroList;
         SaveData();
+
+        DataManager.castle.OnUpdateClaim();
     }
 
     public void SortTeamPosition(List<HeroInfoData> _heroList)

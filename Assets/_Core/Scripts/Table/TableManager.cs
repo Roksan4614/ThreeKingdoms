@@ -24,7 +24,9 @@ public class TableManager
 
     public static Table_Relic relic { get; private set; }
     public static Table_FriendShip friendShip { get; private set; }
+
     public static Table_Castle castle { get; private set; }
+    public static Table_CastleRise castleRise { get; private set; }
 
 
     public async UniTask InitializeAsync()
@@ -45,7 +47,9 @@ public class TableManager
             // TODO
             relic = new(new());
             friendShip = new(new());
-            castle = new(new());
+
+            castle = new(LoadList<TableCastleData>(_result, "Castle")); ;
+            castleRise = new(LoadList<TableCastleRiseData>(_result, "CastleRise")); ;
 
             foreach (var h in _result)
                 h.Value.Release();
@@ -61,7 +65,10 @@ public class TableManager
             return new();
         }
         else
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<SerializeData<T>>(_data[_key].Result.ToString()).Data.ToList();
+        {
+            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<SerializeData<T>>(_data[_key].Result.ToString()).Data.ToList();
+            return result;
+        }
     }
 
     [Serializable]

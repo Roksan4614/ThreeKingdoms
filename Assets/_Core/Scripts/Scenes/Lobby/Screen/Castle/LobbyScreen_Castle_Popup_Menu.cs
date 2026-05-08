@@ -11,8 +11,9 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
         m_element.dimm.onClick.AddListener(() => Close());
         m_element.dimm = null;
 
-        m_element.btnSetting.onClick.AddListener(() => Close(StatusType.Success));
-        m_element.btnEtc.onClick.AddListener(() => Close(StatusType.Valid));
+        m_element.btnInfo.onClick.AddListener(() => Close(StatusType.Success));
+        m_element.btnSetting.onClick.AddListener(() => Close(StatusType.Failed));
+        m_element.btnEtc.onClick.AddListener(() => Close(StatusType.Cancel));
     }
 
     public void Open(Transform _button, CastleObjectType _type)
@@ -20,6 +21,7 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
         statusType = StatusType.Wait;
         gameObject.SetActive(true);
 
+        m_element.btnInfo.gameObject.SetActive(_type != CastleObjectType.Office);
         m_element.btnEtc.gameObject.SetActive(true);
         switch (_type)
         {
@@ -60,6 +62,7 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
     {
         public Button dimm;
 
+        public ButtonHelper btnInfo;
         public ButtonHelper btnSetting;
         public ButtonHelper btnEtc;
 
@@ -68,8 +71,9 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
         public void Initialize(Transform _transform)
         {
             dimm = _transform.GetComponent<Button>("Dimm");
-
             panel = _transform.GetComponent<RectTransform>("Panel");
+
+            btnInfo = panel.GetComponent<ButtonHelper>("btn_info");
             btnSetting = panel.GetComponent<ButtonHelper>("btn_setting");
             btnEtc = panel.GetComponent<ButtonHelper>("btn_etc");
         }

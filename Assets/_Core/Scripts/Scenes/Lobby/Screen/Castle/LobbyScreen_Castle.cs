@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static Data_Castle;
 
 public class LobbyScreen_Castle : LobbyScreen_Base
 {
@@ -73,7 +74,8 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
         await UniTask.WaitUntil(() => m_popupMenu.statusType != StatusType.Wait);
 
-        if (m_popupMenu.statusType == StatusType.Success)
+        // 包府
+        if (m_popupMenu.statusType == StatusType.Success || m_popupMenu.statusType == StatusType.Failed)
         {
             m_element.scroll.enabled = false;
 
@@ -85,7 +87,8 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             var objButton = m_element.btnObject[idx].gameObject;
             objButton.SetActive(false);
 
-            await m_popupSetting.OpenAsync(_objectType, m_cts.Token);
+            bool isInfo = m_popupMenu.statusType == StatusType.Success;
+            await m_popupSetting.OpenAsync(isInfo, _objectType, m_cts.Token);
 
             m_element.panelMap.DOScale(Vector3.one, 0.1f);
             await m_element.scroll.content.DOAnchorPos(Vector3.zero, 0.1f).AsyncWaitForCompletion();
@@ -93,7 +96,8 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             objButton.SetActive(true);
             m_element.scroll.enabled = true;
         }
-        else if (m_popupMenu.statusType == StatusType.Valid)
+        // 漂荐
+        else if (m_popupMenu.statusType == StatusType.Cancel)
         {
             //青惑老版快
             switch (_objectType)

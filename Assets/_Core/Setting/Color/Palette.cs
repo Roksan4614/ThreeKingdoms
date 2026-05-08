@@ -8,7 +8,6 @@ public class Palette
     {
         get
         {
-
             if (m_instance == null)
             {
                 m_instance = new();
@@ -21,4 +20,13 @@ public class Palette
 
     ColorPalette m_data;
     public ColorPalette data => m_data;
+
+    public static Color Get(PaletteColorType _colorType)
+        => instance.m_data.Get(_colorType.ToString());
+
+    public static string GetHexadecimal(PaletteColorType _colorType)
+        => instance.m_data.GetHexadecimal(_colorType);
+
+    public static string htmlString_Up => instance.m_data.GetHexadecimal(PaletteColorType.txt_up);
+    public static string htmlString_Down => instance.m_data.GetHexadecimal(PaletteColorType.txt_down);
 }

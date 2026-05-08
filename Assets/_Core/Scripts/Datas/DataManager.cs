@@ -43,6 +43,11 @@ public class DataManager
 
     public static void Release()
     {
-        m_instance = null;
+        if (m_instance != null)
+        {
+            m_instance.m_castle.Release();
+
+            m_instance = null;
+        }
     }
 }

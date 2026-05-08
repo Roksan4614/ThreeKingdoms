@@ -9,6 +9,9 @@ public enum PaletteColorType
 
     button_select,
 
+    txt_up,
+    txt_down,
+
     MAX
 }
 
@@ -61,6 +64,9 @@ public class ColorPalette : ScriptableObject
         else
             return default;
     }
+
+    public string GetHexadecimal(PaletteColorType _colorType)
+        => ColorUtility.ToHtmlStringRGB(Get(_colorType));
 
     public void Add(ElementData _data) => m_element.Add(_data);
     public void RemoveAt(int _idx) => m_element.RemoveAt(_idx);

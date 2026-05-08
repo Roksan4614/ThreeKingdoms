@@ -10,70 +10,35 @@ public class Table_Castle : BaseTable<string, TableCastleData>
 
     public Table_Castle(List<TableCastleData> _table) : base(_table)
     {
-        List<TableCastleData> list = new();
-
-        list.Add(new()
+        for (var i = 0; i < m_list.Count; i++)
         {
-            key = CastleObjectType.Palace.ToString(),
-            stat_00 = CoreStatType.Charisma.ToString()
-        });
-
-        list.Add(new()
-        {
-            key = CastleObjectType.Market.ToString(),
-            stat_00 = CoreStatType.Intellect.ToString(),
-            stat_01 = CoreStatType.Politics.ToString()
-        });
-
-        list.Add(new()
-        {
-            key = CastleObjectType.Farm.ToString(),
-            stat_00 = CoreStatType.Leadership.ToString(),
-            stat_01 = CoreStatType.Politics.ToString()
-        });
-
-        list.Add(new()
-        {
-            key = CastleObjectType.Office.ToString(),
-        });
-
-        list.Add(new()
-        {
-            key = CastleObjectType.Merchant.ToString(),
-            stat_00 = CoreStatType.Leadership.ToString(),
-            stat_01 = CoreStatType.Intellect.ToString()
-        });
-
-        list.Add(new()
-        {
-            key = CastleObjectType.Gate.ToString(),
-            stat_00 = CoreStatType.Leadership.ToString(),
-            stat_01 = CoreStatType.Strength.ToString()
-        });
-
-        for (var i = 0; i < list.Count; i++)
-        {
-            var d = list[i];
+            var d = m_list[i];
             d.Initialize();
-            list[i] = d;
+            m_list[i] = d;
         }
 
-        m_db = list.ToDictionary(x => x.objectType, x => x);
+        m_db = m_list.ToDictionary(x => x.objectType, x => x);
     }
+
+    public TableCastleData GetCastleData(CastleObjectType _objectType)
+        => m_db.ContainsKey(_objectType) ? m_db[_objectType] : default;
 }
 
 public struct TableCastleData
 {
     public string key;
 
-    public string stat_00;
     public string stat_01;
+    public string stat_02;
+
+    // CUSTOM
+    public bool isActive => key.IsActive();
 
     public void Initialize()
     {
         m_coreStat = new[] {
-                    stat_00.IsActive() ? Enum.Parse<CoreStatType>(stat_00) : CoreStatType.NONE,
-                    stat_01.IsActive() ? Enum.Parse<CoreStatType>(stat_01) : CoreStatType.NONE
+                    stat_01.IsActive() ? Enum.Parse<CoreStatType>(stat_01) : CoreStatType.NONE,
+                    stat_02.IsActive() ? Enum.Parse<CoreStatType>(stat_02) : CoreStatType.NONE
                 };
 
         m_objectType = Enum.Parse<CastleObjectType>(key);

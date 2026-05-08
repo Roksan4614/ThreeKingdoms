@@ -286,5 +286,7 @@ public class Signal
     public SignalObject<bool> ActiveHUD = new();
     public SignalObject<string> UpdateHeroStat = new(); //Hero Key
 
+    public SignalObject<Data_Castle.CastleData> UpdateCastleData = new();
+
     #endregion
 }
