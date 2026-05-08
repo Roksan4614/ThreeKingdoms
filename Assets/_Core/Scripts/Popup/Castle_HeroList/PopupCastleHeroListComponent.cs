@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static Data_Castle;
@@ -39,6 +40,9 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             if (SetHeroInfoData(i))
                 break;
         }
+
+        SetCoreStatStatus();
+        SetCoreStatStatus(true);
     }
 
     bool SetHeroInfoData(CoreStatType _coreStats)
@@ -76,7 +80,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
             if (_coreStats == stat)
                 name = $"<color=#{Palette.htmlString_Up}>{name}";
-            else if(coreStat.Contains(stat) == false)
+            else if (coreStat.Contains(stat) == false)
                 name = $"<color=#7E7E7E>{name}";
 
             m_element.btnCoreStat[i].text = name;
@@ -86,10 +90,39 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         return true;
     }
 
+    void SetCoreStatStatus(bool _isInit = false)
+    {
+        var dbRise = TableManager.castleRise.GetRiseData(m_castleData.type, m_castleData.level);
+        var coreStat = TableManager.castle.GetCastleData(m_castleData.type).coreStat.Where(x => x != CoreStatType.NONE).ToArray();
+
+        int i = 0;
+        for (; i < coreStat.Length; i++)
+        {
+            var stat = coreStat[i];
+
+            var now = DataManager.castle.GetTotalCoreStat(m_castleData, stat);
+            var condition = dbRise.maxCoreStat[i];
+
+            var percent = Mathf.Min(1f, now / (float)condition);
+            m_element.amountBar[i].textTitle = $"필요_{TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}")}_수치 ({percent * 100:0.##}%)";
+            m_element.amountBar[i].textAmount = $"{now}/{condition}";
+            m_element.amountBar[i].fill = percent;
+        }
+
+        if (_isInit)
+            for (; i < m_element.amountBar.Length; i++)
+                m_element.amountBar[i].gameObject.SetActive(false);
+
+        if (_isInit == true)
+            m_element.amountBar[0].transform.parent.ForceRebuildLayout(1);
+    }
+
     void OnButton_Hero(HeroInfoData _heroInfoData)
     {
         if (m_castleData.heroes.Remove(_heroInfoData.key) == false)
             m_castleData.heroes.Add(_heroInfoData.key);
+
+        SetCoreStatStatus();
     }
 
     #region VALIDATE
@@ -106,6 +139,8 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
         public ButtonHelper[] btnCoreStat;
 
+        public AmountBarHelper[] amountBar;
+
         public void Initialize(Transform _transform)
         {
             panel = _transform.Find("Panel");
@@ -113,6 +148,8 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
             var top = scroll.transform.Find("Top");
             btnCoreStat = top.GetComponentsInChildren<ButtonHelper>();
+
+            amountBar = panel.Find("Condition").GetComponentsInChildren<AmountBarHelper>();
         }
     }
     #endregion VALIDATE

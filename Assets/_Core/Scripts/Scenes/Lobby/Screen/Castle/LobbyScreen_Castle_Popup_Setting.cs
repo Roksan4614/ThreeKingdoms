@@ -258,7 +258,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         }
         else
         {
-            m_element.textAmount = $"{_castleData.totalAmount.AmountKMBT()}/{maxAmount.AmountKMBT()}";
+            m_element.textAmount = $"{Mathf.RoundToInt(_castleData.totalAmount).AmountKMBT()}/{maxAmount.AmountKMBT()}";
             m_element.imgBar_CalimAmount.fillAmount = _castleData.totalAmount / (float)maxAmount;
         }
 

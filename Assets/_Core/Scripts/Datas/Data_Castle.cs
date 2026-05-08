@@ -34,7 +34,7 @@ public class Data_Castle
         m_cts = new();
 
         UpdateClaimAmountAsync(CastleObjectType.Farm).Forget();
-        UpdateClaimAmountAsync(CastleObjectType.Market).Forget();
+        //UpdateClaimAmountAsync(CastleObjectType.Market).Forget();
     }
 
     async UniTask UpdateClaimAmountAsync(CastleObjectType _objectType)
@@ -43,10 +43,13 @@ public class Data_Castle
         var amount = GetAmountPerSecond(castleData);
         var maxAmount = GetMaxAmount(castleData);
         int maxAmount_Table = TableManager.castleRise.GetRiseData(castleData.type, castleData.level).max_amount;
-        maxAmount_Table = (int)(maxAmount_Table + maxAmount_Table * .45f);
+        maxAmount_Table = Mathf.RoundToInt(maxAmount_Table + maxAmount_Table * .45f);
 
         if (amount == 0)
             return;
+
+        //if (castleData.totalAmount > maxAmount)
+            //castleData.totalAmount = 1340;
 
         DateTime nextTime = default;
         if (castleData.tickClaim > 0)
@@ -72,7 +75,10 @@ public class Data_Castle
             if (castleData.totalAmount >= maxAmount)
             {
                 if (castleData.totalAmount > maxAmount_Table)
+                {
                     castleData.totalAmount = maxAmount_Table;
+                    UpdateCastleData(castleData);
+                }
 
                 Signal.instance.UpdateCastleData.Emit(castleData);
 
@@ -82,7 +88,7 @@ public class Data_Castle
             await UniTask.WaitUntil(() => nextTime <= DateTime.UtcNow, cancellationToken: m_cts.Token);
 
             nextTime = nextTime.AddSeconds(1f);
-            castleData.totalAmount += amount;
+            castleData.totalAmount = Mathf.Min(maxAmount, castleData.totalAmount + amount);
             UpdateCastleData(castleData);
 
             Signal.instance.UpdateCastleData.Emit(castleData);
@@ -178,7 +184,7 @@ public class Data_Castle
         // 현재 몇퍼인지 계산
         float percent = Mathf.Min(1f, totalStat / (float)tableRiseData.value_02);
 
-        int result = Mathf.FloorToInt(tableRiseData.max_amount + tableRiseData.max_amount * (.45f * percent));
+        int result = Mathf.RoundToInt(tableRiseData.max_amount + tableRiseData.max_amount * (.45f * percent));
         return result;
     }
 
