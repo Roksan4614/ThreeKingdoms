@@ -50,8 +50,13 @@ public class LobbyScreen_Castle : LobbyScreen_Base
         m_element.scroll.content.anchoredPosition = Vector2.zero;
     }
 
+    bool m_isSwitchEscape = true;
+
     protected override bool IsCloseScreen()
     {
+        if (m_isSwitchEscape == false)
+            return false;
+
         if (m_popupMenu.gameObject.activeSelf == true)
         {
             m_popupMenu.Close();
@@ -99,6 +104,8 @@ public class LobbyScreen_Castle : LobbyScreen_Base
         // 특수
         else if (m_popupMenu.statusType == StatusType.Cancel)
         {
+            m_isSwitchEscape = false;
+
             //행상일경우
             switch (_objectType)
             {
@@ -109,6 +116,8 @@ public class LobbyScreen_Castle : LobbyScreen_Base
                     await OpenPopup_Office();
                     break;
             }
+
+            m_isSwitchEscape = true;
         }
 
         for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)

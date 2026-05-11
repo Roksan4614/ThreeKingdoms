@@ -140,6 +140,9 @@ public static class Utils
 
             _onEscape();
 
+            if (_mono == null || _mono.gameObject == null|| _mono.gameObject.activeInHierarchy == false)
+                break;
+
             if (_isForceBreak == true)
                 break;
         }

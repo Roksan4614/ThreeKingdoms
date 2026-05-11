@@ -45,7 +45,7 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
         m_element.panel.anchoredPosition = anchorPos;
     }
 
-    public void Close(StatusType _result = StatusType.Cancel)
+    public void Close(StatusType _result = StatusType.Invalid)
     {
         statusType = _result;
         gameObject.SetActive(false);

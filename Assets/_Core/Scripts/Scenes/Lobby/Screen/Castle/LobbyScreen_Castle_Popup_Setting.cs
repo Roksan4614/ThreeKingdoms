@@ -267,6 +267,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     async UniTask OpenHeroListPopupAsync()
     {
+        m_element.btnAdd.interactable = false;
+
         var rtScroll = (RectTransform)m_element.scroll.transform;
         var prevPos = rtScroll.anchoredPosition.y;
         rtScroll.DOAnchorPosY(0, 0.1f);
@@ -298,7 +300,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                 return;
         }
 
-        //m_castleData.heroes = heroes;
+        m_castleData.heroes = heroes;
         SetBatchHero();
         SetCoreStatInfo();
 
@@ -307,6 +309,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         DataManager.castle.UpdateCastleData(m_castleData);
         DataManager.castle.OnUpdateClaim();
+
+        m_element.btnAdd.interactable = true;
     }
 
     #region VALIDATE
