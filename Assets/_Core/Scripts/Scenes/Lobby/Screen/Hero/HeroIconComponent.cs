@@ -15,13 +15,18 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     UnityAction<HeroIconComponent> m_onClickAction;
 
     LobbyScreen_Hero_Hero m_screenHero;
+    TooltipWorker m_toolkip;
 
     bool m_isOpenPopup;
-    Coroutine m_coPushHold;
+
+    private void Awake()
+    {
+        m_toolkip = transform.GetComponent<TooltipWorker>("Panel/Icon/Tooltip");
+    }
 
     private void Start()
     {
-        m_element.btnHero.onClick.AddListener(() => m_onClick?.Invoke(this, false));
+        m_element.btnHero?.onClick.AddListener(() => m_onClick?.Invoke(this, false));
         m_element.btnAction?.onClick.AddListener(() =>
         {
             if (m_isOpenPopup == false)
@@ -31,11 +36,12 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
 
     public void SetHeroData(HeroInfoData _data
-        , UnityAction<HeroIconComponent, bool> _onClick
+        , UnityAction<HeroIconComponent, bool> _onClick //bool > isRightClick
         , UnityAction<HeroIconComponent> _onClickAction
+        , bool _isForceUpdate = false
         )
     {
-        if (_data.skin.Equals(data.skin))
+        if (_data.skin.Equals(data.skin) && _isForceUpdate == false)
             return;
 
         if (_onClick != null)
@@ -49,9 +55,13 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         m_element.icon.parent.gameObject.SetActive(true);
         m_element.btnAction?.gameObject.SetActive(false);
 
-        m_element.btnHero.interactable = true;
+        if (m_element.btnHero != null)
+            m_element.btnHero.interactable = true;
 
         UpdateHeroInfo(_data);
+
+        if (m_toolkip != null)
+            m_toolkip.text = _data.name;
     }
     public void UpdateHeroInfo(HeroInfoData _data)
     {

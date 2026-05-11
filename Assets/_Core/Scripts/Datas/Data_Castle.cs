@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class Data_Castle
 {
+    public Data_Castle_Mission mission { get; set; } = new();
+
     Dictionary<CastleObjectType, CastleData> m_db;
     IReadOnlyDictionary<CastleObjectType, CastleData> db => m_db;
 
@@ -15,7 +17,10 @@ public class Data_Castle
 
     public async UniTask InitializeAsync()
     {
-        await UniTask.Yield();
+        List<UniTask> lstTask = new()
+        {
+            mission.InitializeAsync()
+        };
 
         //PlayerPrefs.DeleteKey(c_key);
 
@@ -26,6 +31,8 @@ public class Data_Castle
         m_db = data.ToDictionary(x => x.type, x => x);
 
         OnUpdateClaim();
+
+        await UniTask.WhenAll(lstTask);
     }
 
     public void OnUpdateClaim()

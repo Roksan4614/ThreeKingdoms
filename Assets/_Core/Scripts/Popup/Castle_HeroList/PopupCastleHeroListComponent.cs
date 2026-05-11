@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
     PopupCastleHeroList_Item m_base;
 
     CastleData m_castleData;
+    public StatusType resultType { get; private set; }
 
     public List<string> heroes => m_castleData.heroes;
 
@@ -29,11 +31,23 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             CoreStatType statType = CoreStatType.NONE + 1 + i;
             m_element.btnCoreStat[i].onClick.AddListener(() => { SetHeroInfoData(statType); });
         }
+
+        m_element.btnConfirm.onClick.AddListener(() =>
+        {
+            resultType = StatusType.Success;
+            Close();
+        });
+        m_element.btnCancel.onClick.AddListener(Close);
     }
 
     public override void OpenPopup(params object[] _args)
     {
+        resultType = StatusType.Wait;
         m_castleData = (CastleData)_args[0];
+
+        var prev = m_castleData.heroes;
+        m_castleData.heroes = new();
+        m_castleData.heroes.AddRange(prev);
 
         for (var i = CoreStatType.NONE + 1; i < CoreStatType.MAX; i++)
         {
@@ -41,7 +55,9 @@ public class PopupCastleHeroListComponent : BasePopupComponent
                 break;
         }
 
-        SetCoreStatStatus();
+        m_element.txtTitle.text = $"장수_목록: {DataManager.castle.GetObjectName(m_castleData.type)}";
+        //m_element.txtTitle.text = $"장수_목록: Lv.{m_castleData.level} {DataManager.castle.GetObjectName(m_castleData.type)}";
+
         SetCoreStatStatus(true);
     }
 
@@ -120,9 +136,29 @@ public class PopupCastleHeroListComponent : BasePopupComponent
     void OnButton_Hero(HeroInfoData _heroInfoData)
     {
         if (m_castleData.heroes.Remove(_heroInfoData.key) == false)
-            m_castleData.heroes.Add(_heroInfoData.key);
+        {
+            if (m_castleData.heroes.Count < 6)
+                m_castleData.heroes.Add(_heroInfoData.key);
+            else
+            {
+                PopupManager.instance.AlertShow("배치_인원이_이미_모두_찼습니다.");
+                return;
+            }
+        }
 
         SetCoreStatStatus();
+    }
+
+    public override void Close()
+    {
+        CloseAsync().Forget();
+    }
+
+    async UniTask CloseAsync()
+    {
+        await Utils.SetActivePunchAsync(m_element.panel, false, false);
+
+        gameObject.SetActive(false);
     }
 
     #region VALIDATE
@@ -137,19 +173,27 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         public Transform panel;
         public ScrollRect scroll;
 
+        public TextMeshProUGUI txtTitle;
         public ButtonHelper[] btnCoreStat;
-
         public AmountBarHelper[] amountBar;
+
+        public ButtonHelper btnConfirm;
+        public ButtonHelper btnCancel;
 
         public void Initialize(Transform _transform)
         {
             panel = _transform.Find("Panel");
             scroll = panel.GetComponent<ScrollRect>("List/Scroll");
+            txtTitle = panel.GetComponent<TextMeshProUGUI>("txt_title");
 
             var top = scroll.transform.Find("Top");
             btnCoreStat = top.GetComponentsInChildren<ButtonHelper>();
 
             amountBar = panel.Find("Condition").GetComponentsInChildren<AmountBarHelper>();
+
+            var buttons = panel.Find("Button_Box");
+            btnConfirm = buttons.GetComponent<ButtonHelper>("btn_confirm");
+            btnCancel = buttons.GetComponent<ButtonHelper>("btn_cancel");
         }
     }
     #endregion VALIDATE

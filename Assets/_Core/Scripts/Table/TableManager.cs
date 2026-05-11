@@ -27,6 +27,7 @@ public class TableManager
 
     public static Table_Castle castle { get; private set; }
     public static Table_CastleRise castleRise { get; private set; }
+    public static Table_CastleMission castleMisson { get; private set; }
 
 
     public async UniTask InitializeAsync()
@@ -50,6 +51,7 @@ public class TableManager
 
             castle = new(LoadList<TableCastleData>(_result, "Castle")); ;
             castleRise = new(LoadList<TableCastleRiseData>(_result, "CastleRise")); ;
+            castleMisson = new(new());
 
             foreach (var h in _result)
                 h.Value.Release();

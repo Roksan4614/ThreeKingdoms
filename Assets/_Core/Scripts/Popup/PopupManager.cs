@@ -14,12 +14,15 @@ public enum PopupType
 {
     NONE = -1,
 
+    SelectRegion,
+
     Hero_Filter,
     Hero_Sort,
     Hero_HeroInfo,
-    SelectRegion,
-    Castle_Mission,
+
     Castle_HeroList,
+    Castle_Mission,
+    Castle_Mission_HeroList,
 
 
     Modal_Start,

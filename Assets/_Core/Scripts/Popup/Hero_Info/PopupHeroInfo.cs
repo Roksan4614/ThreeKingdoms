@@ -20,6 +20,8 @@ public class PopupHeroInfo : BasePopupComponent
     HeroInfoData m_heroInfoData;
     CharacterComponent m_character;
 
+    public bool isDontDestroy { get; set; } = false;
+
     public bool isNeedUpdate { get; private set; }
 
     void Start()
@@ -257,7 +259,11 @@ public class PopupHeroInfo : BasePopupComponent
     async UniTask CloseAsync()
     {
         await Utils.SetActivePunchAsync(m_element.panel, false, false);
-        gameObject.SetActive(false);
+
+        if( isDontDestroy == true)
+            gameObject.SetActive(false);
+        else
+            Destroy(gameObject);
     }
 
     public override void OnManualValidate()

@@ -286,7 +286,10 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     public async UniTask OpenHeroInfoPopup(HeroInfoData _data)
     {
         if (m_popupHeroInfo == null)
+        {
             m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo, _data);
+            m_popupHeroInfo.isDontDestroy = true;
+        }
         else
             await m_popupHeroInfo.SetHeroInfoDataAsync(_data);
 

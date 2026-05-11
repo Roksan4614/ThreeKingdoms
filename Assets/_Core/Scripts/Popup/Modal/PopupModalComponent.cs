@@ -30,6 +30,8 @@ public class PopupModalComponent : BasePopupComponent
         ModalPopupData popupData = (ModalPopupData)_args[0];
 
         m_element.txtContent.text = popupData.content;
+        m_element.txtContent.gameObject.SetActive(popupData.content.IsActive());
+
         m_element.btnConfirm.text = popupData.confirm ?? "_확인";
         m_element.btnCancel.text = popupData.cancel ?? "_취소";
 

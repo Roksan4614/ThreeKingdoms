@@ -11,7 +11,7 @@ public class TooltipWorker : MonoBehaviour, IValidatable
 
     CancellationTokenSource m_cts;
 
-    string text
+    public string text
     {
         get => m_element.txtTooltip.text;
         set => m_element.txtTooltip.text = value;
@@ -21,16 +21,17 @@ public class TooltipWorker : MonoBehaviour, IValidatable
     {
         if (m_key.IsActive() == true)
             text = TableManager.stringTable.GetString(m_key);
-        else
-            gameObject.SetActive(false);
 
         m_element.rtBox.gameObject.SetActive(false);
+        var rt = ((RectTransform)transform).rect;
+        m_element.collider.size = new Vector2(rt.width, rt.height);
 
         Destroy(m_element.image);
         m_element.image = null;
+        m_element.collider = null;
     }
 
-    public void Initialize(string _key)
+    public void SetKey(string _key)
     {
         m_key = _key;
         text = TableManager.stringTable.GetString(m_key);
@@ -146,11 +147,13 @@ public class TooltipWorker : MonoBehaviour, IValidatable
 
         public RectTransform rtBox;
         public Image image;
+        public BoxCollider2D collider;
 
         public void Initialize(Transform _transform)
         {
             image = _transform.GetComponent<Image>();
             rtBox = _transform.GetComponent<RectTransform>("Box");
+            collider = _transform.GetComponent<BoxCollider2D>();
 
             txtTooltip = rtBox.GetComponent<TextMeshProUGUI>("Panel/Text");
             lt = rtBox.Find("Panel/leftTop");

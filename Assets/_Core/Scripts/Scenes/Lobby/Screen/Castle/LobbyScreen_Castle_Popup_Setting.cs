@@ -14,7 +14,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
     bool m_isClose = false;
 
     Transform m_baseIcon;
-    PopupCastleHeroListComponent m_poupHeroList;
+    PopupCastleHeroListComponent m_popupHeroList;
+    PopupHeroInfo m_popupHeroInfo;
 
     LobbyScreen_Castle_Popup_Setting_UpgradeInfo m_upgradeInfo;
 
@@ -93,7 +94,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             { CastleObjectType.Gate, "성문"},
         };
 
-        m_element.txtTitle.text = $"Lv.{m_castleData.level} {dbTitle[_type]}:{(_isInfo ? "_개요" : "_관리")}";
+        m_element.txtTitle.text = $"Lv.{m_castleData.level} {DataManager.castle.GetObjectName(_type)}: {(_isInfo ? "_개요" : "_관리")}";
 
         m_element.scroll.content.anchoredPosition = Vector2.zero;
         m_element.scroll.enabled = true;
@@ -109,7 +110,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         await UniTask.WaitUntil(() => m_isClose == true, cancellationToken: _cancelToken);
     }
 
-    void SetBatchHero()
+    void SetBatchHero(bool _isForceUpdate = false)
     {
         int i = 0;
         var pIcon = m_element.pHeroIcon;
@@ -122,7 +123,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             var heroData = DataManager.userInfo.GetHeroInfoData(m_castleData.heroes[i]);
 
             item.transform.parent.gameObject.SetActive(true);
-            item.SetHeroData(heroData, null, null);
+            item.SetHeroData(heroData, (_heroIcon, _isRightClick) => OnButtonAsync_BatchHero(heroData).Forget(), null, _isForceUpdate);
             item.name = heroData.skin;
         }
 
@@ -162,15 +163,6 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                 {
                     txt.gameObject.SetActive(true);
 
-                    Dictionary<CoreStatType, string> dbString = new()
-                {
-                    { CoreStatType.Leadership, "통솔" },
-                    { CoreStatType.Strength, "무력" },
-                    { CoreStatType.Intellect, "지력" },
-                    { CoreStatType.Politics, "정치" },
-                    { CoreStatType.Charisma, "매력" },
-                };
-
                     var total = DataManager.castle.GetTotalCoreStat(m_castleData, coreStat);
                     var max = dbCastleRise.maxCoreStat[i];
 
@@ -182,7 +174,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                         isAvail = false;
                     }
 
-                    txt.text = $"{dbString[coreStat]}: {color}{total}/{max}{colorBack} ";
+                    txt.text = $"{TableManager.stringTable.GetString($"CORESTAT_{coreStat.ToString().ToUpper()}")} : {color}{total}/{max}{colorBack} ";
                     if (m_isInfoVersion == true)
                     {
                         string format = "<size=80%>", message = "";
@@ -223,9 +215,14 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     public bool CloseEscape()
     {
-        if (m_poupHeroList != null)
+        if (m_popupHeroList != null)
         {
-            m_poupHeroList.Close();
+            m_popupHeroList.Close();
+            return false;
+        }
+        if (m_popupHeroInfo != null)
+        {
+            m_popupHeroInfo.gameObject.SetActive(false);
             return false;
         }
         if (gameObject.activeSelf == true)
@@ -234,6 +231,14 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             return false;
         }
         return true;
+    }
+
+    private void OnDestroy()
+    {
+        if (m_popupHeroInfo != null)
+            Destroy(m_popupHeroInfo.gameObject);
+        if (m_popupHeroList != null)
+            Destroy(m_popupHeroList.gameObject);
     }
 
     public void Close(StatusType _result = StatusType.Cancel, Ease _ease = Ease.InBack)
@@ -273,44 +278,76 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         var prevPos = rtScroll.anchoredPosition.y;
         rtScroll.DOAnchorPosY(0, 0.1f);
 
-        m_poupHeroList = await PopupManager.instance
-            .OpenPopup<PopupCastleHeroListComponent>(PopupType.Castle_HeroList,
-            m_castleData);
+        if (m_popupHeroList == null)
+            m_popupHeroList = await PopupManager.instance
+                .OpenPopup<PopupCastleHeroListComponent>(PopupType.Castle_HeroList,
+                m_castleData);
+        else
+        {
+            m_popupHeroList.gameObject.SetActive(true);
+            m_popupHeroList.OpenPopup(m_castleData);
+        }
 
         List<string> prevheroes = new();
         prevheroes.AddRange(m_castleData.heroes);
 
-        await UniTask.WaitUntil(() => m_poupHeroList == null);
-
-        rtScroll.DOAnchorPosY(prevPos, 0.1f);
-
-        var heroes = m_poupHeroList.heroes;
-        m_poupHeroList = null;
-
-        if (heroes.Count == prevheroes.Count)
-        {
-            int i = 0;
-            for (; i < heroes.Count; i++)
-            {
-                if (prevheroes.Contains(heroes[i]) == false)
-                    break;
-            }
-
-            if (i == heroes.Count)
-                return;
-        }
-
-        m_castleData.heroes = heroes;
-        SetBatchHero();
-        SetCoreStatInfo();
-
-        if (m_upgradeInfo.gameObject.activeSelf == true)
-            m_upgradeInfo.SetUpgradeInfo(m_castleData);
-
-        DataManager.castle.UpdateCastleData(m_castleData);
-        DataManager.castle.OnUpdateClaim();
+        await UniTask.WaitUntil(() => m_popupHeroList.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
 
         m_element.btnAdd.interactable = true;
+        rtScroll.DOAnchorPosY(prevPos, 0.1f);
+
+        if (m_popupHeroList.resultType == StatusType.Success)
+        {
+            var heroes = m_popupHeroList.heroes;
+            m_popupHeroList = null;
+
+            if (heroes.Count == prevheroes.Count)
+            {
+                int i = 0;
+                for (; i < heroes.Count; i++)
+                {
+                    if (prevheroes.Contains(heroes[i]) == false)
+                        break;
+                }
+
+                if (i == heroes.Count)
+                    return;
+            }
+
+            m_castleData.heroes = heroes;
+            SetBatchHero();
+            SetCoreStatInfo();
+
+            if (m_upgradeInfo.gameObject.activeSelf == true)
+                m_upgradeInfo.SetUpgradeInfo(m_castleData);
+
+            DataManager.castle.UpdateCastleData(m_castleData);
+            DataManager.castle.OnUpdateClaim();
+        }
+    }
+
+    async UniTask OnButtonAsync_BatchHero(HeroInfoData _heroInfoData)
+    {
+        var rtScroll = (RectTransform)m_element.scroll.transform;
+        var prevPos = rtScroll.anchoredPosition.y;
+        rtScroll.DOAnchorPosY(0, 0.1f);
+
+        if (m_popupHeroInfo == null)
+        {
+            m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo, _heroInfoData);
+            m_popupHeroInfo.isDontDestroy = true;
+        }
+        else
+            await m_popupHeroInfo.SetHeroInfoDataAsync(_heroInfoData);
+
+        await UniTask.WaitUntil(() => m_popupHeroInfo.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+
+        rtScroll.DOAnchorPosY(prevPos, 0.1f);
+        if (m_popupHeroInfo.isNeedUpdate == true)
+        {
+            SetBatchHero(true);
+            SetCoreStatInfo();
+        }
     }
 
     #region VALIDATE

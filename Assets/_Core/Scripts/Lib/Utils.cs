@@ -138,10 +138,10 @@ public static class Utils
                 continue;
             }
 
-            _onEscape();
-
-            if (_mono == null || _mono.gameObject == null|| _mono.gameObject.activeInHierarchy == false)
+            if (_mono == null || _mono.gameObject == null)
                 break;
+
+            _onEscape();
 
             if (_isForceBreak == true)
                 break;

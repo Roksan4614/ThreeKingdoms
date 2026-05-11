@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -9,13 +10,13 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
 {
     enum TextType
     {
-        name,
         leadership,
         strength,
         intellect,
         politics,
         charisma,
         job,
+        batch,
     }
 
     HeroInfoData m_heroInfoData;
@@ -23,6 +24,13 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
 
     Data_Castle.CastleData m_castleData;
     CastleObjectType m_prevJob;
+
+    HeroIconComponent m_heroIcon;
+
+    private void Awake()
+    {
+        m_heroIcon = transform.GetComponent<HeroIconComponent>("Panel/Icon");
+    }
 
     public void SetHeroInfoData(Data_Castle.CastleData _castleData, HeroInfoData _heroInfoData, UnityAction<HeroInfoData> _onClick, params CoreStatType[] _coreStatType)
     {
@@ -58,11 +66,10 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
 
         m_heroInfoData = _heroInfoData;
 
-        m_element.GetText(TextType.name).text = _heroInfoData.name;
+        m_heroIcon.SetHeroData(_heroInfoData, null, null);
+        //m_element.GetText(TextType.name).text = _heroInfoData.name;
 
-        m_element.GetText(TextType.job).text = "-";
         m_element.check.SetActive(_heroInfoData.isBatch);
-
         SetCoreStat(_heroInfoData, _coreStatType);
 
         m_prevJob = DataManager.castle.GetJobObjectType(m_heroInfoData.key);
@@ -97,10 +104,20 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
             if (_coreStatType.Length > 0 && _coreStatType.Contains(coreStatType))
                 txt.text = $"<color=#{(dbRise.maxCoreStat[_coreStatType[0] == coreStatType ? 0 : 1] <= value ? Palette.htmlString_Up : Palette.htmlString_Down)}>" + value.ToString();
             else
-                txt.text = value.ToString();
-
-            txt.alpha = value >= 90 ? 1 : value >= 80 ? .9f : value >= 70 ? .8f : value >= 60 ? .7f : .6f;
+            {
+                txt.text = $"<color=#7e7e7e>{value}";
+                txt.alpha = value >= 90 ? 1 : value >= 80 ? .9f : value >= 70 ? .8f : value >= 60 ? .7f : .6f;
+            }
         }
+    }
+
+    public void SetActive_Batch(bool _isShow, string _stringBatch = "")
+    {
+        var txt = m_element.GetText(TextType.batch);
+        txt.gameObject.SetActive(_isShow == false);
+
+        if (_stringBatch.IsActive())
+            txt.text = _stringBatch;
     }
 
     #region VALIDATE
@@ -127,10 +144,17 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
             panel = _transform.Find("Panel");
             button = _transform.GetComponent<Button>();
 
-            check = panel.Find("txt_batch/CheckBox/Check").gameObject;
+            check = panel.Find("Batch/CheckBox/Check").gameObject;
             bg = _transform.Find("BG").gameObject;
 
-            txt = panel.GetComponentsInChildren<TextMeshProUGUI>();
+            List<TextMeshProUGUI> lstTxt = new();
+            for (int i = 0; i < panel.childCount; i++)
+            {
+                var txtItem = panel.GetChild(i).GetComponent<TextMeshProUGUI>();
+                if (txtItem)
+                    lstTxt.Add(txtItem);
+            }
+            txt = lstTxt.ToArray();
         }
     }
     #endregion VALIDATE

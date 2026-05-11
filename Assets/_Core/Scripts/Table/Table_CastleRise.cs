@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Table_CastleRise : BaseTable<string, TableCastleRiseData>
 {
-
     Dictionary<CastleObjectType, List<TableCastleRiseData>> m_db = new();
 
     public IReadOnlyDictionary<CastleObjectType, List<TableCastleRiseData>> db => m_db;
