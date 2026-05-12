@@ -41,7 +41,7 @@ public class Data_Castle
         m_cts = new();
 
         UpdateClaimAmountAsync(CastleObjectType.Farm).Forget();
-        //UpdateClaimAmountAsync(CastleObjectType.Market).Forget();
+        UpdateClaimAmountAsync(CastleObjectType.Market).Forget();
     }
 
     async UniTask UpdateClaimAmountAsync(CastleObjectType _objectType)
@@ -56,7 +56,7 @@ public class Data_Castle
             return;
 
         //if (castleData.totalAmount > maxAmount)
-            //castleData.totalAmount = 1340;
+        //castleData.totalAmount = 1340;
 
         DateTime nextTime = default;
         if (castleData.tickClaim > 0)
@@ -117,9 +117,25 @@ public class Data_Castle
         if (_type == CastleObjectType.Farm || _type == CastleObjectType.Market)
             newData.tickClaim = DateTime.UtcNow.Ticks;
 
-        UpdateCastleData(newData);
+        UpdateCastleData(newData, false);
 
         return GetCaslteData(_type);
+    }
+
+    public void RebatchHeroes(CastleData _data)
+    {
+        for (int i = 0; i < _data.heroes.Count; i++)
+        {
+            var heroKey = _data.heroes[i];
+            var jobType = GetHeroObjectType(heroKey);
+
+            if (jobType == CastleObjectType.NONE || jobType == _data.type)
+                continue;
+
+            var data = m_db[jobType];
+            data.heroes.Remove(heroKey);
+            m_db[jobType] = data;
+        }
     }
 
     public void UpdateCastleData(CastleData _data, bool _isSave = true)
@@ -227,7 +243,7 @@ public class Data_Castle
     public string GetObjectName(CastleObjectType _type)
         => TableManager.stringTable.GetString("CASTLE_OBJECT_" + _type.ToString().ToUpper());
 
-    public CastleObjectType GetJobObjectType(string _heroKey)
+    public CastleObjectType GetHeroObjectType(string _heroKey)
     {
         for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
         {

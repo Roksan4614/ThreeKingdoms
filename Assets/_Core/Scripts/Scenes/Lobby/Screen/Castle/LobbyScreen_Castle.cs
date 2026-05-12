@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using static Data_Castle;
 
 public class LobbyScreen_Castle : LobbyScreen_Base
 {
@@ -87,7 +86,8 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             var rtObject = (RectTransform)m_element.panelMap.Find(_objectType.ToString());
 
             m_element.panelMap.DOScale(Vector3.one * (_objectType == CastleObjectType.Gate ? 1.5f : 2), 0.1f);
-            m_element.scroll.content.DOAnchorPos(m_element.objectPosition[idx], 0.1f);
+            m_element.panelMap.DOAnchorPos(m_element.objectPosition[idx], 0.1f);
+            m_element.scroll.content.anchoredPosition = Vector2.zero;
 
             var objButton = m_element.btnObject[idx].gameObject;
             objButton.SetActive(false);
@@ -96,7 +96,7 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             await m_popupSetting.OpenAsync(isInfo, _objectType, m_cts.Token);
 
             m_element.panelMap.DOScale(Vector3.one, 0.1f);
-            await m_element.scroll.content.DOAnchorPos(Vector3.zero, 0.1f).AsyncWaitForCompletion();
+            await m_element.panelMap.DOAnchorPos(Vector3.zero, 0.1f).AsyncWaitForCompletion();
 
             objButton.SetActive(true);
             m_element.scroll.enabled = true;

@@ -1,7 +1,5 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IValidatable
 {

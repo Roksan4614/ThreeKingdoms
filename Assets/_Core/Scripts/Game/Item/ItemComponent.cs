@@ -19,7 +19,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         data = _itemData;
 
         gameObject.SetActive(true);
-        m_element.panel.gameObject.SetActive(false);
+        //m_element.panel.gameObject.SetActive(false);
 
         bool isHero = _itemData.key == ItemType.Stone_Soul;
         SetIconAsync(_itemData.value, isHero).Forget();
@@ -54,7 +54,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         Utils.SetActivePunch(m_element.panel, true);
         m_element.iconPanel.parent.gameObject.SetActive(true);
 
-        m_element.badge.SetActive(data.isNew);
+        SetActiveBadge(data.isNew);
     }
 
     public void SetSoulCount(long _count = 0)
@@ -63,8 +63,11 @@ public class ItemComponent : MonoBehaviour, IValidatable
         m_element.iconPanel.parent.gameObject.SetActive(false);
 
         m_element.txtCount.text = _count == 0 ? "" : $"x{_count.AmountKMBT()}";
-        m_element.badge.SetActive(false);
+        SetActiveBadge(false);
     }
+
+    public void SetActiveBadge(bool _isActive)
+        => m_element.badge.SetActive(_isActive);
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

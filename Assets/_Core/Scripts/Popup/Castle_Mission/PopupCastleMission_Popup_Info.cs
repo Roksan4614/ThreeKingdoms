@@ -1,16 +1,11 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
+using CastleMissionData = Data_Castle_Mission.CastleMissionData;
 
 public class PopupCastleMission_Popup_Info : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public async UniTask<bool> OpenAsync(CastleMissionData _mission)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return true;
     }
 }

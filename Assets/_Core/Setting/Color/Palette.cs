@@ -21,6 +21,11 @@ public class Palette
     ColorPalette m_data;
     public ColorPalette data => m_data;
 
+    public static Color GetGradeOutline(GradeType _grade)
+        => instance.m_data.Get($"icon_outline_grade_{_grade.ToString().ToLower()}");
+    public static string GetHexa_GradeOutline(GradeType _grade)
+        => ColorUtility.ToHtmlStringRGB(GetGradeOutline(_grade));
+
     public static Color Get(PaletteColorType _colorType)
         => instance.m_data.Get(_colorType.ToString());
 

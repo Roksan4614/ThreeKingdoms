@@ -5,7 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Data_Castle;
+using CastleData = Data_Castle.CastleData;
 
 public class PopupCastleHeroListComponent : BasePopupComponent
 {
@@ -42,6 +42,8 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
     public override void OpenPopup(params object[] _args)
     {
+        Utils.SetActivePunch(m_element.panel, true);
+
         resultType = StatusType.Wait;
         m_castleData = (CastleData)_args[0];
 
@@ -150,16 +152,17 @@ public class PopupCastleHeroListComponent : BasePopupComponent
     }
 
     public override void Close()
-    {
-        CloseAsync().Forget();
-    }
+        => CloseAsync().Forget();
 
     async UniTask CloseAsync()
     {
-        await Utils.SetActivePunchAsync(m_element.panel, false, false);
+        if (resultType != StatusType.Success)
+            resultType = StatusType.Cancel;
 
+        await Utils.SetActivePunchAsync(m_element.panel, false, false);
         gameObject.SetActive(false);
     }
+
 
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);

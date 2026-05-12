@@ -2,12 +2,11 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Data_Castle;
+using CastleData = Data_Castle.CastleData;
 
 public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 {
@@ -83,16 +82,6 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             m_upgradeInfo.SetUpgradeInfo(m_castleData);
         }
         m_element.scroll.content.ForceRebuildLayout();
-
-        Dictionary<CastleObjectType, string> dbTitle = new()
-        {
-            { CastleObjectType.Palace, "궁성"},
-            { CastleObjectType.Market, "시장"},
-            { CastleObjectType.Farm, "농지"},
-            { CastleObjectType.Office, "관아"},
-            { CastleObjectType.Merchant, "행상"},
-            { CastleObjectType.Gate, "성문"},
-        };
 
         m_element.txtTitle.text = $"Lv.{m_castleData.level} {DataManager.castle.GetObjectName(_type)}: {(_isInfo ? "_개요" : "_관리")}";
 
@@ -291,7 +280,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         List<string> prevheroes = new();
         prevheroes.AddRange(m_castleData.heroes);
 
-        await UniTask.WaitUntil(() => m_popupHeroList.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+        await UniTask.WaitUntil(() => m_popupHeroList.resultType != StatusType.Wait, cancellationToken: destroyCancellationToken);
 
         m_element.btnAdd.interactable = true;
         rtScroll.DOAnchorPosY(prevPos, 0.1f);
@@ -315,12 +304,14 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             }
 
             m_castleData.heroes = heroes;
+
             SetBatchHero();
             SetCoreStatInfo();
 
             if (m_upgradeInfo.gameObject.activeSelf == true)
                 m_upgradeInfo.SetUpgradeInfo(m_castleData);
 
+            DataManager.castle.RebatchHeroes(m_castleData);
             DataManager.castle.UpdateCastleData(m_castleData);
             DataManager.castle.OnUpdateClaim();
         }

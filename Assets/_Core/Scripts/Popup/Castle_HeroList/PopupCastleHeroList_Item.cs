@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,28 +40,40 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
         m_element.button.onClick.RemoveAllListeners();
         m_element.button.onClick.AddListener(() =>
         {
-            m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
-            m_element.check.SetActive(m_heroInfoData.isBatch);
-            _onClick(m_heroInfoData);
-
-            var job = m_heroInfoData.isBatch == false ? m_prevJob : m_castleData.type;
+            var job = m_heroInfoData.isBatch == true ? m_prevJob : m_castleData.type;
             if (m_prevJob > CastleObjectType.NONE)
             {
+                // 이전 임무와 다르다면..
                 if (m_prevJob != m_castleData.type)
                 {
-                    var prevCastleData = DataManager.castle.GetCaslteData(m_prevJob);
+                    // 그런데 배치를 시도했네? 확인 팝업 띄우자
+                    if (m_heroInfoData.isBatch == false)
+                    {
+                        PopupManager.instance.OpenModalAsync(
+                            "이미_임무_중인_장수입니다.\n새로운_임무를_부여하겠습니까?", _callback: _statusType =>
+                            {
+                                if (_statusType == StatusType.Success)
+                                {
+                                    m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
+                                    m_element.check.SetActive(m_heroInfoData.isBatch);
 
-                    if (m_heroInfoData.isBatch == true)
-                        prevCastleData.heroes.Remove(m_heroInfoData.key);
-                    else
-                        prevCastleData.heroes.Add(m_heroInfoData.key);
-
-                    DataManager.castle.UpdateCastleData(prevCastleData, false);
+                                    _onClick(m_heroInfoData);
+                                    SetJob(job);
+                                }
+                            }
+                            ).Forget();
+                        return;
+                    }
                 }
-                else if (m_heroInfoData.isBatch == false)
+                //이전임무와 같은데 해제하는거라면
+                else if (m_heroInfoData.isBatch == true)
                     job = CastleObjectType.NONE;
             }
 
+            m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
+            m_element.check.SetActive(m_heroInfoData.isBatch);
+
+            _onClick(m_heroInfoData);
             SetJob(job);
         });
 
@@ -72,7 +85,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
         m_element.check.SetActive(_heroInfoData.isBatch);
         SetCoreStat(_heroInfoData, _coreStatType);
 
-        m_prevJob = DataManager.castle.GetJobObjectType(m_heroInfoData.key);
+        m_prevJob = DataManager.castle.GetHeroObjectType(m_heroInfoData.key);
         SetJob(m_prevJob);
 
         m_element.bg.SetActive(transform.GetSiblingIndex() % 2 == 1);

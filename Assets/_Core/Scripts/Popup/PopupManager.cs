@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
@@ -174,16 +175,19 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     public void SetCanvasCamera() => m_element.canvas.worldCamera = CameraManager.instance.main;
 
-    public async UniTask<StatusType> OpenModalAsync(string _content = null, string _confirm = null, string _cancel = null)
+    public async UniTask<StatusType> OpenModalAsync(string _content = null, string _confirm = null, string _cancel = null, UnityAction<StatusType> _callback = null)
     {
         PopupModalComponent.ModalPopupData popupData = new()
         {
-            content = _confirm,
+            content = _content,
             confirm = _confirm,
             cancel = _cancel,
+            callback = _callback
         };
 
         var popup = await OpenPopupAndWait<PopupModalComponent>(PopupType.Modal, popupData);
+
+        _callback?.Invoke(popup.statusType);
 
         return popup.statusType;
     }

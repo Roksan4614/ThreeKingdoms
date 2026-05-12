@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class PopupModalComponent : BasePopupComponent
@@ -39,7 +40,7 @@ public class PopupModalComponent : BasePopupComponent
 
         var size = m_element.rt.sizeDelta;
         var screenWidth = PopupManager.instance.canvasSize.x;
-        if (screenWidth * 0.8f < size.x)
+        if (screenWidth * 0.9f < size.x)
         {
             m_element.fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             size.x = screenWidth * 0.8f;
@@ -100,5 +101,7 @@ public class PopupModalComponent : BasePopupComponent
         public string content;
         public string confirm;
         public string cancel;
+
+        public UnityAction<StatusType> callback;
     }
 }

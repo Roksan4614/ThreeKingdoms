@@ -45,27 +45,27 @@ public class Scene_Boot : MonoBehaviour, IValidatable
 #if !UNITY_EDITOR
         {
             // 개발 도중 구조가 바뀌는것땜에 에러가 나는 경우가 있어서. 그거 대응
-            var assetBuild = Resources.Load<TextAsset>("EditorData/BuildData");
+            //var assetBuild = Resources.Load<TextAsset>("EditorData/BuildData");
 
-            if (assetBuild != null)
-            {
-                string key = "START_TIME";
+            //if (assetBuild != null)
+            //{
+            //    string key = "START_TIME";
 
-                if (PPWorker.HasKey(key))
-                {
-                    DateTime dtStart = new DateTime(long.Parse(PPWorker.Get<string>(key)));
+            //    if (PPWorker.HasKey(key))
+            //    {
+            //        DateTime dtStart = new DateTime(long.Parse(PPWorker.Get<string>(key)));
 
-                    var build = JObject.Parse(assetBuild.ToString());
-                    DateTime dtBuild = new DateTime((long)build["dt_build"]);
+            //        var build = JObject.Parse(assetBuild.ToString());
+            //        DateTime dtBuild = new DateTime((long)build["dt_build"]);
 
-                    if (dtBuild > dtStart)
-                        PlayerPrefs.DeleteAll();
-                }
-                else
-                    PlayerPrefs.DeleteAll();
+            //        if (dtBuild > dtStart)
+            //            PlayerPrefs.DeleteAll();
+            //    }
+            //    else
+            //        PlayerPrefs.DeleteAll();
 
-                PPWorker.Set(key, DateTime.UtcNow.Ticks.ToString());
-            }
+            //    PPWorker.Set(key, DateTime.UtcNow.Ticks.ToString());
+            //}
         }
 #endif
 
