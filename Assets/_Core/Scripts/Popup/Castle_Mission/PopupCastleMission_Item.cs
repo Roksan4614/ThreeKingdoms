@@ -128,9 +128,9 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
             while (ts.TotalSeconds > 0)
             {
+                ts = endTime - DateTime.UtcNow;
                 m_element.btn_batch.text = Utils.MSpace(ts.ToString(@"hh\:mm\:ss"), 21) + "\n<size=90%>시간단축";
                 await UniTask.WaitForSeconds(1f, cancellationToken: token);
-                ts = endTime - DateTime.UtcNow;
             }
         }
 

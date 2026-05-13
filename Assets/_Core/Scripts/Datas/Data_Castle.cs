@@ -30,13 +30,16 @@ public class Data_Castle
 
         m_db = data.ToDictionary(x => x.type, x => x);
 
-        OnUpdateClaim();
+        OnUpdateClaim(true);
 
         await UniTask.WhenAll(lstTask);
     }
 
-    public void OnUpdateClaim()
+    public void OnUpdateClaim(bool _isInit = false)
     {
+        if (_isInit == false)
+            IngameLog.Add("OnUpdateClaim");
+
         Release_CTS();
         m_cts = new();
 

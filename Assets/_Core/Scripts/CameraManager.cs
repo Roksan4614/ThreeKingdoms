@@ -116,6 +116,7 @@ public class CameraManager : MonoSingleton<CameraManager>
     }
 
     public static Vector3 posPointer => m_instance.m_pointer.position;
+    public static Vector3 localPosPointer => m_instance.m_pointer.localPosition;
     public static Transform pointer => m_instance.m_pointer;
 
     //public Vector3 GetMousePosition()

@@ -29,6 +29,14 @@ public class TooltipWorker : MonoBehaviour, IValidatable
         Destroy(m_element.image);
         m_element.image = null;
         m_element.collider = null;
+
+        Signal.instance.Event_ActivePunch_Start.connect = SlotActivePunchStart;
+    }
+
+    void SlotActivePunchStart()
+    {
+        m_element.rtBox.gameObject.SetActive(false);
+        ReleaseCTS();
     }
 
     public void SetKey(string _key)
@@ -57,12 +65,12 @@ public class TooltipWorker : MonoBehaviour, IValidatable
         m_cts = new();
         var token = m_cts.Token;
 
-        var stayTimer = .5f;
+        var stayTimer = .3f;
         var endTime = Time.time + stayTimer;
 
         var rtBox = m_element.rtBox;
         var pointer = CameraManager.pointer;
-        var prevPos = pointer.position;
+        var prevPos = pointer.localPosition;
 
         rtBox.gameObject.SetActive(false);
 
@@ -71,13 +79,13 @@ public class TooltipWorker : MonoBehaviour, IValidatable
             await UniTask.WaitForEndOfFrame(cancellationToken: token);
 
             // 마우스 움직였는지 여부 확인
-            var distance = (prevPos - CameraManager.posPointer).sqrMagnitude;
+            var distance = (prevPos - pointer.localPosition).sqrMagnitude;
             if (distance > .1f)
             {
                 if (rtBox.gameObject.activeSelf == true)
                     rtBox.gameObject.SetActive(false);
 
-                prevPos = pointer.position;
+                prevPos = pointer.localPosition;
                 endTime = Time.time + stayTimer;
                 continue;
             }

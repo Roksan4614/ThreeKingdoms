@@ -288,5 +288,6 @@ public class Signal
 
     public SignalObject<Data_Castle.CastleData> UpdateCastleData = new();
 
+    public SignalObject Event_ActivePunch_Start = new();
     #endregion
 }

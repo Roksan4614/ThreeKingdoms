@@ -204,21 +204,21 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     public bool CloseEscape()
     {
-        if (m_popupHeroList != null)
+        if (m_popupHeroList?.CloseEscape() == false)
+            return false;
+
+        if (m_popupHeroInfo != null && m_popupHeroInfo.gameObject.activeSelf == true)
         {
-            m_popupHeroList.Close();
+            //m_popupHeroInfo.gameObject.SetActive(false);
             return false;
         }
-        if (m_popupHeroInfo != null)
-        {
-            m_popupHeroInfo.gameObject.SetActive(false);
-            return false;
-        }
+
         if (gameObject.activeSelf == true)
         {
             Close();
             return false;
         }
+
         return true;
     }
 
@@ -280,30 +280,15 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         List<string> prevheroes = new();
         prevheroes.AddRange(m_castleData.heroes);
 
-        await UniTask.WaitUntil(() => m_popupHeroList.resultType != StatusType.Wait, cancellationToken: destroyCancellationToken);
+        await UniTask.WaitUntil(() => m_popupHeroList.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
 
         m_element.btnAdd.interactable = true;
         rtScroll.DOAnchorPosY(prevPos, 0.1f);
 
         if (m_popupHeroList.resultType == StatusType.Success)
         {
-            var heroes = m_popupHeroList.heroes;
-            m_popupHeroList = null;
-
-            if (heroes.Count == prevheroes.Count)
-            {
-                int i = 0;
-                for (; i < heroes.Count; i++)
-                {
-                    if (prevheroes.Contains(heroes[i]) == false)
-                        break;
-                }
-
-                if (i == heroes.Count)
-                    return;
-            }
-
-            m_castleData.heroes = heroes;
+            m_castleData.heroes.Clear();
+            m_castleData.heroes.AddRange(m_popupHeroList.heroes);
 
             SetBatchHero();
             SetCoreStatInfo();

@@ -115,6 +115,8 @@ public class PopupCastleMissionComponent : BasePopupComponent
             {
                 PopupManager.instance.AlertShow("TODO: 보상받기");
                 DataManager.castle.mission.RemoveMission(_missionData.idx);
+
+                SetMissionList(true);
             }
             // 아니면 시간단축 팝업 띄우기
             else

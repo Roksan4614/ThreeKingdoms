@@ -111,7 +111,7 @@ public class Data_Castle_Mission
     public void StartMission(CastleMissionData _missionData)
     {
         _missionData.tickStart = System.DateTime.UtcNow.Ticks;
-        _missionData.tickEnd = System.DateTime.UtcNow.AddSeconds(((int)_missionData.grade + 1) * 60).Ticks;
+        _missionData.tickEnd = System.DateTime.UtcNow.AddSeconds(((int)_missionData.grade + 3) * 10).Ticks;
 
         m_remainCount--;
         UpdateMission(_missionData, false);

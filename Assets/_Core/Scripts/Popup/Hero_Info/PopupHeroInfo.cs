@@ -22,6 +22,7 @@ public class PopupHeroInfo : BasePopupComponent
 
     public bool isDontDestroy { get; set; } = false;
 
+    public StatusType statusType { get; private set; } = StatusType.Wait;
     public bool isNeedUpdate { get; private set; }
 
     void Start()
@@ -55,6 +56,7 @@ public class PopupHeroInfo : BasePopupComponent
 
     private void OnEnable()
     {
+        statusType = StatusType.Wait;
         isNeedUpdate = false;
         Utils.SetActivePunch(m_element.panel, true, false);
         SetActiveTab(TabType.stat);
@@ -258,6 +260,8 @@ public class PopupHeroInfo : BasePopupComponent
 
     async UniTask CloseAsync()
     {
+        statusType = StatusType.Cancel;
+
         await Utils.SetActivePunchAsync(m_element.panel, false, false);
 
         if( isDontDestroy == true)

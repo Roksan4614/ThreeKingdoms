@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,8 @@ public class PopupCastleHeroListComponent : BasePopupComponent
     PopupCastleHeroList_Item m_base;
 
     CastleData m_castleData;
+
+    public StatusType statusType { get; private set; }
     public StatusType resultType { get; private set; }
 
     public List<string> heroes => m_castleData.heroes;
@@ -44,23 +47,27 @@ public class PopupCastleHeroListComponent : BasePopupComponent
     {
         Utils.SetActivePunch(m_element.panel, true);
 
-        resultType = StatusType.Wait;
+        statusType = resultType = StatusType.Wait;
         m_castleData = (CastleData)_args[0];
 
         var prev = m_castleData.heroes;
         m_castleData.heroes = new();
         m_castleData.heroes.AddRange(prev);
 
+        m_element.txtTitle.text = $"장수_목록: {DataManager.castle.GetObjectName(m_castleData.type)}";
+        //m_element.txtTitle.text = $"장수_목록: Lv.{m_castleData.level} {DataManager.castle.GetObjectName(m_castleData.type)}";
+
+        RefreshHeroesData(true);
+    }
+
+    void RefreshHeroesData(bool _isInit)
+    {
         for (var i = CoreStatType.NONE + 1; i < CoreStatType.MAX; i++)
         {
             if (SetHeroInfoData(i))
                 break;
         }
-
-        m_element.txtTitle.text = $"장수_목록: {DataManager.castle.GetObjectName(m_castleData.type)}";
-        //m_element.txtTitle.text = $"장수_목록: Lv.{m_castleData.level} {DataManager.castle.GetObjectName(m_castleData.type)}";
-
-        SetCoreStatStatus(true);
+        SetCoreStatStatus(_isInit);
     }
 
     bool SetHeroInfoData(CoreStatType _coreStats)
@@ -76,7 +83,8 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         var content = m_element.scroll.content;
         foreach (var hero in myHero)
         {
-            var item = i == content.childCount ? Instantiate(m_base, content) :
+            bool isNew = i == content.childCount;
+            var item = isNew ? Instantiate(m_base, content) :
                 content.GetChild(i).GetComponent<PopupCastleHeroList_Item>();
 
             var heroData = hero;
@@ -86,6 +94,10 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             item.gameObject.SetActive(true);
             item.SetHeroInfoData(m_castleData, heroData, OnButton_Hero, coreStat);
             i++;
+
+            // 유저아이콘 클릭했을 때 처리하자
+            if (isNew)
+                item.onClick_HeroIcon.AddListener(() => OpenHeroInfoAsync(item.heroInfoData).Forget());
         }
 
         for (; i < content.childCount; i++)
@@ -151,6 +163,50 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         SetCoreStatStatus();
     }
 
+    bool m_isOpenPopup_HeroInfo;
+    PopupHeroInfo m_popupHeroInfo;
+    async UniTask OpenHeroInfoAsync(HeroInfoData _heroInfoData)
+    {
+        if (m_isOpenPopup_HeroInfo == true)
+            return;
+
+        Signal.instance.Event_ActivePunch_Start.Emit();
+        Utils.SetActivePunch(m_element.panel, false);
+
+        m_isOpenPopup_HeroInfo = true;
+
+        if (m_popupHeroInfo == null)
+        {
+            m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo, _heroInfoData);
+            m_popupHeroInfo.isDontDestroy = true;
+        }
+        else
+            await m_popupHeroInfo.SetHeroInfoDataAsync(_heroInfoData);
+
+        await UniTask.WaitUntil(() => m_popupHeroInfo.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
+
+        if (m_popupHeroInfo.isNeedUpdate == true)
+        {
+            resultType = StatusType.Success;
+            RefreshHeroesData(false);
+        }
+
+        m_isOpenPopup_HeroInfo = false;
+        Utils.SetActivePunch(m_element.panel, true);
+    }
+
+    public bool CloseEscape()
+    {
+        if (m_popupHeroInfo?.gameObject.activeSelf == true)
+            return false;
+        if (statusType == StatusType.Wait)
+        {
+            CloseAsync().Forget();
+            return false;
+        }
+        return true;
+    }
+
     public override void Close()
         => CloseAsync().Forget();
 
@@ -159,6 +215,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         if (resultType != StatusType.Success)
             resultType = StatusType.Cancel;
 
+        statusType = StatusType.Cancel;
         await Utils.SetActivePunchAsync(m_element.panel, false, false);
         gameObject.SetActive(false);
     }

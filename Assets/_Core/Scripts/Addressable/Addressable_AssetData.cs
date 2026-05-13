@@ -1,9 +1,8 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.U2D;
 
 public partial class AddressableManager
 {
@@ -177,5 +176,31 @@ public partial class AddressableManager
         await Load_HeroCharacterAsync(_key);
 
         return m_heroCharacter.ContainsKey(_key) ? m_heroCharacter[_key].Result : null;
+    }
+
+    public async UniTask<Sprite[]> GetAtlasAsync_CastleNPC(int _index)
+    {
+        var tag = "Castle_NPC";
+        if (m_loadedAtlas.ContainsKey(tag) == false)
+        {
+            string key = $"Atlas/{tag}.spriteatlasv2";
+            await LoadAssetAsync<SpriteAtlas>(_result =>
+            {
+                foreach (var s in _result)
+                {
+                    if (m_loadedAtlas.ContainsKey(tag) == false)
+                        m_loadedAtlas.Add(tag, s.Value);
+                }
+            }, null, key);
+
+            return await GetAtlasAsync_CastleNPC(_index);
+        }
+
+        var atlas = m_loadedAtlas[tag].Result;
+
+        var body = atlas.GetSprite($"Castle_NPC_Body{_index:00}_0");
+        var head = atlas.GetSprite($"Castle_NPC_Head{_index:00}_0");
+
+        return new Sprite[] { body, head };
     }
 }

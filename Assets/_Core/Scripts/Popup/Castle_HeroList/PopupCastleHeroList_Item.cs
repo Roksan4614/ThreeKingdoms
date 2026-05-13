@@ -115,12 +115,10 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
             var txt = m_element.GetText(txtType);
 
             if (_coreStatType.Length > 0 && _coreStatType.Contains(coreStatType))
-                txt.text = $"<color=#{(dbRise.maxCoreStat[_coreStatType[0] == coreStatType ? 0 : 1] <= value ? Palette.htmlString_Up : Palette.htmlString_Down)}>" + value.ToString();
+                txt.text = $"<color=#{Palette.htmlString_Up}>" + value.ToString();
             else
-            {
                 txt.text = $"<color=#7e7e7e>{value}";
-                txt.alpha = value >= 90 ? 1 : value >= 80 ? .9f : value >= 70 ? .8f : value >= 60 ? .7f : .6f;
-            }
+            txt.alpha = value >= 90 ? 1 : value >= 80 ? .9f : value >= 70 ? .8f : value >= 60 ? .7f : .6f;
         }
     }
 
@@ -132,6 +130,8 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
         if (_stringBatch.IsActive())
             txt.text = _stringBatch;
     }
+
+    public Button.ButtonClickedEvent onClick_HeroIcon => m_element.btnIcon.onClick;
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
@@ -149,6 +149,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
 
         [SerializeField] TextMeshProUGUI[] txt;
 
+        public Button btnIcon;
         public TextMeshProUGUI GetText(TextType _type)
             => txt[(int)_type];
 
@@ -168,6 +169,8 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
                     lstTxt.Add(txtItem);
             }
             txt = lstTxt.ToArray();
+
+            btnIcon = panel.GetComponent<Button>("Icon/Panel/Icon");
         }
     }
     #endregion VALIDATE
