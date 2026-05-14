@@ -35,7 +35,9 @@ public enum OrderLayerType
     Popup_Front,
 
     Alert,
-    MAX
+    MAX,
+
+    MAX_VALUE = 32200
 }
 
 public class AutoOrderInLayer : MonoBehaviour, IValidatable

@@ -12,6 +12,11 @@ public class LobbyScreen_Castle_NPCManager : Singleton<LobbyScreen_Castle_NPCMan
     {
         m_element.npc.transform.SetParent(transform);
         m_element.npc.gameObject.SetActive(false);
+
+        //test
+        var test = transform.GetComponent<LobbyScreen_Castle_NPCComponent>("List/Test");
+        test.Initialize(m_element.localPosTop.y, m_element.localPosBottom.y);
+        test.transform.SetParent(test.transform.parent.parent);
     }
 
     void OnEnable()
@@ -28,7 +33,8 @@ public class LobbyScreen_Castle_NPCManager : Singleton<LobbyScreen_Castle_NPCMan
         int i = 0, max = 0;
         for (int idxStreet = 0; idxStreet < m_element.streets.Count; idxStreet++)
         {
-            max += idxStreet == 0 ? Random.Range(5, 8) : 3;
+            //max += idxStreet == 0 ? Random.Range(5, 8) : 2;
+            max += idxStreet == 0 ? 5 : 2;
 
             for (; i < max; i++)
             {

@@ -13,6 +13,8 @@ public class Data_Castle_Mission
 
     const string c_key = "pp_casltle_mission";
 
+    int m_idxMission;
+
     public async UniTask InitializeAsync()
     {
         await UniTask.Yield();
@@ -20,10 +22,11 @@ public class Data_Castle_Mission
         m_remainCount = PPWorker.Get<int>(c_key + "_count");
         m_data = PPWorker.Get<List<CastleMissionData>>(c_key);
 
-        //m_data = null; m_remainCount = 10;
+        m_data = null; m_remainCount = 10;
 
         if (m_data == null)
         {
+            m_idxMission = 1;
             m_data = new();
             m_remainCount = 10;
             var dbTable = TableManager.castleMisson.list.OrderBy(x => Random.value).ToArray();
@@ -33,7 +36,7 @@ public class Data_Castle_Mission
                 var grade = GradeType.NONE + 1 + Random.Range(0, (int)GradeType.MAX);
                 CastleMissionData newData = new()
                 {
-                    idx = System.DateTime.UtcNow.Ticks + i,
+                    idx = m_idxMission++,
                     key = dbTable[i].key,
                     grade = grade,
                     exp = 100 * ((int)grade + 1),
@@ -55,6 +58,8 @@ public class Data_Castle_Mission
                 SaveData();
             }
         }
+        else
+            m_idxMission = m_data.Last().idx + 1;
     }
 
     public void RefreshMission()
@@ -76,6 +81,10 @@ public class Data_Castle_Mission
 
     public void AddNewMission(bool _isAutoSave)
     {
+        var a = TableManager.castleMisson.list.OrderBy(x => Random.value);
+        var b = a.Where(x => m_data.Any(x => x.key.Equals(x.key) == false));
+        var c = b.FirstOrDefault();
+
         var newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).Where(x => m_data.Any(x => x.key.Equals(x.key) == false)).FirstOrDefault();
 
         if (newMission.isActive == false)
@@ -84,7 +93,7 @@ public class Data_Castle_Mission
         var grade = GradeType.NONE + 1 + Random.Range(0, (int)GradeType.MAX);
         CastleMissionData newData = new()
         {
-            idx = System.DateTime.UtcNow.Ticks,
+            idx = m_idxMission++,
             key = newMission.key,
             grade = grade,
             exp = 100 * ((int)grade + 1),
@@ -118,7 +127,7 @@ public class Data_Castle_Mission
         AddNewMission(true);
     }
 
-    public void RemoveMission(long _idx, bool _isForceSave = true)
+    public void RemoveMission(int _idx, bool _isForceSave = true)
     {
         var idx = m_data.FindIndex(x => x.idx == _idx);
         if (idx == -1) return;
@@ -147,7 +156,7 @@ public class Data_Castle_Mission
 
     public struct CastleMissionData
     {
-        public long idx;
+        public int idx;
         public string key;
         public List<string> heroes;
         public GradeType grade;

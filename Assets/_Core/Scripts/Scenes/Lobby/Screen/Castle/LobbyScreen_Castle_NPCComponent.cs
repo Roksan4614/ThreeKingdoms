@@ -13,6 +13,8 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable
 
     CancellationTokenSource m_cts;
 
+    public bool isTestNPC;
+
     private void OnDisable()
         => ReleaseCTS();
 
@@ -20,6 +22,12 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable
     {
         m_posTop = _posTop;
         m_posBottom = _posBottom;
+    }
+
+    private void Update()
+    {
+        if (isTestNPC == true && m_element.panel.gameObject.activeSelf)
+            OnUpdate_NPCMove();
     }
 
     public void Spawn(Vector3 _localPosition)
@@ -64,6 +72,12 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable
                 .AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(token);
 
             m_element.anim.Play("Castle_NPC_Idle");
+
+            // 성문뒤에 완전히 숨었으면 좀 바꿔주자
+            if ((_idxStreet == 0 && _idxPos == 16) ||
+                (_idxStreet == 3 && _idxPos == 0) ||
+                (_idxStreet == 2 && _idxPos == 4))
+                SetBodyAsync(UnityRandom.Range(1, 12)).Forget();
         }
     }
 
@@ -82,6 +96,7 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable
             m_element.imgBody[i].sprite = sprite[i];
         }
 
+        transform.name = "NPC_" + _idx;
         m_element.panel.gameObject.SetActive(true);
     }
 
