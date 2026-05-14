@@ -97,7 +97,8 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
             // 유저아이콘 클릭했을 때 처리하자
             if (isNew)
-                item.onClick_HeroIcon.AddListener(() => OpenHeroInfoAsync(item.heroInfoData).Forget());
+                item.onClick_HeroIcon.AddListener(()
+                    => OpenHeroInfoAsync(item.heroInfoData).Forget());
         }
 
         for (; i < content.childCount; i++)
@@ -134,17 +135,17 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             var condition = dbRise.maxCoreStat[i];
 
             var percent = Mathf.Min(1f, now / (float)condition);
-            m_element.amountBar[i].textTitle = $"필요_{TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}")}_수치 ({percent * 100:0.##}%)";
-            m_element.amountBar[i].textAmount = $"{now}/{condition}";
-            m_element.amountBar[i].fill = percent;
+            m_element.gauges[i].textTitle = $"필요_{TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}")}_수치 ({percent * 100:0.##}%)";
+            m_element.gauges[i].textAmount = $"{now}/{condition}";
+            m_element.gauges[i].fillAmount = percent;
         }
 
         if (_isInit)
-            for (; i < m_element.amountBar.Length; i++)
-                m_element.amountBar[i].gameObject.SetActive(false);
+            for (; i < m_element.gauges.Length; i++)
+                m_element.gauges[i].gameObject.SetActive(false);
 
         if (_isInit == true)
-            m_element.amountBar[0].transform.parent.ForceRebuildLayout(1);
+            m_element.gauges[0].transform.parent.ForceRebuildLayout(1);
     }
 
     void OnButton_Hero(HeroInfoData _heroInfoData)
@@ -235,7 +236,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
         public TextMeshProUGUI txtTitle;
         public ButtonHelper[] btnCoreStat;
-        public AmountBarHelper[] amountBar;
+        public GaugeHelper[] gauges;
 
         public ButtonHelper btnConfirm;
         public ButtonHelper btnCancel;
@@ -249,7 +250,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             var top = scroll.transform.Find("Top");
             btnCoreStat = top.GetComponentsInChildren<ButtonHelper>();
 
-            amountBar = panel.Find("Condition").GetComponentsInChildren<AmountBarHelper>();
+            gauges = panel.Find("Condition").GetComponentsInChildren<GaugeHelper>();
 
             var buttons = panel.Find("Button_Box");
             btnConfirm = buttons.GetComponent<ButtonHelper>("btn_confirm");

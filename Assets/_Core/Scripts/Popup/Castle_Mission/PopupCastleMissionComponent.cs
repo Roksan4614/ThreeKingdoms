@@ -45,6 +45,12 @@ public class PopupCastleMissionComponent : BasePopupComponent
             DataManager.castle.mission.RefreshMission();
             SetMissionList(false);
         });
+
+        m_element.btnAll.onClick.AddListener(() =>
+        {
+            DataManager.castle.mission.CompleteMission();
+            SetMissionList(true);
+        });
     }
 
     public override void OpenPopup(params object[] _args)
@@ -78,7 +84,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
         var missionList = DataManager.castle.mission.data.Where(x => (x.tickStart == 0) == (_isRunning == false)).ToArray();
 
         if (_isRunning)
-            missionList = missionList.OrderByDescending(x => x.tickEnd < DateTime.UtcNow.Ticks).ToArray();
+            missionList = missionList.OrderByDescending(x => x.tickEnd < Utils.GetUTC().Ticks).ToArray();
 
         int i = 0;
         for (; i < missionList.Length; i++)
@@ -114,7 +120,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
             if (_missionData.tickEnd <= Utils.GetUTC().Ticks)
             {
                 PopupManager.instance.AlertShow("TODO: 보상받기");
-                DataManager.castle.mission.RemoveMission(_missionData.idx);
+                DataManager.castle.mission.CompleteMission(_missionData);
 
                 SetMissionList(true);
             }
@@ -127,11 +133,21 @@ public class PopupCastleMissionComponent : BasePopupComponent
         // 아니면 상세페이지를 띄워주자
         else
         {
-            bool isStart = await m_element.info.OpenAsync(_missionData);
+            await Utils.SetActivePunchAsync(m_element.panel, false);
 
-            DataManager.castle.mission.StartMission(_missionData);
-            RefreshRemainCount();
-            SetMissionList(false);
+            m_element.info.Open(_missionData);
+
+            //await UniTask.WaitUntil(() => m_element.info.resultType != StatusType.Wait, cancellationToken: destroyCancellationToken);
+            await UniTask.WaitUntil(() => m_element.info.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+
+            Utils.SetActivePunch(m_element.panel, true);
+
+            if (m_element.info.resultType == StatusType.Success)
+            {
+                DataManager.castle.mission.StartMission(_missionData);
+                RefreshRemainCount();
+                SetMissionList(false);
+            }
         }
     }
 
@@ -198,6 +214,8 @@ public class PopupCastleMissionComponent : BasePopupComponent
             btnRefresh = _transform.GetComponent<ButtonHelper>("Panel/btn_refresh");
             btnAll = _transform.GetComponent<ButtonHelper>("Panel/btn_all");
         }
+
+        public Transform panel => btnAll.transform.parent;
     }
     #endregion VALIDATE
 }

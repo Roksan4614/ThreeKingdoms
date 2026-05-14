@@ -68,15 +68,15 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
             if (_type == CastleObjectType.Market || _type == CastleObjectType.Farm)
             {
-                m_element.amountObject.SetActive(true);
+                m_element.gauge.gameObject.SetActive(true);
                 SlotUpdateCastleData(m_castleData);
             }
             else
-                m_element.amountObject.SetActive(false);
+                m_element.gauge.gameObject.SetActive(false);
         }
         else
         {
-            m_element.amountObject.SetActive(false);
+            m_element.gauge.gameObject.SetActive(false);
 
             m_element.btnUpgrade.gameObject.SetActive(true);
             m_upgradeInfo.SetUpgradeInfo(m_castleData);
@@ -247,13 +247,13 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         if (maxAmount == 0)
         {
-            m_element.textAmount = $"_비활성화";
-            m_element.imgBar_CalimAmount.fillAmount = 0;
+            m_element.gauge.textAmount = $"_비활성화";
+            m_element.gauge.fillAmount = 0;
         }
         else
         {
-            m_element.textAmount = $"{Mathf.RoundToInt(_castleData.totalAmount).AmountKMBT()}/{maxAmount.AmountKMBT()}";
-            m_element.imgBar_CalimAmount.fillAmount = _castleData.totalAmount / (float)maxAmount;
+            m_element.gauge.textAmount = $"{Mathf.RoundToInt(_castleData.totalAmount).AmountKMBT()}/{maxAmount.AmountKMBT()}";
+            m_element.gauge.fillAmount = _castleData.totalAmount / (float)maxAmount;
         }
 
         m_castleData = _castleData;
@@ -342,9 +342,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         public Transform pHeroIcon;
         public ButtonHelper btnAdd;
 
-        public Image imgBar_CalimAmount;
-        public TextMeshProUGUI txtClaimAmount;
-        public TextMeshProUGUI txtClaimAmount_Front;
+        public GaugeHelper gauge;
         public TextMeshProUGUI txtPerSecond;
 
         public ButtonHelper btnUpgrade;
@@ -358,26 +356,12 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             pHeroIcon = scroll.content.Find("Batch/Icons/List");
             btnAdd = pHeroIcon.parent.GetComponent<ButtonHelper>("btn_add");
 
-            var amount = scroll.content.Find("Amount");
-            imgBar_CalimAmount = amount.GetComponent<Image>("Bar/img_bar");
-            txtClaimAmount_Front = imgBar_CalimAmount.transform.GetComponent<TextMeshProUGUI>("txt_amount");
-            txtClaimAmount = amount.GetComponent<TextMeshProUGUI>("txt_amount");
-            txtPerSecond = amount.GetComponent<TextMeshProUGUI>("txt_per");
+            gauge = scroll.content.GetComponent<GaugeHelper>("Gauge");
+            txtPerSecond = gauge.transform.GetComponent<TextMeshProUGUI>("txt_per");
 
             var batchStat = scroll.content.Find("Batch/Stat");
             txtBatchStat = batchStat.GetComponentsInChildren<TextMeshProUGUI>();
             btnUpgrade = scroll.content.GetComponent<ButtonHelper>("Batch/btn_upgrade");
-        }
-
-        public GameObject amountObject => txtClaimAmount.transform.parent.gameObject;
-
-        public string textAmount
-        {
-            set
-            {
-                txtClaimAmount.text = value;
-                txtClaimAmount_Front.text = value;
-            }
         }
     }
     #endregion VALIDATE

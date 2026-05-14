@@ -156,6 +156,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         m_popupSort = null; m_popupHeroInfo = null; m_popupFilter = null;
     }
+
     public override bool IsCloseScreen()
     {
         if (gameObject.activeSelf == true)

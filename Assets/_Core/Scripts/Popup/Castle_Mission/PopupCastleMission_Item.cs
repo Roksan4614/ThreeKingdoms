@@ -23,6 +23,9 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
             => m_onClick(m_missionData));
     }
 
+    private void OnDisable()
+        => Release_CTS();
+
     public void Initalize(UnityAction<CastleMissionData> _onClick)
     {
         m_onClick = _onClick;
@@ -113,7 +116,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         var token = m_cts.Token;
 
         var endTime = new DateTime(m_missionData.tickEnd, DateTimeKind.Utc);
-        var ts = endTime - DateTime.UtcNow;
+        var ts = endTime - Utils.GetUTC();
 
         m_element.btn_batch.text = Utils.MSpace(ts.ToString(@"hh\:mm\:ss"), 21) + "\n<size=90%>시간단축";
 
@@ -128,7 +131,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
             while (ts.TotalSeconds > 0)
             {
-                ts = endTime - DateTime.UtcNow;
+                ts = endTime - Utils.GetUTC();
                 m_element.btn_batch.text = Utils.MSpace(ts.ToString(@"hh\:mm\:ss"), 21) + "\n<size=90%>시간단축";
                 await UniTask.WaitForSeconds(1f, cancellationToken: token);
             }

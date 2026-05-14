@@ -3,16 +3,17 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AmountBarHelper : MonoBehaviour, IValidatable
+public class GaugeHelper : MonoBehaviour, IValidatable
 {
     public string textTitle { set => m_element.textTitle = value; }
     public string textAmount { set => m_element.textAmount = value; }
-    public float fill { set => m_element.fill = value; }
+    public float fillAmount { set => m_element.fillAmount = value; }
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
+    //[SerializeField]
     ElementData m_element;
 
     [Serializable]
@@ -39,7 +40,7 @@ public class AmountBarHelper : MonoBehaviour, IValidatable
 
         public string textTitle { set => m_txtTitle.text = m_txtTitle_Front.text = value; }
         public string textAmount { set => m_txtAmount.text = m_txtAmount_Front.text = value; }
-        public float fill { set => m_bar.fillAmount = value; }
+        public float fillAmount { set => m_bar.fillAmount = value; }
     }
     #endregion VALIDATE
 }

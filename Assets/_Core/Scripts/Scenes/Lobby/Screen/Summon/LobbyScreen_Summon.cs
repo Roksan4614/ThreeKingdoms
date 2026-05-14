@@ -69,7 +69,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
         while (true)
         {
-            if (dtEnd < DateTime.UtcNow)
+            if (dtEnd < Utils.GetUTC())
             {
                 await LoadHostDataAsync();
 
@@ -78,7 +78,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
             }
 
             if (package.gameObject.activeSelf == true)
-                package.SetHostRemainTime(dtEnd - DateTime.UtcNow);
+                package.SetHostRemainTime(dtEnd - Utils.GetUTC());
 
             await UniTask.WaitForEndOfFrame(m_cts.Token);
         }
@@ -97,7 +97,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         }
 
         m_element.pHost.gameObject.SetActive(true);
-        m_hostData.dt_end = DateTime.UtcNow.AddHours(1f).ToString();
+        m_hostData.dt_end = Utils.GetUTC().AddHours(1f).ToString();
 
         bool isHas = false;
         for (int i = 0; i < m_element.pHost.childCount; i++)

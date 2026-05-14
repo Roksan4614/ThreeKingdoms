@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LobbyScreen_Castle_NPCManager : Singleton<LobbyScreen_Castle_NPCManager>, IValidatable
 {
-    float m_randomPosRange = 30;
+    float m_randomPosRange = 20;
     System.DateTime m_dtSpawn;
 
     protected override void OnAwake()
@@ -17,6 +17,7 @@ public class LobbyScreen_Castle_NPCManager : Singleton<LobbyScreen_Castle_NPCMan
         var test = transform.GetComponent<LobbyScreen_Castle_NPCComponent>("List/Test");
         test.Initialize(m_element.localPosTop.y, m_element.localPosBottom.y);
         test.transform.SetParent(test.transform.parent.parent);
+        test.gameObject.SetActive(false);
     }
 
     void OnEnable()

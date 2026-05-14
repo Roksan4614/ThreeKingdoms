@@ -10,6 +10,8 @@ using UnityEngine.UI;
 public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IValidatable
 {
     public HeroInfoData data { get; private set; }
+    public Button.ButtonClickedEvent onClick
+        => m_element.btnHero?.onClick;
 
     UnityAction<HeroIconComponent, bool> m_onClick;
     UnityAction<HeroIconComponent> m_onClickAction;

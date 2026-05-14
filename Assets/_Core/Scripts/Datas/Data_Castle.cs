@@ -65,7 +65,7 @@ public class Data_Castle
         if (castleData.tickClaim > 0)
         {
             DateTime lastClaimTime = new DateTime(castleData.tickClaim, DateTimeKind.Utc);
-            TimeSpan elapsed = DateTime.UtcNow - lastClaimTime;
+            TimeSpan elapsed = Utils.GetUTC() - lastClaimTime;
 
             if (elapsed.TotalSeconds >= 1)
             {
@@ -78,7 +78,7 @@ public class Data_Castle
             nextTime = lastClaimTime.AddSeconds(1f);
         }
         else
-            nextTime = DateTime.UtcNow;
+            nextTime = Utils.GetUTC();
 
         while (true)
         {
@@ -95,7 +95,7 @@ public class Data_Castle
                 await UniTask.WaitUntil(() => castleData.totalAmount < maxAmount, cancellationToken: m_cts.Token);
             }
 
-            await UniTask.WaitUntil(() => nextTime <= DateTime.UtcNow, cancellationToken: m_cts.Token);
+            await UniTask.WaitUntil(() => nextTime <= Utils.GetUTC(), cancellationToken: m_cts.Token);
 
             nextTime = nextTime.AddSeconds(1f);
             castleData.totalAmount = Mathf.Min(maxAmount, castleData.totalAmount + amount);
@@ -118,7 +118,7 @@ public class Data_Castle
         };
 
         if (_type == CastleObjectType.Farm || _type == CastleObjectType.Market)
-            newData.tickClaim = DateTime.UtcNow.Ticks;
+            newData.tickClaim = Utils.GetUTC().Ticks;
 
         UpdateCastleData(newData, false);
 

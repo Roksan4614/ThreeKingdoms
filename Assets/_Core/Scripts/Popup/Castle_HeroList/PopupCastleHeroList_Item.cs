@@ -26,13 +26,6 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
     Data_Castle.CastleData m_castleData;
     CastleObjectType m_prevJob;
 
-    HeroIconComponent m_heroIcon;
-
-    private void Awake()
-    {
-        m_heroIcon = transform.GetComponent<HeroIconComponent>("Panel/Icon");
-    }
-
     public void SetHeroInfoData(Data_Castle.CastleData _castleData, HeroInfoData _heroInfoData, UnityAction<HeroInfoData> _onClick, params CoreStatType[] _coreStatType)
     {
         m_castleData = _castleData;
@@ -79,7 +72,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
 
         m_heroInfoData = _heroInfoData;
 
-        m_heroIcon.SetHeroData(_heroInfoData, null, null);
+        m_element.heroIcon.SetHeroData(_heroInfoData, null, null);
         //m_element.GetText(TextType.name).text = _heroInfoData.name;
 
         m_element.check.SetActive(_heroInfoData.isBatch);
@@ -131,7 +124,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
             txt.text = _stringBatch;
     }
 
-    public Button.ButtonClickedEvent onClick_HeroIcon => m_element.btnIcon.onClick;
+    public Button.ButtonClickedEvent onClick_HeroIcon => m_element.heroIcon.onClick;
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
@@ -149,7 +142,8 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
 
         [SerializeField] TextMeshProUGUI[] txt;
 
-        public Button btnIcon;
+        public HeroIconComponent heroIcon;
+
         public TextMeshProUGUI GetText(TextType _type)
             => txt[(int)_type];
 
@@ -170,7 +164,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
             }
             txt = lstTxt.ToArray();
 
-            btnIcon = panel.GetComponent<Button>("Icon/Panel/Icon");
+            heroIcon = _transform.GetComponent<HeroIconComponent>("Panel/Icon/HeroIcon");
         }
     }
     #endregion VALIDATE

@@ -75,8 +75,7 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable
 
             // 성문뒤에 완전히 숨었으면 좀 바꿔주자
             if ((_idxStreet == 0 && _idxPos == 16) ||
-                (_idxStreet == 3 && _idxPos == 0) ||
-                (_idxStreet == 2 && _idxPos == 4))
+                (_idxStreet == 3 && _idxPos == 0))
                 SetBodyAsync(UnityRandom.Range(1, 12)).Forget();
         }
     }

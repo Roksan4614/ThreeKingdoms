@@ -15,7 +15,7 @@ public void OnManualValidate() => m_element.Initialize(transform);
 [SerializeField, HideInInspector]
 ElementData m_element;
 
-[Serializable]
+[System.Serializable]
 struct ElementData
 {
     public void Initialize(Transform _transform)

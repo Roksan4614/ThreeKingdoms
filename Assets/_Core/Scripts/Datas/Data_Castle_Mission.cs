@@ -22,7 +22,7 @@ public class Data_Castle_Mission
         m_remainCount = PPWorker.Get<int>(c_key + "_count");
         m_data = PPWorker.Get<List<CastleMissionData>>(c_key);
 
-        m_data = null; m_remainCount = 10;
+        //m_data = null; m_remainCount = 10;
 
         if (m_data == null)
         {
@@ -59,7 +59,7 @@ public class Data_Castle_Mission
             }
         }
         else
-            m_idxMission = m_data.Last().idx + 1;
+            m_idxMission = m_data.OrderBy(x => x.idx).Last().idx + 1;
     }
 
     public void RefreshMission()
@@ -74,18 +74,18 @@ public class Data_Castle_Mission
         }
 
         for (int i = 0; i < 3; i++)
-            AddNewMission(false);
+            AddNewMission(false, i);
 
         SaveData();
     }
 
-    public void AddNewMission(bool _isAutoSave)
+    public void AddNewMission(bool _isAutoSave, int _prevNumber)
     {
         var a = TableManager.castleMisson.list.OrderBy(x => Random.value);
         var b = a.Where(x => m_data.Any(x => x.key.Equals(x.key) == false));
         var c = b.FirstOrDefault();
 
-        var newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).Where(x => m_data.Any(x => x.key.Equals(x.key) == false)).FirstOrDefault();
+        var newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).Where(x => m_data.Any(x =>x.key.Equals(x.key) == false) ).FirstOrDefault();
 
         if (newMission.isActive == false)
             newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).FirstOrDefault();
@@ -111,7 +111,7 @@ public class Data_Castle_Mission
             });
         }
 
-        m_data.Add(newData);
+        m_data.Insert(_prevNumber, newData);
 
         if (_isAutoSave)
             SaveData();
@@ -119,15 +119,35 @@ public class Data_Castle_Mission
 
     public void StartMission(CastleMissionData _missionData)
     {
-        _missionData.tickStart = System.DateTime.UtcNow.Ticks;
-        _missionData.tickEnd = System.DateTime.UtcNow.AddSeconds(((int)_missionData.grade + 3) * 10).Ticks;
+        _missionData.tickStart = Utils.GetUTC().Ticks;
+        _missionData.tickEnd = Utils.GetUTC().AddSeconds(((int)_missionData.grade + 3) * 10).Ticks;
 
         m_remainCount--;
-        UpdateMission(_missionData, false);
-        AddNewMission(true);
+
+        int number = m_data.FindIndex(x => x.idx == _missionData.idx);
+        m_data.RemoveAt(number);
+        m_data.Add(_missionData);
+        AddNewMission(true, number);
     }
 
-    public void RemoveMission(int _idx, bool _isForceSave = true)
+    public void CompleteMission(params CastleMissionData[] _missionDatas)
+    {
+        // 모두 받기
+        if (_missionDatas.Length == 0)
+            _missionDatas = m_data.Where(x => x.tickEnd > 0 && x.tickEnd < Utils.GetUTC().Ticks).ToArray();
+
+        List<TableItemData> rewards = new();
+        for (int i = 0; i < _missionDatas.Length; i++)
+        {
+            var data = _missionDatas[i];
+            rewards.AddRange(data.rewardList);
+            RemoveMission(data.idx, false);
+        }
+
+        SaveData();
+    }
+
+    void RemoveMission(int _idx, bool _isForceSave = true)
     {
         var idx = m_data.FindIndex(x => x.idx == _idx);
         if (idx == -1) return;
