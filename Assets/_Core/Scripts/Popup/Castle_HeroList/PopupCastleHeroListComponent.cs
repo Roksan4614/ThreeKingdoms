@@ -57,6 +57,9 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         m_element.txtTitle.text = $"장수_목록: {DataManager.castle.GetObjectName(m_castleData.type)}";
         //m_element.txtTitle.text = $"장수_목록: Lv.{m_castleData.level} {DataManager.castle.GetObjectName(m_castleData.type)}";
 
+        for (int i = 0; i < m_element.gauges.Length; i++)
+            m_element.gauges[i].fillAmount = 0;
+
         RefreshHeroesData(true);
     }
 
@@ -137,7 +140,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             var percent = Mathf.Min(1f, now / (float)condition);
             m_element.gauges[i].textTitle = $"필요_{TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}")}_수치 ({percent * 100:0.##}%)";
             m_element.gauges[i].textAmount = $"{now}/{condition}";
-            m_element.gauges[i].fillAmount = percent;
+            m_element.gauges[i].doFillAmount = percent;
         }
 
         if (_isInit)

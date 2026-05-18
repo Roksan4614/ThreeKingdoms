@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using TMPro;
 using UnityEngine;
@@ -7,7 +8,17 @@ public class GaugeHelper : MonoBehaviour, IValidatable
 {
     public string textTitle { set => m_element.textTitle = value; }
     public string textAmount { set => m_element.textAmount = value; }
-    public float fillAmount { set => m_element.fillAmount = value; }
+    public float fillAmount { set => m_element.bar.fillAmount = value; }
+    public float doFillAmount
+    {
+        set
+        {
+            m_element.bar.fillAmount = value;
+
+            //m_element.bar.DOKill();
+            //m_element.bar.DOFillAmount(value, 0.05f);
+        }
+    }
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
@@ -19,28 +30,27 @@ public class GaugeHelper : MonoBehaviour, IValidatable
     [Serializable]
     struct ElementData
     {
-        public Image m_bar;
+        public Image bar;
 
-        public TextMeshProUGUI m_txtTitle;
-        public TextMeshProUGUI m_txtAmount;
+        public TextMeshProUGUI txtTitle;
+        public TextMeshProUGUI txtAmount;
 
-        public TextMeshProUGUI m_txtTitle_Front;
-        public TextMeshProUGUI m_txtAmount_Front;
+        public TextMeshProUGUI txtTitle_Front;
+        public TextMeshProUGUI txtAmount_Front;
 
         public void Initialize(Transform _transform)
         {
-            m_txtTitle = _transform.GetComponent<TextMeshProUGUI>("txt_title");
-            m_txtAmount = _transform.GetComponent<TextMeshProUGUI>("txt_amount");
+            txtTitle = _transform.GetComponent<TextMeshProUGUI>("txt_title");
+            txtAmount = _transform.GetComponent<TextMeshProUGUI>("txt_amount");
 
-            m_bar = _transform.GetComponent<Image>("Bar/img_bar");
+            bar = _transform.GetComponent<Image>("Bar/img_bar");
 
-            m_txtTitle_Front = m_bar.transform.GetComponent<TextMeshProUGUI>("txt_title");
-            m_txtAmount_Front = m_bar.transform.GetComponent<TextMeshProUGUI>("txt_amount");
+            txtTitle_Front = bar.transform.GetComponent<TextMeshProUGUI>("txt_title");
+            txtAmount_Front = bar.transform.GetComponent<TextMeshProUGUI>("txt_amount");
         }
 
-        public string textTitle { set => m_txtTitle.text = m_txtTitle_Front.text = value; }
-        public string textAmount { set => m_txtAmount.text = m_txtAmount_Front.text = value; }
-        public float fillAmount { set => m_bar.fillAmount = value; }
+        public string textTitle { set => txtTitle.text = txtTitle_Front.text = value; }
+        public string textAmount { set => txtAmount.text = txtAmount_Front.text = value; }
     }
     #endregion VALIDATE
 }

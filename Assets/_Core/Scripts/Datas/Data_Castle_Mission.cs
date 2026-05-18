@@ -157,16 +157,19 @@ public class Data_Castle_Mission
             SaveData();
     }
 
-    public void UpdateMission(CastleMissionData _missionData, bool _isForceUpdate = true)
-    {
-        var idx = m_data.FindIndex(x => x.idx == _missionData.idx);
+    //public void UpdateMission(CastleMissionData _missionData, bool _isAutoSave = true)
+    //{
+    //    var idx = m_data.FindIndex(x => x.idx == _missionData.idx);
 
-        if (idx == -1) return;
-        m_data[idx] = _missionData;
+    //    if (idx == -1) return;
+    //    var d = _missionData;
+    //    d.heroes = new();
+    //    d.heroes.AddRange(_missionData.heroes);
+    //    m_data[idx] = d;
 
-        if (_isForceUpdate)
-            SaveData();
-    }
+    //    if (_isAutoSave)
+    //        SaveData();
+    //}
 
     public int GetMissionIdxBatchHero(string _heroKey)
     {

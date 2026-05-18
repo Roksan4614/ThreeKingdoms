@@ -39,7 +39,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
     private void Start()
     {
         m_cts = new();
-        Utils.WaitEscape(this, () => Close(), _token: m_cts.Token);
+        Utils.WaitEscape(this, CloseEscape, _token: m_cts.Token);
 
         foreach (var tab in m_element.dbTab)
             tab.Value.onClick.AddListener(() => OnButton_Tab(tab.Key));
@@ -59,6 +59,8 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
     public override void OpenPopup(params object[] _args)
     {
+        Utils.SetActivePunch(m_element.panel, true);
+
         OnButton_Tab(TabType.MissionList);
         RefreshRemainCount();
     }
@@ -148,6 +150,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
             if (m_element.info.resultType == StatusType.Success)
             {
+                _missionData.heroes = m_element.info.heroes;
                 DataManager.castle.mission.StartMission(_missionData);
                 RefreshRemainCount();
                 SetMissionList(false);
@@ -155,9 +158,23 @@ public class PopupCastleMissionComponent : BasePopupComponent
         }
     }
 
-    protected override void OnClosePopup()
+    void CloseEscape()
+    {
+        if (m_element.info.CloseEscape() == false)
+            return;
+
+        Close();
+    }
+
+    public override void Close()
+        => CloseAsync().Forget();
+
+    async UniTask CloseAsync()
     {
         ReleaseCTS();
+
+        await Utils.SetActivePunchAsync(m_element.panel, false);
+        base.Close();
     }
 
     void ReleaseCTS()

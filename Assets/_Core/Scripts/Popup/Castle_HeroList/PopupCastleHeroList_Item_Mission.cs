@@ -8,13 +8,25 @@ public class PopupCastleHeroList_Item_Mission : PopupCastleHeroList_Item
     {
         m_element.button.onClick.RemoveAllListeners();
 
-        m_element.button.onClick.AddListener(() =>
+        if (DataManager.castle.mission.GetMissionIdxBatchHero(_heroInfoData.key) == -1)
         {
-            m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
-            m_element.check.SetActive(m_heroInfoData.isBatch);
+            m_element.button.onClick.AddListener(() =>
+            {
+                m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
+                m_element.check.SetActive(m_heroInfoData.isBatch);
 
-            _onClick(m_heroInfoData);
-        });
+                _onClick(m_heroInfoData);
+            });
+
+            m_element.check.transform.parent.gameObject.SetActive(true);
+            m_element.txtBatch.gameObject.SetActive(false);
+        }
+        else
+        {
+            m_element.check.transform.parent.gameObject.SetActive(false);
+            m_element.txtBatch.gameObject.SetActive(true);
+            m_element.txtBatch.text = "_ÀÓ¹«Áß";
+        }
 
         m_heroInfoData = _heroInfoData;
 

@@ -16,17 +16,14 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
     PopupHeroInfo m_popupHeroInfo;
 
+    public List<string> heroes => m_missionData.heroes;
     public StatusType resultType { get; private set; }
 
     protected override void Awake()
     {
         base.Awake();
 
-        m_element.btnStart.onClick.AddListener(() =>
-        {
-            resultType = StatusType.Success;
-            Close();
-        });
+        m_element.btnStart.onClick.AddListener(OnButton_Start);
 
         m_element.baseHeroIcon.transform.SetParent(m_element.pHeroIcon.parent);
         m_element.baseHeroIcon.gameObject.SetActive(false);
@@ -38,10 +35,6 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
     {
         m_missionData = _mission;
         m_missionData.heroes = new();
-        m_missionData.heroes.AddRange(_mission.heroes);
-
-        //test
-        var d = DataManager.castle.mission.data.ToList().Find(x => x.idx == _mission.idx);
 
         gameObject.SetActive(true);
         Utils.SetActivePunch(m_element.panel, true);
@@ -51,8 +44,32 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         m_element.txtName.text = _mission.missionName;
         m_element.gauge.textTitle = $"고유 능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.core_stat.ToString().ToUpper()}")}) 요구치";
 
+        // 자동으로 추가해줘보자
+        {
+            var coreStat = m_missionData.dbData.core_stat;
+            int coreStatMax = m_missionData.coreStatMax;
 
+            var myHero = DataManager.userInfo.myHero.Where(x => x.isMine == true && DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1)
+                .OrderByDescending(x => x.resultCoreStat[coreStat]);
 
+            int totalCoreStat = 0;
+
+            foreach (var hero in myHero)
+            {
+                var heroData = hero;
+
+                heroData.isBatch = totalCoreStat < coreStatMax;
+                if (heroData.isBatch == true)
+                {
+                    totalCoreStat += heroData.resultCoreStat[coreStat];
+                    m_missionData.heroes.Add(heroData.key);
+                }
+                else
+                    break;
+            }
+        }
+
+        UpdateHero(true);
     }
 
     void UpdateHero(bool _isForceUpdate)
@@ -62,6 +79,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         var parent = m_element.pHeroIcon;
         int i = 0;
 
+        CoreStatType coreStat = m_missionData.dbData.core_stat;
         int totalCoreStat = 0;
         for (; i < myHeroes.Count; i++)
         {
@@ -74,14 +92,17 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
             item.gameObject.SetActive(true);
             item.SetHeroData(heroData, (_icon, _) => OpenHeroInfoPopupAsync(_icon.data).Forget(), null, _isForceUpdate);
 
-            totalCoreStat += heroData.resultCoreStat[m_missionData.dbData.core_stat];
+            totalCoreStat += heroData.resultCoreStat[coreStat];
         }
 
         for (; i < parent.childCount; i++)
             parent.GetChild(i).gameObject.SetActive(false);
 
-        m_element.gauge.textAmount = $"{totalCoreStat.AmountKMBT()}/{m_missionData.coreStatMax.AmountKMBT()}";
-        m_element.gauge.fillAmount = totalCoreStat / (float)m_missionData.coreStatMax;
+        parent.ForceRebuildLayout();
+
+        var percent = Mathf.Min(1f, totalCoreStat / (float)m_missionData.coreStatMax);
+        m_element.gauge.fillAmount = percent;
+        m_element.gauge.textAmount = $"({percent * 100:0.##}%) {totalCoreStat.AmountKMBT()}/{m_missionData.coreStatMax.AmountKMBT()}";
     }
 
     async UniTask OpenHeroInfoPopupAsync(HeroInfoData _data)
@@ -109,7 +130,6 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         Utils.SetActivePunch(m_element.panel, false);
 
         var popup = m_element.popupHeroList;
-
         popup.Open(m_missionData);
 
         await UniTask.WaitUntil(() => popup.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
@@ -123,6 +143,29 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
             UpdateHero(true);
         }
+    }
+
+    void OnButton_Start()
+    {
+        resultType = StatusType.Success;
+        Close();
+    }
+
+    public bool CloseEscape()
+    {
+        if (m_popupHeroInfo != null && m_popupHeroInfo.gameObject.activeSelf == true)
+            return false;
+
+        if (m_element.popupHeroList.CloseEscape() == false)
+            return false;
+
+        if (gameObject.activeSelf == true)
+        {
+            Close();
+            return false;
+        }
+
+        return true;
     }
 
     public override void Close()

@@ -204,14 +204,11 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     public bool CloseEscape()
     {
-        if (m_popupHeroList?.CloseEscape() == false)
+        if (m_popupHeroInfo != null && m_popupHeroInfo.gameObject.activeSelf == true)
             return false;
 
-        if (m_popupHeroInfo != null && m_popupHeroInfo.gameObject.activeSelf == true)
-        {
-            //m_popupHeroInfo.gameObject.SetActive(false);
+        if (m_popupHeroList?.CloseEscape() == false)
             return false;
-        }
 
         if (gameObject.activeSelf == true)
         {

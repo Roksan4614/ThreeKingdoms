@@ -138,7 +138,7 @@ public static class Utils
                 continue;
             }
 
-            if (_mono == null || _mono.gameObject == null)
+            if (_mono == null)
                 break;
 
             _onEscape();

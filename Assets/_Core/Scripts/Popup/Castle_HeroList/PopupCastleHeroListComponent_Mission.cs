@@ -16,8 +16,10 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
     public bool isUpdated { get; private set; }
     public string[] heroes => m_missionData.heroes.ToArray();
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
+
         m_element.baseItem.gameObject.SetActive(false);
         m_element.baseItem.transform.SetParent(m_element.scroll.viewport);
 
@@ -27,9 +29,6 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
             Close();
         });
         m_element.btnCancel.onClick.AddListener(Close);
-
-        m_element.gauges[1].gameObject.SetActive(false);
-        m_element.gauges[1].transform.parent.ForceRebuildLayout();
     }
 
     public void Open(Data_Castle_Mission.CastleMissionData _missionData)
@@ -44,22 +43,31 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
 
         Utils.SetActivePunch(m_element.panel, true);
 
-        RefreshHeroesData();
+        m_element.gauges[0].fillAmount = 0;
+
+        //RefreshHeroesData(true);
+        RefreshHeroesData(false);
     }
 
-    void RefreshHeroesData()
+    void RefreshHeroesData(bool _isInit)
     {
-        SetHeroInfoData(m_missionData.dbData.core_stat);
+        SetHeroInfoData(_isInit);
         SetCoreStatStatus();
     }
 
-    bool SetHeroInfoData(CoreStatType _coreStat)
+    bool SetHeroInfoData(bool _isInit)
     {
-        var myHero = DataManager.userInfo.myHero.Where(x => x.isMine == true && DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1)
-            .OrderByDescending(x => x.resultCoreStat[_coreStat]);
+        var coreStat = m_missionData.dbData.core_stat;
+        int coreStatMax = m_missionData.coreStatMax;
+
+        var myHero = DataManager.userInfo.myHero.Where(x => x.isMine == true)
+            .OrderBy(x => DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1 ? -1 : 0)
+            .ThenByDescending(x => x.resultCoreStat[coreStat]);
 
         int i = 0;
         var content = m_element.scroll.content;
+
+        //int totalCoreStat = 0;
         foreach (var hero in myHero)
         {
             bool isNew = i == content.childCount;
@@ -68,10 +76,20 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
 
             var heroData = hero;
 
-            heroData.isBatch = m_missionData.heroes.Contains(hero.key);
+            //if (_isInit)
+            //{
+            //    heroData.isBatch = totalCoreStat < coreStatMax;
+            //    if (heroData.isBatch == true)
+            //    {
+            //        totalCoreStat += heroData.resultCoreStat[coreStat];
+            //        m_missionData.heroes.Add(heroData.key);
+            //    }
+            //}
+            //else
+                heroData.isBatch = m_missionData.heroes.Contains(hero.key);
 
             item.gameObject.SetActive(true);
-            item.SetHeroInfoData_Mission(heroData, OnButton_Hero, _coreStat);
+            item.SetHeroInfoData_Mission(heroData, OnButton_Hero, coreStat);
             i++;
 
             // 유저아이콘 클릭했을 때 처리하자
@@ -88,12 +106,12 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
         {
             var name = TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}");
 
-            if (_coreStat == stat)
+            if (coreStat == stat)
                 name = $"<color=#{Palette.htmlString_Up}>{name}";
             else
                 name = $"<color=#7E7E7E>{name}";
 
-            m_element.btnCoreStat[i].text = name;
+            m_element.txtTop[i].text = name;
         }
 
         return true;
@@ -124,7 +142,7 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
         var gauge = m_element.gauges[0];
         gauge.textTitle = $"필요_{TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}")}_수치 ({percent * 100:0.##}%)";
         gauge.textAmount = $"{now}/{condition}";
-        gauge.fillAmount = percent;
+        gauge.doFillAmount = percent;
     }
 
     bool m_isOpenPopup_HeroInfo;
@@ -150,10 +168,24 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
         await UniTask.WaitUntil(() => m_popupHeroInfo.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
 
         if (m_popupHeroInfo.isNeedUpdate == true)
-            RefreshHeroesData();
+            RefreshHeroesData(false);
 
         m_isOpenPopup_HeroInfo = false;
         Utils.SetActivePunch(m_element.panel, true);
+    }
+
+    public bool CloseEscape()
+    {
+        if (m_popupHeroInfo != null && m_popupHeroInfo.gameObject.activeSelf == true)
+            return false;
+
+        if (gameObject.activeSelf == true)
+        {
+            Close();
+            return false;
+        }
+
+        return true;
     }
 
     public override void Close()
@@ -178,7 +210,7 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
         public Transform panel;
         public ScrollRect scroll;
 
-        public ButtonHelper[] btnCoreStat;
+        public List<TextMeshProUGUI> txtTop;
 
         public ButtonHelper btnConfirm;
         public ButtonHelper btnCancel;
@@ -197,7 +229,8 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
             baseItem = scroll.content.GetChild(0).GetComponent<PopupCastleHeroList_Item_Mission>();
 
             var top = scroll.transform.Find("Top");
-            btnCoreStat = top.GetComponentsInChildren<ButtonHelper>();
+            txtTop = top.GetComponentsInChildren<TextMeshProUGUI>()
+                .Skip(1).Take(5).ToList();
 
             gauges = panel.Find("Condition").GetComponentsInChildren<GaugeHelper>();
 

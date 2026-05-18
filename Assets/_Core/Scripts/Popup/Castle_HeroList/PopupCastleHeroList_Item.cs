@@ -136,7 +136,10 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
     {
         public Transform panel;
         public Button button;
+
         public GameObject check;
+        public TextMeshProUGUI txtBatch;
+
         public GameObject bg;
 
         [SerializeField] TextMeshProUGUI[] txt;
@@ -151,8 +154,9 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
             panel = _transform.Find("Panel");
             button = _transform.GetComponent<Button>();
 
-            check = panel.Find("Batch/CheckBox/Check").gameObject;
             bg = _transform.Find("BG").gameObject;
+            check = panel.Find("Batch/CheckBox/Check").gameObject;
+            txtBatch = panel.GetComponent<TextMeshProUGUI>("Batch/Text");
 
             List<TextMeshProUGUI> lstTxt = new();
             for (int i = 0; i < panel.childCount; i++)
