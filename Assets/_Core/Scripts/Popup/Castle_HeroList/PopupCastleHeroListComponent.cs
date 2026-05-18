@@ -98,7 +98,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             // 유저아이콘 클릭했을 때 처리하자
             if (isNew)
                 item.onClick_HeroIcon.AddListener(()
-                    => OpenHeroInfoAsync(item.heroInfoData).Forget());
+                    => OpenHeroInfoPopupAsync(item.heroInfoData).Forget());
         }
 
         for (; i < content.childCount; i++)
@@ -141,11 +141,12 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         }
 
         if (_isInit)
+        {
             for (; i < m_element.gauges.Length; i++)
                 m_element.gauges[i].gameObject.SetActive(false);
 
-        if (_isInit == true)
             m_element.gauges[0].transform.parent.ForceRebuildLayout(1);
+        }
     }
 
     void OnButton_Hero(HeroInfoData _heroInfoData)
@@ -166,7 +167,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
     bool m_isOpenPopup_HeroInfo;
     PopupHeroInfo m_popupHeroInfo;
-    async UniTask OpenHeroInfoAsync(HeroInfoData _heroInfoData)
+    async UniTask OpenHeroInfoPopupAsync(HeroInfoData _heroInfoData)
     {
         if (m_isOpenPopup_HeroInfo == true)
             return;

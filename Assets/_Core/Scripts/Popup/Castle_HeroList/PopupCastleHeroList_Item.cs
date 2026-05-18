@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
 {
-    enum TextType
+    protected enum TextType
     {
         leadership,
         strength,
@@ -20,7 +20,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
         batch,
     }
 
-    HeroInfoData m_heroInfoData;
+    protected HeroInfoData m_heroInfoData;
     public HeroInfoData heroInfoData => m_heroInfoData;
 
     Data_Castle.CastleData m_castleData;
@@ -94,7 +94,6 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
         m_element.GetText(TextType.job).text = name;
     }
 
-
     void SetCoreStat(HeroInfoData _heroInfoData, CoreStatType[] _coreStatType)
     {
         TableCastleRiseData dbRise = TableManager.castleRise.GetRiseData(m_castleData.type, m_castleData.level);
@@ -130,10 +129,10 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
-    ElementData m_element;
+    protected ElementData m_element;
 
     [Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public Transform panel;
         public Button button;

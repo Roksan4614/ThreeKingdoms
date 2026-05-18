@@ -181,7 +181,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         else
         {
             m_isOpenPopup = true;
-            await m_screenHero.OpenHeroInfoPopup(data);
+            await m_screenHero.OpenHeroInfoPopupAsync(data);
             m_isOpenPopup = false;
             SetActiveButton(false);
         }

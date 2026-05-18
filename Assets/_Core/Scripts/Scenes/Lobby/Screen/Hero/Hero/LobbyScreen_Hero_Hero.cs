@@ -284,7 +284,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         m_itemList.Find(x => x.data.key == _data.key).UpdateHeroInfo(_data);
     }
 
-    public async UniTask OpenHeroInfoPopup(HeroInfoData _data)
+    public async UniTask OpenHeroInfoPopupAsync(HeroInfoData _data)
     {
         if (m_popupHeroInfo == null)
         {

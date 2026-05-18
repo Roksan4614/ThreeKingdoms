@@ -85,7 +85,7 @@ public class Data_Castle_Mission
         var b = a.Where(x => m_data.Any(x => x.key.Equals(x.key) == false));
         var c = b.FirstOrDefault();
 
-        var newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).Where(x => m_data.Any(x =>x.key.Equals(x.key) == false) ).FirstOrDefault();
+        var newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).Where(x => m_data.Any(x => x.key.Equals(x.key) == false)).FirstOrDefault();
 
         if (newMission.isActive == false)
             newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).FirstOrDefault();
@@ -168,6 +168,26 @@ public class Data_Castle_Mission
             SaveData();
     }
 
+    public int GetMissionIdxBatchHero(string _heroKey)
+    {
+        var d = m_data.Find(x => x.heroes.Contains(_heroKey));
+
+        return d.isActive ? d.idx : -1;
+    }
+
+    public int GetTotalCoreStat(CastleMissionData _missionData)
+    {
+        var coreStat = _missionData.dbData.core_stat;
+
+        int totalStat = 0;
+        for (int i = 0; i < _missionData.heroes.Count; i++)
+        {
+            var heroData = DataManager.userInfo.GetHeroInfoData(_missionData.heroes[i]);
+            totalStat += heroData.resultCoreStat[coreStat];
+        }
+        return totalStat;
+    }
+
     public void SaveData()
     {
         PPWorker.Set(c_key + "_count", m_remainCount);
@@ -198,6 +218,7 @@ public class Data_Castle_Mission
 
         public bool isActive => key.IsActive();
         //TODO : stringtable 에서 가져와야 해.
-        public string missionName => $"[{TableManager.stringTable.GetString($"GRADE_{grade.ToString().ToUpper()}")}] {key}";
+        public string missionName => $"[{TableManager.stringTable.GetString($"CORESTAT_{dbData.core_stat.ToString().ToUpper()}")}] {key}";
+        public int coreStatMax => ((int)grade + 1) * 100;
     }
 }
