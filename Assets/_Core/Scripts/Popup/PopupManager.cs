@@ -23,8 +23,6 @@ public enum PopupType
 
     Castle_HeroList,
     Castle_Mission,
-    Castle_Mission_HeroList,
-
 
     Modal_Start,
     Modal,

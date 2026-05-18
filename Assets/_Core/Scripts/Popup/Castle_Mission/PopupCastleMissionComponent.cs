@@ -30,6 +30,10 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
         m_element.baseItem.transform.SetParent(m_element.scroll.viewport);
         m_element.baseItem.gameObject.SetActive(false);
+
+        var popup = transform.Find("Popup");
+        for (int i = 0; i < popup.childCount; i++)
+            popup.GetChild(i).gameObject.SetActive(false);
     }
 
     private void Start()

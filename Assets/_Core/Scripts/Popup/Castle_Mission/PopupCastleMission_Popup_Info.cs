@@ -1,12 +1,20 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using CastleMissionData = Data_Castle_Mission.CastleMissionData;
 
 public class PopupCastleMission_Popup_Info : BasePopupComponent
 {
     PopupCastleMission_Popup_Info() : base(PopupType.NONE) { }
+
+    CastleMissionData m_missionData;
+
+    PopupHeroInfo m_popupHeroInfo;
 
     public StatusType resultType { get; private set; }
 
@@ -19,14 +27,102 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
             resultType = StatusType.Success;
             Close();
         });
+
+        m_element.baseHeroIcon.transform.SetParent(m_element.pHeroIcon.parent);
+        m_element.baseHeroIcon.gameObject.SetActive(false);
+
+        m_element.btnAdd.onClick.AddListener(() => OpenHeroListPopupAsync().Forget());
     }
 
     public void Open(CastleMissionData _mission)
     {
+        m_missionData = _mission;
+        m_missionData.heroes = new();
+        m_missionData.heroes.AddRange(_mission.heroes);
+
+        //test
+        var d = DataManager.castle.mission.data.ToList().Find(x => x.idx == _mission.idx);
+
         gameObject.SetActive(true);
         Utils.SetActivePunch(m_element.panel, true);
         resultType = StatusType.Wait;
 
+        m_element.txtTitle.text = $"임무_: [{TableManager.stringTable.GetString($"GRADE_{_mission.grade.ToString().ToUpper()}")}]";
+        m_element.txtName.text = _mission.missionName;
+        m_element.gauge.textTitle = $"고유 능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.core_stat.ToString().ToUpper()}")}) 요구치";
+
+
+
+    }
+
+    void UpdateHero(bool _isForceUpdate)
+    {
+        var myHeroes = DataManager.userInfo.myHero.Where(x => m_missionData.heroes.Contains(x.key)).ToList();
+
+        var parent = m_element.pHeroIcon;
+        int i = 0;
+
+        int totalCoreStat = 0;
+        for (; i < myHeroes.Count; i++)
+        {
+            var heroData = myHeroes[i];
+
+            bool isNew = i == parent.childCount;
+            var item = isNew ? Instantiate(m_element.baseHeroIcon, parent) :
+                parent.GetChild(i).GetComponent<HeroIconComponent>();
+
+            item.gameObject.SetActive(true);
+            item.SetHeroData(heroData, (_icon, _) => OpenHeroInfoPopupAsync(_icon.data).Forget(), null, _isForceUpdate);
+
+            totalCoreStat += heroData.resultCoreStat[m_missionData.dbData.core_stat];
+        }
+
+        for (; i < parent.childCount; i++)
+            parent.GetChild(i).gameObject.SetActive(false);
+
+        m_element.gauge.textAmount = $"{totalCoreStat.AmountKMBT()}/{m_missionData.coreStatMax.AmountKMBT()}";
+        m_element.gauge.fillAmount = totalCoreStat / (float)m_missionData.coreStatMax;
+    }
+
+    async UniTask OpenHeroInfoPopupAsync(HeroInfoData _data)
+    {
+        Utils.SetActivePunch(m_element.panel, false);
+
+        if (m_popupHeroInfo == null)
+        {
+            m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo, _data);
+            m_popupHeroInfo.isDontDestroy = true;
+        }
+        else
+            await m_popupHeroInfo.SetHeroInfoDataAsync(_data);
+
+        await UniTask.WaitUntil(() => m_popupHeroInfo.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
+
+        Utils.SetActivePunch(m_element.panel, true);
+
+        if (m_popupHeroInfo.isNeedUpdate)
+            UpdateHero(true);
+    }
+
+    async UniTask OpenHeroListPopupAsync()
+    {
+        Utils.SetActivePunch(m_element.panel, false);
+
+        var popup = m_element.popupHeroList;
+
+        popup.Open(m_missionData);
+
+        await UniTask.WaitUntil(() => popup.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
+
+        Utils.SetActivePunch(m_element.panel, true);
+
+        if (popup.isUpdated == true)
+        {
+            m_missionData.heroes.Clear();
+            m_missionData.heroes.AddRange(popup.heroes);
+
+            UpdateHero(true);
+        }
     }
 
     public override void Close()
@@ -51,18 +147,41 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
     struct ElementData
     {
         public TextMeshProUGUI txtTitle;
-        public TextMeshProUGUI txtName;
-        public TextMeshProUGUI txtInfo;
 
-        public GaugeHelper gauge;
+        public TextMeshProUGUI txtName;
+        public TextMeshProUGUI txtContent_Time;
+        public TextMeshProUGUI txtContent_Exp;
 
         public Transform pHeroIcon;
+        public HeroIconComponent baseHeroIcon;
+        public GaugeHelper gauge;
+        public ButtonHelper btnAdd;
+
+        public ScrollRect scroll;
+        public PopupCastleMission_Popup_Info_RewardItem baseRewardItem;
 
         public ButtonHelper btnStart;
+
+        public PopupCastleHeroListComponent_Mission popupHeroList;
 
         public void Initialize(Transform _transform)
         {
             btnStart = _transform.GetComponent<ButtonHelper>("Panel/btn_start");
+
+            txtTitle = panel.GetComponent<TextMeshProUGUI>("txt_title");
+            txtName = panel.GetComponent<TextMeshProUGUI>("Info/txt_name");
+            txtContent_Time = panel.GetComponent<TextMeshProUGUI>("Info/Content/txt_time");
+            txtContent_Exp = panel.GetComponent<TextMeshProUGUI>("Info/Content/txt_exp");
+
+            pHeroIcon = panel.Find("Info/Heroes/Panel");
+            baseHeroIcon = pHeroIcon.GetComponent<HeroIconComponent>("Slot_Hero");
+            btnAdd = pHeroIcon.parent.GetComponent<ButtonHelper>("btn_add");
+            gauge = panel.GetComponent<GaugeHelper>("Info/Status");
+
+            scroll = panel.GetComponent<ScrollRect>("Reward/Scroll");
+            baseRewardItem = scroll.content.GetComponent<PopupCastleMission_Popup_Info_RewardItem>("Item");
+
+            popupHeroList = _transform.parent.GetComponent<PopupCastleHeroListComponent_Mission>("Castle_HeroList");
         }
 
         public Transform panel => btnStart.transform.parent;
