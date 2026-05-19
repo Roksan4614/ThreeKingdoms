@@ -16,6 +16,8 @@ public partial class AddressableManager
             Release(h.Value);
         foreach (var h in m_itemIcon)
             Release(h.Value);
+        foreach (var h in m_lobbyScreen)
+            Release(h.Value);
 
         base.OnDestroy();
     }
@@ -23,6 +25,7 @@ public partial class AddressableManager
     Dictionary<string, AsyncOperationHandle<GameObject>> m_heroIcon = new();
     Dictionary<string, AsyncOperationHandle<GameObject>> m_itemIcon = new();
     Dictionary<string, AsyncOperationHandle<GameObject>> m_heroCharacter = new();
+    Dictionary<string, AsyncOperationHandle<GameObject>> m_lobbyScreen = new();
 
     public async UniTask<GameObject> GetIconAsync(string _key, bool _isHero)
     {
@@ -202,5 +205,35 @@ public partial class AddressableManager
         var head = atlas.GetSprite($"Castle_NPC_Head{_index:00}_0");
 
         return new Sprite[] { body, head };
+    }
+
+    public async UniTask<GameObject> GetLobbyScreen(LobbyScreenType _screenType)
+    {
+        var key = _screenType.ToString();
+        if (m_lobbyScreen.ContainsKey(key))
+            return m_lobbyScreen[key].IsValid() ? m_lobbyScreen[key].Result : null;
+
+        await Load_LobbyScreenAsync(_screenType);
+
+        return m_lobbyScreen.ContainsKey(key) ? m_lobbyScreen[key].Result : null;
+    }
+
+    async UniTask Load_LobbyScreenAsync(LobbyScreenType _screenType)
+    {
+        string key = $"LobbyScreen/{_screenType}.prefab";
+
+        await LoadAssetAsync<GameObject>(_result =>
+        {
+            foreach (var data in _result)
+            {
+                if (m_lobbyScreen.ContainsKey(data.Key) == false)
+                    m_lobbyScreen.Add(data.Key, data.Value);
+                else
+                    data.Value.Release();
+            }
+
+            if (m_lobbyScreen.ContainsKey(key) == false)
+                m_lobbyScreen.Add(key, default);
+        }, null, key);
     }
 }

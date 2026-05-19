@@ -70,6 +70,9 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                     m_itemBatch.Add(hero);
             }
         }
+
+        Signal.instance.UpdateHeroStat.connectLambda = new(this, _
+            => m_isNeedUpdateLayout = true);
     }
 
     private void Start()
@@ -138,6 +141,16 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         {
             m_myHero.Clear();
             m_myHero.AddRange(DataManager.userInfo.myHero);
+
+            for (int i = 0; i < m_myHero.Count; i++)
+            {
+                var itemBatch = m_itemBatch.Find(x => x.data.key == m_myHero[i].key);
+                itemBatch?.UpdateHeroInfo(m_myHero[i]);
+
+                var itemList = m_itemList.Find(x => x.data.key == m_myHero[i].key);
+                itemList.UpdateHeroInfo(m_myHero[i]);
+            }
+
             SetLayout_Batch();
             SetLayout_List();
         }
@@ -206,9 +219,10 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         if (m_isNeedUpdateLayout)
         {
+            m_isNeedUpdateLayout = false;
             MapManager.instance.FadeDimm(true, 0f);
 
-            var heroList = m_itemList.Select(x => x.data).ToList();
+            var heroList = m_itemList.Where(x => x.data.isMine == true).Select(x => x.data).ToList();
             for (int i = 0; i < heroList.Count; i++)
             {
                 var data = heroList[i];
@@ -300,7 +314,8 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         ResetActiveButton_List();
 
         if (m_popupHeroInfo.isNeedUpdate)
-            SetLayout_List(DataManager.userInfo.GetHeroInfoData(_data.key));
+            OnEnable();
+        //SetLayout_List(DataManager.userInfo.GetHeroInfoData(_data.key));
     }
 
     #region BATCH

@@ -35,7 +35,7 @@ public class LobbyScreen_Hero_Collection_Item : MonoBehaviour, IValidatable
             HeroInfoData heroInfoData = new(_data.splitHero[i], _data.grade[i]);
             heroInfoData.isMine = DataManager.userInfo.GetHeroInfoData(heroInfoData.key).isMine;
 
-            item.SetHeroData(heroInfoData, (_icon, _) => OnButtonAsync_Hero(_icon.data).Forget(), null);
+            item.SetHeroData(heroInfoData, (_icon, _) => OnButtonAsync_Hero(_icon.data).Forget(), null, true);
             item.gameObject.SetActive(true);
         }
 

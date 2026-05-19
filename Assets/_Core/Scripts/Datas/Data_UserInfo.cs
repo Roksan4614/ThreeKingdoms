@@ -182,16 +182,23 @@ public class Data_UserInfo
         var index = m_element.myHero.FindIndex(x => x.key.Equals(_heroData.key));
         m_element.myHero[index] = _heroData;
         SaveData();
+    }
 
-        DataManager.castle.OnUpdateClaim();
+    public void UpdateUpgrade(HeroInfoData _heroData)
+    {
+        var index = m_element.myHero.FindIndex(x => x.key.Equals(_heroData.key));
+        var data = m_element.myHero[index];
+        data.enchantLevel = _heroData.enchantLevel;
+        data.grade = _heroData.grade;
+        m_element.myHero[index] = data;
+
+        SaveData();
     }
 
     public void UpdateAll(List<HeroInfoData> _heroList)
     {
         m_element.myHero = _heroList;
         SaveData();
-
-        DataManager.castle.OnUpdateClaim();
     }
 
     public void SortTeamPosition(List<HeroInfoData> _heroList)
@@ -217,7 +224,7 @@ public class Data_UserInfo
     {
         var heroData = GetHeroInfoData(_key);
 
-        if (heroData.isActive == true)
+        if (heroData.isMine == true)
         {
             heroData.soulCount += _count;
             Update(heroData);
@@ -244,6 +251,8 @@ public class Data_UserInfo
         await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
 
         SaveData();
+
+        Signal.instance.UpdateHeroStat.Emit("");
     }
     public void SetRegion(RegionType _region)
     {

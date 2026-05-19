@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,19 +8,28 @@ public class Character_Worker_Buff : Character_Worker
 {
     public Character_Worker_Buff(CharacterComponent _owner) : base(_owner) { }
 
-    public BuffData Add(BuffType _buffType, float _duration = -1)
+    async UniTask Timer(long _hash, BuffType _buffType, float _duration)
+    {
+        await UniTask.WaitForSeconds(_duration);
+        //Remove(_hash, _buffType);
+        Remove(_hash);
+    }
+
+    public long Add(BuffType _buffType, float _value = 0, float _duration = 0)
     {
         BuffData buffData = new();
         buffData.hash = Utils.GetUTC().Ticks;
-        if (_duration > 0)
-            buffData.endTick = Utils.GetUTC().AddSeconds(_duration).Ticks;
+        buffData.value = _value;
 
         if (m_dbBuff.ContainsKey(_buffType))
             m_dbBuff[_buffType].Add(buffData);
         else
             m_dbBuff.Add(_buffType, new() { buffData });
 
-        return buffData;
+        if (_duration > 0)
+            Timer(buffData.hash, _buffType, _duration).Forget();
+
+        return buffData.hash;
     }
 
     public void Remove(long _hash, BuffType _buffType = BuffType.NONE)
@@ -62,15 +72,8 @@ public class Character_Worker_Buff : Character_Worker
 
     public bool IsActive(BuffType _buffType)
     {
-        var nowTick = Utils.GetUTC().Ticks;
-
-        if (m_dbBuff.ContainsKey(_buffType))
-        {
-            m_dbBuff[_buffType] = m_dbBuff[_buffType].Where(x => x.endTick == 0 || x.endTick > nowTick).ToList();
-
-            if (m_dbBuff[_buffType].Count > 0)
-                return true;
-        }
+        if (m_dbBuff.ContainsKey(_buffType) && m_dbBuff[_buffType].Count > 0)
+            return true;
 
         return false;
     }

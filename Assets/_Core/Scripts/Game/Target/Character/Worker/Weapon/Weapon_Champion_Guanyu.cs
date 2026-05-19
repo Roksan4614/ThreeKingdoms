@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
-using System.Collections;
 using System.Linq;
 using UnityEngine;
 
@@ -67,14 +66,25 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
     public override async UniTask UseSkillAsync()
     {
-        ControllerManager.instance.SetPunchSkill();
-
         Vector3 targetPos = m_skillRange.position;
 
         // 그냥 스킬을 쓴거라면, 가장 가까운 적에게 날라가자.
         if (m_isUseSkillControll == false)
-            targetPos = StageManager.instance.GetNearestEnemy(m_owner.transform.position).transform.position;
+        {
+            var enemy = StageManager.instance.GetNearestEnemy(m_owner.transform.position);
 
+            if (enemy == null)
+                return;
+
+            Vector3 enemyPos = enemy.transform.position;
+            Vector3 ownerPos = m_owner.transform.position;
+
+            float keepDistance = 1.5f;
+
+            targetPos = enemyPos - ((enemyPos - ownerPos).normalized * keepDistance);
+        }
+
+        ControllerManager.instance.SetPunchSkill();
         ControllerManager.instance.isSwitch = false;
 
         m_owner.move.MoveStop();
@@ -117,6 +127,13 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
                     isAlliance = target.factionType == FactionType.Alliance
                 });
                 target.OnDamage(m_owner, damage);
+
+                target.buff.Add(BuffType.DEBUFF_NO_MOVE, 0.1f);
+
+                //적들을 관우쪽으로 끌어당기기
+                target.transform.DOMove(
+                    Vector3.Lerp(target.transform.position, m_owner.transform.position, 0.5f),
+                    0.1f);
             }
 
             target.SetColorParts(Color.white);

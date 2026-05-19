@@ -8,31 +8,31 @@ public class Table_CastleMission : BaseTable<string, TableCastleMissionData>
         m_list.Add(new()
         {
             key = "군량 수송",
-            core_stat = CoreStatType.Leadership,
+            req_stat_type = CoreStatType.Leadership,
         });
 
         m_list.Add(new()
         {
             key = "도적 토벌",
-            core_stat = CoreStatType.Strength,
+            req_stat_type = CoreStatType.Strength,
         });
 
         m_list.Add(new()
         {
             key = "도서관 정리",
-            core_stat = CoreStatType.Intellect,
+            req_stat_type = CoreStatType.Intellect,
         });
 
         m_list.Add(new()
         {
             key = "마을 갈등 중재",
-            core_stat = CoreStatType.Politics,
+            req_stat_type = CoreStatType.Politics,
         });
 
         m_list.Add(new()
         {
             key = "고양이 구출",
-            core_stat = CoreStatType.Charisma,
+            req_stat_type = CoreStatType.Charisma,
         });
 
         SetDictionary(x => x.key);
@@ -42,7 +42,7 @@ public class Table_CastleMission : BaseTable<string, TableCastleMissionData>
 public struct TableCastleMissionData
 {
     public string key;
-    public CoreStatType core_stat;
+    public CoreStatType req_stat_type;
 
 
     public bool isActive => key.IsActive();

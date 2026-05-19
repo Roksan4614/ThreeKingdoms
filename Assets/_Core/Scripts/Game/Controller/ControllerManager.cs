@@ -269,7 +269,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             float progress = (Time.time - startTime) / (endTime - startTime);
             m_element.imgDashTimer.fillAmount = 1 - progress;
 
-            await UniTask.Yield(cancellationToken:destroyCancellationToken);
+            await UniTask.Yield(cancellationToken: destroyCancellationToken);
         }
 
         m_element.imgCallTimer.gameObject.SetActive(false);
@@ -305,8 +305,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public bool isLeftClick => Input.GetMouseButton(0) || isTouch;
     public bool isRightClick => Input.GetMouseButton(1);
     public bool isTouch => Input.touchCount > 0;
-    public static bool isClick => instance.isLeftClick || instance.isRightClick || instance.isTouch;
-    public static bool isClickDown => instance.isLeftClick_Down || instance.isRightClick_Down || instance.isTouch;
+    public static bool isClick => instance == null ? false : instance.isLeftClick || instance.isRightClick || instance.isTouch;
+    public static bool isClickDown => instance == null ? false : instance.isLeftClick_Down || instance.isRightClick_Down || instance.isTouch;
 
     public void OnPointerDown(PointerEventData _eventData)
     {

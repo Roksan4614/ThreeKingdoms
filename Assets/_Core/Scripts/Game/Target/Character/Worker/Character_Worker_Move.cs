@@ -34,9 +34,12 @@ public class Character_Worker_Move : Character_Worker
 
         if (m_tweenDash == null)
         {
+            if (m_owner.buff.IsActive(BuffType.DEBUFF_NO_MOVE))
+                return;
+
             if (_isAnim == true &&
-                m_owner.anim.IsType(CharacterAnimType.Walk) == false &&
-                m_owner.anim.IsType(CharacterAnimType.Walk_Back) == false)
+            m_owner.anim.IsType(CharacterAnimType.Walk) == false &&
+            m_owner.anim.IsType(CharacterAnimType.Walk_Back) == false)
             {
                 m_owner.anim.Play(CharacterAnimType.Walk);
             }

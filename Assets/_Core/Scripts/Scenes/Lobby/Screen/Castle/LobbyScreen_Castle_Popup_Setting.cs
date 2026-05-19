@@ -20,6 +20,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     CastleData m_castleData;
     bool m_isInfoVersion;
+    bool m_isNeedUpdate;
 
     private void Awake()
     {
@@ -49,6 +50,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             }
         });
 
+        Signal.instance.UpdateHeroStat.connectLambda = new(this, _ => m_isNeedUpdate = true);
         Signal.instance.UpdateCastleData.connect = SlotUpdateCastleData;
     }
 
@@ -91,8 +93,10 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         rtScroll.anchoredPosition = Vector2.zero;
         rtScroll.DOAnchorPosY(rtScroll.rect.height, 0.1f);
 
-        SetBatchHero();
+        m_element.pHeroIcon.parent.gameObject.SetActive(m_castleData.type != CastleObjectType.Office);
+        SetBatchHero(m_isNeedUpdate);
         SetCoreStatInfo();
+        m_isNeedUpdate = false;
 
         var maxAmount = DataManager.castle.GetMaxAmount(m_castleData);
 
@@ -130,10 +134,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         var dbCastleRise = TableManager.castleRise.GetRiseData(m_castleData.type, m_castleData.level);
 
         bool isAvail = true;
-        bool isOffice = m_castleData.type == CastleObjectType.Office;
-        m_element.pHeroIcon.parent.gameObject.SetActive(isOffice == false);
 
-        if (isOffice)
+        if (m_castleData.type == CastleObjectType.Office)
         {
             m_element.txtBatchStat[0].text = "°æÇèÄ¡_:_0/1,000";
             m_element.txtBatchStat[1].gameObject.SetActive(false);
@@ -287,7 +289,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             m_castleData.heroes.Clear();
             m_castleData.heroes.AddRange(m_popupHeroList.heroes);
 
-            SetBatchHero();
+            SetBatchHero(true);
             SetCoreStatInfo();
 
             if (m_upgradeInfo.gameObject.activeSelf == true)
@@ -295,6 +297,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
             DataManager.castle.RebatchHeroes(m_castleData);
             DataManager.castle.UpdateCastleData(m_castleData);
+
             DataManager.castle.OnUpdateClaim();
         }
     }

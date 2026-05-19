@@ -11,6 +11,8 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
 
     public LobbyScreen_Hero_Collection_Item m_baseScrollItem;
 
+    bool m_isNeedUpdate = false;
+
     protected override void Awake()
     {
         m_baseScrollItem = m_element.scroll.content.GetChild(0).GetComponent<LobbyScreen_Hero_Collection_Item>();
@@ -26,8 +28,24 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
     {
         UpdateLayout();
 
-        Signal.instance.UpdateHeroStat.connect = UpdateLayout;
+        Signal.instance.UpdateHeroStat.connectLambda = new(this, _ =>
+        {
+            if (gameObject.activeInHierarchy == false)
+                m_isNeedUpdate = true;
+            else
+                UpdateLayout();
+        });
     }
+
+    private void OnEnable()
+    {
+        if (m_isNeedUpdate == true)
+        {
+            UpdateLayout();
+            m_isNeedUpdate = false;
+        }
+    }
+
     public override bool IsCloseScreen()
     {
         if (PopupManager.instance.IsOpenPopup())

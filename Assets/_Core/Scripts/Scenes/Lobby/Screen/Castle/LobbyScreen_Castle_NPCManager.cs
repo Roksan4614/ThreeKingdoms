@@ -30,6 +30,9 @@ public class LobbyScreen_Castle_NPCManager : Singleton<LobbyScreen_Castle_NPCMan
     {
         bool isRebatch = m_dtSpawn < System.DateTime.Now;
 
+        if (isRebatch == false)
+            return;
+
         var parent = m_element.parentList;
         int i = 0, max = 0;
         for (int idxStreet = 0; idxStreet < m_element.streets.Count; idxStreet++)
@@ -49,13 +52,10 @@ public class LobbyScreen_Castle_NPCManager : Singleton<LobbyScreen_Castle_NPCMan
                 }
 
                 int idxPos = Random.Range(0, m_element.streets[idxStreet].posTargets.Count);
-                if (isRebatch)
-                {
-                    npc.Spawn(GetTargetPosition(
-                        idxStreet,
-                        idxPos,
-                        out idxPos));
-                }
+                npc.Spawn(GetTargetPosition(
+                    idxStreet,
+                    idxPos,
+                    out idxPos));
 
                 npc.StartAsync(idxStreet, idxPos).Forget();
             }

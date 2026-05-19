@@ -180,7 +180,7 @@ public class Data_Castle_Mission
 
     public int GetTotalCoreStat(CastleMissionData _missionData)
     {
-        var coreStat = _missionData.dbData.core_stat;
+        var coreStat = _missionData.dbData.req_stat_type;
 
         int totalStat = 0;
         for (int i = 0; i < _missionData.heroes.Count; i++)
@@ -221,7 +221,7 @@ public class Data_Castle_Mission
 
         public bool isActive => key.IsActive();
         //TODO : stringtable 에서 가져와야 해.
-        public string missionName => $"[{TableManager.stringTable.GetString($"CORESTAT_{dbData.core_stat.ToString().ToUpper()}")}] {key}";
+        public string missionName => $"[{TableManager.stringTable.GetString($"CORESTAT_{dbData.req_stat_type.ToString().ToUpper()}")}] {key}";
         public int coreStatMax => ((int)grade + 1) * 100;
     }
 }

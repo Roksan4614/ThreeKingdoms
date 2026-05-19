@@ -57,10 +57,10 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
 
     bool SetHeroInfoData(bool _isInit)
     {
-        var coreStat = m_missionData.dbData.core_stat;
+        var coreStat = m_missionData.dbData.req_stat_type;
         int coreStatMax = m_missionData.coreStatMax;
 
-        var myHero = DataManager.userInfo.myHero.Where(x => x.isMine == true)
+        var myHero = DataManager.userInfo.myHero
             .OrderBy(x => DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1 ? -1 : 0)
             .ThenByDescending(x => x.resultCoreStat[coreStat]);
 
@@ -134,7 +134,7 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
     }
     void SetCoreStatStatus()
     {
-        var stat = m_missionData.dbData.core_stat;
+        var stat = m_missionData.dbData.req_stat_type;
         var now = DataManager.castle.mission.GetTotalCoreStat(m_missionData);
         var condition = m_missionData.coreStatMax;
 

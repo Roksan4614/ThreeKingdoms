@@ -15,7 +15,7 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable
 
     public bool isTestNPC;
 
-    private void OnDisable()
+    private void OnDestroy()
         => ReleaseCTS();
 
     public void Initialize(float _posTop, float _posBottom)

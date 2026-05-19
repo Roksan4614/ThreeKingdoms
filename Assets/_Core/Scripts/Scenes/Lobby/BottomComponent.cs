@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
@@ -39,27 +40,21 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
         Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(_isActive));
     }
 
-    void OnButton(LobbyScreenType _screen)
+    bool m_isDoing = false;
+    void OnButton(LobbyScreenType _screenType)
     {
-        if (LobbyScreenManager.instance.isLock == true)
+        if (LobbyScreenManager.instance.isLock == true || m_isDoing == true)
             return;
 
-        // TODO TEST
-        {
-            if (_screen == LobbyScreenType.Shop)
-            {
-                LobbyScreenManager.instance.GetScreenHero().SetActiveTab(LobbyScreen_Hero.HeroTabType.Relic);
-                _screen = LobbyScreenType.Hero;
-            }
-        }
+        m_isDoing = true;
 
         SelectButton(LobbyScreenManager.instance.curScreen, false);
 
-        var screen = LobbyScreenManager.instance.OpenScreen(_screen);
-        if (screen != null)
-        {
-            SelectButton(_screen, true);
-        }
+        LobbyScreenManager.instance.OpenScreenAsync(_screenType, _screen => {
+            if (_screen != null)
+                SelectButton(_screenType, true);
+            m_isDoing = false;
+        }).Forget();
     }
 
     void SelectButton(LobbyScreenType _screen, bool _isSelect)

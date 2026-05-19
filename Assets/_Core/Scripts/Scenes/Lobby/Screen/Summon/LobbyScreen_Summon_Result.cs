@@ -95,8 +95,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         #region 영웅 불러오기
         {
             await UniTask.WaitForEndOfFrame();
-            List<TableHeroData> dbHeroes = new();
-            dbHeroes.AddRange(TableManager.hero.list);
+            List<TableHeroData> dbHeroes = TableManager.hero.list.Where(x => x.key.Equals(_hostKey) == false).ToList();
 
             // 특정 국가면 하나 더 넣자
             if (_regionType > RegionType.NONE)
@@ -130,6 +129,16 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             }
             else
             {
+                // 호스트 넣기
+                {
+                    TableItemData itemData = new();
+                    itemData.key = ItemType.Stone_Soul;
+                    itemData.value = _hostKey;
+                    itemData.count = TableManager.hero.GetNeedSoul(GradeType.Normal);
+                    result.Add(itemData);
+                    i++;
+                }
+
                 //일단 영웅 뽑기
                 for (; i < 10; i++)
                 {
@@ -139,14 +148,9 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     TableItemData itemData = new();
                     itemData.key = ItemType.Stone_Soul;
 
-                    if (i == 0)
-                        itemData.value = _hostKey;
-                    else
-                    {
-                        var randomIdx = UnityEngine.Random.Range(0, dbHeroes.Count);
-                        itemData.value = dbHeroes[randomIdx].key;
-                        dbHeroes.RemoveAt(randomIdx);
-                    }
+                    var randomIdx = UnityEngine.Random.Range(0, dbHeroes.Count);
+                    itemData.value = dbHeroes[randomIdx].key;
+                    dbHeroes.RemoveAt(randomIdx);
 
                     GradeType grade = GradeType.Normal;
                     while (UnityEngine.Random.value <= m_element.dbRate[i + 1] && grade < GradeType.MAX - 1)
@@ -170,13 +174,13 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
         // 정렬하자
         result = result
-            .OrderBy(x =>
+            .OrderByDescending(x =>
             {
                 if (x.key == ItemType.Stone_Soul)
                     // 새 영웅일 경우 맨 뒤로
-                    return DataManager.userInfo.GetHeroInfoData(x.value).isActive ? 2 : 1;
+                    return _hostKey.Equals(x.value) ? 1 : DataManager.userInfo.GetHeroInfoData(x.value).isMine ? 2 : 3;
                 else
-                    return 10;
+                    return 0;
             })
             .ThenByDescending(x => x.count)
             .ThenByDescending(x => x.key == ItemType.Gold)
@@ -216,6 +220,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             }
 
             m_itemComps[i].SetItemData(data);
+            m_itemComps[i].SetActivePanel(false);
 #if UNITY_EDITOR
             m_itemComps[i].name = $"{data.value}_x{data.count}";
 #endif
@@ -383,7 +388,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                 heroInfoData = new(itemComp.data.value, grade);
 
             await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true);
-            await UniTask.WaitUntil(() => popupHeroInfo.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+            await UniTask.WaitUntil(() => popupHeroInfo == null, cancellationToken: destroyCancellationToken);
 
             await UniTask.WaitForSeconds(.5f);
 

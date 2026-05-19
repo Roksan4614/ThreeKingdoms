@@ -147,8 +147,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 
     void UpdateTotalClass()
     {
-        var myHero = DataManager.userInfo.GetHeroSortData().Where(
-            x => DataManager.userInfo.GetHeroInfoData(x.key).isMine == true).ToArray();
+        var myHero = DataManager.userInfo.GetHeroSortData().ToArray();
 
         int i = 0;
         var scroll = m_element.scroll;

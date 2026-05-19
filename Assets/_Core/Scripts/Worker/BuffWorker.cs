@@ -9,6 +9,7 @@ public enum BuffType
     BUFF_NO_TAKEN_DAMAGE,
 
     DEBUFF_NO_SKILL,
+    DEBUFF_NO_MOVE,
 
     MAX
 }
@@ -16,17 +17,17 @@ public enum BuffType
 public struct BuffData
 {
     public long hash;
-    public long endTick;
+    public float value;
 }
 
 public static class BuffWorker
 {
-    public static long AddBuff(CharacterComponent _hero, BuffType buffType)
-     => _hero.buff.Add(buffType).hash;
+    //public static long AddBuff(CharacterComponent _hero, BuffType buffType)
+    // => _hero.buff.Add(buffType).hash;
 
 
-    public static async UniTask AddBuffAsync(CharacterComponent _hero, BuffType buffType)
-    {
+    //public static async UniTask AddBuffAsync(CharacterComponent _hero, BuffType buffType)
+    //{
 
-    }
+    //}
 }

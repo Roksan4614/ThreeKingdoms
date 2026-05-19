@@ -560,7 +560,7 @@ GameObject:
   - component: {fileID: 223321671201631304}
   - component: {fileID: 8565619747332932638}
   m_Layer: 5
-  m_Name: Screen_Castle
+  m_Name: Castle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2956,7 +2956,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7479567072431792769, guid: 3898004785392c04a943a6d37aa0e786, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7013295256273359688, guid: 3898004785392c04a943a6d37aa0e786, type: 3}
@@ -2996,6 +2997,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9023880044535283742, guid: 3898004785392c04a943a6d37aa0e786, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7713667317690912793}
+    - targetCorrespondingSourceObject: {fileID: 7051775909580666059, guid: 3898004785392c04a943a6d37aa0e786, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8503016098582873932}
   m_SourcePrefab: {fileID: 100100000, guid: 3898004785392c04a943a6d37aa0e786, type: 3}
 --- !u!224 &95246884300455768 stripped
 RectTransform:
@@ -3112,6 +3116,34 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 9086219797332626294, guid: 3898004785392c04a943a6d37aa0e786, type: 3}
   m_PrefabInstance: {fileID: 1293061788734978409}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8083134547243011490 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7051775909580666059, guid: 3898004785392c04a943a6d37aa0e786, type: 3}
+  m_PrefabInstance: {fileID: 1293061788734978409}
+  m_PrefabAsset: {fileID: 0}
+--- !u!223 &8503016098582873932
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8083134547243011490}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 498427749
+  m_SortingOrder: 30001
+  m_TargetDisplay: 0
 --- !u!224 &8117133838149675553 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7013295256273359688, guid: 3898004785392c04a943a6d37aa0e786, type: 3}

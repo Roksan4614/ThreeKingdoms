@@ -72,7 +72,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
 
         m_heroInfoData = _heroInfoData;
 
-        m_element.heroIcon.SetHeroData(_heroInfoData, null, null);
+        m_element.heroIcon.SetHeroData(_heroInfoData, null, null, true);
         //m_element.GetText(TextType.name).text = _heroInfoData.name;
 
         m_element.check.SetActive(_heroInfoData.isBatch);

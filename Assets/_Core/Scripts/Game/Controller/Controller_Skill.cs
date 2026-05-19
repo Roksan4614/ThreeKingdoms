@@ -40,7 +40,7 @@ public class Controller_Skill : Controller_Attack
         if (m_pointer == null || isDrag == false)
             return;
 
-        var mousePosition = CameraManager.posPointer;
+        var mousePosition = CameraManager.GetPosPointer(m_touchFingerId);
         var dist = (m_element.startPosition.position - mousePosition);
 
         if (Mathf.Approximately(m_magnitude, dist.sqrMagnitude) == false)
@@ -66,12 +66,12 @@ public class Controller_Skill : Controller_Attack
         if (m_hero.isLive == false || m_pointer == null)
             return;
 
-        var mousePosition = CameraManager.posPointer;
+        var mousePosition = CameraManager.GetPosPointer(m_touchFingerId);
         var dist = (m_element.startPosition.position - mousePosition);
 
         if (dist.sqrMagnitude > 0.5f)
         {
-            ControllerManager.instance.isSwitch = false;
+            //ControllerManager.instance.isSwitch = false;
             isDrag = true;
             m_element.startPosition.gameObject.SetActive(true);
             button.interactable = false;
@@ -89,7 +89,7 @@ public class Controller_Skill : Controller_Attack
         {
             Utils.AfterSecond(() => button.interactable = true);
 
-            ControllerManager.instance.isSwitch = true;
+            //ControllerManager.instance.isSwitch = true;
             isDrag = false;
             m_element.startPosition.gameObject.SetActive(false);
             m_hero.attack.OnUp_ControllSkill();

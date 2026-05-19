@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraManager : MonoSingleton<CameraManager>
@@ -7,7 +8,7 @@ public class CameraManager : MonoSingleton<CameraManager>
     [SerializeField]
     Camera m_camera;
 
-    Transform m_pointer;
+    List<Transform> m_pointer = new();
 
     public Camera main => m_camera;
     const float c_smoothFactor = 5f;
@@ -21,7 +22,7 @@ public class CameraManager : MonoSingleton<CameraManager>
 
     private void Start()
     {
-        m_pointer = transform.Find("Pointer");
+        m_pointer.Add(transform.Find("Pointer"));
 
         DontDestroyOnLoad(this);
 
@@ -41,12 +42,32 @@ public class CameraManager : MonoSingleton<CameraManager>
         if (m_camera == null)
             return;
 
-        var mousePos = Input.touchCount > 1 ? (Vector3)Input.GetTouch(Input.touchCount - 1).position : Input.mousePosition;
-        mousePos.z = -m_camera.transform.position.z;
-        var pos = m_camera.ScreenToWorldPoint(mousePos);
-        pos.z = 0;
+        if (Input.touchCount == 0)
+        {
+            //var mousePos = Input.touchCount > 1 ? (Vector3)Input.GetTouch(Input.touchCount - 1).position : Input.mousePosition;
+            var mousePos = Input.mousePosition;
+            mousePos.z = -m_camera.transform.position.z;
+            var pos = m_camera.ScreenToWorldPoint(mousePos);
+            pos.z = 0;
 
-        m_pointer.position = pos;
+            m_pointer[0].position = pos;
+        }
+        else
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                var touchPos = Input.GetTouch(i).position;
+                var pos = m_camera.ScreenToWorldPoint(touchPos);
+                pos.z = 0;
+
+                if (i == m_pointer.Count)
+                {
+                    var pointer = Instantiate(m_pointer[0], transform);
+                    m_pointer.Add(pointer);
+                }
+                m_pointer[i].position = pos;
+            }
+        }
     }
 
     private void LateUpdate()
@@ -115,9 +136,22 @@ public class CameraManager : MonoSingleton<CameraManager>
         m_isShake = false;
     }
 
-    public static Vector3 posPointer => m_instance.m_pointer.position;
-    public static Vector3 localPosPointer => m_instance.m_pointer.localPosition;
-    public static Transform pointer => m_instance.m_pointer;
+    public static Vector3 posPointer => m_instance.m_pointer[0].position;
+    public static Transform pointer => m_instance.m_pointer[0];
+
+    public static Vector3 GetPosPointer(int _fingerId)
+    {
+        if (_fingerId == -1)
+            return m_instance.m_pointer[0].position;
+
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            if (Input.GetTouch(i).fingerId == _fingerId)
+                return m_instance.m_pointer[i].position;
+        }
+
+        return Vector3.zero;
+    }
 
     //public Vector3 GetMousePosition()
     //{

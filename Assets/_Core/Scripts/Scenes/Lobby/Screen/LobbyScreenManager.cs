@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Collections.Generic;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public enum LobbyScreenType
@@ -34,35 +36,17 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
 
     private void Start()
     {
-        List<string> screens = new() {
-            "Screen_Hero",
-            "Screen_Castle",
-            "Screen_Boss",
-            "",
-            "Screen_Summon",
-        };
-
-        for (int i = 0; i < screens.Count; i++)
-        {
-            var type = LobbyScreenType.None + i + 1;
-
-            var screen = transform.GetComponent<LobbyScreen_Base>(screens[i]);
-            screen?.Initilize(type);
-
-            m_dicScreen.Add(type, screen);
-        }
-
         SetActiveDimm(false, false);
 
         Signal.instance.CloseLobbyScreen.connect = CloseScreen;
     }
 
     // ½ºÅ©¸°¿¡¼­ ´Ý±â¸¦ ´­·¯¼­ ´ÝÀ» ¶§
-    public void CloseScreen(LobbyScreenType _screen)
+    public void CloseScreen(LobbyScreenType _screenType)
     {
-        if(_screen == m_curScreen)
+        if (_screenType == m_curScreen)
         {
-            m_dicScreen[_screen].Close();
+            m_dicScreen[_screenType].Close();
             SetActiveDimm(false);
         }
 
@@ -71,26 +55,41 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         ControllerManager.instance.isSwitch = true;
     }
 
-    public LobbyScreen_Base OpenScreen(LobbyScreenType _screen)
+    public async UniTask OpenScreenAsync(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback)
     {
         ControllerManager.instance.isSwitch = true;
 
         if (m_doing_ActiveDimm == true)
-            return null;
+        {
+            _callback(null);
+            return;
+        }
 
-        if (m_curScreen == _screen ||
-            m_dicScreen.ContainsKey(_screen) == false ||
-            m_dicScreen[_screen] == null)
+        if (m_dicScreen.ContainsKey(_screenType) == false)
+        {
+            var screen = await AddressableManager.instance.GetLobbyScreen(_screenType);
+            var item = Instantiate(screen, transform).GetComponent<LobbyScreen_Base>();
+            item.name = _screenType.ToString();
+
+            m_dicScreen.Add(_screenType, item);
+        }
+
+        if (m_curScreen == _screenType ||
+            m_dicScreen.ContainsKey(_screenType) == false ||
+            m_dicScreen[_screenType] == null)
         {
             if (m_curScreen > LobbyScreenType.None)
                 CloseScreen(m_curScreen);
-            return null;
+            {
+                _callback(null);
+                return;
+            }
         }
 
         if (m_curScreen == LobbyScreenType.None)
         {
             // BOSS ³­ µõ ¾È±ò°Å¾ß
-            if (_screen != LobbyScreenType.Boss)
+            if (_screenType != LobbyScreenType.Boss)
                 SetActiveDimm(true);
         }
         else if (m_dicScreen[m_curScreen].isOpenned)
@@ -100,15 +99,15 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         {
             if (m_curScreen == LobbyScreenType.Boss)
                 SetActiveDimm(true);
-            else if (_screen == LobbyScreenType.Boss)
+            else if (_screenType == LobbyScreenType.Boss)
                 SetActiveDimm(false, false);
         }
 
-        m_dicScreen[_screen].Open(m_curScreen);
-        m_curScreen = _screen;
+        m_dicScreen[_screenType].Open(m_curScreen);
+        m_curScreen = _screenType;
 
         ControllerManager.instance.isSwitch = false;
-        return m_dicScreen[_screen];
+        _callback(m_dicScreen[_screenType]);
     }
 
     bool m_doing_ActiveDimm;

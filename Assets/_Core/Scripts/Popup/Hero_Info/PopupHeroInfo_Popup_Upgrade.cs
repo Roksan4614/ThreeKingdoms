@@ -95,9 +95,13 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
 
         await UniTask.WaitForEndOfFrame();
 
-        DataManager.userInfo.Update(m_heroInfoData);
+        DataManager.userInfo.UpdateUpgrade(m_heroInfoData);
         DataManager.stat.friendShip.Reload();
         Signal.instance.UpdateHeroStat.Emit(m_heroInfoData.key);
+
+        var caslteObject = DataManager.castle.GetHeroObjectType(m_heroInfoData.key);
+        if (caslteObject == CastleObjectType.Market || caslteObject == CastleObjectType.Farm)
+            DataManager.castle.OnUpdateClaim();
 
         Close();
         m_status = StatusType.Success;

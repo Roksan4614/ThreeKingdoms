@@ -15,6 +15,8 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
     protected CharacterComponent m_hero;
     CharacterComponent m_target;
 
+    protected int m_touchFingerId;
+
     protected virtual void Start()
     {
         button = transform.GetComponent<Button>();
@@ -43,7 +45,7 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public virtual void OnDrag(PointerEventData eventData)
     {
-        var mousePosition = CameraManager.posPointer;
+        var mousePosition = CameraManager.GetPosPointer(m_touchFingerId);
 
         var dist = (m_element.startPosition.position - mousePosition);
 
@@ -63,7 +65,8 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        m_element.startPosition.position = CameraManager.posPointer;
+        m_touchFingerId = Input.touchCount == 0 ? -1 : Input.GetTouch(Input.touchCount - 1).fingerId;
+        m_element.startPosition.position = CameraManager.GetPosPointer(m_touchFingerId);
     }
 
     public virtual void OnPointerUp(PointerEventData eventData)

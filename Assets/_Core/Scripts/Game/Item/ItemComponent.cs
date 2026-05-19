@@ -66,6 +66,8 @@ public class ItemComponent : MonoBehaviour, IValidatable
         SetActiveBadge(false);
     }
 
+    public void SetActivePanel(bool _isActive)
+        => m_element.panel.gameObject.SetActive(_isActive);
     public void SetActiveBadge(bool _isActive)
         => m_element.badge.SetActive(_isActive);
 

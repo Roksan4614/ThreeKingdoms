@@ -42,14 +42,14 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
         m_element.txtTitle.text = $"임무_: [{TableManager.stringTable.GetString($"GRADE_{_mission.grade.ToString().ToUpper()}")}]";
         m_element.txtName.text = _mission.missionName;
-        m_element.gauge.textTitle = $"고유 능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.core_stat.ToString().ToUpper()}")}) 요구치";
+        m_element.gauge.textTitle = $"고유 능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.req_stat_type.ToString().ToUpper()}")}) 요구치";
 
         // 자동으로 추가해줘보자
         {
-            var coreStat = m_missionData.dbData.core_stat;
+            var coreStat = m_missionData.dbData.req_stat_type;
             int coreStatMax = m_missionData.coreStatMax;
 
-            var myHero = DataManager.userInfo.myHero.Where(x => x.isMine == true && DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1)
+            var myHero = DataManager.userInfo.myHero.Where(x => DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1)
                 .OrderByDescending(x => x.resultCoreStat[coreStat]);
 
             int totalCoreStat = 0;
@@ -79,7 +79,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         var parent = m_element.pHeroIcon;
         int i = 0;
 
-        CoreStatType coreStat = m_missionData.dbData.core_stat;
+        CoreStatType coreStat = m_missionData.dbData.req_stat_type;
         int totalCoreStat = 0;
         for (; i < myHeroes.Count; i++)
         {
@@ -103,6 +103,8 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         var percent = Mathf.Min(1f, totalCoreStat / (float)m_missionData.coreStatMax);
         m_element.gauge.fillAmount = percent;
         m_element.gauge.textAmount = $"({percent * 100:0.##}%) {totalCoreStat.AmountKMBT()}/{m_missionData.coreStatMax.AmountKMBT()}";
+
+
     }
 
     async UniTask OpenHeroInfoPopupAsync(HeroInfoData _data)
@@ -200,8 +202,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         public GaugeHelper gauge;
         public ButtonHelper btnAdd;
 
-        public ScrollRect scroll;
-        public PopupCastleMission_Popup_Info_RewardItem baseRewardItem;
+        public PopupCastleMission_Popup_Info_Reward reward;
 
         public ButtonHelper btnStart;
 
@@ -221,8 +222,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
             btnAdd = pHeroIcon.parent.GetComponent<ButtonHelper>("btn_add");
             gauge = panel.GetComponent<GaugeHelper>("Info/Status");
 
-            scroll = panel.GetComponent<ScrollRect>("Reward/Scroll");
-            baseRewardItem = scroll.content.GetComponent<PopupCastleMission_Popup_Info_RewardItem>("Item");
+            reward = panel.GetComponent<PopupCastleMission_Popup_Info_Reward>("Reward");
 
             popupHeroList = _transform.parent.GetComponent<PopupCastleHeroListComponent_Mission>("Castle_HeroList");
         }
