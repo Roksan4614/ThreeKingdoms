@@ -33,7 +33,7 @@ public class Data_Castle_Mission
 
             for (int i = 0; i < 3; i++)
             {
-                var grade = GradeType.NONE + 1 + Random.Range(0, (int)GradeType.MAX);
+                var grade = GradeType.NONE + 1 + Random.Range(0, 3) * 2;
                 CastleMissionData newData = new()
                 {
                     idx = m_idxMission++,
@@ -90,7 +90,7 @@ public class Data_Castle_Mission
         if (newMission.isActive == false)
             newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).FirstOrDefault();
 
-        var grade = GradeType.NONE + 1 + Random.Range(0, (int)GradeType.MAX);
+        var grade = GradeType.NONE + 1 + Random.Range(0, 3) * 2;
         CastleMissionData newData = new()
         {
             idx = m_idxMission++,

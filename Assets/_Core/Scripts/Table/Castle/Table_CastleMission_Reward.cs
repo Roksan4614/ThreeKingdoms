@@ -13,6 +13,33 @@ public class Table_CastleMission_Reward : BaseTable<string, TableCastleMissionRe
             x => x.Key,
             x => x.GroupBy(g => g.grade).ToDictionary(g => g.Key, g => g.ToList()));
     }
+
+    public List<TableCastleMissionRewardData> GetReward(Data_Castle_Mission.CastleMissionData _missionData)
+    {
+        // 특수한 미션이 세팅되어 있다면
+        if (m_db.ContainsKey(_missionData.key) == true)
+        {
+            var db = m_db[_missionData.key];
+
+            // 해당 난이도가 있다면
+            if (db.ContainsKey(_missionData.grade))
+                return db[_missionData.grade];
+        }
+        else
+        {
+            var key = _missionData.dbData.statType.ToString().ToLower();
+            if (m_db.ContainsKey(key))
+            {
+                var db = m_db[key];
+
+                if (db.ContainsKey(_missionData.grade))
+                    return db[_missionData.grade];
+            }
+        }
+
+        return null;
+    }
+
 }
 
 public struct TableCastleMissionRewardData

@@ -102,9 +102,10 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
         var percent = Mathf.Min(1f, totalCoreStat / (float)m_missionData.coreStatMax);
         m_element.gauge.fillAmount = percent;
-        m_element.gauge.textAmount = $"({percent * 100:0.##}%) {totalCoreStat.AmountKMBT()}/{m_missionData.coreStatMax.AmountKMBT()}";
+        percent *= 100;
+        m_element.gauge.textAmount = $"({percent:0.##}%) {totalCoreStat.AmountKMBT()}/{m_missionData.coreStatMax.AmountKMBT()}";
 
-
+        m_element.reward.SetRewardList(m_missionData, percent);
     }
 
     async UniTask OpenHeroInfoPopupAsync(HeroInfoData _data)
