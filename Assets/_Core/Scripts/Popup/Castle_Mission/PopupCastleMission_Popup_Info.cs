@@ -42,11 +42,11 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
         m_element.txtTitle.text = $"임무_: [{TableManager.stringTable.GetString($"GRADE_{_mission.grade.ToString().ToUpper()}")}]";
         m_element.txtName.text = _mission.missionName;
-        m_element.gauge.textTitle = $"고유 능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.req_stat_type.ToString().ToUpper()}")}) 요구치";
+        m_element.gauge.textTitle = $"고유 능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.statType.ToString().ToUpper()}")}) 요구치";
 
         // 자동으로 추가해줘보자
         {
-            var coreStat = m_missionData.dbData.req_stat_type;
+            var coreStat = m_missionData.dbData.statType;
             int coreStatMax = m_missionData.coreStatMax;
 
             var myHero = DataManager.userInfo.myHero.Where(x => DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1)
@@ -79,7 +79,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         var parent = m_element.pHeroIcon;
         int i = 0;
 
-        CoreStatType coreStat = m_missionData.dbData.req_stat_type;
+        CoreStatType coreStat = m_missionData.dbData.statType;
         int totalCoreStat = 0;
         for (; i < myHeroes.Count; i++)
         {

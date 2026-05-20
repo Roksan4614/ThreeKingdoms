@@ -157,7 +157,7 @@ public class Tutorial_START : TutorialBase
             bottomButton[(int)LobbyScreenType.Summon].interactable = true;
 
             // 연회권 보상 연출
-            await RewardWorker.instance.RunAsync(enemy.transform.position, ItemType.Scroll_Party);
+            await RewardWorker.instance.RunAsync(enemy.transform.position, ItemType.Normal_Gatcha_Ticket);
 
             await UniTask.WaitForSeconds(.5f);
 

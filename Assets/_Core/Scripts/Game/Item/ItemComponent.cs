@@ -21,7 +21,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         gameObject.SetActive(true);
         //m_element.panel.gameObject.SetActive(false);
 
-        bool isHero = _itemData.key == ItemType.Stone_Soul;
+        bool isHero = _itemData.key == ItemType.Dedicated_Soul_Stone;
         SetIconAsync(_itemData.value, isHero).Forget();
         m_element.txtCount.text = _itemData.count > 0 ? $"x{_itemData.count.AmountKMBT()}" : "";
     }

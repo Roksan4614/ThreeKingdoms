@@ -12,13 +12,25 @@ public class Table_Item : BaseTable<ItemType, TableItemData>
 
 public enum ItemType
 {
-    NONE,
+    NONE = -1,
 
-    Gold,           //골드
-    Rice,           //군량미
-    Scroll_Party,    //연회권
-    Stone_Soul,     //영혼석
-    Stone_Time,     //시간석
+    Gold,                               // 골드
+    Rice,                               // 군량미
+    Time_Stone,                         // 시간석
+    Bundle_Normal,                      // 일반 보따리
+    Bundle_Elite,                       // 고급 보따리
+    Bundle_General,                     // 명장 보따리
+    Bundle_Legend,                      // 전설 보따리
+    Public_Soul_Stone,                  // 공용 영혼석
+    Class_Soul_Stone,                   // 클래스 영혼석
+    Dedicated_Soul_Stone,               // 전용 영혼석
+    Class_Soul_Stone_Random_Box,        // 클래스 영혼석 랜덤 상자
+    Dedicated_Soul_Stone_Random_Box,    // 전용 영혼석 랜덤 상자
+    Treasure,                           // 보물
+    Treasure_Piece,                     // 보물 조각
+    Treasure_Piece_Random_Box,          // 보물 조각 랜덤 상자
+    Normal_Gatcha_Ticket,               // 일반 가챠 티켓
+    Rare_Gatcha_Ticket,                 // 희귀 가챠 티켓
 
     MAX
 }

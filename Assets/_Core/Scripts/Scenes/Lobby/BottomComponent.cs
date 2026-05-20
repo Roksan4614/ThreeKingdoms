@@ -71,7 +71,7 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
     public Transform GetIconScreen(ItemType _itemType)
         => m_dbScreen[_itemType switch
         {
-            ItemType.Scroll_Party => LobbyScreenType.Summon,
+            ItemType.Normal_Gatcha_Ticket => LobbyScreenType.Summon,
             _ => LobbyScreenType.Hero
         }].icon;
 
