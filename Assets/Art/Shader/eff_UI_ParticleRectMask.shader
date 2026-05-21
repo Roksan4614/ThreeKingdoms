@@ -2,7 +2,7 @@ Shader "Custom/FX/eff_UI_ParticleRectMask"
 {
     Properties
     {
-        [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
+        _MainTex ("Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
         
         // RectMask2D에서 이 프로퍼티 이름을 찾아 값을 넘겨줍니다.
@@ -60,17 +60,17 @@ Shader "Custom/FX/eff_UI_ParticleRectMask"
             struct appdata_t
             {
                 float4 vertex   : POSITION;
-                float4 color    : COLOR;    // 파티클 시스템의 컬러 수신
+                float4 color    : COLOR;
                 float2 texcoord : TEXCOORD0;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
             {
-                float4 vertex   : SV_POSITION;
-                fixed4 color    : COLOR;
-                float2 texcoord : TEXCOORD0;
-                float4 worldPosition : TEXCOORD1; // UI 마스킹 핵심 좌표
+                float4 vertex        : SV_POSITION;
+                fixed4 color         : COLOR;
+                float2 texcoord      : TEXCOORD0;
+                float4 worldPosition : TEXCOORD1;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
@@ -84,26 +84,26 @@ Shader "Custom/FX/eff_UI_ParticleRectMask"
                 v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                
-                // RectMask2D는 이 worldPosition(로컬 정점 좌표)을 기준으로 영역을 계산합니다.
+
+                // RectMask2D는 이 worldPosition 좌표를 기준으로 영역을 계산합니다.
                 o.worldPosition = v.vertex;
-                
+
                 o.vertex = UnityObjectToClipPos(o.worldPosition);
                 o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
                 o.color = v.color * _Color;
+
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                fixed4 col = (tex2D(_MainTex, i.texcoord)) * i.color;
+                fixed4 col = tex2D(_MainTex, i.texcoord) * i.color;
 
-                // 핵심: UnityGet2DClipping 함수가 RectMask2D의 영역을 계산해 알파를 깎습니다.
-                // Camera 모드일 때 특히 이 로컬 기반 좌표 계산이 중요합니다.
+                // RectMask2D 영역 밖 알파 제거
                 col.a *= UnityGet2DClipping(i.worldPosition.xy, _ClipRect);
 
                 #ifdef UNITY_UI_ALPHACLIP
-                clip (col.a - 0.001);
+                clip(col.a - 0.001);
                 #endif
 
                 return col;
