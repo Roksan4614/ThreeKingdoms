@@ -136,14 +136,14 @@ public static class Extenssions
         => string.IsNullOrWhiteSpace(_string) == false;
 
     #region AMOUNT
-    public static string AmountKMBT(this int _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
-        => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT);
-    public static string AmountKMBT(this long _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
-        => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT);
-    public static string AmountKMBT(this float _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
-            => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT);
+    public static string AmountKMBT(this int _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false, bool _isEastAsia = false)
+        => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT, _isEastAsia);
+    public static string AmountKMBT(this long _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false, bool _isEastAsia = false)
+        => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT, _isEastAsia);
+    public static string AmountKMBT(this float _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false, bool _isEastAsia = false)
+            => AmountKMBT((double)_value, _isDot, _isFullDot, _isMBT, _isEastAsia);
 
-    public static string AmountKMBT(this double _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false)
+    public static string AmountKMBT(this double _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false, bool _isEastAsia = false)
     {
         string amount = $"{_value:#,##0.##}";
 
@@ -151,10 +151,13 @@ public static class Extenssions
             (_isMBT == false && _value < 1000))
             return _isDot ? (_isFullDot && _value >= 1000) ? $"{_value:#,##0.#0}" : amount : $"{Math.Floor(_value):#,##0}";
 
-        switch (DataManager.option.language)
+        if (_isEastAsia == true)
         {
-            case LanguageType.Korean:
-                return AmountKMBT_EastAsia(_value, _isDot, _isFullDot);
+            switch (DataManager.option.language)
+            {
+                case LanguageType.Korean:
+                    return AmountKMBT_EastAsia(_value, _isDot, _isFullDot);
+            }
         }
 
         var amount_point = amount.Split('.');

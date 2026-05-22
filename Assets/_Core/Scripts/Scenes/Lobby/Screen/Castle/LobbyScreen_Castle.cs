@@ -37,9 +37,9 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             btn.onClick.AddListener(()
                 => OnButtonAsync_Object(type).Forget());
 
-            var parent = m_element.panelMap.Find(type.ToString());
-            btn.transform.SetParent(parent);
-            btn.transform.SetAsLastSibling();
+            //var parent = m_element.panelMap.Find(type.ToString());
+            //btn.transform.SetParent(parent);
+            //btn.transform.SetAsLastSibling();
         }
     }
 

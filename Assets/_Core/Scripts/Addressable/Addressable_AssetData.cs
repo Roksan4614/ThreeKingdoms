@@ -130,7 +130,7 @@ public partial class AddressableManager
 
         await Load_ItemIconAsync(_key);
 
-        return m_itemIcon.ContainsKey(key) ? m_itemIcon[key].Result : null;
+        return await GetItemIconAsync(_key);
     }
 
     public async UniTask Load_HeroCharacterAsync(params string[] _key)

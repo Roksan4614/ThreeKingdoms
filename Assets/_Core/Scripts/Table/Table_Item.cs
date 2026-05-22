@@ -9,10 +9,19 @@ public class Table_Item : BaseTable<ItemType, TableItemData>
     }
 }
 
+public enum ItemCategoryType
+{
+    Currency,
+    Soul_Stone,
+    Bundle,
+    Random_Box,
+    Item,
+    Piece
+}
 
 public enum ItemType
 {
-    NONE = -1,
+    NONE = 0,
 
     Gold,                               // 골드
     Rice,                               // 군량미
@@ -20,6 +29,7 @@ public enum ItemType
     Bundle_Normal,                      // 일반 보따리
     Bundle_Elite,                       // 고급 보따리
     Bundle_General,                     // 명장 보따리
+    Bundle_Hero,                        // 명장 보따리
     Bundle_Legend,                      // 전설 보따리
     Public_Soul_Stone,                  // 공용 영혼석
     Class_Soul_Stone,                   // 클래스 영혼석
@@ -39,8 +49,10 @@ public struct TableItemData
 {
     public ItemType key;
     public string value;
+    public ItemCategoryType category;
 
     //custom 
+    public bool isActive => key > ItemType.NONE;
     public bool isNew;
     public long count;
 }

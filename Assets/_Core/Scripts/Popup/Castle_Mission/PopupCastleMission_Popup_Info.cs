@@ -16,7 +16,6 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
     PopupHeroInfo m_popupHeroInfo;
 
-    public List<string> heroes => m_missionData.heroes;
     public StatusType resultType { get; private set; }
 
     protected override void Awake()
@@ -40,9 +39,9 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         Utils.SetActivePunch(m_element.panel, true);
         resultType = StatusType.Wait;
 
-        m_element.txtTitle.text = $"임무_: [{TableManager.stringTable.GetString($"GRADE_{_mission.grade.ToString().ToUpper()}")}]";
-        m_element.txtName.text = _mission.missionName;
-        m_element.gauge.textTitle = $"고유 능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.statType.ToString().ToUpper()}")}) 요구치";
+        m_element.txtTitle.text = $"임무_:_[{TableManager.stringTable.GetString($"GRADE_{_mission.grade.ToString().ToUpper()}")}]";
+        m_element.txtName.text = _mission.missionNameStat;
+        m_element.gauge.textTitle = $"고유_능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.statType.ToString().ToUpper()}")})_요구치";
 
         // 자동으로 추가해줘보자
         {
@@ -68,6 +67,13 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
                     break;
             }
         }
+
+        //소요시간
+        var now = DateTime.Now;
+        TimeSpan ts = now.AddSeconds(_mission.dbGradeData.durationSeconds) - now;
+        m_element.txtContent_Time.text = $"소요시간_:_{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}";
+        m_element.txtContent_Exp.text = $"경험치_:_+{_mission.dbGradeData.missionXp.AmountKMBT()}";
+        m_element.txtContent_Exp.transform.parent.ForceRebuildLayout();
 
         UpdateHero(true);
     }
@@ -100,11 +106,16 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
         parent.ForceRebuildLayout();
 
+        
         var percent = Mathf.Min(1f, totalCoreStat / (float)m_missionData.coreStatMax);
         m_element.gauge.fillAmount = percent;
         percent *= 100;
         m_element.gauge.textAmount = $"({percent:0.##}%) {totalCoreStat.AmountKMBT()}/{m_missionData.coreStatMax.AmountKMBT()}";
+        m_element.btnAdd.text = $"({myHeroes.Count}/6)";
+        
+        m_missionData.percentStat = percent;
 
+        // 보상 리스트 업데이트
         m_element.reward.SetRewardList(m_missionData, percent);
     }
 
@@ -150,6 +161,14 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
     void OnButton_Start()
     {
+        if (m_missionData.percentStat < 10)
+        {
+            PopupManager.instance.AlertShow("요구_능력치를_10%이상_달성해줘!");
+            return;
+        }
+
+        DataManager.castle.mission.StartMission(m_missionData);
+
         resultType = StatusType.Success;
         Close();
     }

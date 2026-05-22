@@ -52,7 +52,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
         m_element.btnAll.onClick.AddListener(() =>
         {
-            DataManager.castle.mission.CompleteMission();
+            DataManager.castle.mission.CompleteMissionAsync(() => UpdateLevelInfo()).Forget();
             SetMissionList(true);
         });
     }
@@ -63,6 +63,16 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
         OnButton_Tab(TabType.MissionList);
         RefreshRemainCount();
+
+        UpdateLevelInfo();
+    }
+
+    void UpdateLevelInfo()
+    {
+        var levelInfo = DataManager.castle.mission.levelInfo;
+        m_element.exp.textTitle = $"Lv.{levelInfo.level}_관아_경험치 : ";
+        m_element.exp.textAmount = $"{levelInfo.nowExp:#,0} / {levelInfo.maxExp:#,0}";
+        m_element.exp.fillAmount = levelInfo.nowExp / (float)levelInfo.maxExp;
     }
 
     void RefreshRemainCount()
@@ -126,7 +136,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
             if (_missionData.tickEnd <= Utils.GetUTC().Ticks)
             {
                 PopupManager.instance.AlertShow("TODO: 보상받기");
-                DataManager.castle.mission.CompleteMission(_missionData);
+                DataManager.castle.mission.CompleteMissionAsync(() => UpdateLevelInfo(), _missionData).Forget();
 
                 SetMissionList(true);
             }
@@ -139,6 +149,14 @@ public class PopupCastleMissionComponent : BasePopupComponent
         // 아니면 상세페이지를 띄워주자
         else
         {
+            var countNoBatch = DataManager.userInfo.myHero.Where(x => DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1)
+                .Count();
+            if(countNoBatch == 0)
+            {
+                PopupManager.instance.AlertShow("임무_보낼_장수가_없습니다.");
+                return;
+            }
+
             await Utils.SetActivePunchAsync(m_element.panel, false);
 
             m_element.info.Open(_missionData);
@@ -150,8 +168,6 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
             if (m_element.info.resultType == StatusType.Success)
             {
-                _missionData.heroes = m_element.info.heroes;
-                DataManager.castle.mission.StartMission(_missionData);
                 RefreshRemainCount();
                 SetMissionList(false);
             }
@@ -209,6 +225,8 @@ public class PopupCastleMissionComponent : BasePopupComponent
         public ButtonHelper btnRefresh;
         public ButtonHelper btnAll;
 
+        public GaugeHelper exp;
+
         public Dictionary<TabType, ButtonHelper> dbTab
         {
             get
@@ -234,6 +252,8 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
             btnRefresh = _transform.GetComponent<ButtonHelper>("Panel/btn_refresh");
             btnAll = _transform.GetComponent<ButtonHelper>("Panel/btn_all");
+
+            exp = _transform.GetComponent<GaugeHelper>("Panel/EXP");
         }
 
         public Transform panel => btnAll.transform.parent;

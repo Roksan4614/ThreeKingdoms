@@ -60,10 +60,10 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         await RunAsync(rewardData);
     }
 
-    public void Run(params RewardData[] rewardData)
+    void Run(params RewardData[] rewardData)
         => RunAsync(rewardData).Forget();
 
-    public async UniTask RunAsync(params RewardData[] _rewardData)
+    async UniTask RunAsync(params RewardData[] _rewardData)
     {
         List<RewardItemComponent> rewardComps = new();
         for (int i = 0; i < _rewardData.Length; i++)
@@ -109,7 +109,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
 
         //목적지까지 날려주자
         for (int i = 0; i < rewardComps.Count; i++)
-            rewardComps[i].ThrowStart(GetThrowTarget(rewardComps[i].data), m_actionData.durationMove, m_actionData.isCanvas).Forget();
+            rewardComps[i].ThrowStart(GetThrowTarget(rewardComps[i].data), m_actionData.durationMove).Forget();
     }
 
     public Vector3 GetPositionStartPunch(Vector3 _startPos)

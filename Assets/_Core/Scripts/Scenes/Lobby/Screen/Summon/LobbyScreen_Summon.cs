@@ -28,7 +28,6 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         base.Awake();
 
         package.SetActive(true);
-        m_element.pResult.gameObject.SetActive(false);
         m_element.hostDash.SetActive(false);
     }
 
@@ -44,6 +43,8 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
         m_isSkipAction = PPWorker.Get<int>(PlayerPrefsType.SUMMON_SKIP_ACTION) == 1;
         m_element.btnSkip.isCheck = m_isSkipAction;
+
+        m_element.pResult.gameObject.SetActive(false);
 
         // setlocalization
         {

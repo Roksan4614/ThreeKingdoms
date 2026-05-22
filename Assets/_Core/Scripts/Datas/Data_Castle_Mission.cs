@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Data_Castle_Mission
 {
@@ -14,6 +15,9 @@ public class Data_Castle_Mission
     const string c_key = "pp_casltle_mission";
 
     int m_idxMission;
+
+    CastleMissionLevelInfoData m_levelInfo;
+    public CastleMissionLevelInfoData levelInfo => m_levelInfo;
 
     public async UniTask InitializeAsync()
     {
@@ -37,22 +41,10 @@ public class Data_Castle_Mission
                 CastleMissionData newData = new()
                 {
                     idx = m_idxMission++,
-                    key = dbTable[i].key,
+                    key = dbTable[UnityEngine.Random.Range(0, dbTable.Length)].key,
                     grade = grade,
-                    exp = 100 * ((int)grade + 1),
-                    rewardList = new(),
                     heroes = new()
                 };
-
-                int max = ((int)newData.grade + 1) * 3;
-                for (int j = 0; j < max; j++)
-                {
-                    newData.rewardList.Add(new()
-                    {
-                        key = ItemType.Gold,
-                        count = Random.Range(10, 20) * ((int)grade + 1)
-                    });
-                }
 
                 m_data.Add(newData);
                 SaveData();
@@ -60,6 +52,21 @@ public class Data_Castle_Mission
         }
         else
             m_idxMission = m_data.OrderBy(x => x.idx).Last().idx + 1;
+
+        //PlayerPrefs.DeleteKey(c_key + "_levelinfo");
+
+        if (PPWorker.HasKey(c_key + "_levelinfo"))
+            m_levelInfo = PPWorker.Get<CastleMissionLevelInfoData>(c_key + "_levelinfo");
+        else
+        {
+            m_levelInfo = new()
+            {
+                level = 1,
+                nowExp = 0,
+                maxExp = TableManager.castleOfficeLevel.GetLevelInfo(2).req_xp
+            };
+            SaveLevelData();
+        }
     }
 
     public void RefreshMission()
@@ -81,11 +88,7 @@ public class Data_Castle_Mission
 
     public void AddNewMission(bool _isAutoSave, int _prevNumber)
     {
-        var a = TableManager.castleMisson.list.OrderBy(x => Random.value);
-        var b = a.Where(x => m_data.Any(x => x.key.Equals(x.key) == false));
-        var c = b.FirstOrDefault();
-
-        var newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).Where(x => m_data.Any(x => x.key.Equals(x.key) == false)).FirstOrDefault();
+        var newMission = TableManager.castleMisson.list.Where(x => m_data.Any(x => x.key.Equals(x.key) == false)).OrderBy(x => Random.value).FirstOrDefault();
 
         if (newMission.isActive == false)
             newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).FirstOrDefault();
@@ -96,20 +99,8 @@ public class Data_Castle_Mission
             idx = m_idxMission++,
             key = newMission.key,
             grade = grade,
-            exp = 100 * ((int)grade + 1),
-            rewardList = new(),
             heroes = new()
         };
-
-        int max = ((int)newData.grade + 1) * 3;
-        for (int j = 0; j < max; j++)
-        {
-            newData.rewardList.Add(new()
-            {
-                key = ItemType.Gold,
-                count = Random.Range(10, 20) * ((int)grade + 1)
-            });
-        }
 
         m_data.Insert(_prevNumber, newData);
 
@@ -119,32 +110,79 @@ public class Data_Castle_Mission
 
     public void StartMission(CastleMissionData _missionData)
     {
-        _missionData.tickStart = Utils.GetUTC().Ticks;
-        _missionData.tickEnd = Utils.GetUTC().AddSeconds(((int)_missionData.grade + 3) * 10).Ticks;
+        var idx = m_data.FindIndex(x => x.idx == _missionData.idx);
+        var data = m_data[idx];
+
+        data.tickStart = Utils.GetUTC().Ticks;
+        data.percentStat = _missionData.percentStat;
+        data.heroes.AddRange(_missionData.heroes);
+        var sec = data.dbGradeData.durationSeconds;
+#if UNITY_EDITOR
+        data.tickEnd = Utils.GetUTC().AddSeconds(((int)_missionData.grade + 3) * 5).Ticks;
+#else
+        data.tickEnd = Utils.GetUTC().AddSeconds(sec).Ticks;
+#endif
 
         m_remainCount--;
 
-        int number = m_data.FindIndex(x => x.idx == _missionData.idx);
-        m_data.RemoveAt(number);
-        m_data.Add(_missionData);
-        AddNewMission(true, number);
+        m_data.RemoveAt(idx);
+        m_data.Add(data);
+        AddNewMission(true, idx);
     }
 
-    public void CompleteMission(params CastleMissionData[] _missionDatas)
+    public async UniTask CompleteMissionAsync(UnityAction _onComplete, params CastleMissionData[] _missionDatas)
     {
         // 모두 받기
         if (_missionDatas.Length == 0)
             _missionDatas = m_data.Where(x => x.tickEnd > 0 && x.tickEnd < Utils.GetUTC().Ticks).ToArray();
 
-        List<TableItemData> rewards = new();
+        int prevExp = m_levelInfo.nowExp;
+
         for (int i = 0; i < _missionDatas.Length; i++)
         {
-            var data = _missionDatas[i];
-            rewards.AddRange(data.rewardList);
-            RemoveMission(data.idx, false);
+            m_levelInfo.nowExp += _missionDatas[i].dbGradeData.missionXp;
+            RemoveMission(_missionDatas[i].idx, false);
         }
 
+        SaveLevelData();
         SaveData();
+
+
+        if (prevExp < m_levelInfo.maxExp && m_levelInfo.nowExp >= m_levelInfo.maxExp)
+            PopupManager.instance.AlertShow("관아 업그레이드 준비완료!");
+
+        _onComplete();
+
+        // 보상 연출 해주자
+        Dictionary<ItemType, TableItemData> dbRewards = new();
+        foreach (var m in _missionDatas)
+        {
+            var reward = TableManager.castleMissonReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
+            foreach (var r in reward)
+            {
+                if (dbRewards.ContainsKey(r.reward_key))
+                {
+                    var db = dbRewards[r.reward_key];
+                    db.count += UnityEngine.Random.Range(r.reward_min, r.reward_max + 1);
+                }
+                else
+                {
+                    dbRewards.Add(r.reward_key, new()
+                    {
+                        key = r.reward_key,
+                        value = r.reward_value,
+                        count = UnityEngine.Random.Range(r.reward_min, r.reward_max + 1)
+                    });
+                }
+            }
+        }
+
+        var rewards = dbRewards.Values.Select(x => new RewardWorker.RewardItemData(x.key, x.count)).ToList();
+        foreach (var r in rewards)
+            RewardWorker.instance.Run(CameraManager.posPointer, r.itemType, r.count, _isCanvas: true);
+
+
+        await UniTask.Yield();
     }
 
     void RemoveMission(int _idx, bool _isForceSave = true)
@@ -191,10 +229,37 @@ public class Data_Castle_Mission
         return totalStat;
     }
 
+    public void SetUpgradeOffice()
+    {
+        var nextLevelInfo = TableManager.castleOfficeLevel.GetLevelInfo(m_levelInfo.level + 1);
+
+        m_levelInfo.level++;
+        m_levelInfo.nowExp -= m_levelInfo.maxExp;
+        m_levelInfo.maxExp = nextLevelInfo.level == 0 ? -1 : nextLevelInfo.req_xp;
+        SaveLevelData();
+    }
+
+    //public void UpdateMissionPercentStat(CastleMissionData _missionData)
+    //{
+    //    int idx = m_data.FindIndex(x => x.idx == _missionData.idx);
+
+    //    if (idx == -1) return;
+
+    //    var data = m_data[idx];
+    //    data.percentStat = _missionData.percentStat;
+    //    m_data[idx] = data;
+    //    SaveData();
+    //}
+
     public void SaveData()
     {
         PPWorker.Set(c_key + "_count", m_remainCount);
         PPWorker.Set(c_key, m_data);
+    }
+
+    public void SaveLevelData()
+    {
+        PPWorker.Set(c_key + "_levelinfo", m_levelInfo);
     }
 
     public struct CastleMissionData
@@ -205,23 +270,35 @@ public class Data_Castle_Mission
         public GradeType grade;
         public long tickStart;
         public long tickEnd;
-        public long exp;
-        public List<TableItemData> rewardList;
+        public float percentStat;
 
-        TableCastleMissionData m_dbData;
         public TableCastleMissionData dbData
-        {
-            get
-            {
-                if (m_dbData.isActive == false)
-                    m_dbData = TableManager.castleMisson.Get(key);
-                return m_dbData;
-            }
-        }
+            => TableManager.castleMisson.Get(key);
+
+        public TableCastleMissionGradeData dbGradeData
+            => TableManager.castleMissonGrade.Get(grade);
+
+        //public IReadOnlyList<TableCastleMissionRewardData> dbRewardData
+        //    => TableManager.castleMissonReward.GetReward(this);
 
         public bool isActive => key.IsActive();
         //TODO : stringtable 에서 가져와야 해.
-        public string missionName => $"[{TableManager.stringTable.GetString($"CORESTAT_{dbData.statType.ToString().ToUpper()}")}] {key}";
-        public int coreStatMax => ((int)grade + 1) * 100;
+        string missionName => TableManager.stringMission.GetString(key.ToUpper() + "_TITLE");
+        public string missionNameStat => $"[{TableManager.stringTable.GetString($"CORESTAT_{dbData.statType.ToString().ToUpper()}")}] {missionName}";
+        public string gradeName => TableManager.stringMission.GetString($"GRADETYPE_{grade.ToString().ToUpper()}");
+
+        public int coreStatMax => dbGradeData.reqStatValue;
+        public int xp => dbGradeData.missionXp;
+        public int durationSeconds => dbGradeData.durationSeconds;
+    }
+
+
+    public struct CastleMissionLevelInfoData
+    {
+        public int level;
+        public int nowExp;
+        public int maxExp;
+
+        public bool isReadyUpgrade => nowExp >= maxExp;
     }
 }

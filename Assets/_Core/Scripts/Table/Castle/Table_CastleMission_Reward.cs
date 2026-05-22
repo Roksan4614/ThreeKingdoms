@@ -14,7 +14,7 @@ public class Table_CastleMission_Reward : BaseTable<string, TableCastleMissionRe
             x => x.GroupBy(g => g.grade).ToDictionary(g => g.Key, g => g.ToList()));
     }
 
-    public List<TableCastleMissionRewardData> GetReward(Data_Castle_Mission.CastleMissionData _missionData)
+    public IReadOnlyList<TableCastleMissionRewardData> GetReward(Data_Castle_Mission.CastleMissionData _missionData)
     {
         // 특수한 미션이 세팅되어 있다면
         if (m_db.ContainsKey(_missionData.key) == true)
@@ -47,7 +47,7 @@ public struct TableCastleMissionRewardData
     public string key;
     public GradeType grade;
     public int unlock_pct;
-    public string reward_key;
+    public ItemType reward_key;
     public string reward_value;
     public int reward_min;
     public int reward_max;
@@ -62,6 +62,22 @@ public struct TableCastleMissionRewardData
             if (m_keyProper.IsActive() == false)
                 m_keyProper = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(key);
             return m_keyProper;
+        }
+    }
+
+    TableItemData m_itemData;
+    public TableItemData itemData
+    {
+        get
+        {
+            if (m_itemData.isActive == false)
+                m_itemData = new()
+                {
+                    key = reward_key,
+                    count = reward_max,
+                    value = reward_value
+                };
+            return m_itemData;
         }
     }
 }

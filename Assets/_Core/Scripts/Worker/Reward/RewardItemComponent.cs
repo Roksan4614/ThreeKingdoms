@@ -10,12 +10,20 @@ public class RewardItemComponent : TargetComponent, IValidatable
 {
     RewardWorker.RewardItemData m_data;
     public RewardWorker.RewardItemData data => m_data;
+    public bool m_isCanvas;
+
     public bool Initialize(RewardWorker.RewardItemData _itemData, bool _isCanvas, bool _isFXStart)
     {
+        m_isCanvas = _isCanvas;
         isSwitchSorting = true;
         m_element.sg.sortingLayerID = _isCanvas ? m_element.layerPopup : m_element.layerStart;
+        m_element.sg.sortingOrder = 1;
         m_element.character.gameObject.SetActive(true);
         m_element.ps.gameObject.SetActive(_isFXStart);
+        m_element.psRenderer.sortingLayerID = _isCanvas ? m_element.layerPopup : m_element.layerStart;
+
+        if (_isCanvas == true)
+            m_element.sg.sortingOrder = (int)OrderLayerType.MAX;
 
         var main = m_element.ps.main;
         var minMax = main.startDelay;
@@ -44,14 +52,9 @@ public class RewardItemComponent : TargetComponent, IValidatable
         return true;
     }
 
-    public async UniTask ThrowStart(Transform _target, float _moveDuration, bool _isPopup)
+    public async UniTask ThrowStart(Transform _target, float _moveDuration)
     {
         isSwitchSorting = false;
-        if (_isPopup == false)
-        {
-            m_element.sg.sortingLayerID = m_element.layerAction;
-            m_element.sg.sortingOrder = 1;
-        }
 
         var prevParent = transform.parent;
         transform.SetParent(_target.parent);
@@ -105,6 +108,11 @@ public class RewardItemComponent : TargetComponent, IValidatable
         await UniTask.WaitUntil(() => m_element.ps.particleCount == 0);
         gameObject.SetActive(false);
     }
+    protected override void LateUpdate()
+    {
+        if (m_isCanvas == false)
+            base.LateUpdate();
+    }
 
     #region VALIDATA
     public override void OnManualValidate()
@@ -125,6 +133,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
 
         public SortingGroup sg;
         public ParticleSystem ps;
+        public ParticleSystemRenderer psRenderer;
 
         public Transform character;
         public Transform panel;
@@ -136,6 +145,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         {
             sg = _transform.GetComponent<SortingGroup>("Character");
             ps = _transform.GetComponent<ParticleSystem>("RewardEffect");
+            psRenderer = _transform.GetComponent<ParticleSystemRenderer>("RewardEffect");
 
             character = _transform.Find("Character");
             panel = character.Find("Panel");

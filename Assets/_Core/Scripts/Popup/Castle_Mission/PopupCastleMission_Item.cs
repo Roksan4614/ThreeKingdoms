@@ -38,14 +38,19 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
         m_missionData = _missionData;
 
-        m_element.txt_title.text = _missionData.missionName;
-        m_element.txt_exp.text = $"획득_경험치_:_+{_missionData.exp.AmountKMBT()}";
+        m_element.txt_title.text = _missionData.missionNameStat;
+        m_element.txt_exp.text = $"난이도_:_{_missionData.gradeName} <size=90%>(+{_missionData.dbGradeData.missionXp.AmountKMBT()}경험치)";
+
+        var dbRewards = TableManager.castleMissonReward.GetReward(_missionData);
 
         // 확정아이템
+        int itemCount = 0;
         {
             int i = 0;
 
-            var rewardList = _missionData.rewardList.Take(2).ToList();
+            var rewardList = dbRewards.Where(x => x.unlock_pct == 0).Take(6).ToList();
+            itemCount = rewardList.Count;
+
             for (; i < rewardList.Count; i++)
             {
                 var itemIcon = (i == m_element.parentRewardList.childCount ? Instantiate(m_element.baseItem, m_element.parentRewardList) :
@@ -53,7 +58,8 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
                     .GetComponent<ItemComponent>("ItemIcon");
 
                 itemIcon.transform.parent.gameObject.SetActive(true);
-                itemIcon.SetItemData(rewardList[i]);
+                itemIcon.SetItemData(rewardList[i].itemData);
+                itemIcon.SetCountText(rewardList[i].reward_max, true);
             }
 
             for (; i < m_element.parentRewardList.childCount; i++)
@@ -64,23 +70,37 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
         // 기타아이템
         {
-            int i = 0;
+            var db = dbRewards.OrderByDescending(x => x.unlock_pct)
+                .Where(x => x.unlock_pct > 0);
 
-            var rewardList = _missionData.rewardList.Take(5).ToList();
-            for (; i + 2 < rewardList.Count; i++)
+            //진행중이라면
+            if (_missionData.tickStart > 0)
+                db = db.Where(x => x.unlock_pct <= _missionData.percentStat).ToList();
+
+            var rewardList = db.ToList();
+
+            int i = 0;
+            for (; i < rewardList.Count; i++)
             {
+                itemCount++;
+                if (itemCount > 5)
+                    break;
+
                 var itemIcon = (i == m_element.parentRewardList_ETC.childCount ? Instantiate(m_element.baseItem, m_element.parentRewardList_ETC) :
                     m_element.parentRewardList_ETC.GetChild(i))
                     .GetComponent<ItemComponent>("ItemIcon");
 
                 itemIcon.transform.parent.gameObject.SetActive(true);
-                itemIcon.SetItemData(rewardList[i + 2]);
+                itemIcon.SetItemData(rewardList[i].itemData);
+                itemIcon.SetCountText(rewardList[i].reward_max, true);
             }
 
             for (; i < m_element.parentRewardList_ETC.childCount; i++)
                 m_element.parentRewardList_ETC.GetChild(i).gameObject.SetActive(false);
 
             m_element.parentRewardList_ETC.ForceRebuildLayout();
+
+            m_element.rewardEtc.SetActive(itemCount > 5);
         }
 
         m_element.parentRewardList.ForceRebuildLayout();
@@ -101,7 +121,11 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
             m_element.btn_batch.interactable = true;
         }
 
-        //m_element.imgOutline.color = Palette.GetGradeOutline(m_missionData.grade);
+        m_element.imgOutline.color = Palette.GetGradeOutline(m_missionData.grade switch
+        {
+            GradeType.General => GradeType.Hero,
+            _ => m_missionData.grade
+        });
     }
 
     async UniTask TimerAsync()
@@ -174,6 +198,8 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         public Transform baseItem;
         public Image imgOutline;
 
+        public GameObject rewardEtc;
+
         public void Initialize(Transform _transform)
         {
             var panel = _transform.Find("Panel");
@@ -186,6 +212,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
             baseItem = parentRewardList.GetChild(0);
 
             imgOutline = _transform.GetComponent<Image>("img_outline");
+            rewardEtc = panel.Find("Reward/img_etc").gameObject;
         }
     }
     #endregion VALIDATE

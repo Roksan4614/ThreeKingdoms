@@ -21,8 +21,11 @@ public class ItemComponent : MonoBehaviour, IValidatable
         gameObject.SetActive(true);
         //m_element.panel.gameObject.SetActive(false);
 
-        bool isHero = _itemData.key == ItemType.Dedicated_Soul_Stone;
-        SetIconAsync(_itemData.value, isHero).Forget();
+        if (_itemData.category == ItemCategoryType.Soul_Stone)
+            SetIconAsync(_itemData.value, true).Forget();
+        else
+            SetIconAsync(_itemData.key.ToString(), false).Forget();
+
         m_element.txtCount.text = _itemData.count > 0 ? $"x{_itemData.count.AmountKMBT()}" : "";
     }
 
@@ -66,15 +69,20 @@ public class ItemComponent : MonoBehaviour, IValidatable
         SetActiveBadge(false);
     }
 
+    public void SetCountText(long _count, bool _isRange = false)
+        => m_element.txtCount.text = _count <= 1 ? "" : $"{(_isRange ? "~ " : "")}{_count.AmountKMBT()}";
+
     public void SetActivePanel(bool _isActive)
         => m_element.panel.gameObject.SetActive(_isActive);
     public void SetActiveBadge(bool _isActive)
         => m_element.badge.SetActive(_isActive);
+    public void SetActiveDimm(bool _isActive)
+        => m_element.dimm?.SetActive(_isActive);
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     ElementData m_element;
 
     [Serializable]
@@ -86,6 +94,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         public Transform iconPanel;
 
         public GameObject badge;
+        public GameObject dimm;
 
         public void Initialize(Transform _transform)
         {
@@ -95,6 +104,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
             txtCount = panel.GetComponent<TextMeshProUGUI>("txt_count");
 
             badge = panel.Find("Badge").gameObject;
+            dimm = iconPanel.parent.Find("Dimm")?.gameObject;
         }
     }
     #endregion VALIDATA

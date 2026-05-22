@@ -21,7 +21,7 @@ public abstract class TargetComponent : MonoBehaviour, IValidatable
             m_canvas.sortingOrder = m_sortingGroup.sortingOrder + 1;
     }
 
-    private void LateUpdate()
+    protected virtual void LateUpdate()
     {
         UpdateSortingOreder();
     }

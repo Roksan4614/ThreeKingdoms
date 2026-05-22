@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -13,20 +14,54 @@ public class PopupCastleMission_Popup_Info_RewardItem : MonoBehaviour, IValidata
         m_element.baseItem.gameObject.SetActive(false);
     }
 
-    public void SetUnlock(bool _isUnlock)
+    public void SetTitle(bool _isFixed)
     {
-        m_element.txtTitle.color = Color.white;
-        m_element.bgTitle.SetActive(true);
+        if (_isFixed)
+        {
+            m_element.txtTitle.text = "확정_보상";
+            m_element.txtTitle.color = Color.white;
+            m_element.bgTitle.SetActive(true);
+        }
+        else
+        {
+            m_element.txtTitle.text = $"획득_가능_보상";
+            m_element.txtTitle.fontStyle = FontStyles.Bold;
+            m_element.txtTitle.color = Color.black;
+            m_element.bgTitle.SetActive(false);
+        }
+
+        m_element.txtTitle.transform.parent.ForceRebuildLayout();
     }
 
-    public void SetReward(params TableCastleMissionRewardData[] _rewardData)
+    public void SetReward(int _percent, params TableCastleMissionRewardData[] _rewardData)
     {
         int i = 0;
-
-        foreach (var rewardData in _rewardData)
+        for (; i < _rewardData.Length; i++)
         {
+            var rewardData = _rewardData[i];
+            var item = i == m_element.parent.childCount ?
+                Instantiate(m_element.baseItem, m_element.parent) :
+                m_element.parent.GetChild(i).GetComponent<ItemComponent>();
 
+            item.gameObject.SetActive(true);
+
+            TableItemData itemData = new();
+            itemData.key = rewardData.reward_key;
+            itemData.value = rewardData.reward_value;
+            item.SetItemData(itemData);
+
+            bool isLock = _percent < rewardData.unlock_pct;
+            item.SetActiveDimm(isLock);
+
+            if (isLock)
+                item.SetCountText(0);
+            else
+                //min max 차이가 있으면 range로.. 없으면 걍 max로
+                item.SetCountText(rewardData.reward_max, rewardData.reward_max - rewardData.reward_min > 0);
         }
+
+        for (; i < m_element.parent.childCount; i++)
+            m_element.parent.GetChild(i).gameObject.SetActive(false);
     }
 
     #region VALIDATE

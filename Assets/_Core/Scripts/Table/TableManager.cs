@@ -21,6 +21,7 @@ public class TableManager
     public static Table_String stringTable { get; private set; }
     public static Table_String stringHero { get; private set; }
     public static Table_StringTalk scenarioTalk { get; private set; }
+    public static Table_String stringMission { get; private set; }
 
     public static Table_Relic relic { get; private set; }
     public static Table_FriendShip friendShip { get; private set; }
@@ -28,8 +29,10 @@ public class TableManager
     public static Table_Castle castle { get; private set; }
     public static Table_CastleRise castleRise { get; private set; }
     public static Table_CastleMission castleMisson { get; private set; }
+    public static Table_CastleMission_Grade castleMissonGrade { get; private set; }
     public static Table_CastleMission_Reward castleMissonReward { get; private set; }
 
+    public static Table_Castle_Office_Level castleOfficeLevel { get; private set; }
 
     public async UniTask InitializeAsync()
     {
@@ -45,6 +48,7 @@ public class TableManager
             stringTable = new(LoadList<TableStringData>(_result, "String"));
             stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
             scenarioTalk = new(LoadList<TableStringData>(_result, "String_ScenarioTalk"));
+            stringMission = new(LoadList<TableStringData>(_result, "String_Mission"));
 
             // TODO
             relic = new(new());
@@ -53,7 +57,10 @@ public class TableManager
             castle = new(LoadList<TableCastleData>(_result, "Castle"));
             castleRise = new(LoadList<TableCastleRiseData>(_result, "CastleRise"));
             castleMisson = new(LoadList<TableCastleMissionData>(_result, "CastleMission"));
+            castleMissonGrade = new(LoadList<TableCastleMissionGradeData>(_result, "CastleMissionGrade"));
             castleMissonReward = new(LoadList<TableCastleMissionRewardData>(_result, "CastleMissionReward"));
+
+            castleOfficeLevel = new(LoadList<TableCastleOfficeLevelData>(_result, "CastleOfficeLevel"));
 
             foreach (var h in _result)
                 h.Value.Release();
