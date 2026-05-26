@@ -49,6 +49,24 @@ public class LobbyScreen_Castle : LobbyScreen_Base
         m_element.scroll.content.anchoredPosition = Vector2.zero;
     }
 
+    private void Update()
+    {
+        for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
+        {
+            int idx = (int)i;
+
+            if (Input.GetKeyDown(KeyCode.Alpha1 + idx))
+            {
+                IngameLog.Add(m_element.builds[idx].name + ": " + Input.GetKey(KeyCode.LeftShift));
+                if (Input.GetKey(KeyCode.LeftShift))
+                    m_element.builds[idx].FinishUpgrade();
+                else
+                    m_element.builds[idx].StartUpgrade();
+            }
+        }
+    }
+
+
     bool m_isSwitchEscape = true;
 
     protected override bool IsCloseScreen()
@@ -149,6 +167,9 @@ public class LobbyScreen_Castle : LobbyScreen_Base
         public RectTransform panelMap;
         public Transform pButtons;
         public ButtonHelper[] btnObject;
+
+        public List<LobbyScreen_Castle_Building> builds;
+
         public void Initialize(Transform _transform)
         {
             scroll = _transform.GetComponent<ScrollRect>("Panel/Scroll");
@@ -156,6 +177,8 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             panelMap = scroll.content.GetComponent<RectTransform>("Map/Panel");
             pButtons = scroll.content.Find("Buttons");
             btnObject = pButtons.GetComponentsInChildren<ButtonHelper>();
+
+            builds = _transform.Find("Panel").GetComponentsInChildren<LobbyScreen_Castle_Building>().ToList();
         }
     }
     #endregion VALIDATE

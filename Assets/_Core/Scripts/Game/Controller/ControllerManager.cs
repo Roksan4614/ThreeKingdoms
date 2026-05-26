@@ -96,8 +96,6 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     bool m_isPushSkillOn_C = false;
     private void Update()
     {
-
-
         if (isSwitch == false || m_mainHero?.isLive == false)
             return;
 
@@ -133,7 +131,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
                 // 스킬 번호
                 else
                 {
-                    for (var i = KeyCode.Alpha1; i < KeyCode.Alpha4; i++)
+                    for (var i = KeyCode.Alpha1; i <= KeyCode.Alpha4; i++)
                     {
                         if (Input.GetKeyDown(i))
                             TeamManager.instance.heroInfo.UseSkill(i - KeyCode.Alpha1);
