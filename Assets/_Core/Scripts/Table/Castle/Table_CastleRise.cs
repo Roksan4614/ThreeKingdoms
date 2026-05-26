@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,10 +41,10 @@ public struct TableCastleRiseData
 {
     public string key;
     public int level;
-    public int value_01;        // 요구치
-    public int value_02;        // 요구치
-    public int count_batch;     // 업그레이드 당 배치 수
-    public int upgrade_duration;// 업그레이드 소요 시간 (초)
+    [JsonProperty] int req_stat_value_1;        // 요구치
+    [JsonProperty] int req_stat_value_2;        // 요구치
+    public int character_slot_max;     // 업그레이드 당 배치 수
+    public int upgrade_seconds;// 업그레이드 소요 시간 (초)
     public int max_amount;      // 최대 보유량
     public int rate_per_second; // 초당 획득량
 
@@ -53,10 +54,16 @@ public struct TableCastleRiseData
     public void Initialize()
     {
         type = System.Enum.Parse<CastleObjectType>(key);
-
-        m_maxCoreStat = new[] { value_01, value_02 };
     }
 
-    int[] m_maxCoreStat;
-    public int[] maxCoreStat => m_maxCoreStat;
+    public int[] maxCoreStat => new[] { value01, value02 };
+
+    public int orinValue01 => req_stat_value_1;
+    public int value01 => type == CastleObjectType.Palace ?
+        req_stat_value_1 :
+        Mathf.FloorToInt((1 - DataManager.castle.GetPalaceCharismaRate()) * req_stat_value_1) + req_stat_value_1;
+
+    public int value02 => type == CastleObjectType.Palace ?
+        req_stat_value_2 :
+        Mathf.FloorToInt((1 - DataManager.castle.GetPalaceCharismaRate()) * req_stat_value_2) + req_stat_value_2;
 }

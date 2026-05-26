@@ -142,7 +142,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         var endTime = new DateTime(m_missionData.tickEnd, DateTimeKind.Utc);
         var ts = endTime - Utils.GetUTC();
 
-        m_element.btn_batch.text = Utils.MSpace(ts.ToString(@"hh\:mm\:ss"), 21) + "\n<size=90%>시간단축";
+        m_element.btn_batch.text = Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 21) + "\n<size=90%>시간단축";
 
         if (ts.TotalSeconds > 0)
         {
@@ -156,7 +156,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
             while (ts.TotalSeconds > 0)
             {
                 ts = endTime - Utils.GetUTC();
-                m_element.btn_batch.text = Utils.MSpace(ts.ToString(@"hh\:mm\:ss"), 21) + "\n<size=90%>시간단축";
+                m_element.btn_batch.text = Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 21) + "\n<size=90%>시간단축";
                 await UniTask.WaitForSeconds(1f, cancellationToken: token);
             }
         }

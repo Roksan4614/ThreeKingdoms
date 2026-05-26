@@ -18,6 +18,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     LobbyScreen_Castle_Popup_Setting_UpgradeInfo m_upgradeInfo;
 
+    CancellationTokenSource m_ctsUpgrade;
+
     CastleData m_castleData;
     bool m_isInfoVersion;
     bool m_isNeedUpdate;
@@ -31,6 +33,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         m_baseIcon.gameObject.SetActive(false);
 
         m_element.btnAdd.onClick.AddListener(() => OpenHeroListPopupAsync().Forget());
+        m_element.btnUpgrade.onClick.AddListener(OnButton_Upgrade);
 
         m_upgradeInfo = m_element.scroll.content.GetComponent<LobbyScreen_Castle_Popup_Setting_UpgradeInfo>("UpgradeInfo");
 
@@ -100,7 +103,58 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         var maxAmount = DataManager.castle.GetMaxAmount(m_castleData);
 
+        UpgradeAsync().Forget();
+
         await UniTask.WaitUntil(() => m_isClose == true, cancellationToken: _cancelToken);
+    }
+
+    async UniTask UpgradeAsync()
+    {
+        if (m_castleData.isDoingUpgrade == true)
+        {
+            Release_CTSUpgrade();
+            m_ctsUpgrade = new();
+            var token = m_ctsUpgrade.Token;
+
+            m_element.btnUpgrade.gameObject.SetActive(false);
+            m_element.btnUpgradeTimer.gameObject.SetActive(true);
+
+            var dtEnd = m_castleData.dtEndUpgrade;
+
+            int prevSecond = -1;
+            while (true)
+            {
+                var ts = dtEnd - Utils.GetUTC();
+                if (ts.TotalSeconds < 0)
+                    break;
+
+                if (ts.TotalSeconds > 0)
+                {
+                    if (prevSecond != ts.TotalSeconds)
+                        m_element.btnUpgradeTimer.text = Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30) + "\n남은_시간";
+                }
+                else
+                {
+                    m_element.btnUpgradeTimer.text = Utils.MSpace(ts.TotalSeconds.ToString("0.000"), 30) + "s\n남은_시간";
+                }
+
+                await UniTask.WaitForEndOfFrame(cancellationToken: token);
+            }
+
+            Release_CTSUpgrade();
+        }
+
+        m_element.btnUpgrade.gameObject.SetActive(true);
+        m_element.btnUpgradeTimer.gameObject.SetActive(false);
+    }
+
+    void OnButton_Upgrade()
+    {
+        DataManager.castle.StartUpgradeAsync(m_castleData.type, _castleData =>
+        {
+            m_castleData = _castleData;
+            UpgradeAsync().Forget();
+        }).Forget();
     }
 
     void SetBatchHero(bool _isForceUpdate = false)
@@ -235,6 +289,17 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         rtScroll.DOAnchorPosY(0, 0.1f).SetEase(_ease).OnComplete(() => gameObject.SetActive(false));
 
         Utils.AfterSecond(() => m_isClose = true, 0.05f);
+        Release_CTSUpgrade();
+    }
+
+    void Release_CTSUpgrade()
+    {
+        if (m_ctsUpgrade != null)
+        {
+            m_ctsUpgrade.Cancel();
+            m_ctsUpgrade.Dispose();
+            m_ctsUpgrade = null;
+        }
     }
 
     void SlotUpdateCastleData(CastleData _castleData)
@@ -298,6 +363,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             DataManager.castle.RebatchHeroes(m_castleData);
             DataManager.castle.UpdateCastleData(m_castleData);
 
+            DataManager.castle.building.UpdateBuildingUpgrade(CastleObjectType.NONE);
             DataManager.castle.OnUpdateClaim();
         }
     }
@@ -346,6 +412,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtPerSecond;
 
         public ButtonHelper btnUpgrade;
+        public ButtonHelper btnUpgradeTimer;
         public TextMeshProUGUI[] txtBatchStat;
 
         public void Initialize(Transform _transform)
@@ -362,6 +429,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             var batchStat = scroll.content.Find("Batch/Stat");
             txtBatchStat = batchStat.GetComponentsInChildren<TextMeshProUGUI>();
             btnUpgrade = scroll.content.GetComponent<ButtonHelper>("Batch/btn_upgrade");
+            btnUpgradeTimer = scroll.content.GetComponent<ButtonHelper>("Batch/btn_upgrade_timer");
         }
     }
     #endregion VALIDATE

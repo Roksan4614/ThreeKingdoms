@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +29,8 @@ public struct TableCastleData
 {
     public string key;
 
-    public string stat_01;
-    public string stat_02;
+    [JsonProperty] string stat_type_1;
+    [JsonProperty] string stat_type_2;
 
     // CUSTOM
     public bool isActive => key.IsActive();
@@ -37,8 +38,8 @@ public struct TableCastleData
     public void Initialize()
     {
         m_coreStat = new[] {
-                    stat_01.IsActive() ? Enum.Parse<CoreStatType>(stat_01) : CoreStatType.NONE,
-                    stat_02.IsActive() ? Enum.Parse<CoreStatType>(stat_02) : CoreStatType.NONE
+                    stat_type_1.IsActive() ? Enum.Parse<CoreStatType>(stat_type_1) : CoreStatType.NONE,
+                    stat_type_2.IsActive() ? Enum.Parse<CoreStatType>(stat_type_2) : CoreStatType.NONE
                 };
 
         m_objectType = Enum.Parse<CastleObjectType>(key);

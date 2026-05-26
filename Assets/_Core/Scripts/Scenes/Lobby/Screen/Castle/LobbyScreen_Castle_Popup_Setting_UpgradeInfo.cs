@@ -35,10 +35,10 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         // 공통
         {
             // 고유 능력 요구치
-            SetAddItem(i++, "고유_능력_요구치", m_nowData.value_01.ToString(), m_nextData.value_01.ToString());
+            SetAddItem(i++, "고유_능력_요구치", m_nowData.value01.ToString(), m_nextData.value01.ToString());
 
             // 장수배치 수
-            SetAddItem(i++, "배치_장수_수", m_nowData.count_batch.ToString(), m_nextData.count_batch.ToString());
+            SetAddItem(i++, "배치_장수_수", m_nowData.character_slot_max.ToString(), m_nextData.character_slot_max.ToString());
         }
 
         for (; i < m_element.panel.childCount; i++)

@@ -287,6 +287,7 @@ public class Signal
     public SignalObject<string> UpdateHeroStat = new(); //Hero Key
 
     public SignalObject<Data_Castle.CastleData> UpdateCastleData = new();
+    public SignalObject<Data_Castle.CastleData> UpgradeCaslteBuilding = new();
 
     public SignalObject Event_ActivePunch_Start = new();
     #endregion
