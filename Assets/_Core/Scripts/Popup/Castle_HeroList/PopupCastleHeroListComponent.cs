@@ -37,8 +37,12 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
         m_element.btnConfirm.onClick.AddListener(() =>
         {
-            resultType = StatusType.Success;
-            Close();
+            DataManager.castle.SetBatchHeroAsync(m_castleData, _result =>
+            {
+                resultType = _result;
+                Close();
+
+            }).Forget();
         });
         m_element.btnCancel.onClick.AddListener(Close);
     }
@@ -126,7 +130,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
     void SetCoreStatStatus(bool _isInit = false)
     {
-        var dbRise = TableManager.castleRise.GetRiseData(m_castleData.type, m_castleData.level);
+        var dbRise = m_castleData.dbRise;
         var coreStat = TableManager.castle.GetCastleData(m_castleData.type).coreStat.Where(x => x != CoreStatType.NONE).ToArray();
 
         int i = 0;
@@ -135,7 +139,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             var stat = coreStat[i];
 
             var now = DataManager.castle.GetTotalCoreStat(m_castleData, stat);
-            var condition = dbRise.maxCoreStat[i];
+            var condition = m_castleData.type == CastleObjectType.Palace ? dbRise.orinValue01 : dbRise.maxCoreStat[i];
 
             var percent = Mathf.Min(1f, now / (float)condition);
             m_element.gauges[i].textTitle = $"필요_{TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}")}_수치 ({percent * 100:0.##}%)";

@@ -103,6 +103,9 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         if (caslteObject == CastleObjectType.Market || caslteObject == CastleObjectType.Farm)
             DataManager.castle.OnUpdateClaim();
 
+        // 영지에서 배치된 곳이 있다면 업데이트 쪽 다시 봐야 해
+            DataManager.castle.building.UpdateBuildingUpgrade(m_heroInfoData.key);
+
         Close();
         m_status = StatusType.Success;
     }

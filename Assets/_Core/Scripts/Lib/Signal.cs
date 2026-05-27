@@ -286,8 +286,12 @@ public class Signal
     public SignalObject<bool> ActiveHUD = new();
     public SignalObject<string> UpdateHeroStat = new(); //Hero Key
 
-    public SignalObject<Data_Castle.CastleData> UpdateCastleData = new();
-    public SignalObject<Data_Castle.CastleData> UpgradeCaslteBuilding = new();
+    public SignalObject<Data_Castle.CastleData> UpdateFarmMarketData = new();
+    public SignalObject<Data_Castle.CastleData> StartCaslteBuildingUpgrade = new();
+    public SignalObject<Data_Castle_Building.CastleBuildingUpgradeData> UpdateCaslteBuildingUpgrade = new();
+    public SignalObject<Data_Castle.CastleData> StopCaslteBuildingUpgrade = new();
+    public SignalObject<Data_Castle.CastleData> CompleteCaslteBuildingUpgrade = new();
+    public SignalObject<Data_Castle.CastleData> UpdateCastleHeroBatch = new();
 
     public SignalObject Event_ActivePunch_Start = new();
     #endregion

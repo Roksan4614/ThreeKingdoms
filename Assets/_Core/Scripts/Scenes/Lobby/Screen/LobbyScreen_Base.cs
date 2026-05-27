@@ -68,7 +68,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 
     public void Initilize(LobbyScreenType _type)
     {
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
         m_screenType = _type;
     }
 

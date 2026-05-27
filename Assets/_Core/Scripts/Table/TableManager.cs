@@ -34,6 +34,8 @@ public class TableManager
 
     public static Table_Castle_Office_Level castleOfficeLevel { get; private set; }
 
+    public static Dictionary<CastleObjectType, Table_Castle_Effect> castleEffect { get; private set; } = new();
+
     public async UniTask InitializeAsync()
     {
         await AddressableManager.instance.LoadAssetAsync<TextAsset>(_result =>
@@ -61,6 +63,9 @@ public class TableManager
             castleMissonReward = new(LoadList<TableCastleMissionRewardData>(_result, "CastleMissionReward"));
 
             castleOfficeLevel = new(LoadList<TableCastleOfficeLevelData>(_result, "CastleOfficeLevel"));
+
+            for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
+                castleEffect.Add(i, new(LoadList<TableCastleEffectData>(_result, "Castle" + i)));
 
             foreach (var h in _result)
                 h.Value.Release();

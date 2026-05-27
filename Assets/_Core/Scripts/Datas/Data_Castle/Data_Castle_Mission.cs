@@ -147,7 +147,6 @@ public class Data_Castle_Mission
         SaveLevelData();
         SaveData();
 
-
         if (prevExp < m_levelInfo.maxExp && m_levelInfo.nowExp >= m_levelInfo.maxExp)
             PopupManager.instance.AlertShow("관아 업그레이드 준비완료!");
 
@@ -195,20 +194,6 @@ public class Data_Castle_Mission
             SaveData();
     }
 
-    //public void UpdateMission(CastleMissionData _missionData, bool _isAutoSave = true)
-    //{
-    //    var idx = m_data.FindIndex(x => x.idx == _missionData.idx);
-
-    //    if (idx == -1) return;
-    //    var d = _missionData;
-    //    d.heroes = new();
-    //    d.heroes.AddRange(_missionData.heroes);
-    //    m_data[idx] = d;
-
-    //    if (_isAutoSave)
-    //        SaveData();
-    //}
-
     public int GetMissionIdxBatchHero(string _heroKey)
     {
         var d = m_data.Find(x => x.heroes.Contains(_heroKey));
@@ -229,6 +214,9 @@ public class Data_Castle_Mission
         return totalStat;
     }
 
+
+
+
     public void SetUpgradeOffice()
     {
         var nextLevelInfo = TableManager.castleOfficeLevel.GetLevelInfo(m_levelInfo.level + 1);
@@ -238,18 +226,6 @@ public class Data_Castle_Mission
         m_levelInfo.maxExp = nextLevelInfo.level == 0 ? -1 : nextLevelInfo.req_xp;
         SaveLevelData();
     }
-
-    //public void UpdateMissionPercentStat(CastleMissionData _missionData)
-    //{
-    //    int idx = m_data.FindIndex(x => x.idx == _missionData.idx);
-
-    //    if (idx == -1) return;
-
-    //    var data = m_data[idx];
-    //    data.percentStat = _missionData.percentStat;
-    //    m_data[idx] = data;
-    //    SaveData();
-    //}
 
     public void SaveData()
     {
@@ -299,6 +275,6 @@ public class Data_Castle_Mission
         public int nowExp;
         public int maxExp;
 
-        public bool isReadyUpgrade => nowExp >= maxExp;
+        public bool isUpgradable => nowExp >= maxExp;
     }
 }

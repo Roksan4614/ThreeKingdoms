@@ -18,9 +18,9 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     LobbyScreen_Castle_Popup_Setting_UpgradeInfo m_upgradeInfo;
 
-    CancellationTokenSource m_ctsUpgrade;
-
     CastleData m_castleData;
+
+    string m_logUpgrade;
     bool m_isInfoVersion;
     bool m_isNeedUpdate;
 
@@ -54,7 +54,30 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         });
 
         Signal.instance.UpdateHeroStat.connectLambda = new(this, _ => m_isNeedUpdate = true);
-        Signal.instance.UpdateCastleData.connect = SlotUpdateCastleData;
+        Signal.instance.UpdateFarmMarketData.connect = SlotUpdateFarmMarketData;
+        Signal.instance.CompleteCaslteBuildingUpgrade.connectLambda = new(this, _castleData =>
+        {
+            //세팅 화면 업그레이드 결과 세팅해줘야 해
+            if (m_castleData.type != _castleData.type || gameObject.activeInHierarchy == false)
+                return;
+            m_castleData = _castleData;
+            m_upgradeInfo.SetUpgradeInfo(m_castleData);
+
+            SetBatchHero(false);
+            SetCoreStatInfo();
+            m_element.txtTitle.text = $"Lv.{m_castleData.level} {DataManager.castle.GetObjectName(m_castleData.type)}: {(m_isInfoVersion ? "_개요" : "_관리")}";
+
+            m_element.btnUpgrade.gameObject.SetActive(true);
+            m_element.btnUpgradeTimer.gameObject.SetActive(false);
+        });
+        Signal.instance.StopCaslteBuildingUpgrade.connectLambda = new(this, _castleData =>
+        {
+            if (m_castleData.type != _castleData.type || gameObject.activeInHierarchy == false)
+                return;
+            m_castleData = _castleData;
+        });
+        Signal.instance.StartCaslteBuildingUpgrade.connect = SlotStartCaslteBuildingUpgrade;
+        Signal.instance.UpdateCaslteBuildingUpgrade.connect = SlotUpdateCaslteBuildingUpgrade;
     }
 
     public async UniTask OpenAsync(bool _isInfo, CastleObjectType _type, CancellationToken _cancelToken)
@@ -69,22 +92,31 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         if (_isInfo)
         {
             m_element.btnUpgrade.gameObject.SetActive(false);
+            m_element.btnUpgradeTimer.gameObject.SetActive(false);
             m_upgradeInfo.gameObject.SetActive(false);
 
             if (_type == CastleObjectType.Market || _type == CastleObjectType.Farm)
             {
                 m_element.gauge.gameObject.SetActive(true);
-                SlotUpdateCastleData(m_castleData);
+                SlotUpdateFarmMarketData(m_castleData);
             }
             else
                 m_element.gauge.gameObject.SetActive(false);
+
+            m_element.btnGoShop.transform.parent.gameObject.SetActive(_type == CastleObjectType.Merchant);
+            m_element.palace.gameObject.SetActive(_type == CastleObjectType.Palace);
+            if(_type == CastleObjectType.Gate)
+                m_upgradeInfo.SetGateInfo(m_castleData);
+            //m_element.gate.gameObject.SetActive(_type == CastleObjectType.Gate);
         }
         else
         {
             m_element.gauge.gameObject.SetActive(false);
-
-            m_element.btnUpgrade.gameObject.SetActive(true);
             m_upgradeInfo.SetUpgradeInfo(m_castleData);
+
+            m_element.btnGoShop.transform.parent.gameObject.SetActive(false);
+            m_element.palace.gameObject.SetActive(false);
+            m_element.gate.gameObject.SetActive(false);
         }
         m_element.scroll.content.ForceRebuildLayout();
 
@@ -101,60 +133,74 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         SetCoreStatInfo();
         m_isNeedUpdate = false;
 
-        var maxAmount = DataManager.castle.GetMaxAmount(m_castleData);
+        if (_isInfo == false)
+        {
+            if (m_castleData.isDoingUpgrade == true)
+            {
+                Data_Castle_Building.CastleBuildingUpgradeData upgradeData = new();
+                upgradeData.objectType = m_castleData.type;
 
-        UpgradeAsync().Forget();
+                DateTime dtEnd = m_castleData.dtUpgradeEnd;
+                if (m_castleData.remainUpgradeSeconds > 0)
+                    dtEnd = Utils.GetUTC().AddSeconds(m_castleData.remainUpgradeSeconds);
+
+                upgradeData.ts = dtEnd - Utils.GetUTC();
+
+                SlotUpdateCaslteBuildingUpgrade(upgradeData);
+            }
+            else
+            {
+                m_element.btnUpgrade.gameObject.SetActive(true);
+                m_element.btnUpgradeTimer.gameObject.SetActive(false);
+            }
+        }
+
+        // 관리야?? 그런데 업그레이드 조건 미달성이야?? 알람 ㄱㄱ
+        if (_isInfo == false && m_logUpgrade.IsActive() == true)
+            PopupManager.instance.AlertShow(m_logUpgrade, -100);
 
         await UniTask.WaitUntil(() => m_isClose == true, cancellationToken: _cancelToken);
     }
 
-    async UniTask UpgradeAsync()
+    void SlotStartCaslteBuildingUpgrade(CastleData _castleData)
     {
-        if (m_castleData.isDoingUpgrade == true)
-        {
-            Release_CTSUpgrade();
-            m_ctsUpgrade = new();
-            var token = m_ctsUpgrade.Token;
+        if (m_castleData.type != _castleData.type || gameObject.activeInHierarchy == false)
+            return;
 
-            m_element.btnUpgrade.gameObject.SetActive(false);
-            m_element.btnUpgradeTimer.gameObject.SetActive(true);
-
-            var dtEnd = m_castleData.dtEndUpgrade;
-
-            int prevSecond = -1;
-            while (true)
-            {
-                var ts = dtEnd - Utils.GetUTC();
-                if (ts.TotalSeconds < 0)
-                    break;
-
-                if (ts.TotalSeconds > 0)
-                {
-                    if (prevSecond != ts.TotalSeconds)
-                        m_element.btnUpgradeTimer.text = Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30) + "\n남은_시간";
-                }
-                else
-                {
-                    m_element.btnUpgradeTimer.text = Utils.MSpace(ts.TotalSeconds.ToString("0.000"), 30) + "s\n남은_시간";
-                }
-
-                await UniTask.WaitForEndOfFrame(cancellationToken: token);
-            }
-
-            Release_CTSUpgrade();
-        }
+        m_castleData = _castleData;
+        m_upgradeInfo.SetUpgradeInfo(m_castleData);
 
         m_element.btnUpgrade.gameObject.SetActive(true);
         m_element.btnUpgradeTimer.gameObject.SetActive(false);
     }
 
+    void SlotUpdateCaslteBuildingUpgrade(Data_Castle_Building.CastleBuildingUpgradeData _updateData)
+    {
+        if (m_castleData.type != _updateData.objectType || gameObject.activeInHierarchy == false)
+            return;
+
+        if (m_element.btnUpgradeTimer.gameObject.activeSelf == false)
+        {
+            m_element.btnUpgrade.gameObject.SetActive(false);
+            m_element.btnUpgradeTimer.gameObject.SetActive(true);
+        }
+
+        var ts = _updateData.ts;
+        if (ts.Minutes > 0)
+            m_element.btnUpgradeTimer.text = Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30) + "\n남은_시간";
+        else
+            m_element.btnUpgradeTimer.text = Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30) + "s\n남은_시간";
+    }
+
     void OnButton_Upgrade()
     {
-        DataManager.castle.StartUpgradeAsync(m_castleData.type, _castleData =>
+        if (m_logUpgrade.IsActive() == true)
         {
-            m_castleData = _castleData;
-            UpgradeAsync().Forget();
-        }).Forget();
+            PopupManager.instance.AlertShow(m_logUpgrade, -100);
+            return;
+        }
+
+        DataManager.castle.StartUpgradeAsync(m_castleData.type, null).Forget();
     }
 
     void SetBatchHero(bool _isForceUpdate = false)
@@ -185,15 +231,17 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
     void SetCoreStatInfo()
     {
         var dbCastle = TableManager.castle.GetCastleData(m_castleData.type);
-        var dbCastleRise = TableManager.castleRise.GetRiseData(m_castleData.type, m_castleData.level);
+        var dbCastleRise = m_castleData.dbRise;
 
-        bool isAvail = true;
-
+        m_logUpgrade = "";
+        // 관아일 경우
         if (m_castleData.type == CastleObjectType.Office)
         {
-            m_element.txtBatchStat[0].text = "경험치_:_0/1,000";
+            var levelInfo = DataManager.castle.mission.levelInfo;
+            m_element.txtBatchStat[0].text = $"경험치_:_{levelInfo.nowExp}/{levelInfo.maxExp}";
+
+            m_logUpgrade = levelInfo.isUpgradable ? "" : "경험치가_부족합니다.";
             m_element.txtBatchStat[1].gameObject.SetActive(false);
-            isAvail = false;
         }
         else
         {
@@ -209,14 +257,14 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                     txt.gameObject.SetActive(true);
 
                     var total = DataManager.castle.GetTotalCoreStat(m_castleData, coreStat);
-                    var max = dbCastleRise.maxCoreStat[i];
+                    var max = m_castleData.type == CastleObjectType.Palace ? dbCastleRise.orinValue01 : dbCastleRise.maxCoreStat[i];
 
                     string color = "", colorBack = "";
                     if (total < max)
                     {
                         color = $"<color=#{Palette.htmlString_Down}>";
                         colorBack = "</color>";
-                        isAvail = false;
+                        m_logUpgrade = "요구_능력치가_부족합니다.";
                     }
 
                     txt.text = $"{TableManager.stringTable.GetString($"CORESTAT_{coreStat.ToString().ToUpper()}")} : {color}{total}/{max}{colorBack} ";
@@ -227,31 +275,53 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                         switch (m_castleData.type)
                         {
                             case CastleObjectType.Palace:
-                                format += "(건설_속도_{0}증가)";
+                                format += "(시간석_효율_{0})";
                                 break;
                             case CastleObjectType.Market:
                             case CastleObjectType.Farm:
-                                format += i == 0 ? "(획득량_{0}증가)" : "(최대치_{0}증가";
+                                format += i == 0 ? "(획득량_{0})" : "(최대치_{0})";
                                 break;
                             case CastleObjectType.Merchant:
-                                format += i == 0 ? "(할인율_{0}증가)" : "(판매_개수_{0}증가";
+                                format += i == 0 ? "(할인율_{0})" : "(판매_개수_{0})";
                                 break;
                             case CastleObjectType.Gate:
-                                format += i == 0 ? "(깨끗율_{0}증가)" : "(치안율_{0}증가";
+                                format += i == 0 ? "(청렴도_{0})" : "(치안율_{0})";
                                 break;
                         }
 
                         if (total > 0)
-                            message = $"<color=#{Palette.htmlString_Up}>+{(Mathf.Min(1, total / (float)max) * 0.45f) * 100:0.##}%</color>_";
+                            message = $"<color=#{Palette.htmlString_Up}>+{(Mathf.Min(1, total / (float)max) * 0.45f) * 100:0.##}%</color>";
+                        else
+                            message = "0%";
 
                         txt.text += string.Format(format, message);
+                    }
+                }
+
+                // 궁성일 경우 다른 모든 건물 레벨이 궁성과 같아야 한다.
+                if (m_logUpgrade.IsActive() == false)
+                {
+                    if (m_castleData.type == CastleObjectType.Palace)
+                    {
+                        for (var type = CastleObjectType.NONE + 1; type < CastleObjectType.MAX; type++)
+                        {
+                            if (m_castleData.level != DataManager.castle.GetCaslteData(type).level)
+                            {
+                                m_logUpgrade = "다른_건물의_레벨이_낮습니다.";
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var palaceLevel = DataManager.castle.GetCaslteData(CastleObjectType.Palace).level;
+                        m_logUpgrade = m_castleData.level < palaceLevel ? "" : "궁성의_레벨보다_높을_수_없습니다.";
                     }
                 }
             }
         }
 
-        m_element.btnUpgrade.interactable = isAvail;
-        m_element.btnUpgrade.text = isAvail ? "업그레이드" : "조건미달성";
+        m_element.btnUpgrade.text = m_logUpgrade.IsActive() == false ? "증축_시작" : "조건_미달성";
 
         m_element.txtBatchStat[0].transform.parent.ForceRebuildLayout();
 
@@ -289,20 +359,9 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         rtScroll.DOAnchorPosY(0, 0.1f).SetEase(_ease).OnComplete(() => gameObject.SetActive(false));
 
         Utils.AfterSecond(() => m_isClose = true, 0.05f);
-        Release_CTSUpgrade();
     }
 
-    void Release_CTSUpgrade()
-    {
-        if (m_ctsUpgrade != null)
-        {
-            m_ctsUpgrade.Cancel();
-            m_ctsUpgrade.Dispose();
-            m_ctsUpgrade = null;
-        }
-    }
-
-    void SlotUpdateCastleData(CastleData _castleData)
+    void SlotUpdateFarmMarketData(CastleData _castleData)
     {
         if (gameObject.activeInHierarchy == false || m_castleData.type != _castleData.type)
             return;
@@ -316,7 +375,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         }
         else
         {
-            m_element.gauge.textAmount = $"{Mathf.RoundToInt(_castleData.totalAmount).AmountKMBT()}/{maxAmount.AmountKMBT()}";
+            //m_element.gauge.textAmount = $"{Mathf.RoundToInt(_castleData.totalAmount).AmountKMBT()}/{maxAmount.AmountKMBT()}";
+            m_element.gauge.textAmount = $"{Mathf.RoundToInt(_castleData.totalAmount):#,0}/{maxAmount:#,0}";
             m_element.gauge.fillAmount = _castleData.totalAmount / (float)maxAmount;
         }
 
@@ -351,20 +411,14 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         if (m_popupHeroList.resultType == StatusType.Success)
         {
-            m_castleData.heroes.Clear();
+            m_castleData.heroes = new();
             m_castleData.heroes.AddRange(m_popupHeroList.heroes);
 
             SetBatchHero(true);
             SetCoreStatInfo();
 
-            if (m_upgradeInfo.gameObject.activeSelf == true)
-                m_upgradeInfo.SetUpgradeInfo(m_castleData);
-
-            DataManager.castle.RebatchHeroes(m_castleData);
-            DataManager.castle.UpdateCastleData(m_castleData);
-
-            DataManager.castle.building.UpdateBuildingUpgrade(CastleObjectType.NONE);
-            DataManager.castle.OnUpdateClaim();
+            //if (m_upgradeInfo.gameObject.activeSelf == true)
+            //    m_upgradeInfo.SetUpgradeInfo(m_castleData);
         }
     }
 
@@ -415,6 +469,10 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         public ButtonHelper btnUpgradeTimer;
         public TextMeshProUGUI[] txtBatchStat;
 
+        public ButtonHelper btnGoShop;
+        public LobbyScreen_Castle_Popup_Setting_Palace palace;
+        public LobbyScreen_Castle_Popup_Setting_Gate gate;
+
         public void Initialize(Transform _transform)
         {
             scroll = _transform.GetComponent<ScrollRect>("Panel");
@@ -430,6 +488,10 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             txtBatchStat = batchStat.GetComponentsInChildren<TextMeshProUGUI>();
             btnUpgrade = scroll.content.GetComponent<ButtonHelper>("Batch/btn_upgrade");
             btnUpgradeTimer = scroll.content.GetComponent<ButtonHelper>("Batch/btn_upgrade_timer");
+
+            btnGoShop = scroll.content.GetComponent<ButtonHelper>("Merchant/btn_shop");
+            palace = scroll.content.GetComponent<LobbyScreen_Castle_Popup_Setting_Palace>("Palace");
+            gate = scroll.content.GetComponent<LobbyScreen_Castle_Popup_Setting_Gate>("Gate");
         }
     }
     #endregion VALIDATE

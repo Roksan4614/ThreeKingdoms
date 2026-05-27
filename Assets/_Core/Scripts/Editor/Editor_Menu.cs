@@ -19,6 +19,12 @@ public class Editor_Menu
         PlayerPrefs.DeleteAll();
     }
 
+    [MenuItem("Rev9/PlayerPrefabs RESET: Castle", false, 10001)]
+    static void ResetPlayerPrefabsCastle()
+    {
+        PlayerPrefs.DeleteKey("pp_castle_data");
+    }
+
     [MenuItem("Rev9/Restart UNITY", false, 10000)]
     static void RestartUnity()
     {

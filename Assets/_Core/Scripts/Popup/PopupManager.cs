@@ -221,10 +221,10 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     #region ALERT
     CancellationTokenSource m_ctsAlert;
-    public void AlertShow(string _message, float _posY = 0, bool _isTyping = false, float _duration = 3f)
-        => AlertShowAsync(_message, _posY, _isTyping, _duration).Forget();
+    public void AlertShow(string _message, float _addPosY = 0, bool _isTyping = false, float _duration = 3f)
+        => AlertShowAsync(_message, _addPosY, _isTyping, _duration).Forget();
 
-    public async UniTask AlertShowAsync(string _message, float _posY = 0, bool _isTyping = false, float _duration = 3f)
+    public async UniTask AlertShowAsync(string _message, float _addPosY = 0, bool _isTyping = false, float _duration = 3f)
     {
         if (m_ctsAlert != null)
         {
@@ -233,7 +233,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         }
         m_ctsAlert = new();
 
-        await m_element.alertData.ShowAsync(_message, m_ctsAlert.Token, _posY, _isTyping, _duration);
+        await m_element.alertData.ShowAsync(_message, m_ctsAlert.Token, _addPosY, _isTyping, _duration);
 
         m_ctsAlert = null;
     }

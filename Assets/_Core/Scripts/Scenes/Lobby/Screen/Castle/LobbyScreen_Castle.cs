@@ -49,22 +49,22 @@ public class LobbyScreen_Castle : LobbyScreen_Base
         m_element.scroll.content.anchoredPosition = Vector2.zero;
     }
 
-    private void Update()
-    {
-        for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
-        {
-            int idx = (int)i;
+    //private void Update()
+    //{
+    //    for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
+    //    {
+    //        int idx = (int)i;
 
-            if (Input.GetKeyDown(KeyCode.Alpha1 + idx))
-            {
-                IngameLog.Add(m_element.builds[idx].name + ": " + Input.GetKey(KeyCode.LeftShift));
-                if (Input.GetKey(KeyCode.LeftShift))
-                    m_element.builds[idx].FinishUpgrade();
-                else
-                    m_element.builds[idx].StartUpgrade();
-            }
-        }
-    }
+    //        if (Input.GetKeyDown(KeyCode.Alpha1 + idx))
+    //        {
+    //            IngameLog.Add(m_element.builds[idx].name + ": " + Input.GetKey(KeyCode.LeftShift));
+    //            if (Input.GetKey(KeyCode.LeftShift))
+    //                m_element.builds[idx].FinishUpgrade();
+    //            else
+    //                m_element.builds[idx].StartUpgrade();
+    //        }
+    //    }
+    //}
 
 
     bool m_isSwitchEscape = true;

@@ -39,9 +39,6 @@ public class Data_Castle
 
     public void OnUpdateClaim(bool _isInit = false)
     {
-        if (_isInit == false)
-            IngameLog.Add("OnUpdateClaim");
-
         Release_CTS();
         m_cts = new();
 
@@ -54,7 +51,7 @@ public class Data_Castle
         CastleData castleData = GetCaslteData(_objectType);
         var amount = GetAmountPerSecond(castleData);
         var maxAmount = GetMaxAmount(castleData);
-        int maxAmount_Table = castleData.dbRise.max_amount;
+        int maxAmount_Table = TableManager.castleEffect[_objectType].GetMaxAmount(castleData);
         maxAmount_Table = Mathf.RoundToInt(maxAmount_Table + maxAmount_Table * .45f);
 
         if (amount == 0)
@@ -89,10 +86,8 @@ public class Data_Castle
                 if (castleData.totalAmount > maxAmount_Table)
                 {
                     castleData.totalAmount = maxAmount_Table;
-                    UpdateCastleData(castleData);
+                    UpdateCastleAmountData(castleData);
                 }
-
-                Signal.instance.UpdateCastleData.Emit(castleData);
 
                 await UniTask.WaitUntil(() => castleData.totalAmount < maxAmount, cancellationToken: m_cts.Token);
             }
@@ -101,9 +96,7 @@ public class Data_Castle
 
             nextTime = nextTime.AddSeconds(1f);
             castleData.totalAmount = Mathf.Min(maxAmount, castleData.totalAmount + amount);
-            UpdateCastleData(castleData);
-
-            Signal.instance.UpdateCastleData.Emit(castleData);
+            UpdateCastleAmountData(castleData);
         }
     }
 
@@ -127,20 +120,13 @@ public class Data_Castle
         return GetCaslteData(_type);
     }
 
-    public void RebatchHeroes(CastleData _data)
+    public void UpdateCastleAmountData(CastleData _data)
     {
-        for (int i = 0; i < _data.heroes.Count; i++)
-        {
-            var heroKey = _data.heroes[i];
-            var jobType = GetHeroObjectType(heroKey);
+        var db = m_db[_data.type];
+        db.totalAmount = _data.totalAmount;
+        m_db[_data.type] = db;
 
-            if (jobType == CastleObjectType.NONE || jobType == _data.type)
-                continue;
-
-            var data = m_db[jobType];
-            data.heroes.Remove(heroKey);
-            m_db[jobType] = data;
-        }
+        Signal.instance.UpdateFarmMarketData.Emit(db);
     }
 
     public void UpdateCastleData(CastleData _data, bool _isSave = true)
@@ -159,7 +145,7 @@ public class Data_Castle
         PPWorker.Set(c_key, m_db.Values.ToList());
     }
 
-    public float GetAmountPerSecond(CastleData _data)
+    public float GetAmountPerSecond(CastleData _data, bool _isWithProbity = true)
     {
         if (_data.type != CastleObjectType.Farm &&
             _data.type != CastleObjectType.Market)
@@ -177,17 +163,27 @@ public class Data_Castle
         float percent = Mathf.Min(1f, totalStat / (float)tableRiseData.value01);
 
         // 청렴도
-        float probity = GetProbityRate();
+        float probity = GetGateProbityRate();
+        if (_isWithProbity == false)
+            probity = 1f;
 
-        float result = tableRiseData.rate_per_second + tableRiseData.rate_per_second * (.45f * percent);
+        var perCeconds = TableManager.castleEffect[_data.type].GetAmountPerCeconds(_data);
+
+        float result = perCeconds + perCeconds * (.45f * percent);
         return result == 0 ? 0 : Mathf.Max(1, result * probity);
     }
 
-    public float GetProbityRate()
+    /// <summary>
+    /// 청렴도!!
+    /// </summary>
+    /// <returns></returns>
+    public float GetGateProbityRate()
     {
         var gateData = GetCaslteData(CastleObjectType.Gate);
 
+        // 최저 청렴도
         float minPercent = 0.5f;
+
         var totalLeaderShip = GetTotalCoreStat(gateData, CoreStatType.Leadership);
         var dbMaxLeaderShip = gateData.dbRise.value01;
 
@@ -217,10 +213,12 @@ public class Data_Castle
         int totalStat = GetTotalCoreStat(_data, tableCastle.coreStat[1]);
         var tableRiseData = TableManager.castleRise.GetRiseData(_data.type, _data.level);
 
+        var max = TableManager.castleEffect[_data.type].GetMaxAmount(_data);
+
         // 현재 몇퍼인지 계산
         float percent = Mathf.Min(1f, totalStat / (float)tableRiseData.value02);
 
-        int result = Mathf.RoundToInt(tableRiseData.max_amount + tableRiseData.max_amount * (.45f * percent));
+        int result = Mathf.RoundToInt(max + max * (.45f * percent));
         return result;
     }
 
@@ -267,6 +265,40 @@ public class Data_Castle
         return CastleObjectType.NONE;
     }
 
+    public async UniTask SetBatchHeroAsync(CastleData _castleData, UnityAction<StatusType> _onComplete)
+    {
+        await UniTask.Yield();
+
+        // 기존 장수 삭제
+        for (int i = 0; i < _castleData.heroes.Count; i++)
+        {
+            var heroKey = _castleData.heroes[i];
+            var jobType = GetHeroObjectType(heroKey);
+
+            if (jobType == CastleObjectType.NONE || jobType == _castleData.type)
+                continue;
+
+            var data = m_db[jobType];
+            data.heroes.Remove(heroKey);
+
+            Signal.instance.UpdateCastleHeroBatch.Emit(data);
+        }
+
+        {
+            var data = m_db[_castleData.type];
+            data.heroes = new();
+            data.heroes.AddRange(_castleData.heroes);
+            UpdateCastleData(data);
+
+            Signal.instance.UpdateCastleHeroBatch.Emit(data);
+        }
+
+        building.UpdateBuildingUpgrade(CastleObjectType.NONE);
+        OnUpdateClaim();
+
+        _onComplete(StatusType.Success);
+    }
+
     public async UniTask StartUpgradeAsync(CastleObjectType _objectType, UnityAction<CastleData> _callback)
     {
         var db = m_db[_objectType];
@@ -283,23 +315,33 @@ public class Data_Castle
             return;
         }
 
-        db.tickUpgradeStart = Utils.GetUTC().Ticks;
-        m_db[_objectType] = db;
+        if (db.remainUpgradeSeconds == 0)
+            db.tickUpgradeEnd = Utils.GetUTC().AddSeconds(db.dbRise.upgradeSeconds).Ticks;
+        else
+        {
+            db.tickUpgradeEnd = Utils.GetUTC().AddSeconds(db.remainUpgradeSeconds).Ticks;
+            db.remainUpgradeSeconds = 0;
+        }
+
+        UpdateCastleData(db);
 
         SaveData();
+        building.UpdateBuildingUpgrade(_objectType);
 
         // 서버 연동 작업 필요
         await UniTask.Yield();
 
-        _callback(db);
+        _callback?.Invoke(db);
     }
 
     public CastleData CompleteUpgrade(CastleObjectType _objectType)
     {
         var db = m_db[_objectType];
-        db.tickUpgradeStart = db.remainUpgradeTime = 0;
+        db.tickUpgradeEnd = 0;
+        db.remainUpgradeSeconds = 0;
         db.level++;
-        m_db[_objectType] = db;
+
+        UpdateCastleData(db);
 
         // 관아와 행상 외에는 모두 클레임에 영향을 끼침
         if (_objectType != CastleObjectType.Office && _objectType != CastleObjectType.Merchant)
@@ -317,43 +359,79 @@ public class Data_Castle
         public int level;
         public long tickClaim;          // 회수한 시간
         public float totalAmount;       // 회수할 수 있는 총 재화량
-        public long tickUpgradeStart;   // 업그레이드 시작
-        public long remainUpgradeTime;  // 중단되서 멈췄을 때 남은 시간
+        public long tickUpgradeEnd;     // 업그레이드 시작
+        public float remainUpgradeSeconds;  // 중단되서 멈췄을 때 남은 시간
 
         public TableCastleRiseData dbRise => TableManager.castleRise.GetRiseData(type, level);
-        public DateTime dtStartUpgrade => new DateTime(tickUpgradeStart);
 
         public bool isValidUpgrade
         {
-            get {
-                //DataManager.castle.GetTotalCoreStat(this, )
-                return true;
-            }
-        }
-
-        public bool isDoingUpgrade => tickUpgradeStart > 0;
-        public DateTime dtEndUpgrade
-        {
             get
             {
-                // 중단 된 적이 없다면
-                if (remainUpgradeTime == 0)
+                // 관아일 경우
+                if (type == CastleObjectType.Office)
                 {
-                    var dtStart = new DateTime(tickUpgradeStart, DateTimeKind.Utc).AddSeconds(Configure.instance.timeGapFromServer);
-
-                    var addSeconds = TableManager.castleRise.GetRiseData(type, level).upgrade_seconds;
-#if UNITY_EDITOR
-                    addSeconds = level * 5;
-#endif
-                    return dtStart.AddSeconds(addSeconds);
+                    return DataManager.castle.mission.levelInfo.isUpgradable;
                 }
                 else
                 {
-                    return Utils.GetUTC().AddSeconds(remainUpgradeTime);
+                    var dbCastle = TableManager.castle.GetCastleData(type);
 
+                    for (int i = 0; i < dbCastle.coreStat.Length; i++)
+                    {
+                        var coreStat = dbCastle.coreStat[i];
+
+                        if (coreStat == CoreStatType.NONE)
+                            continue;
+
+                        var total = DataManager.castle.GetTotalCoreStat(this, coreStat);
+                        var max = type == CastleObjectType.Palace ? dbRise.orinValue01 : dbRise.maxCoreStat[i];
+
+                        if (total < max)
+                            return false;
+                    }
+
+                    if (type == CastleObjectType.Palace)
+                    {
+                        for (var type = CastleObjectType.NONE + 1; type < CastleObjectType.MAX; type++)
+                        {
+                            if (level != DataManager.castle.GetCaslteData(type).level)
+                                return false;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        var palaceLevel = DataManager.castle.GetCaslteData(CastleObjectType.Palace).level;
+                        return level < palaceLevel;
+                    }
                 }
             }
         }
+
+        public bool isDoingUpgrade => tickUpgradeEnd > 0;
+        public DateTime dtUpgradeEnd
+            => new DateTime(tickUpgradeEnd, DateTimeKind.Utc);
+        //        {
+        //            get
+        //            {
+        //                // 중단 된 적이 없다면
+        //                if (remainUpgradeSeconds == 0)
+        //                {
+        //                    var dtStart =  new DateTime(tickUpgradeStart, DateTimeKind.Utc).AddSeconds(Configure.instance.timeGapFromServer);
+
+        //                    var addSeconds = dbRise.upgrade_seconds;
+        //#if UNITY_EDITOR
+        //                    addSeconds = level * 5;
+        //#endif
+        //                    return dtStart.AddSeconds(addSeconds);
+        //                }
+        //                else
+        //                {
+        //                    return Utils.GetUTC().AddSeconds(remainUpgradeSeconds);
+        //                }
+        //            }
+        //        }
     }
 }
 

@@ -71,6 +71,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
             var item = Instantiate(screen, transform).GetComponent<LobbyScreen_Base>();
             item.name = _screenType.ToString();
 
+            item.Initilize(_screenType);
             m_dicScreen.Add(_screenType, item);
         }
 
