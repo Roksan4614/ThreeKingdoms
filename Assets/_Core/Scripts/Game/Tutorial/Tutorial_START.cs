@@ -233,6 +233,13 @@ public class Tutorial_START : TutorialBase
     async UniTask SummonHeroAsync()
     {
         var screen = LobbyScreenManager.instance.GetScreenSummon();
+
+        while (screen == null)
+        {
+            screen = LobbyScreenManager.instance.GetScreenSummon();
+            await UniTask.WaitForEndOfFrame();
+        }
+
         screen.SetRegionType(TeamManager.instance.mainHero.info.regionType);
 
         bool isHeroSummon = false;

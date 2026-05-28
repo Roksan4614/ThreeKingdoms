@@ -41,6 +41,9 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             //btn.transform.SetParent(parent);
             //btn.transform.SetAsLastSibling();
         }
+
+        m_element.claimMarket.Initialize(CastleObjectType.Market);
+        m_element.claimFarm.Initialize(CastleObjectType.Farm);
     }
 
     protected override void OnEnable()
@@ -151,6 +154,12 @@ public class LobbyScreen_Castle : LobbyScreen_Base
         await PopupManager.instance.OpenPopupAndWait(PopupType.Castle_Mission);
     }
 
+    public ButtonHelper GetButton(CastleObjectType _type)
+        => m_element.btnObject[(int)_type];
+
+    public LobbyScreen_Castle_Claim GetClaim(CastleObjectType _type)
+        => _type == CastleObjectType.Market ? m_element.claimMarket : _type == CastleObjectType.Farm ? m_element.claimFarm : null;
+
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);
 
@@ -166,9 +175,13 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
         public RectTransform panelMap;
         public Transform pButtons;
-        public ButtonHelper[] btnObject;
 
+        public ButtonHelper[] btnObject;
         public List<LobbyScreen_Castle_Building> builds;
+
+        public LobbyScreen_Castle_Claim claimMarket;
+        public LobbyScreen_Castle_Claim claimFarm;
+
 
         public void Initialize(Transform _transform)
         {
@@ -179,6 +192,9 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             btnObject = pButtons.GetComponentsInChildren<ButtonHelper>();
 
             builds = _transform.Find("Panel").GetComponentsInChildren<LobbyScreen_Castle_Building>().ToList();
+
+            claimMarket = pButtons.GetChild((int)CastleObjectType.Market).GetComponent<LobbyScreen_Castle_Claim>("Claim");
+            claimFarm = pButtons.GetChild((int)CastleObjectType.Farm).GetComponent<LobbyScreen_Castle_Claim>("Claim");
         }
     }
     #endregion VALIDATE

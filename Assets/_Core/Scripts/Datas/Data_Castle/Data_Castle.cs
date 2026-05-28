@@ -157,27 +157,19 @@ public class Data_Castle
         var tableCastle = TableManager.castle.GetCastleData(_data.type);
         int totalStat = GetTotalCoreStat(_data, tableCastle.coreStat[0]);
 
-        var tableRiseData = _data.dbRise;
-
         // 현재 몇퍼인지 계산
-        float percent = Mathf.Min(1f, totalStat / (float)tableRiseData.value01);
-
-        // 청렴도
-        float probity = GetGateProbityRate();
-        if (_isWithProbity == false)
-            probity = 1f;
-
+        float percent = Mathf.Min(1f, totalStat / (float)_data.dbRise.value01);
         var perCeconds = TableManager.castleEffect[_data.type].GetAmountPerCeconds(_data);
 
         float result = perCeconds + perCeconds * (.45f * percent);
-        return result == 0 ? 0 : Mathf.Max(1, result * probity);
+        return Mathf.Max(.1f, result);
     }
 
     /// <summary>
     /// 청렴도!!
     /// </summary>
     /// <returns></returns>
-    public float GetGateProbityRate()
+    public float GetGateProbityRate(bool _isJustPercent = false)
     {
         var gateData = GetCaslteData(CastleObjectType.Gate);
 
@@ -189,8 +181,29 @@ public class Data_Castle
 
         float percent = Mathf.Min(1f, totalLeaderShip / (float)dbMaxLeaderShip);
 
+        if (_isJustPercent == true)
+            return percent;
+
         return minPercent + minPercent * percent;
     }
+
+    //public float GetGatePublicOrderRate(bool _isJustPercent = false)
+    //{
+    //    var gateData = GetCaslteData(CastleObjectType.Gate);
+
+    //    // 최저 청렴도
+    //    float minPercent = 0.5f;
+
+    //    var totalLeaderShip = GetTotalCoreStat(gateData, CoreStatType.Strength);
+    //    var dbMaxLeaderShip = gateData.dbRise.value01;
+
+    //    float percent = Mathf.Min(1f, totalLeaderShip / (float)dbMaxLeaderShip);
+
+    //    if (_isJustPercent == true)
+    //        return percent;
+
+    //    return minPercent + minPercent * percent;
+    //}
 
     public float GetPalaceCharismaRate()
     {

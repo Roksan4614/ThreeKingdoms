@@ -75,6 +75,14 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             if (m_castleData.type != _castleData.type || gameObject.activeInHierarchy == false)
                 return;
             m_castleData = _castleData;
+
+            var upgradeData = DataManager.castle.building.GetUpgradeData(m_castleData);
+
+            var ts = upgradeData.ts;
+            if (ts.Minutes > 0)
+                m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
+            else
+                m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s\n남은_시간";
         });
         Signal.instance.StartCaslteBuildingUpgrade.connect = SlotStartCaslteBuildingUpgrade;
         Signal.instance.UpdateCaslteBuildingUpgrade.connect = SlotUpdateCaslteBuildingUpgrade;
@@ -105,7 +113,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
             m_element.btnGoShop.transform.parent.gameObject.SetActive(_type == CastleObjectType.Merchant);
             m_element.palace.gameObject.SetActive(_type == CastleObjectType.Palace);
-            if(_type == CastleObjectType.Gate)
+            if (_type == CastleObjectType.Gate)
                 m_upgradeInfo.SetGateInfo(m_castleData);
             //m_element.gate.gameObject.SetActive(_type == CastleObjectType.Gate);
         }
@@ -116,7 +124,6 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
             m_element.btnGoShop.transform.parent.gameObject.SetActive(false);
             m_element.palace.gameObject.SetActive(false);
-            m_element.gate.gameObject.SetActive(false);
         }
         m_element.scroll.content.ForceRebuildLayout();
 
@@ -137,16 +144,11 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         {
             if (m_castleData.isDoingUpgrade == true)
             {
-                Data_Castle_Building.CastleBuildingUpgradeData upgradeData = new();
-                upgradeData.objectType = m_castleData.type;
-
-                DateTime dtEnd = m_castleData.dtUpgradeEnd;
-                if (m_castleData.remainUpgradeSeconds > 0)
-                    dtEnd = Utils.GetUTC().AddSeconds(m_castleData.remainUpgradeSeconds);
-
-                upgradeData.ts = dtEnd - Utils.GetUTC();
-
+                var upgradeData = DataManager.castle.building.GetUpgradeData(m_castleData);
                 SlotUpdateCaslteBuildingUpgrade(upgradeData);
+
+                if (m_castleData.remainUpgradeSeconds > 0)
+                    m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{m_element.btnUpgradeTimer.text}";
             }
             else
             {
@@ -174,9 +176,9 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         m_element.btnUpgradeTimer.gameObject.SetActive(false);
     }
 
-    void SlotUpdateCaslteBuildingUpgrade(Data_Castle_Building.CastleBuildingUpgradeData _updateData)
+    void SlotUpdateCaslteBuildingUpgrade(Data_Castle_Building.CastleBuildingUpgradeData _upgradeData)
     {
-        if (m_castleData.type != _updateData.objectType || gameObject.activeInHierarchy == false)
+        if (m_castleData.type != _upgradeData.objectType || gameObject.activeInHierarchy == false)
             return;
 
         if (m_element.btnUpgradeTimer.gameObject.activeSelf == false)
@@ -185,11 +187,11 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             m_element.btnUpgradeTimer.gameObject.SetActive(true);
         }
 
-        var ts = _updateData.ts;
+        var ts = _upgradeData.ts;
         if (ts.Minutes > 0)
-            m_element.btnUpgradeTimer.text = Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30) + "\n남은_시간";
+            m_element.btnUpgradeTimer.text = $"{Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
         else
-            m_element.btnUpgradeTimer.text = Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30) + "s\n남은_시간";
+            m_element.btnUpgradeTimer.text = $"{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s\n남은_시간";
     }
 
     void OnButton_Upgrade()
@@ -290,7 +292,17 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                         }
 
                         if (total > 0)
-                            message = $"<color=#{Palette.htmlString_Up}>+{(Mathf.Min(1, total / (float)max) * 0.45f) * 100:0.##}%</color>";
+                        {
+                            switch (m_castleData.type)
+                            {
+                                case CastleObjectType.Gate:
+                                    message = $"<color=#{Palette.htmlString_Up}>{Mathf.Min(1, total / (float)max) * 100:0.##}%</color>";
+                                    break;
+                                default:
+                                    message = $"<color=#{Palette.htmlString_Up}>+{(Mathf.Min(1, total / (float)max) * 0.45f) * 100:0.##}%</color>";
+                                    break;
+                            }
+                        }
                         else
                             message = "0%";
 
@@ -325,7 +337,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         m_element.txtBatchStat[0].transform.parent.ForceRebuildLayout();
 
-        m_element.txtPerSecond.text = $"시간당_획득량: {DataManager.castle.GetAmountPerSecond(m_castleData).AmountKMBT()}";
+        if (m_element.gauge.gameObject.activeSelf == true)
+            m_element.txtPerSecond.text = $"시간당_획득량: {DataManager.castle.GetAmountPerSecond(m_castleData).AmountKMBT()}";
     }
 
     public bool CloseEscape()
@@ -471,7 +484,6 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         public ButtonHelper btnGoShop;
         public LobbyScreen_Castle_Popup_Setting_Palace palace;
-        public LobbyScreen_Castle_Popup_Setting_Gate gate;
 
         public void Initialize(Transform _transform)
         {
@@ -491,7 +503,6 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
             btnGoShop = scroll.content.GetComponent<ButtonHelper>("Merchant/btn_shop");
             palace = scroll.content.GetComponent<LobbyScreen_Castle_Popup_Setting_Palace>("Palace");
-            gate = scroll.content.GetComponent<LobbyScreen_Castle_Popup_Setting_Gate>("Gate");
         }
     }
     #endregion VALIDATE

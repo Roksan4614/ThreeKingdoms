@@ -88,7 +88,7 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         item.gameObject.SetActive(true);
 
         item.SetText("txt_name", _name);
-        item.SetText("txt_value", $"{_now}{(_after.IsActive() ? $"  <size=70%>></size>  <color=#{Palette.htmlString_Up}>{_after}" : "")}");
+        item.SetText("txt_value", $"{(_now.IsActive() ? _now : "")}{(_after.IsActive() ? $"  <size=70%>></size>  <color=#{Palette.htmlString_Up}>{_after}" : "")}");
     }
 
     int SetInfo_Palace()
@@ -139,24 +139,46 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
 
         int i = 0;
 
+        //SetAddItem(i++, "<size=110%><color=#000000>치안율 영향</color></size>", null, null);
+        //{
+        //    // 상점
+        //    {
+        //        var perSecond = DataManager.castle.GetAmountPerSecond(DataManager.castle.GetCaslteData(CastleObjectType.Market), false);
+        //        SetAddItem(i++, " 금화_초당_획득량", $"{perSecond.AmountKMBT()}/s",
+        //            probity == 1 ? null : $"{(perSecond * probity).AmountKMBT()}/s");
+        //    }
+        //    // 농장
+        //    {
+        //        var perSecond = DataManager.castle.GetAmountPerSecond(DataManager.castle.GetCaslteData(CastleObjectType.Farm), false);
+        //        SetAddItem(i++, " 군량_초당_획득량", $"{perSecond.AmountKMBT()}/s",
+        //            probity == 1 ? null : $"{(perSecond * probity).AmountKMBT()}/s");
+        //    }
+        //}
+
+        SetAddItem(i++, "<size=110%><color=#000000>청렴도 영향</color></size>", null, null);
         // 궁성
         {
             var timeStoneSec = TableManager.castleEffect[CastleObjectType.Palace].Get(m_castleData.level).time_stone_sec ?? -1;
-            SetAddItem(i++, "시간석_개당_단축", $"{timeStoneSec}s", $"{(timeStoneSec * probity):0.##}s");
-        }
-        // 농장
-        {
-            var perSecond = DataManager.castle.GetAmountPerSecond(DataManager.castle.GetCaslteData(CastleObjectType.Farm), false);
-
-            SetAddItem(i++, "금화_초당_획득량", $"{perSecond.AmountKMBT()}/s",
-                $"{(perSecond * probity).AmountKMBT()}/s");
+            SetAddItem(i++, " 시간석_개당_단축", $"{timeStoneSec}s", probity == 1 ? null : $"{(timeStoneSec * probity):0.##}s");
         }
         // 상점
         {
             var perSecond = DataManager.castle.GetAmountPerSecond(DataManager.castle.GetCaslteData(CastleObjectType.Market), false);
-
-            SetAddItem(i++, "군량_초당_획득량", $"{perSecond.AmountKMBT()}/s",
-                $"{(perSecond * probity).AmountKMBT()}/s");
+            SetAddItem(i++, " 군량/금화_수령시_획득량", $"<color=#{Palette.htmlString_Up}>{probity * 100: 0.##}%", null);
+        }
+        // 행상
+        {
+            // todo
+            var discountRate = 0.1f;
+            SetAddItem(i++, " 상점 할인율", $"{discountRate * 100: 0.##}%", probity == 1 ? null : $"{discountRate * probity * 100: 0.##}%");
+        }
+        // 관아
+        {
+            if (probity < 1)
+            {
+                var orinProbity = DataManager.castle.GetGateProbityRate(true);
+                SetAddItem(i++, " 높은 등급 등장 확률 감소", $"<color=#{Palette.htmlString_Up}>-{(1 - orinProbity) * 100: 0.##}%", null);
+            }
         }
 
         for (; i < m_element.panel.childCount; i++)

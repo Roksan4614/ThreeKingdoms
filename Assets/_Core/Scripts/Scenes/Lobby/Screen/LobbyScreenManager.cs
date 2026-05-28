@@ -26,7 +26,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
 
     //public T GetScreen<T>(LobbyScreenType _type) where T: LobbyScreen_Base => m_dicScreen[_type] as T;
     public LobbyScreen_Hero GetScreenHero() => m_dicScreen[LobbyScreenType.Hero] as LobbyScreen_Hero;
-    public LobbyScreen_Summon GetScreenSummon() => m_dicScreen[LobbyScreenType.Summon] as LobbyScreen_Summon;
+    public LobbyScreen_Summon GetScreenSummon() => m_dicScreen.ContainsKey(LobbyScreenType.Summon) ? m_dicScreen[LobbyScreenType.Summon] as LobbyScreen_Summon : null;
 
     protected override void OnAwake()
     {
@@ -71,8 +71,8 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
             var item = Instantiate(screen, transform).GetComponent<LobbyScreen_Base>();
             item.name = _screenType.ToString();
 
-            item.Initilize(_screenType);
             m_dicScreen.Add(_screenType, item);
+            item.Initilize(_screenType);
         }
 
         if (m_curScreen == _screenType ||

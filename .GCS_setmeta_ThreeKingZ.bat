@@ -5,7 +5,7 @@ chcp 65001 >nul
 
 set SET_PATH=D:\_Work\Kingz_ThreeKingdoms
 
-set SET_URL_GS_DEV=10.10.100.60
+set SET_URL_GS_DEV=106.251.241.130
 set SET_URL_GS_STAGING=10.10.100.60
 set SET_URL_GS_LIVE=10.10.100.60
 
@@ -76,15 +76,15 @@ if "%PLATFORM%"=="3" (
 	echo https://%HTTPS_URL%/WebGL/%VERSION%_%BUNDLE_VERION%/index.html
 
 	echo.
-	echo ssh -i .ssh/webgl_key webgl-upload@%GS_URL% "rm -rf /app/static/WebGL/%VERSION%_%BUNDLE_VERION%"
-	echo ssh -i .ssh/webgl_key webgl-upload@%GS_URL% "mkdir -p /app/static/WebGL/%VERSION%_%BUNDLE_VERION%"
-	echo scp -i .ssh/webgl_key -r %SET_PATH%/0_Bin/WebGL/%SERVICE_TYPE%/* webgl-upload@%GS_URL%:/app/static/WebGL/%VERSION%_%BUNDLE_VERION%
+	echo ssh -p 6022 -i .ssh/webgl_key webgl-upload@%GS_URL% "rm -rf /app/static/WebGL/%VERSION%_%BUNDLE_VERION%"
+	echo ssh -p 6022 -i .ssh/webgl_key webgl-upload@%GS_URL% "mkdir -p /app/static/WebGL/%VERSION%_%BUNDLE_VERION%"
+	echo scp -P 6022 -i .ssh/webgl_key -r %SET_PATH%/0_Bin/WebGL/%SERVICE_TYPE%/* webgl-upload@%GS_URL%:/app/static/WebGL/%VERSION%_%BUNDLE_VERION%
 	echo.
 )
 
-echo ssh -i .ssh/webgl_key webgl-upload@%GS_URL% "rm -rf /app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%"
-echo ssh -i .ssh/webgl_key webgl-upload@%GS_URL% "mkdir -p /app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%"
-echo scp -i .ssh/webgl_key -r %SET_PATH%/Bundle/_Last/%RESULT_PLATFORM%/* webgl-upload@%GS_URL%:/app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%
+echo ssh -p 6022 -i .ssh/webgl_key webgl-upload@%GS_URL% "rm -rf /app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%"
+echo ssh -p 6022 -i .ssh/webgl_key webgl-upload@%GS_URL% "mkdir -p /app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%"
+echo scp -P 6022 -i .ssh/webgl_key -r %SET_PATH%/Bundle/_Last/%RESULT_PLATFORM%/* webgl-upload@%GS_URL%:/app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%
 
 :GOTO_FINISH
 

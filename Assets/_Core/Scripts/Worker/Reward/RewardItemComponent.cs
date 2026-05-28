@@ -20,7 +20,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         m_element.sg.sortingOrder = 1;
         m_element.character.gameObject.SetActive(true);
         m_element.ps.gameObject.SetActive(_isFXStart);
-        m_element.psRenderer.sortingLayerID = _isCanvas ? m_element.layerPopup : m_element.layerStart;
+        m_element.psRenderer.sortingLayerID = _isCanvas ? m_element.layerPopup : m_element.layerUIFront;
 
         if (_isCanvas == true)
             m_element.sg.sortingOrder = (int)OrderLayerType.MAX;
@@ -130,6 +130,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         public int layerStart;
         public int layerAction;
         public int layerPopup;
+        public int layerUIFront;
 
         public SortingGroup sg;
         public ParticleSystem ps;
@@ -163,9 +164,10 @@ public class RewardItemComponent : TargetComponent, IValidatable
             layerStart = SortingLayer.NameToID("Character");
             layerAction = SortingLayer.NameToID("UI");
             layerPopup = SortingLayer.NameToID("Popup");
+            layerUIFront = SortingLayer.NameToID("UI_Front");
 
-            if (layerStart == 0 || layerAction == 0 || layerPopup == 0)
-                IngameLog.Add($"{_transform.name}: layerError: layerStart{layerStart} / layerAction{layerAction} / layserPopup{layerPopup}");
+            if (layerStart == 0 || layerAction == 0 || layerPopup == 0 || layerUIFront == 0)
+                IngameLog.Add($"{_transform.name}: layerError: layerStart{layerStart} / layerAction{layerAction} / layserPopup{layerPopup} / layserPopup{layerUIFront}");
         }
 
         public GameObject GetObject(ItemType _itemType)

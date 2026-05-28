@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEngine;
 
 public class Data_Castle_Building
 {
@@ -128,6 +127,20 @@ public class Data_Castle_Building
     public void Release()
     {
         Release_CTS(CastleObjectType.NONE);
+    }
+
+    public CastleBuildingUpgradeData GetUpgradeData(Data_Castle.CastleData _castleData)
+    {
+        CastleBuildingUpgradeData upgradeData = new();
+        upgradeData.objectType = _castleData.type;
+
+        DateTime dtEnd = _castleData.dtUpgradeEnd;
+        if (_castleData.remainUpgradeSeconds > 0)
+            dtEnd = Utils.GetUTC().AddSeconds(_castleData.remainUpgradeSeconds);
+
+        upgradeData.ts = dtEnd - Utils.GetUTC();
+
+        return upgradeData;
     }
 
     public struct CastleBuildingUpgradeData

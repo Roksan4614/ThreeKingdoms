@@ -16,6 +16,7 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
 
     public string text
     {
+        get => m_element.txtName.text;
         set => m_element.txtName.text = value;
     }
 
