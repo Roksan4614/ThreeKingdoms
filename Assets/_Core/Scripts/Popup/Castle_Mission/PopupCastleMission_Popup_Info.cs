@@ -10,13 +10,13 @@ using CastleMissionData = Data_Castle_Mission.CastleMissionData;
 
 public class PopupCastleMission_Popup_Info : BasePopupComponent
 {
-    PopupCastleMission_Popup_Info() : base(PopupType.NONE) { }
+    protected PopupCastleMission_Popup_Info() : base(PopupType.NONE) { }
 
-    CastleMissionData m_missionData;
+    protected CastleMissionData m_missionData;
 
     PopupHeroInfo m_popupHeroInfo;
 
-    public StatusType resultType { get; private set; }
+    public StatusType resultType { get; protected set; }
 
     protected override void Awake()
     {
@@ -106,13 +106,13 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
         parent.ForceRebuildLayout();
 
-        
+
         var percent = Mathf.Min(1f, totalCoreStat / (float)m_missionData.coreStatMax);
         m_element.gauge.fillAmount = percent;
         percent *= 100;
         m_element.gauge.textAmount = $"({percent:0.##}%) {totalCoreStat.AmountKMBT()}/{m_missionData.coreStatMax.AmountKMBT()}";
         m_element.btnAdd.text = $"({myHeroes.Count}/6)";
-        
+
         m_missionData.percentStat = percent;
 
         // 보상 리스트 업데이트
@@ -159,7 +159,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         }
     }
 
-    void OnButton_Start()
+    protected virtual void OnButton_Start()
     {
         if (m_missionData.percentStat < 10)
         {
@@ -206,10 +206,10 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
     public override void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
-    ElementData m_element;
+    protected ElementData m_element;
 
     [Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public TextMeshProUGUI txtTitle;
 
@@ -238,13 +238,16 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
             txtContent_Exp = panel.GetComponent<TextMeshProUGUI>("Info/Content/txt_exp");
 
             pHeroIcon = panel.Find("Info/Heroes/Panel");
-            baseHeroIcon = pHeroIcon.GetComponent<HeroIconComponent>("Slot_Hero");
-            btnAdd = pHeroIcon.parent.GetComponent<ButtonHelper>("btn_add");
-            gauge = panel.GetComponent<GaugeHelper>("Info/Status");
+            if (pHeroIcon != null)
+            {
+                baseHeroIcon = pHeroIcon.GetComponent<HeroIconComponent>("Slot_Hero");
+                btnAdd = pHeroIcon.parent.GetComponent<ButtonHelper>("btn_add");
+            }
 
+            gauge = panel.GetComponent<GaugeHelper>("Info/Status");
             reward = panel.GetComponent<PopupCastleMission_Popup_Info_Reward>("Reward");
 
-            popupHeroList = _transform.parent.GetComponent<PopupCastleHeroListComponent_Mission>("Castle_HeroList");
+            popupHeroList = _transform.parent?.GetComponent<PopupCastleHeroListComponent_Mission>("Castle_HeroList");
         }
 
         public Transform panel => btnStart.transform.parent;

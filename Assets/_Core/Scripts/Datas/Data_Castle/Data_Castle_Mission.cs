@@ -130,7 +130,7 @@ public class Data_Castle_Mission
         AddNewMission(true, idx);
     }
 
-    public async UniTask CompleteMissionAsync(UnityAction _onComplete, params CastleMissionData[] _missionDatas)
+    public async UniTask CompleteMissionAsync(UnityAction<StatusType, int> _onComplete, params CastleMissionData[] _missionDatas)
     {
         // 모두 받기
         if (_missionDatas.Length == 0)
@@ -150,36 +150,7 @@ public class Data_Castle_Mission
         if (prevExp < m_levelInfo.maxExp && m_levelInfo.nowExp >= m_levelInfo.maxExp)
             PopupManager.instance.AlertShow("관아 업그레이드 준비완료!");
 
-        _onComplete();
-
-        // 보상 연출 해주자
-        Dictionary<ItemType, TableItemData> dbRewards = new();
-        foreach (var m in _missionDatas)
-        {
-            var reward = TableManager.castleMissonReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
-            foreach (var r in reward)
-            {
-                if (dbRewards.ContainsKey(r.reward_key))
-                {
-                    var db = dbRewards[r.reward_key];
-                    db.count += UnityEngine.Random.Range(r.reward_min, r.reward_max + 1);
-                }
-                else
-                {
-                    dbRewards.Add(r.reward_key, new()
-                    {
-                        key = r.reward_key,
-                        value = r.reward_value,
-                        count = UnityEngine.Random.Range(r.reward_min, r.reward_max + 1)
-                    });
-                }
-            }
-        }
-
-        var rewards = dbRewards.Values.Select(x => new RewardWorker.RewardItemData(x.key, x.count)).ToList();
-        foreach (var r in rewards)
-            RewardWorker.instance.Run(CameraManager.posPointer, r.itemType, r.count, _isCanvas: true);
-
+        _onComplete(StatusType.Success, m_levelInfo.nowExp - prevExp);
 
         await UniTask.Yield();
     }

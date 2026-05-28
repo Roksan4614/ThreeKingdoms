@@ -19,13 +19,39 @@ public class Data_Castle
 
     public async UniTask InitializeAsync()
     {
+        List<UniTask> lstTask = new()
+        {
+            DoLoad_CastleDataAsync(),
+            //DoLoad_ClaimDataAsync()
+        };
+        await UniTask.WhenAll(lstTask);
+    }
+
+    //async UniTask DoLoad_ClaimDataAsync()
+    //{
+    //    m_claimData = PPWorker.Get<CastleClaimData>("pp_castle_claim_data");
+
+    //    await UniTask.Yield();
+    //}
+
+    async UniTask DoLoad_CastleDataAsync()
+    {
         //PlayerPrefs.DeleteKey(c_key);
 
         var data = PPWorker.Get<List<CastleData>>(c_key);
         if (data == null)
-            data = new();
+        {
+            m_db = new();
+            var market = GetCaslteData(CastleObjectType.Market);
+            market.tickClaim = Utils.GetUTC().Ticks;
+            UpdateCastleData(market);
 
-        m_db = data.ToDictionary(x => x.type, x => x);
+            var farm = GetCaslteData(CastleObjectType.Farm);
+            farm.tickClaim = Utils.GetUTC().Ticks;
+            UpdateCastleData(farm);
+        }
+        else
+            m_db = data.ToDictionary(x => x.type, x => x);
 
         OnUpdateClaim(true);
 
@@ -35,6 +61,7 @@ public class Data_Castle
             building.InitializeAsync()
         };
         await UniTask.WhenAll(lstTask);
+
     }
 
     public void OnUpdateClaim(bool _isInit = false)
@@ -111,9 +138,6 @@ public class Data_Castle
             heroes = new(),
             level = 1
         };
-
-        if (_type == CastleObjectType.Farm || _type == CastleObjectType.Market)
-            newData.tickClaim = Utils.GetUTC().Ticks;
 
         UpdateCastleData(newData, false);
 
@@ -312,57 +336,31 @@ public class Data_Castle
         _onComplete(StatusType.Success);
     }
 
-    public async UniTask StartUpgradeAsync(CastleObjectType _objectType, UnityAction<CastleData> _callback)
+    public async UniTask ClaimAsync(CastleObjectType _objectType, UnityAction<StatusType> _onComplete)
     {
-        var db = m_db[_objectType];
-
-        if (db.level == 10)
-        {
-            PopupManager.instance.AlertShow("이미_최고 레벨입니다.");
-            return;
-        }
-
-        if (db.isDoingUpgrade == true)
-        {
-            PopupManager.instance.AlertShow("이미_업그레이드가_진행중입니다.");
-            return;
-        }
-
-        if (db.remainUpgradeSeconds == 0)
-            db.tickUpgradeEnd = Utils.GetUTC().AddSeconds(db.dbRise.upgradeSeconds).Ticks;
-        else
-        {
-            db.tickUpgradeEnd = Utils.GetUTC().AddSeconds(db.remainUpgradeSeconds).Ticks;
-            db.remainUpgradeSeconds = 0;
-        }
-
-        UpdateCastleData(db);
-
-        SaveData();
-        building.UpdateBuildingUpgrade(_objectType);
-
-        // 서버 연동 작업 필요
         await UniTask.Yield();
 
-        _callback?.Invoke(db);
-    }
+        var castleData = m_db[_objectType];
 
-    public CastleData CompleteUpgrade(CastleObjectType _objectType)
-    {
-        var db = m_db[_objectType];
-        db.tickUpgradeEnd = 0;
-        db.remainUpgradeSeconds = 0;
-        db.level++;
+        var probity = GetGateProbityRate();
+        var count = (long)(castleData.totalAmount * probity);
+        var itemType = _objectType == CastleObjectType.Market ? ItemType.Gold : ItemType.Rice;
 
-        UpdateCastleData(db);
+        castleData.totalAmount = 0;
+        castleData.addClaimAmount = count;
+        castleData.tickClaim = Utils.GetUTC().Ticks;
 
-        // 관아와 행상 외에는 모두 클레임에 영향을 끼침
-        if (_objectType != CastleObjectType.Office && _objectType != CastleObjectType.Merchant)
-            OnUpdateClaim();
-
+        m_db[_objectType] = castleData;
         SaveData();
+        OnUpdateClaim();
 
-        return db;
+        // SAVEDATA 재화 데이타 저장
+        DataManager.userInfo.AddAsset(itemType, count, false, false);
+
+        RewardWorker.instance.Run(CameraManager.posPointer,
+            itemType, count, _isPopup: true);
+
+        _onComplete(StatusType.Success);
     }
 
     public struct CastleData
@@ -370,8 +368,11 @@ public class Data_Castle
         public CastleObjectType type;
         public List<string> heroes;
         public int level;
+
         public long tickClaim;          // 회수한 시간
         public float totalAmount;       // 회수할 수 있는 총 재화량
+        public float todayClaimAmount;
+
         public long tickUpgradeEnd;     // 업그레이드 시작
         public float remainUpgradeSeconds;  // 중단되서 멈췄을 때 남은 시간
 
@@ -425,26 +426,25 @@ public class Data_Castle
         public bool isDoingUpgrade => tickUpgradeEnd > 0;
         public DateTime dtUpgradeEnd
             => new DateTime(tickUpgradeEnd, DateTimeKind.Utc);
-        //        {
-        //            get
-        //            {
-        //                // 중단 된 적이 없다면
-        //                if (remainUpgradeSeconds == 0)
-        //                {
-        //                    var dtStart =  new DateTime(tickUpgradeStart, DateTimeKind.Utc).AddSeconds(Configure.instance.timeGapFromServer);
 
-        //                    var addSeconds = dbRise.upgrade_seconds;
-        //#if UNITY_EDITOR
-        //                    addSeconds = level * 5;
-        //#endif
-        //                    return dtStart.AddSeconds(addSeconds);
-        //                }
-        //                else
-        //                {
-        //                    return Utils.GetUTC().AddSeconds(remainUpgradeSeconds);
-        //                }
-        //            }
-        //        }
+        public DateTime dtClaim => new DateTime(tickClaim, DateTimeKind.Utc);
+        public bool isDateChanged => Utils.GetUTC().Date > dtClaim.Date;
+        public long addClaimAmount
+        {
+            set
+            {
+                CheckDate();
+                todayClaimAmount += value;
+            }
+        }
+        void CheckDate()
+        {
+            if (isDateChanged)
+            {
+                todayClaimAmount = 0;
+                tickClaim = Utils.GetUTC().Ticks;
+            }
+        }
     }
 }
 

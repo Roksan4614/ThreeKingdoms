@@ -30,12 +30,14 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
 
     public void Run(Vector3 _posFrom, ItemType _itemType, long _count = 1, bool _isStartPunch = true
         , bool _isFXStart = false, float _distMax = 0
-        , bool _isCanvas = false, float _durationWait = -1, bool _isTargetPunch = false, Vector3 _posTargetPunch = default)
-        => RunAsync(_posFrom, _itemType, _count, _isStartPunch, _isFXStart, _distMax, _isCanvas, _durationWait, _isTargetPunch, _posTargetPunch).Forget();
+        , bool _isField = false, bool _isScreen = false, bool _isPopup = false,
+        float _durationWait = -1, bool _isTargetPunch = false, Vector3 _posTargetPunch = default)
+        => RunAsync(_posFrom, _itemType, _count, _isStartPunch, _isFXStart, _distMax, _isField, _isScreen, _isPopup, _durationWait, _isTargetPunch, _posTargetPunch).Forget();
 
     public async UniTask RunAsync(Vector3 _posFrom, ItemType _itemType, long _count = 1, bool _isStartPunch = true
         , bool _isFXStart = false, float _distMax = 0
-        , bool _isCanvas = false, float _durationWait = -1, bool _isTargetPunch = false, Vector3 _posTargetPunch = default)
+        , bool _isField = false, bool _isScreen = false, bool _isPopup = false,
+        float _durationWait = -1, bool _isTargetPunch = false, Vector3 _posTargetPunch = default)
     {
         RewardData rewardData = new();
         rewardData.startPos = _posFrom;
@@ -54,8 +56,19 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         m_actionData.isStartPunch = _isStartPunch;
         m_actionData.isTargetPunch = _isTargetPunch;
         m_actionData.posTargetPunch = _posTargetPunch;
-        m_actionData.durationThrow = _durationWait == -1 ? m_actionData.durationWait + m_actionData.durationInstantiate : _durationWait;
-        m_actionData.isCanvas = _isCanvas;
+        m_actionData.durationWait = _durationWait;
+
+        if (_isField)
+        {
+            if (LobbyScreenManager.instance.curScreen == LobbyScreenType.None)
+                m_actionData.spawnType = RewardSpawnType.UI_Front;
+            else
+                m_actionData.spawnType = RewardSpawnType.Character;
+        }
+        else if (_isScreen)
+            m_actionData.spawnType = RewardSpawnType.UI_Front;
+        else
+            m_actionData.spawnType = RewardSpawnType.Popup;
 
         await RunAsync(rewardData);
     }
@@ -81,7 +94,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
                     m_dbItems.Add(item);
                 }
 
-                if (item.Initialize(reward, m_actionData.isCanvas, m_actionData.isFXStart) == false)
+                if (item.Initialize(reward, m_actionData.spawnType, m_actionData.isFXStart, GetThrowTarget(reward)) == false)
                     continue;
 
                 item.gameObject.SetActive(true);
@@ -100,7 +113,9 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             }
         }
 
-        if (m_actionData.durationWait > -1)
+        await UniTask.WaitForSeconds(m_actionData.durationInstantiate);
+
+        if (m_actionData.durationWait > 0)
         {
             // 생성하고 조금 기다려주자
             await UniTask.WaitForSeconds(m_actionData.durationWait);
@@ -109,7 +124,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
 
         //목적지까지 날려주자
         for (int i = 0; i < rewardComps.Count; i++)
-            rewardComps[i].ThrowStart(GetThrowTarget(rewardComps[i].data), m_actionData.durationMove).Forget();
+            rewardComps[i].ThrowStart(m_actionData.durationMove).Forget();
     }
 
     public Vector3 GetPositionStartPunch(Vector3 _startPos)
@@ -162,12 +177,12 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         public bool isStartPunch;       // 시작할 때 아이템 퍼트릴꺼?
         public bool isTargetPunch;      // 퍼트리는데 타켓 설정할꺼?
         public Vector3 posTargetPunch;  // 그 위치는?
-        public float durationThrow;     // 던지기전에 기다리는 시간
-        public bool isCanvas;           // 캔버스라면??
+        // public float durationThrow;     // 던지기전에 기다리는 시간
+        public RewardSpawnType spawnType; // 필드에서 생성? 스크린?? 팝업??
 
         public void SetDefault()
         {
-            durationWait = 1.5f;
+            durationWait = -1;
             durationInstantiate = 0.2f;
             durationMove = 0.5f;
 
@@ -175,7 +190,8 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             distInstantiateMIN = 1f;
 
             isStartPunch = true;
-            durationThrow = -1;
+
+            spawnType = RewardSpawnType.UI_Front;
         }
     }
 
@@ -188,12 +204,15 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
     public struct RewardItemData
     {
         public ItemType itemType;
+        //public RewardSpawnType spawnType;
         public long count;
 
+        //public RewardItemData(ItemType _itemType, RewardSpawnType _spawnType, long _count = 1)
         public RewardItemData(ItemType _itemType, long _count = 1)
         {
             itemType = _itemType;
             count = _count;
+            //  spawnType = _spawnType;
         }
 
         public bool isCurrency => itemType == ItemType.Gold || itemType == ItemType.Rice;

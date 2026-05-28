@@ -128,6 +128,22 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
     int SetInfo_Merchant() { int i = 0; return i; }
     int SetInfo_Gate() { int i = 0; return i; }
 
+    //public void SetPalaceInfo(Data_Castle.CastleData _castleData)
+    //{
+    //    gameObject.SetActive(true);
+
+    //    int i = 0;
+
+    //    SetAddItem(i++, "ø¿¥√_»πµÊ«— ±›»≠", DataManager.castle.GetCaslteData(CastleObjectType.Market).todayClaimAmount.ToString("#,0"), null);
+    //    SetAddItem(i++, "ø¿¥√_»πµÊ«— ±∫∑Æ", DataManager.castle.GetCaslteData(CastleObjectType.Farm).todayClaimAmount.ToString("#,0"), null);
+
+    //    for (; i < m_element.panel.childCount; i++)
+    //        m_element.panel.GetChild(i).gameObject.SetActive(false);
+
+    //    m_element.panel.ForceRebuildLayout();
+
+    //}
+
     public void SetGateInfo(Data_Castle.CastleData _castleData)
     {
         m_isOpenGateInfo = true;
@@ -138,22 +154,6 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         var probity = DataManager.castle.GetGateProbityRate();
 
         int i = 0;
-
-        //SetAddItem(i++, "<size=110%><color=#000000>ƒ°æ»¿≤ øµ«‚</color></size>", null, null);
-        //{
-        //    // ªÛ¡°
-        //    {
-        //        var perSecond = DataManager.castle.GetAmountPerSecond(DataManager.castle.GetCaslteData(CastleObjectType.Market), false);
-        //        SetAddItem(i++, " ±›»≠_√ ¥Á_»πµÊ∑Æ", $"{perSecond.AmountKMBT()}/s",
-        //            probity == 1 ? null : $"{(perSecond * probity).AmountKMBT()}/s");
-        //    }
-        //    // ≥Û¿Â
-        //    {
-        //        var perSecond = DataManager.castle.GetAmountPerSecond(DataManager.castle.GetCaslteData(CastleObjectType.Farm), false);
-        //        SetAddItem(i++, " ±∫∑Æ_√ ¥Á_»πµÊ∑Æ", $"{perSecond.AmountKMBT()}/s",
-        //            probity == 1 ? null : $"{(perSecond * probity).AmountKMBT()}/s");
-        //    }
-        //}
 
         SetAddItem(i++, "<size=110%><color=#000000>√ª∑≈µµ øµ«‚</color></size>", null, null);
         // ±√º∫

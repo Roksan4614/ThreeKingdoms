@@ -53,6 +53,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         m_curScreen = LobbyScreenType.None;
 
         ControllerManager.instance.isSwitch = true;
+        Signal.instance.CloseLobbyScreenFinished.Emit();
     }
 
     public async UniTask OpenScreenAsync(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback)
@@ -104,6 +105,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
                 SetActiveDimm(false, false);
         }
 
+        Signal.instance.OpenLobbyScreen.Emit(m_curScreen);
         m_dicScreen[_screenType].Open(m_curScreen);
         m_curScreen = _screenType;
 

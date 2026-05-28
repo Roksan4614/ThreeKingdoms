@@ -11,7 +11,7 @@ public class Table_Item : BaseTable<ItemType, TableItemData>
 
 public enum ItemCategoryType
 {
-    Currency,
+    Currency = 1,
     Soul_Stone,
     Bundle,
     Random_Box,

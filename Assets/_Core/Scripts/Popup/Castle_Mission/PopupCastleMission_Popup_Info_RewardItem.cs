@@ -14,17 +14,17 @@ public class PopupCastleMission_Popup_Info_RewardItem : MonoBehaviour, IValidata
         m_element.baseItem.gameObject.SetActive(false);
     }
 
-    public void SetTitle(bool _isFixed)
+    public void SetTitle(bool _isFixed, string _title)
     {
+        m_element.txtTitle.text = _title;
+
         if (_isFixed)
         {
-            m_element.txtTitle.text = "확정_보상";
             m_element.txtTitle.color = Color.white;
             m_element.bgTitle.SetActive(true);
         }
         else
         {
-            m_element.txtTitle.text = $"획득_가능_보상";
             m_element.txtTitle.fontStyle = FontStyles.Bold;
             m_element.txtTitle.color = Color.black;
             m_element.bgTitle.SetActive(false);
@@ -62,6 +62,32 @@ public class PopupCastleMission_Popup_Info_RewardItem : MonoBehaviour, IValidata
 
         for (; i < m_element.parent.childCount; i++)
             m_element.parent.GetChild(i).gameObject.SetActive(false);
+
+        m_element.parent.ForceRebuildLayout();
+    }
+
+    public void SetReward_Result(params TableItemData[] _rewardData)
+    {
+        int i = 0;
+        for (; i < _rewardData.Length; i++)
+        {
+            var rewardData = _rewardData[i];
+            var item = i == m_element.parent.childCount ?
+                Instantiate(m_element.baseItem, m_element.parent) :
+                m_element.parent.GetChild(i).GetComponent<ItemComponent>();
+
+            item.gameObject.SetActive(true);
+
+            item.SetItemData(_rewardData[i]);
+
+            //min max 차이가 있으면 range로.. 없으면 걍 max로
+            //item.SetCountText(rewardData.reward_max, rewardData.reward_max - rewardData.reward_min > 0);
+        }
+
+        for (; i < m_element.parent.childCount; i++)
+            m_element.parent.GetChild(i).gameObject.SetActive(false);
+
+        m_element.parent.ForceRebuildLayout();
     }
 
     #region VALIDATE

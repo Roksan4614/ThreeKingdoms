@@ -76,7 +76,7 @@ public class Tutorial_START : TutorialBase
 
                     RewardWorker.instance.isSwitchReceive = false;
                     RewardWorker.instance.Run(enemy.transform.position,
-                        ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1));
+                        ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1), _durationWait: 1.5f);
 
                     await UniTask.WaitForEndOfFrame();
                 }
@@ -157,7 +157,7 @@ public class Tutorial_START : TutorialBase
             bottomButton[(int)LobbyScreenType.Summon].interactable = true;
 
             // 연회권 보상 연출
-            await RewardWorker.instance.RunAsync(enemy.transform.position, ItemType.Normal_Gatcha_Ticket);
+            await RewardWorker.instance.RunAsync(enemy.transform.position, ItemType.Normal_Gatcha_Ticket, _isField: true);
 
             await UniTask.WaitForSeconds(.5f);
 

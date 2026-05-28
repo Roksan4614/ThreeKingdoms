@@ -202,7 +202,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             return;
         }
 
-        DataManager.castle.StartUpgradeAsync(m_castleData.type, null).Forget();
+        DataManager.castle.building.StartUpgradeAsync(m_castleData.type, null).Forget();
     }
 
     void SetBatchHero(bool _isForceUpdate = false)

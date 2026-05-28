@@ -2,32 +2,39 @@ using UnityEngine;
 
 public class LobbyScreen_Castle_Popup_Setting_Palace : MonoBehaviour, IValidatable
 {
-    protected virtual void Start()
+    private void Start()
     {
         m_element.market.textTitle = "±ÝÈ­_È¹µæ·®";
         m_element.farm.textTitle = "±º·®_È¹µæ·®";
 
-        Signal.instance.UpdateFarmMarketData.connect = SlotUpdateFarmMarketData;
+        m_element.market.fillAmount = m_element.farm.fillAmount = 1;
     }
 
-    protected virtual void OnEnable()
+    private void OnEnable()
     {
-        SlotUpdateFarmMarketData(DataManager.castle.GetCaslteData(CastleObjectType.Market));
-        SlotUpdateFarmMarketData(DataManager.castle.GetCaslteData(CastleObjectType.Farm));
+        m_element.market.textAmount = DataManager.castle.GetCaslteData(CastleObjectType.Market).todayClaimAmount.ToString("#,0");
+        m_element.farm.textAmount = DataManager.castle.GetCaslteData(CastleObjectType.Farm).todayClaimAmount.ToString("#,0");
     }
 
-    void SlotUpdateFarmMarketData(Data_Castle.CastleData _castleData)
-    {
-        if (gameObject.activeInHierarchy == false)
-            return;
 
-        var gauge = _castleData.type == CastleObjectType.Market ? m_element.market : m_element.farm;
+    //protected virtual void OnEnable()
+    //{
+    //    SlotUpdateFarmMarketData(DataManager.castle.GetCaslteData(CastleObjectType.Market));
+    //    SlotUpdateFarmMarketData(DataManager.castle.GetCaslteData(CastleObjectType.Farm));
+    //}
 
-        var maxAmount = DataManager.castle.GetMaxAmount(_castleData);
+    //void SlotUpdateFarmMarketData(Data_Castle.CastleData _castleData)
+    //{
+    //    if (gameObject.activeInHierarchy == false)
+    //        return;
 
-        gauge.textAmount = $"{Mathf.RoundToInt(_castleData.totalAmount):#,0}/{maxAmount:#,0}";
-        gauge.fillAmount = _castleData.totalAmount / (float)maxAmount;
-    }
+    //    var gauge = _castleData.type == CastleObjectType.Market ? m_element.market : m_element.farm;
+
+    //    var maxAmount = DataManager.castle.GetMaxAmount(_castleData);
+
+    //    gauge.textAmount = $"{Mathf.RoundToInt(_castleData.totalAmount):#,0}/{maxAmount:#,0}";
+    //    gauge.fillAmount = _castleData.totalAmount / (float)maxAmount;
+    //}
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

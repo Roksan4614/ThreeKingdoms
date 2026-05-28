@@ -64,9 +64,9 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         m_isNextStep = m_isSkip = _isSkip;
         gameObject.SetActive(true);
 
-        await Request_Summon(_regionType, _hostKey);
-
         InitializePos();
+
+        await Request_Summon(_regionType, _hostKey);
 
         await ReceiveActionAsync();
 
@@ -131,8 +131,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             {
                 // 호스트 넣기
                 {
-                    TableItemData itemData = new();
-                    itemData.key = ItemType.Dedicated_Soul_Stone;
+                    TableItemData itemData = TableManager.item.Get(ItemType.Dedicated_Soul_Stone);
                     itemData.value = _hostKey;
                     itemData.count = TableManager.hero.GetNeedSoul(GradeType.Normal);
                     result.Add(itemData);
@@ -145,8 +144,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     if (UnityEngine.Random.value > m_element.dbRate[i])
                         break;
 
-                    TableItemData itemData = new();
-                    itemData.key = ItemType.Dedicated_Soul_Stone;
+                    TableItemData itemData = TableManager.item.Get(ItemType.Dedicated_Soul_Stone);
 
                     var randomIdx = UnityEngine.Random.Range(0, dbHeroes.Count);
                     itemData.value = dbHeroes[randomIdx].key;
@@ -163,8 +161,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
             for (; i < 10; i++)
             {
-                TableItemData itemData = new();
-                itemData.key = UnityEngine.Random.value > 0.5f ? ItemType.Gold : ItemType.Rice;
+                TableItemData itemData = TableManager.item.Get(UnityEngine.Random.value > 0.5f ? ItemType.Gold : ItemType.Rice);
                 itemData.value = itemData.key.ToString();
                 itemData.count = UnityEngine.Random.Range(1, 10) * 10;
                 result.Add(itemData);
@@ -220,7 +217,6 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             }
 
             m_itemComps[i].SetItemData(data);
-            m_itemComps[i].SetActivePanel(false);
 #if UNITY_EDITOR
             m_itemComps[i].name = $"{data.value}_x{data.count}";
 #endif
@@ -250,8 +246,12 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         }
 
         for (int i = 0; i < m_itemComps.Count; i++)
+        {
             m_itemComps[i].transform.position = m_element.pCenter.position;
+            m_itemComps[i].SetActivePanel(false);
+        }
     }
+
     async UniTask ReceiveActionAsync()
     {
         float duration = 1f;
@@ -483,9 +483,10 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         {
             RewardWorker.instance.Run(
                 m_element.pHost.position + new Vector3(2f, 1f)
-                , i.Key, i.Value.count, true, false, 0.5f, true
-                , _isTargetPunch: true,
-                _posTargetPunch: transform.position + new Vector3(
+                , i.Key, i.Value.count, _distMax: 0.5f, _isScreen: true
+                , _isTargetPunch: true
+                , _durationWait: 1.5f
+                , _posTargetPunch: transform.position + new Vector3(
                     UnityEngine.Random.Range(0.5f, 2f) * (idx++ % 2 == 0 ? 1 : -1),
                     UnityEngine.Random.Range(4f, 6f)));
 

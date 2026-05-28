@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,36 +9,50 @@ public class LobbyScreen_Castle_Claim : MonoBehaviour, IValidatable
 {
     CastleObjectType m_objectType = CastleObjectType.NONE;
 
-    [SerializeField] float duration = .5f;
-    [SerializeField] float strength = 10f;
+    float duration = .2f;
+    float strength = 5f;
 
     Transform panel => m_element.imgProcess.transform.parent;
 
     private void Start()
     {
         Signal.instance.UpdateFarmMarketData.connect = SlotUpdateFarmMarketData;
+
+        transform.GetComponent<Button>().onClick.AddListener(OnButton_Claim);
     }
 
     private void OnEnable()
     {
         transform.rotation = Quaternion.Euler(0, 0, m_element.rotZ);
-        ShakeRotation();
+
+        Utils.AfterSecond(() =>
+        {
+            if (gameObject.activeInHierarchy == true)
+                ShakeRotation();
+            return;
+        }, Random.Range(.5f, 2.5f));
     }
 
     void ShakeRotation()
     {
-        transform.DORotate(new Vector3(0, 0, m_element.rotZ - strength), duration).OnComplete(() =>
+        var dir = Random.value < .5f ? 1 : -1;
+
+        transform.DOKill();
+        transform.DORotate(new Vector3(0, 0, m_element.rotZ - strength * dir), duration).SetEase(Ease.InOutCubic).OnComplete(() =>
         {
-            transform.DORotate(new Vector3(0, 0, m_element.rotZ + strength), duration * 2).OnComplete(() =>
+            transform.DORotate(new Vector3(0, 0, m_element.rotZ + strength * dir), duration * 2).SetEase(Ease.InOutCubic).OnComplete(() =>
             {
-                transform.DORotate(new Vector3(0, 0, m_element.rotZ), duration).OnComplete(() =>
+                transform.DORotate(new Vector3(0, 0, m_element.rotZ - strength * dir), duration * 2).SetEase(Ease.InOutCubic).OnComplete(() =>
                 {
-                    Utils.AfterSecond(() =>
+                    transform.DORotate(new Vector3(0, 0, m_element.rotZ), duration).SetEase(Ease.InOutCubic).OnComplete(() =>
                     {
-                        if (gameObject.activeInHierarchy == true)
-                            ShakeRotation();
-                        return;
-                    }, duration + Random.Range(1f, 2.5f));
+                        Utils.AfterSecond(() =>
+                        {
+                            if (gameObject.activeInHierarchy == true)
+                                ShakeRotation();
+                            return;
+                        }, duration + Random.Range(1f, 3.5f));
+                    });
                 });
             });
         });
@@ -53,7 +69,7 @@ public class LobbyScreen_Castle_Claim : MonoBehaviour, IValidatable
         m_objectType = _objectType;
 
         for (int i = 0; i < m_element.txtProcess.Length; i++)
-            m_element.txtProcess[i].text = _objectType == CastleObjectType.Market ? "_금화_" : "_군량_";
+            m_element.txtProcess[i].text = _objectType == CastleObjectType.Market ? "금화" : "군량";
 
         SlotUpdateFarmMarketData(DataManager.castle.GetCaslteData(_objectType));
     }
@@ -66,7 +82,7 @@ public class LobbyScreen_Castle_Claim : MonoBehaviour, IValidatable
         var maxAmount = DataManager.castle.GetMaxAmount(_castleData);
         var process = _castleData.totalAmount / (float)maxAmount;
 
-        if (process < 0.01f)
+        if (process < 0.1f)
         {
             panel.gameObject.SetActive(false);
             return;
@@ -78,6 +94,15 @@ public class LobbyScreen_Castle_Claim : MonoBehaviour, IValidatable
 
         //for (int i = 0; i < m_element.txtProcess.Length; i++)
         //    m_element.txtProcess[i].text = process == 1 ? "100%" : $"{process * 100: 0.0}%";
+    }
+
+    void OnButton_Claim()
+    {
+        DataManager.castle.ClaimAsync(m_objectType, _result =>
+        {
+            if (_result == StatusType.Success)
+                SlotUpdateFarmMarketData(DataManager.castle.GetCaslteData(m_objectType));
+        }).Forget();
     }
 
     #region VALIDATE

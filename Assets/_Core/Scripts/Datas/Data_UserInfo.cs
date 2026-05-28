@@ -264,10 +264,6 @@ public class Data_UserInfo
     public long GetAssetAmount(ItemType _itemType)
         => _itemType switch { ItemType.Gold => m_element.gold, ItemType.Rice => m_element.rice, _ => -1 };
 
-    public void AddRice(long _amount, bool _isUpdate = true, bool _isTween = true)
-        => AddAsset(0, _amount, _isUpdate, _isTween);
-    public void AddGold(long _amount, bool _isUpdate = true, bool _isTween = true)
-        => AddAsset(_amount, 0, _isUpdate, _isTween);
     public void AddAsset(long _gold, long _rice, bool _isUpdate = true, bool _isTween = true)
     {
         SetAsset(
@@ -275,6 +271,8 @@ public class Data_UserInfo
             _rice != 0 ? m_element.rice + _rice : -1,
             _isUpdate, _isTween);
     }
+    public void AddAsset(ItemType _itemType, long _amount, bool _isUpdate = true, bool _isTween = true)
+        => AddAsset(_itemType == ItemType.Gold ? _amount : 0, _itemType == ItemType.Rice ? _amount : 0, _isUpdate, _isTween);
 
     public void SetProvision(long _amount, bool _isUpdate = true, bool _isTween = true)
         => SetAsset(-1, _amount, _isUpdate, _isTween);

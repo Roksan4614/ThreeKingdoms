@@ -269,7 +269,9 @@ public class Signal
     public SignalObject ApplicationQuit = new();
     public SignalObject<bool> ChangeDisplayMode = new(); // isLandscape
 
+    public SignalObject<LobbyScreenType> OpenLobbyScreen = new();
     public SignalObject<LobbyScreenType> CloseLobbyScreen = new();
+    public SignalObject CloseLobbyScreenFinished = new();
 
     public SignalObject<CharacterComponent> ConnectMainHero = new();
     public SignalObject<CharacterComponent> UpdateHP = new();

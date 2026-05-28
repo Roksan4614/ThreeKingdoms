@@ -50,11 +50,8 @@ public class PopupCastleMissionComponent : BasePopupComponent
             SetMissionList(false);
         });
 
-        m_element.btnAll.onClick.AddListener(() =>
-        {
-            DataManager.castle.mission.CompleteMissionAsync(() => UpdateLevelInfo()).Forget();
-            SetMissionList(true);
-        });
+        m_element.btnAll.onClick.AddListener(()
+            => OpenMissionResultAsync(DataManager.castle.mission.data.Where(x => x.tickEnd > 0 && x.tickEnd < Utils.GetUTC().Ticks).ToArray()).Forget());
     }
 
     public override void OpenPopup(params object[] _args)
@@ -135,10 +132,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
             // 완료면 보상받기
             if (_missionData.tickEnd <= Utils.GetUTC().Ticks)
             {
-                PopupManager.instance.AlertShow("TODO: 보상받기");
-                DataManager.castle.mission.CompleteMissionAsync(() => UpdateLevelInfo(), _missionData).Forget();
-
-                SetMissionList(true);
+                await OpenMissionResultAsync(_missionData);
             }
             // 아니면 시간단축 팝업 띄우기
             else
@@ -151,7 +145,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
         {
             var countNoBatch = DataManager.userInfo.myHero.Where(x => DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1)
                 .Count();
-            if(countNoBatch == 0)
+            if (countNoBatch == 0)
             {
                 PopupManager.instance.AlertShow("임무_보낼_장수가_없습니다.");
                 return;
@@ -171,6 +165,19 @@ public class PopupCastleMissionComponent : BasePopupComponent
                 RefreshRemainCount();
                 SetMissionList(false);
             }
+        }
+    }
+
+    async UniTask OpenMissionResultAsync(params CastleMissionData[] _mission)
+    {
+        Utils.SetActivePunch(m_element.panel, false);
+        await m_element.result.OpenAsync(_mission);
+        Utils.SetActivePunch(m_element.panel, true);
+
+        if (m_element.result.resultType == StatusType.Success)
+        {
+            UpdateLevelInfo();
+            SetMissionList(true);
         }
     }
 
@@ -213,6 +220,8 @@ public class PopupCastleMissionComponent : BasePopupComponent
     struct ElementData
     {
         public PopupCastleMission_Popup_Info info;
+        public PopupCastleMission_Popup_Result result;
+
         public PopupCastleMission_Item baseItem;
 
         public ScrollRect scroll;
@@ -243,6 +252,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
         public void Initialize(Transform _transform)
         {
             info = _transform.GetComponent<PopupCastleMission_Popup_Info>("Popup/MissionInfo");
+            result = _transform.GetComponent<PopupCastleMission_Popup_Result>("Popup/MissionResult");
 
             scroll = _transform.GetComponent<ScrollRect>("Panel/List/Scroll");
             baseItem = scroll.content.GetChild(0).GetComponent<PopupCastleMission_Item>();

@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using UnityEngine.Events;
 
 public class Data_Castle_Building
 {
@@ -100,10 +101,60 @@ public class Data_Castle_Building
 
         PopupManager.instance.AlertShow($"건물 업그레이드 완료: [{TableManager.stringTable.GetString($"CASTLE_OBJECT_{_objectType.ToString().ToUpper()}")}]");
 
-        castleData = DataManager.castle.CompleteUpgrade(_objectType);
+        castleData = CompleteUpgrade(_objectType);
         Signal.instance.CompleteCaslteBuildingUpgrade.Emit(castleData);
 
         DataManager.castle.OnUpdateClaim();
+    }
+
+    public async UniTask StartUpgradeAsync(CastleObjectType _objectType, UnityAction<Data_Castle.CastleData> _callback)
+    {
+        var db = DataManager.castle.GetCaslteData(_objectType);
+
+        if (db.level == 10)
+        {
+            PopupManager.instance.AlertShow("이미_최고 레벨입니다.");
+            return;
+        }
+
+        if (db.isDoingUpgrade == true)
+        {
+            PopupManager.instance.AlertShow("이미_업그레이드가_진행중입니다.");
+            return;
+        }
+
+        if (db.remainUpgradeSeconds == 0)
+            db.tickUpgradeEnd = Utils.GetUTC().AddSeconds(db.dbRise.upgradeSeconds).Ticks;
+        else
+        {
+            db.tickUpgradeEnd = Utils.GetUTC().AddSeconds(db.remainUpgradeSeconds).Ticks;
+            db.remainUpgradeSeconds = 0;
+        }
+
+        DataManager.castle.UpdateCastleData(db);
+
+        UpdateBuildingUpgrade(_objectType);
+
+        // 서버 연동 작업 필요
+        await UniTask.Yield();
+
+        _callback?.Invoke(db);
+    }
+
+    public Data_Castle.CastleData CompleteUpgrade(CastleObjectType _objectType)
+    {
+        var db = DataManager.castle.GetCaslteData(_objectType);
+        db.tickUpgradeEnd = 0;
+        db.remainUpgradeSeconds = 0;
+        db.level++;
+
+        DataManager.castle.UpdateCastleData(db);
+
+        // 관아와 행상 외에는 모두 클레임에 영향을 끼침
+        if (_objectType != CastleObjectType.Office && _objectType != CastleObjectType.Merchant)
+            DataManager.castle.OnUpdateClaim();
+
+        return db;
     }
 
     public void Release_CTS(CastleObjectType _objectType)

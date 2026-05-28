@@ -6,24 +6,52 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+public enum RewardSpawnType
+{
+    Character,
+    UI_Front,
+    Popup,
+}
+
 public class RewardItemComponent : TargetComponent, IValidatable
 {
     RewardWorker.RewardItemData m_data;
     public RewardWorker.RewardItemData data => m_data;
-    public bool m_isCanvas;
 
-    public bool Initialize(RewardWorker.RewardItemData _itemData, bool _isCanvas, bool _isFXStart)
+    Transform m_target;
+    Transform m_prevParent;
+
+    private void Start()
     {
-        m_isCanvas = _isCanvas;
+        m_prevParent = transform.parent;
+
+        Signal.instance.CloseLobbyScreenFinished.connectLambda = new(this, () =>
+        {
+            if (gameObject.activeInHierarchy == true)
+                m_element.sg.sortingLayerID = m_element.psRenderer.sortingLayerID = m_element.layerPopup;
+        });
+
+        Signal.instance.OpenLobbyScreen.connectLambda = new(this, _screen =>
+        {
+            if (gameObject.activeInHierarchy == true)
+                m_element.sg.sortingLayerID = m_element.psRenderer.sortingLayerID = m_element.layerCharacter;
+        });
+    }
+
+    public bool Initialize(RewardWorker.RewardItemData _itemData, RewardSpawnType _spawnType, bool _isFXStart, Transform _target)
+    {
+        m_target = _target;
+        transform.SetParent(_target.parent);
+
         isSwitchSorting = true;
-        m_element.sg.sortingLayerID = _isCanvas ? m_element.layerPopup : m_element.layerStart;
         m_element.sg.sortingOrder = 1;
         m_element.character.gameObject.SetActive(true);
         m_element.ps.gameObject.SetActive(_isFXStart);
-        m_element.psRenderer.sortingLayerID = _isCanvas ? m_element.layerPopup : m_element.layerUIFront;
+        m_element.sg.sortingLayerID = m_element.psRenderer.sortingLayerID =
+            _spawnType == RewardSpawnType.Character ? m_element.layerCharacter : m_element.layerPopup;
 
-        if (_isCanvas == true)
-            m_element.sg.sortingOrder = (int)OrderLayerType.MAX;
+        //if (_spawnType > RewardSpawnType.Character)
+        m_element.sg.sortingOrder = (int)OrderLayerType.MAX;
 
         var main = m_element.ps.main;
         var minMax = main.startDelay;
@@ -49,23 +77,20 @@ public class RewardItemComponent : TargetComponent, IValidatable
         if (_itemData.count > 1)
             m_element.txtCount.text = $"x{_itemData.count.AmountKMBT()}";
 
+
         return true;
     }
 
-    public async UniTask ThrowStart(Transform _target, float _moveDuration)
+    public async UniTask ThrowStart(float _moveDuration)
     {
         isSwitchSorting = false;
 
-        var prevParent = transform.parent;
-        transform.SetParent(_target.parent);
-
         m_element.ps.gameObject.SetActive(true);
-        //m_element.txtCount.gameObject.SetActive(false);
 
         // 방향 곡선!!
         {
             Vector3 startPos = transform.localPosition;
-            var endPos = _target.localPosition;
+            var endPos = m_target.localPosition;
 
             Vector3 lookAt = endPos - startPos;
             float distance = lookAt.magnitude;
@@ -89,17 +114,17 @@ public class RewardItemComponent : TargetComponent, IValidatable
         }
 
         m_element.character.gameObject.SetActive(false);
-        transform.SetParent(prevParent);
+        transform.SetParent(m_prevParent);
 
-        var prevScale = _target.localScale;
+        var prevScale = m_target.localScale;
         prevScale.x = prevScale.y = prevScale.z;
         var scale = prevScale;
         scale *= 1.1f;
         scale.z = prevScale.z;
-        _target.localScale = scale;
+        m_target.localScale = scale;
 
-        _target.DOKill();
-        _target.DOScale(prevScale, .2f);
+        m_target.DOKill();
+        m_target.DOScale(prevScale, .2f);
 
         // 금화와 군량일 경우 올려주는 연출
         if (m_data.isCurrency)
@@ -110,8 +135,6 @@ public class RewardItemComponent : TargetComponent, IValidatable
     }
     protected override void LateUpdate()
     {
-        if (m_isCanvas == false)
-            base.LateUpdate();
     }
 
     #region VALIDATA
@@ -127,10 +150,8 @@ public class RewardItemComponent : TargetComponent, IValidatable
     [Serializable]
     struct ElementData
     {
-        public int layerStart;
-        public int layerAction;
         public int layerPopup;
-        public int layerUIFront;
+        public int layerCharacter;
 
         public SortingGroup sg;
         public ParticleSystem ps;
@@ -161,13 +182,11 @@ public class RewardItemComponent : TargetComponent, IValidatable
 
             txtCount = _transform.GetComponent<TextMeshProUGUI>("Character/Canvas/txt_count");
 
-            layerStart = SortingLayer.NameToID("Character");
-            layerAction = SortingLayer.NameToID("UI");
+            layerCharacter = SortingLayer.NameToID("Character");
             layerPopup = SortingLayer.NameToID("Popup");
-            layerUIFront = SortingLayer.NameToID("UI_Front");
 
-            if (layerStart == 0 || layerAction == 0 || layerPopup == 0 || layerUIFront == 0)
-                IngameLog.Add($"{_transform.name}: layerError: layerStart{layerStart} / layerAction{layerAction} / layserPopup{layerPopup} / layserPopup{layerUIFront}");
+            if (layerCharacter == 0 || layerPopup == 0)
+                IngameLog.Add($"{_transform.name}: layerError: layerCharacter{layerCharacter} / layserPopup{layerPopup}");
         }
 
         public GameObject GetObject(ItemType _itemType)

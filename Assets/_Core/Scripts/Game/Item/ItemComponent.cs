@@ -62,7 +62,8 @@ public class ItemComponent : MonoBehaviour, IValidatable
 
     public void SetSoulCount(long _count = 0)
     {
-        m_element.panel.gameObject.SetActive(true);
+        SetActivePanel(true);
+        //m_element.panel.gameObject.SetActive(true);
         m_element.iconPanel.parent.gameObject.SetActive(false);
 
         m_element.txtCount.text = _count == 0 ? "" : $"x{_count.AmountKMBT()}";

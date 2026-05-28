@@ -11,9 +11,15 @@ public class PopupCastleMission_Popup_Info_Reward : MonoBehaviour, IValidatable
     private void Awake()
     {
         m_rewardRandom = Instantiate(m_element.baseRewardItem, m_element.scroll.content).GetComponent<PopupCastleMission_Popup_Info_RewardItem>();
-        m_element.baseRewardItem.SetTitle(true);
-        m_rewardRandom.SetTitle(false);
+        m_element.baseRewardItem.SetTitle(true, "È®Á¤_º¸»ó");
+        m_rewardRandom.SetTitle(false, "È¹µæ_°¡´É_º¸»ó");
         m_rewardRandom.name = "Random";
+    }
+
+    public void SetTitleResult()
+    {
+        m_element.baseRewardItem.SetTitle(true, "È®Á¤_º¸»ó");
+        m_rewardRandom.SetTitle(false, "È¹µæ_º¸»ó");
     }
 
     public void SetRewardList(Data_Castle_Mission.CastleMissionData _missionData, float _percent)
@@ -27,6 +33,12 @@ public class PopupCastleMission_Popup_Info_Reward : MonoBehaviour, IValidatable
         m_rewardRandom.SetReward((int)_percent,
             dbGroup[false].OrderByDescending(x => x.unlock_pct <= _percent).ThenByDescending(x => x.unlock_pct).ToArray());
     }
+
+    public void SetReward_ResultFixed(params TableCastleMissionRewardData[] _rewardData)
+        => m_rewardFixed.SetReward(100, _rewardData);
+    public void SetReward_ResultRandom(params TableItemData[] _rewardData)
+        => m_rewardFixed.SetReward_Result(_rewardData);
+
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
