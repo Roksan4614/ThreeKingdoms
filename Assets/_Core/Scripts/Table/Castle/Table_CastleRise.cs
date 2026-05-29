@@ -57,8 +57,10 @@ public struct TableCastleRiseData
     public int[] maxCoreStat => new[] { value01, value02 };
 
     public int orinValue01 => req_stat_value_1;
-    public int value01 => Mathf.FloorToInt((1 - DataManager.castle.GetPalaceCharismaRate()) * req_stat_value_1) + req_stat_value_1;
-    public int value02 => Mathf.FloorToInt((1 - DataManager.castle.GetPalaceCharismaRate()) * req_stat_value_2) + req_stat_value_2;
+    //public int value01 => Mathf.FloorToInt((1 - DataManager.castle.GetPalaceCharismaRate()) * req_stat_value_1) + req_stat_value_1;
+    //public int value02 => Mathf.FloorToInt((1 - DataManager.castle.GetPalaceCharismaRate()) * req_stat_value_2) + req_stat_value_2;
+    public int value01 => Mathf.RoundToInt(req_stat_value_1 * 2 * Mathf.Lerp(1, 0.5f, DataManager.castle.GetPalaceCharismaRate()));
+    public int value02 => Mathf.RoundToInt(req_stat_value_2 * 2 * Mathf.Lerp(1, 0.5f, DataManager.castle.GetPalaceCharismaRate()));
 
     public int nowUpgradeSeconds => upgrade_seconds;
     public int upgradeSeconds => TableManager.castleRise.GetRiseData(type, level + 1).nowUpgradeSeconds;

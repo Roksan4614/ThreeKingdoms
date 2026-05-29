@@ -121,6 +121,8 @@ public class PopupCastleMissionComponent : BasePopupComponent
         for (; i < m_element.scroll.content.childCount; i++)
             m_element.scroll.content.GetChild(i).gameObject.SetActive(false);
 
+        m_element.txtEmpty.gameObject.SetActive(missionList.Length == 0);
+
         m_element.scroll.content.ForceRebuildLayout();
     }
 
@@ -223,6 +225,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
         public PopupCastleMission_Popup_Result result;
 
         public PopupCastleMission_Item baseItem;
+        public TextMeshProUGUI txtEmpty;
 
         public ScrollRect scroll;
 
@@ -264,6 +267,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
             btnAll = _transform.GetComponent<ButtonHelper>("Panel/btn_all");
 
             exp = _transform.GetComponent<GaugeHelper>("Panel/EXP");
+            txtEmpty = scroll.transform.GetComponent<TextMeshProUGUI>("txt_empty");
         }
 
         public Transform panel => btnAll.transform.parent;

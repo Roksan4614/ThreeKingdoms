@@ -34,6 +34,8 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         m_nowData = TableManager.castleRise.GetRiseData(_castleData.type, _castleData.level);
         m_nextData = TableManager.castleRise.GetRiseData(_castleData.type, _castleData.level + 1);
 
+        SetAddItem(0, $"<size=110%><color=#000000>Lv.{_castleData.level + 1} 효과</color></size>", null, null);
+
         int i = _castleData.type switch
         {
             CastleObjectType.Palace => SetInfo_Palace(),
@@ -48,12 +50,12 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         // 공통
         {
             // 고유 능력 요구치
-            SetAddItem(i++, "고유_능력_요구치",
+            SetAddItem(i++, " 고유_능력_요구치",
                 (m_castleData.type == CastleObjectType.Palace ? m_nowData.orinValue01 : m_nowData.value01).ToString(),
                 (m_castleData.type == CastleObjectType.Palace ? m_nextData.orinValue01 : m_nextData.value01).ToString());
 
             // 장수배치 수
-            SetAddItem(i++, "배치_장수_수", m_nowData.character_slot_max.ToString(), m_nextData.character_slot_max.ToString());
+            SetAddItem(i++, " 배치_장수_수", m_nowData.character_slot_max.ToString(), m_nextData.character_slot_max.ToString());
 
             // 업그레이드 시간
             // 업그레이드 중이면 안보여주자
@@ -61,7 +63,7 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
             {
                 var dt = DateTime.Now;
                 var ts = dt.AddSeconds(m_castleData.dbRise.upgradeSeconds) - dt;
-                SetAddItem(i++, "증축_시간", m_castleData.dbRise.upgradeSeconds == 0 ? "_즉시" :
+                SetAddItem(i++, " 증축_시간", m_castleData.dbRise.upgradeSeconds == 0 ? "_즉시" :
                     ts.Days > 0 ?
                     $"{ts.Days}d {ts.Hours}h" :
                     ts.Hours > 0 ?
@@ -96,14 +98,14 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         var nowData = TableManager.castleEffect[m_castleData.type].Get(m_castleData.level);
         var nextData = TableManager.castleEffect[m_castleData.type].Get(m_castleData.level + 1);
 
-        int i = 0;
+        int i = 1;
 
         var probity = DataManager.castle.GetGateProbityRate();
 
-        SetAddItem(i++, "건물_레벨_상한선", $"{nowData.level_cap ?? -1}", $"{nextData.level_cap ?? -1}");
-        SetAddItem(i++, "시간석_개당_단축", $"{(nowData.time_stone_sec * probity ?? -1):0.##}s",
+        SetAddItem(i++, " 건물_레벨_상한선", $"{nowData.level_cap ?? -1}", $"{nextData.level_cap ?? -1}");
+        SetAddItem(i++, " 시간석_개당_단축", $"{(nowData.time_stone_sec * probity ?? -1):0.##}s",
             $"{(nextData.time_stone_sec * probity ?? -1):0.##}s");
-        SetAddItem(i++, "광고_회당_단축", $"{nowData.ad_reduce_min ?? -1}s", $"{nextData.ad_reduce_min ?? -1}s");
+        SetAddItem(i++, " 광고_회당_단축", $"{nowData.ad_reduce_min ?? -1}s", $"{nextData.ad_reduce_min ?? -1}s");
 
         return i;
     }
@@ -112,13 +114,13 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         var nextCastleData = m_castleData;
         nextCastleData.level += 1;
 
-        int i = 0;
+        int i = 1;
 
-        SetAddItem(i++, "초당_획득량",
+        SetAddItem(i++, " 초당_획득량",
             $"{DataManager.castle.GetAmountPerSecond(m_castleData).AmountKMBT()}/s",
             $"{DataManager.castle.GetAmountPerSecond(nextCastleData).AmountKMBT()}/s");
 
-        SetAddItem(i++, "보유량 한도",
+        SetAddItem(i++, " 보유량 한도",
             $"{DataManager.castle.GetMaxAmount(m_castleData).AmountKMBT()}",
             $"{DataManager.castle.GetMaxAmount(nextCastleData).AmountKMBT()}");
 

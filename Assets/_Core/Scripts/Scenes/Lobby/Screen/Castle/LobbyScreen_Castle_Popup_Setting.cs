@@ -277,7 +277,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                         switch (m_castleData.type)
                         {
                             case CastleObjectType.Palace:
-                                format += "(시간석_효율_{0})";
+                                format += "(고유_능력치_감소_{0})";
                                 break;
                             case CastleObjectType.Market:
                             case CastleObjectType.Farm:
@@ -295,6 +295,9 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                         {
                             switch (m_castleData.type)
                             {
+                                case CastleObjectType.Palace:
+                                    message = $"<color=#{Palette.htmlString_Up}>-{(Mathf.Min(1, total / (float)max)) * 0.5f * 100:0.##}%</color>";
+                                    break;
                                 case CastleObjectType.Gate:
                                     message = $"<color=#{Palette.htmlString_Up}>{Mathf.Min(1, total / (float)max) * 100:0.##}%</color>";
                                     break;
