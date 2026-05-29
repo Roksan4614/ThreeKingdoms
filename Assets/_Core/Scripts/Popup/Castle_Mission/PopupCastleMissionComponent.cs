@@ -73,7 +73,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
     }
 
     void RefreshRemainCount()
-        => m_element.txtRemainCount.text = $"남은_횟수 : {DataManager.castle.mission.remainCount}";
+        => m_element.txtRemainCount.text = $"남은_횟수 : {DataManager.castle.mission.levelInfo.missionCount}";
 
     void OnButton_Tab(TabType _tabType)
     {
@@ -145,6 +145,16 @@ public class PopupCastleMissionComponent : BasePopupComponent
         // 아니면 상세페이지를 띄워주자
         else
         {
+            if (DataManager.castle.mission.levelInfo.missionCount == 0)
+            {
+#if UNITY_EDITOR
+                PopupManager.instance.AlertShow("더이상_임무_보낼_수_없지만_테스트니까ㄱ");
+#else
+                PopupManager.instance.AlertShow("더이상_임무를_보낼_수_없습니다.");
+                return;
+#endif
+            }
+
             var countNoBatch = DataManager.userInfo.myHero.Where(x => DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1)
                 .Count();
             if (countNoBatch == 0)

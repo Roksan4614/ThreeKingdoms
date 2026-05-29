@@ -167,10 +167,14 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
             return;
         }
 
-        DataManager.castle.mission.StartMission(m_missionData);
-
-        resultType = StatusType.Success;
-        Close();
+        DataManager.castle.mission.StartMissionAsync(m_missionData, _result =>
+        {
+            if (_result == StatusType.Success)
+            {
+                resultType = StatusType.Success;
+                Close();
+            }
+        }).Forget();
     }
 
     public bool CloseEscape()

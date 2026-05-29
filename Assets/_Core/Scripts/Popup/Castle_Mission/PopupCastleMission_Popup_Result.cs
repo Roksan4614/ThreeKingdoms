@@ -136,7 +136,7 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
         DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
 
         foreach (var r in rewards)
-            RewardWorker.instance.Run(CameraManager.posPointer, r.itemType, r.count, _isPopup: true);
+            RewardWorker.instance.Run(CameraManager.posPointer, r.itemType, r.count, _isPopup: true, _durationWait: Random.Range(0.5f, 1f));
     }
 
     void OnButton_Confirm()

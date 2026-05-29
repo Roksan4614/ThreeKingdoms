@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,10 +10,8 @@ public class Data_Castle_Mission
     List<CastleMissionData> m_data;
     public IReadOnlyList<CastleMissionData> data => m_data;
 
-    int m_remainCount;
-    public int remainCount => m_remainCount;
-
     const string c_key = "pp_casltle_mission";
+
 
     int m_idxMission;
 
@@ -23,7 +22,6 @@ public class Data_Castle_Mission
     {
         await UniTask.Yield();
 
-        m_remainCount = PPWorker.Get<int>(c_key + "_count");
         m_data = PPWorker.Get<List<CastleMissionData>>(c_key);
 
         //m_data = null; m_remainCount = 10;
@@ -32,7 +30,6 @@ public class Data_Castle_Mission
         {
             m_idxMission = 1;
             m_data = new();
-            m_remainCount = 10;
             var dbTable = TableManager.castleMisson.list.OrderBy(x => Random.value).ToArray();
 
             for (int i = 0; i < 3; i++)
@@ -108,8 +105,10 @@ public class Data_Castle_Mission
             SaveData();
     }
 
-    public void StartMission(CastleMissionData _missionData)
+    public async UniTask StartMissionAsync(CastleMissionData _missionData, UnityAction<StatusType> _onComplete)
     {
+        await UniTask.Yield();
+
         var idx = m_data.FindIndex(x => x.idx == _missionData.idx);
         var data = m_data[idx];
 
@@ -117,17 +116,23 @@ public class Data_Castle_Mission
         data.percentStat = _missionData.percentStat;
         data.heroes.AddRange(_missionData.heroes);
         var sec = data.dbGradeData.durationSeconds;
+
 #if UNITY_EDITOR
         data.tickEnd = Utils.GetUTC().AddSeconds(((int)_missionData.grade + 3) * 5).Ticks;
 #else
         data.tickEnd = Utils.GetUTC().AddSeconds(sec).Ticks;
 #endif
 
-        m_remainCount--;
-
         m_data.RemoveAt(idx);
         m_data.Add(data);
         AddNewMission(true, idx);
+
+        m_levelInfo.missionCount = m_levelInfo.missionCount - 1;
+        SaveLevelData();
+
+        PopupManager.instance.AlertShow("미션_임무를_시작합니다.", -390);
+
+        _onComplete(StatusType.Success);
     }
 
     public async UniTask CompleteMissionAsync(UnityAction<StatusType, int> _onComplete, params CastleMissionData[] _missionDatas)
@@ -185,9 +190,6 @@ public class Data_Castle_Mission
         return totalStat;
     }
 
-
-
-
     public void SetUpgradeOffice()
     {
         var nextLevelInfo = TableManager.castleOfficeLevel.GetLevelInfo(m_levelInfo.level + 1);
@@ -200,7 +202,6 @@ public class Data_Castle_Mission
 
     public void SaveData()
     {
-        PPWorker.Set(c_key + "_count", m_remainCount);
         PPWorker.Set(c_key, m_data);
     }
 
@@ -239,13 +240,40 @@ public class Data_Castle_Mission
         public int durationSeconds => dbGradeData.durationSeconds;
     }
 
-
     public struct CastleMissionLevelInfoData
     {
         public int level;
         public int nowExp;
         public int maxExp;
 
+        public long tickMission;
+        [JsonProperty] int mission_count;
+
         public bool isUpgradable => nowExp >= maxExp;
+
+        public System.DateTime dtMission => new System.DateTime(tickMission, System.DateTimeKind.Utc);
+        public bool isDateChanged => Utils.GetUTC().Date > dtMission.Date;
+
+        public int missionCount
+        {
+            get
+            {
+                CheckDate();
+                return mission_count;
+            }
+            set
+            {
+                mission_count = value;
+            }
+        }
+
+        void CheckDate()
+        {
+            if (isDateChanged)
+            {
+                mission_count = TableManager.castleEffect[CastleObjectType.Office].Get(level).mission_count.Value;
+                tickMission = Utils.GetUTC().Ticks;
+            }
+        }
     }
 }
