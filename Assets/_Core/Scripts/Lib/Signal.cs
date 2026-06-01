@@ -295,6 +295,9 @@ public class Signal
     public SignalObject<Data_Castle.CastleData> CompleteCaslteBuildingUpgrade = new();
     public SignalObject<Data_Castle.CastleData> UpdateCastleHeroBatch = new();
 
+    public SignalObject CastleWally_Spawn = new();
+    public SignalObject CastleWally_Failed = new();
+
     public SignalObject Event_ActivePunch_Start = new();
     #endregion
 }

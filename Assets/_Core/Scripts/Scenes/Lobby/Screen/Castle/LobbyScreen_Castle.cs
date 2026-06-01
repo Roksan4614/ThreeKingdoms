@@ -160,6 +160,9 @@ public class LobbyScreen_Castle : LobbyScreen_Base
     public LobbyScreen_Castle_Claim GetClaim(CastleObjectType _type)
         => _type == CastleObjectType.Market ? m_element.claimMarket : _type == CastleObjectType.Farm ? m_element.claimFarm : null;
 
+    public Transform GetWallyPointRandom()
+        => m_element.builds[UnityEngine.Random.Range(0, m_element.builds.Count)].GetWallyPointRandom();
+
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);
 
@@ -181,7 +184,6 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
         public LobbyScreen_Castle_Claim claimMarket;
         public LobbyScreen_Castle_Claim claimFarm;
-
 
         public void Initialize(Transform _transform)
         {

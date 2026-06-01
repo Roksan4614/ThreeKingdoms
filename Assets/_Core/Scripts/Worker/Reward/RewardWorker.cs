@@ -2,8 +2,6 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class RewardWorker : Singleton<RewardWorker>, IValidatable
@@ -26,6 +24,16 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         m_element.baseRewardItem.gameObject.SetActive(false);
 
         Signal.instance.ConnectMainHero.connectLambda = new(this, _mainhero => m_mainHero = _mainhero);
+    }
+
+    public void AddAsset(long _gold, long _rice, Transform _fromTarget = null)
+    {
+        DataManager.userInfo.AddAsset(_gold, _rice, false);
+
+        Vector3 posFrom = _fromTarget == null ? CameraManager.posPointer : _fromTarget.position;
+
+        Run(posFrom, ItemType.Gold, _gold, _isPopup: true, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
+        Run(posFrom, ItemType.Rice, _rice, _isPopup: true, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
     }
 
     public void Run(Vector3 _posFrom, ItemType _itemType, long _count = 1, bool _isStartPunch = true

@@ -15,13 +15,42 @@ public class LobbyScreen_Castle_NPCManager : Singleton<LobbyScreen_Castle_NPCMan
 
         //test
         var test = transform.GetComponent<LobbyScreen_Castle_NPCComponent>("List/Test");
-        test.Initialize(m_element.localPosTop.y, m_element.localPosBottom.y);
-        test.transform.SetParent(test.transform.parent.parent);
-        test.gameObject.SetActive(false);
+        if (test != null)
+        {
+            test.Initialize(m_element.localPosTop.y, m_element.localPosBottom.y);
+            test.transform.SetParent(test.transform.parent.parent);
+            test.gameObject.SetActive(false);
+        }
+
+        // µµÀû
+        {
+            m_element.wally.gameObject.SetActive(false);
+            m_element.wally.transform.SetParent(m_element.wally.transform.parent.parent);
+            Signal.instance.CastleWally_Spawn.connectLambda = new(this, () =>
+            {
+                if (gameObject.activeInHierarchy == false)
+                    return;
+
+                m_element.wally.SpawnStartAsync().Forget();
+            });
+
+            Signal.instance.CastleWally_Failed.connectLambda = new(this, () =>
+            {
+                if (gameObject.activeInHierarchy == false)
+                    return;
+
+                m_element.wally.gameObject.SetActive(false);
+            });
+        }
     }
 
     void OnEnable()
-        => SetSpawnNPC();
+    {
+        SetSpawnNPC();
+        if (DataManager.castle.wallyData.tickSpawn > 0)
+            m_element.wally.SpawnStartAsync().Forget();
+
+    }
 
     void OnDisable()
         => m_dtSpawn = System.DateTime.Now.AddMinutes(1f);
@@ -143,6 +172,7 @@ public class LobbyScreen_Castle_NPCManager : Singleton<LobbyScreen_Castle_NPCMan
         public List<StreetData> streets;
 
         public LobbyScreen_Castle_NPCComponent npc;
+        public LobbyScreen_Castle_NPC_Wally wally;
 
         public Vector3 localPosTop;
         public Vector3 localPosBottom;
@@ -164,6 +194,7 @@ public class LobbyScreen_Castle_NPCManager : Singleton<LobbyScreen_Castle_NPCMan
             }
 
             npc = _transform.GetComponent<LobbyScreen_Castle_NPCComponent>("List/Castle_NPC_Default");
+            wally = _transform.GetComponent<LobbyScreen_Castle_NPC_Wally>("List/Castle_NPC_Wally");
             parentList = npc.transform.parent;
 
             localPosTop = _transform.Find("pos_npc_top").localPosition;

@@ -457,6 +457,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7739765976817815394}
   - component: {fileID: 2473142621071818801}
+  - component: {fileID: 1532853015870575104}
+  - component: {fileID: 1389139246425599580}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -514,6 +516,46 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!223 &1532853015870575104
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 700626750549038903}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: -1738142153
+  m_SortingOrder: 6
+  m_TargetDisplay: 0
+--- !u!114 &1389139246425599580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 700626750549038903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1055557829116781043
 GameObject:
   m_ObjectHideFlags: 0
@@ -1056,7 +1098,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: -79.70801}
-  m_SizeDelta: {x: 0, y: 159.4161}
+  m_SizeDelta: {x: 128.7, y: 159.4161}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &6506176533534051524
 MonoBehaviour:
@@ -2228,8 +2270,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 540, y: -140.5464}
-  m_SizeDelta: {x: 910, y: 67}
+  m_AnchoredPosition: {x: 540, y: -310.5464}
+  m_SizeDelta: {x: 910, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5768665743445605003
 MonoBehaviour:
@@ -2765,7 +2807,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 456.5, y: -15}
-  m_SizeDelta: {x: 913, y: 70}
+  m_SizeDelta: {x: 913, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &102810113365491474
 CanvasRenderer:
@@ -3242,7 +3284,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8232053659143098293, guid: 920b071bb04ddb7418cec5f7f3a7eea9, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8232053659143098293, guid: 920b071bb04ddb7418cec5f7f3a7eea9, type: 3}
       propertyPath: m_AnchorMin.x
@@ -3250,11 +3292,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8232053659143098293, guid: 920b071bb04ddb7418cec5f7f3a7eea9, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8232053659143098293, guid: 920b071bb04ddb7418cec5f7f3a7eea9, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 873
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8232053659143098293, guid: 920b071bb04ddb7418cec5f7f3a7eea9, type: 3}
       propertyPath: m_SizeDelta.y
@@ -3290,11 +3332,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8232053659143098293, guid: 920b071bb04ddb7418cec5f7f3a7eea9, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 456.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8232053659143098293, guid: 920b071bb04ddb7418cec5f7f3a7eea9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -35
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8232053659143098293, guid: 920b071bb04ddb7418cec5f7f3a7eea9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

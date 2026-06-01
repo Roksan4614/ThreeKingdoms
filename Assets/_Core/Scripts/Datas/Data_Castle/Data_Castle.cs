@@ -6,7 +6,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Data_Castle
+public partial class Data_Castle
 {
     public Data_Castle_Mission mission { get; set; } = new();
     public Data_Castle_Building building { get; set; } = new();
@@ -19,6 +19,8 @@ public class Data_Castle
 
     public async UniTask InitializeAsync()
     {
+        InitializeWallyAsync().Forget();
+
         List<UniTask> lstTask = new()
         {
             DoLoad_CastleDataAsync(),
@@ -211,23 +213,17 @@ public class Data_Castle
         return minPercent + minPercent * percent;
     }
 
-    //public float GetGatePublicOrderRate(bool _isJustPercent = false)
-    //{
-    //    var gateData = GetCaslteData(CastleObjectType.Gate);
+    public float GetGatePublicOrderRate()
+    {
+        var gateData = GetCaslteData(CastleObjectType.Gate);
 
-    //    // √÷¿˙ √ª∑≈µµ
-    //    float minPercent = 0.5f;
+        var total = GetTotalCoreStat(gateData, CoreStatType.Strength);
+        var dbMax = gateData.dbRise.value02;
 
-    //    var totalLeaderShip = GetTotalCoreStat(gateData, CoreStatType.Strength);
-    //    var dbMaxLeaderShip = gateData.dbRise.value01;
+        float percent = Mathf.Min(1f, total / (float)dbMax);
 
-    //    float percent = Mathf.Min(1f, totalLeaderShip / (float)dbMaxLeaderShip);
-
-    //    if (_isJustPercent == true)
-    //        return percent;
-
-    //    return minPercent + minPercent * percent;
-    //}
+        return percent;
+    }
 
     public float GetPalaceCharismaRate()
     {
@@ -275,6 +271,7 @@ public class Data_Castle
     {
         SaveData();
         Release_CTS();
+        Release_CTSWally();
 
         building.Release();
     }
@@ -360,7 +357,7 @@ public class Data_Castle
         DataManager.userInfo.AddAsset(itemType, count, false, false);
 
         RewardWorker.instance.Run(CameraManager.posPointer,
-            itemType, count, _isPopup: true);
+            itemType, count, _isPopup: true, _isStartPunch: false);
 
         _onComplete(StatusType.Success);
     }

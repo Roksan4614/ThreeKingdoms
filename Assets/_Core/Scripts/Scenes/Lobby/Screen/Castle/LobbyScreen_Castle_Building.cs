@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
@@ -138,8 +139,15 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
         }
     }
 
+    public Transform GetWallyPointRandom()
+    {
+        if (m_element.wallyPoint == null)
+            return null;
+        return m_element.wallyPoint[Random.Range(0, m_element.wallyPoint.Length)];
+    }
+
     #region VALIDATE
-    public void OnManualValidate() => m_element.Initialize(transform);
+    public void OnManualValidate() => m_element.Initialize(transform, m_objectType);
 
     [SerializeField, HideInInspector]
     ElementData m_element;
@@ -148,10 +156,13 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
     struct ElementData
     {
         public Animator anim;
+        public Transform[] wallyPoint;
 
-        public void Initialize(Transform _transform)
+        public void Initialize(Transform _transform, CastleObjectType _objectType)
         {
             anim = _transform.GetComponent<Animator>();
+
+            wallyPoint = _transform.parent?.Find($"WallyPoint/{_objectType.ToString()}")?.GetComponentsInChildren<Transform>().Skip(1)?.ToArray();
         }
     }
     #endregion VALIDATE

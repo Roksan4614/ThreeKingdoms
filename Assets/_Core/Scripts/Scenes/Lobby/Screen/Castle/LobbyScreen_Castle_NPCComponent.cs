@@ -41,7 +41,7 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
         m_posBottom = _posBottom;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (isTestNPC == true && m_element.panel.gameObject.activeSelf)
             OnUpdate_NPCMove();
@@ -152,7 +152,7 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
         }
     }
 
-    public void OnPointerDown(PointerEventData _eventData)
+    public virtual void OnPointerDown(PointerEventData _eventData)
     {
         transform.DOKill();
         ReleaseCTS();
@@ -173,7 +173,7 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
     }
 
     #region VALIDATE
-    public void OnManualValidate() => m_element.Initialize(transform);
+    public virtual void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
     ElementData m_element;
@@ -187,7 +187,6 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
         public Animator anim;
 
         public Canvas canvas;
-        public Button button;
 
         public Transform emoticon;
 
@@ -202,7 +201,6 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
             anim = _transform.GetComponent<Animator>();
             canvas = _transform.GetComponent<Canvas>();
 
-            button = _transform.GetComponent<Button>("Button");
             emoticon = _transform.Find("Emoticons");
         }
     }
