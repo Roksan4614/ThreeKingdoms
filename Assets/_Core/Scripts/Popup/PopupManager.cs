@@ -24,6 +24,8 @@ public enum PopupType
     Castle_HeroList,
     Castle_Mission,
 
+    UseTimeStone,
+
     Modal_Start,
     Modal,
     Modal_TalkSelect,

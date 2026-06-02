@@ -15,6 +15,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
     Transform m_baseIcon;
     PopupCastleHeroListComponent m_popupHeroList;
     PopupHeroInfo m_popupHeroInfo;
+    PopupUseTimeStoneComponent m_popupTimeStone;
 
     LobbyScreen_Castle_Popup_Setting_UpgradeInfo m_upgradeInfo;
 
@@ -34,6 +35,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         m_element.btnAdd.onClick.AddListener(() => OpenHeroListPopupAsync().Forget());
         m_element.btnUpgrade.onClick.AddListener(OnButton_Upgrade);
+        m_element.btnUpgradeTimer.onClick.AddListener(() => OnButton_TimeStoneAsync().Forget());
 
         m_upgradeInfo = m_element.scroll.content.GetComponent<LobbyScreen_Castle_Popup_Setting_UpgradeInfo>("UpgradeInfo");
 
@@ -69,6 +71,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
             m_element.btnUpgrade.gameObject.SetActive(true);
             m_element.btnUpgradeTimer.gameObject.SetActive(false);
+
+            m_popupTimeStone?.Close();
         });
         Signal.instance.StopCaslteBuildingUpgrade.connectLambda = new(this, _castleData =>
         {
@@ -188,10 +192,12 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         }
 
         var ts = _upgradeData.ts;
-        if (ts.Minutes > 0)
-            m_element.btnUpgradeTimer.text = $"{Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
+        if (ts.TotalMinutes > 0)
+            m_element.btnUpgradeTimer.text = $"{Utils.MSpace($"{ts.Hours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
         else
             m_element.btnUpgradeTimer.text = $"{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s\n남은_시간";
+
+        m_popupTimeStone?.UpdateRemainTime(ts);
     }
 
     void OnButton_Upgrade()
@@ -203,6 +209,28 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         }
 
         DataManager.castle.building.StartUpgradeAsync(m_castleData.type, null).Forget();
+    }
+
+    async UniTask OnButton_TimeStoneAsync()
+    {
+        m_popupTimeStone = await PopupManager.instance.OpenPopup<PopupUseTimeStoneComponent>(PopupType.UseTimeStone);
+        m_popupTimeStone.UpdateRemainTime(DataManager.castle.building.GetUpgradeData(m_castleData).ts);
+
+        var rtScroll = (RectTransform)m_element.scroll.transform;
+        var prevPos = rtScroll.anchoredPosition.y;
+        rtScroll.DOAnchorPosY(0, 0.1f);
+
+        await UniTask.WaitUntil(() => m_popupTimeStone.statusType != StatusType.Wait);
+
+        if (m_popupTimeStone.statusType == StatusType.Success)
+            DataManager.castle.building.UpgradeTimerBonus(m_castleData.type, m_popupTimeStone.timeBonus);
+
+        await rtScroll.DOAnchorPosY(prevPos, 0.1f).AsyncWaitForCompletion();
+
+        m_popupTimeStone.CloseEscape();
+        m_popupTimeStone = null;
+
+        await UniTask.Yield();
     }
 
     void SetBatchHero(bool _isForceUpdate = false)
@@ -350,6 +378,9 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             return false;
 
         if (m_popupHeroList?.CloseEscape() == false)
+            return false;
+
+        if (m_popupTimeStone?.CloseEscape() == false)
             return false;
 
         if (gameObject.activeSelf == true)

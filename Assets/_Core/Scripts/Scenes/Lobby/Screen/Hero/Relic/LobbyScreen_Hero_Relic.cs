@@ -50,7 +50,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         m_curHeroCountType = countType - 1;
         SetHeroCountType(countType);
 
-        m_element.heroCountData.btnOpen.onClick.AddListener(() => SetActiveHeroCount(true));
+        m_element.heroCountData.btnOpen.onClick.AddListener(() => SetActiveCountPanel(true));
 
         for (int i = 0; i < m_element.heroCountData.btnCount.Length; i++)
         {
@@ -61,7 +61,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             b.onClick.AddListener(() =>
             {
                 SetHeroCountType(type);
-                SetActiveHeroCount(false);
+                SetActiveCountPanel(false);
 
                 PPWorker.Set(c_keyHeroCountType, (int)type);
             });
@@ -98,7 +98,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             UpdateTotalStat();
     }
 
-    void SetActiveHeroCount(bool _isActive)
+    void SetActiveCountPanel(bool _isActive)
     {
         var tab = m_element.btnTabs[0].transform.parent.gameObject;
 
@@ -106,7 +106,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             tab.SetActive(true);
         else if (tab.activeSelf == false)
         {
-            SetActiveHeroCount(false);
+            SetActiveCountPanel(false);
             return;
         }
 

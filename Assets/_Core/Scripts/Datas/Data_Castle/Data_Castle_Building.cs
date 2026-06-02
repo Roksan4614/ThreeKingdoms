@@ -157,6 +157,15 @@ public class Data_Castle_Building
         return db;
     }
 
+    public void UpgradeTimerBonus(CastleObjectType _objectType, int _bonusTime)
+    {
+        var objectData = DataManager.castle.GetCaslteData(_objectType);
+        objectData.tickUpgradeEnd = objectData.dtUpgradeEnd.AddSeconds(-_bonusTime).Ticks;
+        DataManager.castle.UpdateCastleData(objectData);
+
+        Signal.instance.UpdateCaslteBuildingUpgrade.Emit(GetUpgradeData(objectData));
+    }
+
     public void Release_CTS(CastleObjectType _objectType)
     {
         if (_objectType == CastleObjectType.NONE)

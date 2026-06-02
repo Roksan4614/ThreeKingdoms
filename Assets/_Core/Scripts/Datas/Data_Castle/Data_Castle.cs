@@ -267,6 +267,13 @@ public partial class Data_Castle
         return totalStat;
     }
 
+    public void GetSecondTimeStone(UnityAction<int, int> _callback)
+    {
+        var palace = GetCaslteData(CastleObjectType.Palace);
+        var effectData = TableManager.castleEffect[CastleObjectType.Palace].Get(palace.level);
+        _callback(effectData.time_stone_sec.Value, effectData.ad_reduce_min.Value);
+    }
+
     public void Release()
     {
         SaveData();
