@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.3}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!198 &1130837435319476490
@@ -558,8 +558,8 @@ ParticleSystem:
     startRotation:
       serializedVersion: 2
       minMaxState: 3
-      scalar: -3.1415925
-      minScalar: 3.1415925
+      scalar: -0.31415927
+      minScalar: 0.31415927
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1059,8 +1059,8 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.21484372
         - serializedVersion: 3
-          time: 0.0619943
-          value: 0.7505286
+          time: 0.040176116
+          value: 0.7708676
           inSlope: -0.38859776
           outSlope: -0.38859776
           tangentMode: 0
@@ -1083,8 +1083,8 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.21484375
         - serializedVersion: 3
-          time: 0.061845593
-          value: 0.710557
+          time: 0.04002741
+          value: 0.730896
           inSlope: -0.4249765
           outSlope: -0.4249765
           tangentMode: 0
@@ -1312,7 +1312,7 @@ ParticleSystem:
     curve:
       serializedVersion: 2
       minMaxState: 2
-      scalar: 12.217304
+      scalar: 1.3439035
       minScalar: 1.5707963
       maxCurve:
         serializedVersion: 2
@@ -1612,14 +1612,14 @@ ParticleSystem:
     y:
       serializedVersion: 2
       minMaxState: 1
-      scalar: 2
+      scalar: 3
       minScalar: 0.2
       maxCurve:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
-          time: 0.1
-          value: 0.3186486
+          time: 0.24181819
+          value: 0.22373131
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -1628,39 +1628,30 @@ ParticleSystem:
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 0.4678424
-          value: -0.6560036
-          inSlope: -4.3827906
-          outSlope: 6.938546
-          tangentMode: 65
+          value: -0.6966835
+          inSlope: -6.9617753
+          outSlope: 11.222581
+          tangentMode: 1
           weightedMode: 0
-          inWeight: 0.22397606
-          outWeight: 0.28965515
+          inWeight: 0.20362523
+          outWeight: 0.22685927
         - serializedVersion: 3
-          time: 0.61455584
-          value: 0.36197436
+          time: 0.6336374
+          value: 0.15858635
           inSlope: 0
           outSlope: 0
           tangentMode: 0
           weightedMode: 0
           inWeight: 0.33333334
-          outWeight: 0.33333334
-        - serializedVersion: 3
-          time: 0.839996
-          value: -0.68698037
-          inSlope: -7.3771024
-          outSlope: 6.7371764
-          tangentMode: 65
-          weightedMode: 0
-          inWeight: 0.36486474
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0.3909949
-          inSlope: 0
-          outSlope: 0
-          tangentMode: 0
+          value: -1
+          inSlope: -5.2007136
+          outSlope: 6.7371764
+          tangentMode: 65
           weightedMode: 0
-          inWeight: 0.33333334
+          inWeight: 0.18858615
           outWeight: 0.33333334
         m_PreInfinity: 2
         m_PostInfinity: 0
@@ -4900,7 +4891,7 @@ ParticleSystemRenderer:
   m_ShadowBias: 0
   m_RenderAlignment: 2
   m_Pivot: {x: 0, y: 0, z: 0}
-  m_Flip: {x: 0, y: 0, z: 0}
+  m_Flip: {x: 0.5, y: 0, z: 0}
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
   m_AllowRoll: 1
