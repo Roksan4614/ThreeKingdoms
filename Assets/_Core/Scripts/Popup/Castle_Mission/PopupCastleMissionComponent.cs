@@ -21,6 +21,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
     PopupCastleMissionComponent() : base(PopupType.Castle_Mission) { }
 
     CancellationTokenSource m_cts;
+    PopupUseTimeStoneComponent m_popupTimeStone;
 
     TabType m_curTab = TabType.NONE;
 
@@ -111,7 +112,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
             if (isNew == true)
                 item.Initalize(
-                    _data => OnButtonAsync_Batch(_data).Forget());
+                    _data => OnButtonAsync_Batch(_data).Forget(), _ts => OnUpdateTimer(_ts));
 
             item.gameObject.SetActive(true);
             item.name = missionData.idx.ToString();
@@ -139,7 +140,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
             // 아니면 시간단축 팝업 띄우기
             else
             {
-                PopupManager.instance.AlertShow("TODO: 시간단축 팝업 띄우기");
+                await OpenUseTimeStoneAsync(_missionData);
             }
         }
         // 아니면 상세페이지를 띄워주자
@@ -180,10 +181,10 @@ public class PopupCastleMissionComponent : BasePopupComponent
         }
     }
 
-    async UniTask OpenMissionResultAsync(params CastleMissionData[] _mission)
+    async UniTask OpenMissionResultAsync(params CastleMissionData[] _missionData)
     {
-        Utils.SetActivePunch(m_element.panel, false);
-        await m_element.result.OpenAsync(_mission);
+        await Utils.SetActivePunchAsync(m_element.panel, false);
+        await m_element.result.OpenAsync(_missionData);
         Utils.SetActivePunch(m_element.panel, true);
 
         if (m_element.result.resultType == StatusType.Success)
@@ -193,9 +194,37 @@ public class PopupCastleMissionComponent : BasePopupComponent
         }
     }
 
+    async UniTask OpenUseTimeStoneAsync(CastleMissionData _missionData)
+    {
+        m_popupTimeStone = await PopupManager.instance.OpenPopup<PopupUseTimeStoneComponent>(PopupType.UseTimeStone);
+
+        var endTime = new DateTime(_missionData.tickEnd, DateTimeKind.Utc);
+        var ts = endTime - Utils.GetUTC();
+        OnUpdateTimer(ts);
+
+        await UniTask.WaitUntil(() => m_popupTimeStone.statusType != StatusType.Wait);
+
+        if (m_popupTimeStone.statusType == StatusType.Success)
+        {
+            var result = await DataManager.castle.mission.TimerBonusAsync(_missionData.idx, m_popupTimeStone.timeBonus);
+            if (result == StatusType.Success)
+                SetMissionList(true);
+        }
+
+        m_popupTimeStone = null;
+    }
+
+    void OnUpdateTimer(TimeSpan _ts)
+    {
+        m_popupTimeStone?.UpdateRemainTime(_ts);
+    }
+
     void CloseEscape()
     {
         if (m_element.info.CloseEscape() == false)
+            return;
+
+        if (m_element.result.CloseEscape() == false)
             return;
 
         Close();

@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +14,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
     PopupCastleHeroList_Item m_base;
 
     CastleData m_castleData;
+    int m_maxBatchSlot;
 
     public StatusType statusType { get; private set; }
     public StatusType resultType { get; private set; }
@@ -65,6 +65,9 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             m_element.gauges[i].fillAmount = 0;
 
         RefreshHeroesData(true);
+
+        m_maxBatchSlot = m_castleData.dbRise.character_slot_max;
+        m_element.txtBatchCount.text = $"({m_castleData.heroes.Count}/{m_maxBatchSlot})";
     }
 
     void RefreshHeroesData(bool _isInit)
@@ -104,8 +107,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
             // 유저아이콘 클릭했을 때 처리하자
             if (isNew)
-                item.onClick_HeroIcon.AddListener(()
-                    => OpenHeroInfoPopupAsync(item.heroInfoData).Forget());
+                item.Initialize(this, () => OpenHeroInfoPopupAsync(item.heroInfoData).Forget());
         }
 
         for (; i < content.childCount; i++)
@@ -156,19 +158,12 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         }
     }
 
-    void OnButton_Hero(HeroInfoData _heroInfoData)
+    void OnButton_Hero(PopupCastleHeroList_Item _item)
     {
-        if (m_castleData.heroes.Remove(_heroInfoData.key) == false)
-        {
-            if (m_castleData.heroes.Count < 6)
-                m_castleData.heroes.Add(_heroInfoData.key);
-            else
-            {
-                PopupManager.instance.AlertShow("배치_인원이_이미_모두_찼습니다.");
-                return;
-            }
-        }
+        if (m_castleData.heroes.Remove(_item.heroInfoData.key) == false)
+            m_castleData.heroes.Add(_item.heroInfoData.key);
 
+        m_element.txtBatchCount.text = $"({m_castleData.heroes.Count}/{m_maxBatchSlot})";
         SetCoreStatStatus();
     }
 
@@ -229,6 +224,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         gameObject.SetActive(false);
     }
 
+    public bool isFullBatch => m_castleData.heroes.Count >= m_maxBatchSlot;
 
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);
@@ -245,6 +241,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         public TextMeshProUGUI txtTitle;
         public ButtonHelper[] btnCoreStat;
         public GaugeHelper[] gauges;
+        public TextMeshProUGUI txtBatchCount;
 
         public ButtonHelper btnConfirm;
         public ButtonHelper btnCancel;
@@ -259,6 +256,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             btnCoreStat = top.GetComponentsInChildren<ButtonHelper>();
 
             gauges = panel.Find("Condition").GetComponentsInChildren<GaugeHelper>();
+            txtBatchCount = panel.GetComponent<TextMeshProUGUI>("List/txt_batchCount");
 
             var buttons = panel.Find("Button_Box");
             btnConfirm = buttons.GetComponent<ButtonHelper>("btn_confirm");

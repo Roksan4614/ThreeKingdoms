@@ -25,8 +25,15 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
 
     Data_Castle.CastleData m_castleData;
     CastleObjectType m_prevJob;
+    PopupCastleHeroListComponent m_heroList;
 
-    public void SetHeroInfoData(Data_Castle.CastleData _castleData, HeroInfoData _heroInfoData, UnityAction<HeroInfoData> _onClick, params CoreStatType[] _coreStatType)
+    public void Initialize(PopupCastleHeroListComponent _heroList, UnityAction _onHeroIcon)
+    {
+        m_element.heroIcon.onClick.AddListener(_onHeroIcon);
+        m_heroList = _heroList;
+    }
+
+    public void SetHeroInfoData(Data_Castle.CastleData _castleData, HeroInfoData _heroInfoData, UnityAction<PopupCastleHeroList_Item> _onClick, params CoreStatType[] _coreStatType)
     {
         m_castleData = _castleData;
 
@@ -42,6 +49,12 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
                     // 그런데 배치를 시도했네? 확인 팝업 띄우자
                     if (m_heroInfoData.isBatch == false)
                     {
+                        if (m_heroList.isFullBatch == true)
+                        {
+                            PopupManager.instance.AlertShow("배치_인원이_이미_모두_찼습니다.");
+                            return;
+                        }
+
                         PopupManager.instance.OpenModalAsync(
                             "이미_임무_중인_장수입니다.\n새로운_임무를_부여하겠습니까?", _callback: _statusType =>
                             {
@@ -50,7 +63,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
                                     m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
                                     m_element.check.SetActive(m_heroInfoData.isBatch);
 
-                                    _onClick(m_heroInfoData);
+                                    _onClick(this);
                                     SetJob(job);
                                 }
                             }
@@ -63,11 +76,20 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
                     job = CastleObjectType.NONE;
             }
 
+            if (m_heroInfoData.isBatch == false)
+            {
+                if (m_heroList.isFullBatch == true)
+                {
+                    PopupManager.instance.AlertShow("배치_인원이_이미_모두_찼습니다.");
+                    return;
+                }
+            }
+
             m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
             m_element.check.SetActive(m_heroInfoData.isBatch);
 
-            _onClick(m_heroInfoData);
             SetJob(job);
+            _onClick(this);
         });
 
         m_heroInfoData = _heroInfoData;
@@ -113,17 +135,6 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
             txt.alpha = value >= 90 ? 1 : value >= 80 ? .9f : value >= 70 ? .8f : value >= 60 ? .7f : .6f;
         }
     }
-
-    public void SetActive_Batch(bool _isShow, string _stringBatch = "")
-    {
-        var txt = m_element.GetText(TextType.batch);
-        txt.gameObject.SetActive(_isShow == false);
-
-        if (_stringBatch.IsActive())
-            txt.text = _stringBatch;
-    }
-
-    public Button.ButtonClickedEvent onClick_HeroIcon => m_element.heroIcon.onClick;
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

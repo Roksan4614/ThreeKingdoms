@@ -86,7 +86,7 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
             //    }
             //}
             //else
-                heroData.isBatch = m_missionData.heroes.Contains(hero.key);
+            heroData.isBatch = m_missionData.heroes.Contains(hero.key);
 
             item.gameObject.SetActive(true);
             item.SetHeroInfoData_Mission(heroData, OnButton_Hero, coreStat);
@@ -94,8 +94,7 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
 
             // 유저아이콘 클릭했을 때 처리하자
             if (isNew)
-                item.onClick_HeroIcon.AddListener(()
-                    => OpenHeroInfoPopupAsync(item.heroInfoData).Forget());
+                item.Initialize(null, () => OpenHeroInfoPopupAsync(item.heroInfoData).Forget());
         }
 
         for (; i < content.childCount; i++)

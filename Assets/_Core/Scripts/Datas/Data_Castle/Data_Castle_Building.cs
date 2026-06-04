@@ -157,13 +157,17 @@ public class Data_Castle_Building
         return db;
     }
 
-    public void UpgradeTimerBonus(CastleObjectType _objectType, int _bonusTime)
+    public async UniTask UpgradeTimerBonusAsync(CastleObjectType _objectType, int _bonusTime)
     {
+        await UniTask.Yield();
+
         var objectData = DataManager.castle.GetCaslteData(_objectType);
         objectData.tickUpgradeEnd = objectData.dtUpgradeEnd.AddSeconds(-_bonusTime).Ticks;
         DataManager.castle.UpdateCastleData(objectData);
 
-        Signal.instance.UpdateCaslteBuildingUpgrade.Emit(GetUpgradeData(objectData));
+        UpdateBuildingUpgrade(_objectType);
+
+        PopupManager.instance.AlertShow($"시간이_단축되었습니다");
     }
 
     public void Release_CTS(CastleObjectType _objectType)

@@ -14,6 +14,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
     CancellationTokenSource m_cts;
 
     public UnityAction<CastleMissionData> m_onClick;
+    public UnityAction<TimeSpan> m_onUpdateTimer;
 
     private void Awake()
     {
@@ -26,14 +27,14 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
     private void OnDisable()
         => Release_CTS();
 
-    public void Initalize(UnityAction<CastleMissionData> _onClick)
+    public void Initalize(UnityAction<CastleMissionData> _onClick, UnityAction<TimeSpan> _onUpdateTimer)
     {
-        m_onClick = _onClick;
+        m_onClick = _onClick; m_onUpdateTimer = _onUpdateTimer;
     }
 
     public void SetMissionInfo(CastleMissionData _missionData)
     {
-        if (m_missionData.idx == _missionData.idx && m_missionData.tickStart == _missionData.tickStart)
+        if (m_missionData.idx == _missionData.idx && m_missionData.tickEnd == _missionData.tickEnd)
             return;
 
         m_missionData = _missionData;
@@ -142,7 +143,8 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         var endTime = new DateTime(m_missionData.tickEnd, DateTimeKind.Utc);
         var ts = endTime - Utils.GetUTC();
 
-        m_element.btn_batch.text = Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 21) + "\n<size=90%>시간단축";
+        m_element.btn_batch.text = Utils.MSpace($"{Mathf.FloorToInt((float)ts.TotalHours):00}:{ts.ToString(@"mm\:ss")}", 21) + "\n<size=90%>시간단축";
+        m_onUpdateTimer(ts);
 
         if (ts.TotalSeconds > 0)
         {
@@ -156,7 +158,9 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
             while (ts.TotalSeconds > 0)
             {
                 ts = endTime - Utils.GetUTC();
-                m_element.btn_batch.text = Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 21) + "\n<size=90%>시간단축";
+                m_element.btn_batch.text = Utils.MSpace($"{Mathf.FloorToInt((float)ts.TotalHours):00}:{ts.ToString(@"mm\:ss")}", 21) + "\n<size=90%>시간단축";
+                m_onUpdateTimer(ts);
+
                 await UniTask.WaitForSeconds(1f, cancellationToken: token);
             }
         }

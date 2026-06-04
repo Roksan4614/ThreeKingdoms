@@ -118,7 +118,8 @@ public class Data_Castle_Mission
         var sec = data.dbGradeData.durationSeconds;
 
 #if UNITY_EDITOR
-        data.tickEnd = Utils.GetUTC().AddSeconds(((int)_missionData.grade + 3) * 5).Ticks;
+        //data.tickEnd = Utils.GetUTC().AddSeconds(((int)_missionData.grade + 3) * 5).Ticks;
+        data.tickEnd = Utils.GetUTC().AddSeconds(sec).Ticks;
 #else
         data.tickEnd = Utils.GetUTC().AddSeconds(sec).Ticks;
 #endif
@@ -158,6 +159,26 @@ public class Data_Castle_Mission
         _onComplete(StatusType.Success, m_levelInfo.nowExp - prevExp);
 
         await UniTask.Yield();
+    }
+
+    public async UniTask<StatusType> TimerBonusAsync(int _idx, float _bonusSeconds)
+    {
+        var result = StatusType.Wait;
+        await UniTask.Yield();
+
+        result = StatusType.Success;
+        var idx = m_data.FindIndex(x => x.idx == _idx);
+
+        var data = m_data[idx];
+        var dtEnd = new System.DateTime(data.tickEnd, System.DateTimeKind.Utc);
+
+        data.tickEnd = dtEnd.AddSeconds(-_bonusSeconds).Ticks;
+        m_data[idx] = data;
+        SaveData();
+
+        PopupManager.instance.AlertShow($"시간이_단축되었습니다");
+
+        return result;
     }
 
     void RemoveMission(int _idx, bool _isForceSave = true)

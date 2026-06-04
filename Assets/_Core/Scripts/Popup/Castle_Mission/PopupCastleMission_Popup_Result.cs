@@ -10,27 +10,17 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
 
     [SerializeField] ScrollRect m_scrollBatchHero;
 
+    Data_Castle_Mission.CastleMissionData[] m_missionDatas;
+
     protected override void Awake()
     {
-        m_element.btnStart.onClick.AddListener(OnButton_Confirm);
+        transform.GetComponent<Button>("Panel/btn_close")?.onClick.AddListener(Close);
+        m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Confirm().Forget());
     }
 
     public async UniTask OpenAsync(params Data_Castle_Mission.CastleMissionData[] _missionDatas)
     {
-        await DataManager.castle.mission.CompleteMissionAsync((_result, _exp) =>
-        {
-            resultType = _result;
-
-            if (_result == StatusType.Success)
-                m_element.txtContent_Exp.text = $"획득_경험치 : +{_exp.AmountKMBT(_isMBT: true)}";
-
-        }, _missionDatas);
-
-        if (resultType == StatusType.Failed)
-        {
-            Close();
-            return;
-        }
+        m_missionDatas = _missionDatas;
 
         gameObject.SetActive(true);
         Utils.SetActivePunch(m_element.panel, true);
@@ -40,13 +30,19 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
         var firstMission = _missionDatas.First();
 
         m_element.txtTitle.text = $"임무_결과_:_[{(_missionDatas.Length > 1 ? "전체" : TableManager.stringTable.GetString($"GRADE_{firstMission.grade.ToString().ToUpper()}"))}]";
-        m_element.txtName.text = _missionDatas.Length > 1 ? "전체_보상받기" : firstMission.missionNameStat;
+
+        m_element.txtName.text = firstMission.missionNameStat;
+
+        if (_missionDatas.Length > 1)
+            m_element.txtName.text += $"_외_{_missionDatas.Length - 1}건";
 
         // 관아 레벨
         {
             var levelInfo = DataManager.castle.mission.levelInfo;
+            var addExp = _missionDatas.Sum(x => x.dbGradeData.missionXp);
+            m_element.txtContent_Exp.text = $"획득_경험치 : +{addExp.AmountKMBT(_isMBT: true)}";
             m_element.gauge.textTitle = $"Lv.{levelInfo.level}_관아_경험치 : ";
-            m_element.gauge.textAmount = $"{levelInfo.nowExp:#,0} / {levelInfo.maxExp:#,0}";
+            m_element.gauge.textAmount = $"{levelInfo.nowExp + addExp:#,0} / {levelInfo.maxExp:#,0}";
             m_element.gauge.fillAmount = levelInfo.nowExp / (float)levelInfo.maxExp;
         }
 
@@ -92,9 +88,9 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
 
         await UniTask.WaitUntil(() => resultType != StatusType.Wait);
 
-        ActionReward(_missionDatas);
+        await Utils.SetActivePunchAsync(m_element.panel, false, true);
 
-        Close();
+        gameObject.SetActive(false);
     }
 
     void ActionReward(params Data_Castle_Mission.CastleMissionData[] _missionDatas)
@@ -136,12 +132,33 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
         DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
 
         foreach (var r in rewards)
-            RewardWorker.instance.Run(CameraManager.posPointer, r.itemType, r.count, _isPopup: true, _durationWait: Random.Range(0.5f, 1f));
+            RewardWorker.instance.Run(CameraManager.posPointer, r.itemType, r.count, _isPopup: true, _durationWait: Random.Range(0.1f, .5f));
     }
 
-    void OnButton_Confirm()
+    async UniTask OnButtonAsync_Confirm()
     {
-        resultType = StatusType.Success;
+        await DataManager.castle.mission.CompleteMissionAsync((_result, _exp) =>
+        {
+            resultType = _result;
+
+            if (resultType == StatusType.Success)
+                ActionReward(m_missionDatas);
+        }, m_missionDatas);
+    }
+
+    public override bool CloseEscape()
+    {
+        if (gameObject.activeSelf == false)
+            return true;
+
+        Close();
+
+        return false;
+    }
+    public override void Close()
+    {
+        if (resultType == StatusType.Wait)
+            resultType = StatusType.Cancel;
     }
 
     public override void OnManualValidate()

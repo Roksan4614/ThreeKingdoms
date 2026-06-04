@@ -58,8 +58,8 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
             SetAddItem(i++, " 배치_장수_수", m_nowData.character_slot_max.ToString(), m_nextData.character_slot_max.ToString());
 
             // 업그레이드 시간
-            // 업그레이드 중이면 안보여주자
-            if (m_castleData.isDoingUpgrade == false)
+            // 업그레이드 중이면 안보여주자.. 보여주까??
+            //if (m_castleData.isDoingUpgrade == false)
             {
                 var dt = DateTime.Now;
                 var ts = dt.AddSeconds(m_castleData.dbRise.upgradeSeconds) - dt;

@@ -33,6 +33,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         m_baseIcon.transform.SetParent(m_element.pHeroIcon.parent);
         m_baseIcon.gameObject.SetActive(false);
 
+        m_element.btnChange.onClick.AddListener(() => AdjustUI(!m_isInfoVersion, m_castleData.type, true));
         m_element.btnAdd.onClick.AddListener(() => OpenHeroListPopupAsync().Forget());
         m_element.btnUpgrade.onClick.AddListener(OnButton_Upgrade);
         m_element.btnUpgradeTimer.onClick.AddListener(() => OnButton_TimeStoneAsync().Forget());
@@ -72,7 +73,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             m_element.btnUpgrade.gameObject.SetActive(true);
             m_element.btnUpgradeTimer.gameObject.SetActive(false);
 
-            m_popupTimeStone?.Close();
+            if (m_popupTimeStone != null && m_popupTimeStone.statusType == StatusType.Wait)
+                m_popupTimeStone.Close();
         });
         Signal.instance.StopCaslteBuildingUpgrade.connectLambda = new(this, _castleData =>
         {
@@ -94,12 +96,20 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     public async UniTask OpenAsync(bool _isInfo, CastleObjectType _type, CancellationToken _cancelToken)
     {
-        var rtScroll = (RectTransform)m_element.scroll.transform;
         gameObject.SetActive(true);
         m_isClose = false;
 
+        AdjustUI(_isInfo, _type, false);
+
+        await UniTask.WaitUntil(() => m_isClose == true, cancellationToken: _cancelToken);
+    }
+
+    void AdjustUI(bool _isInfo, CastleObjectType _type, bool _isChange)
+    {
         m_castleData = DataManager.castle.GetCaslteData(_type);
         m_isInfoVersion = _isInfo;
+
+        m_element.btnChange.text = _isInfo ? "_관리" : "_개요";
 
         if (_isInfo)
         {
@@ -136,8 +146,12 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         m_element.scroll.content.anchoredPosition = Vector2.zero;
         m_element.scroll.enabled = true;
 
-        rtScroll.anchoredPosition = Vector2.zero;
-        rtScroll.DOAnchorPosY(rtScroll.rect.height, 0.1f);
+        if (_isChange == false)
+        {
+            var rtScroll = (RectTransform)m_element.scroll.transform;
+            rtScroll.anchoredPosition = Vector2.zero;
+            rtScroll.DOAnchorPosY(rtScroll.rect.height, 0.1f);
+        }
 
         m_element.pHeroIcon.parent.gameObject.SetActive(m_castleData.type != CastleObjectType.Office);
         SetBatchHero(m_isNeedUpdate);
@@ -162,10 +176,8 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         }
 
         // 관리야?? 그런데 업그레이드 조건 미달성이야?? 알람 ㄱㄱ
-        if (_isInfo == false && m_logUpgrade.IsActive() == true)
-            PopupManager.instance.AlertShow(m_logUpgrade, -100);
-
-        await UniTask.WaitUntil(() => m_isClose == true, cancellationToken: _cancelToken);
+        //if (_isInfo == false && m_logUpgrade.IsActive() == true)
+        //    PopupManager.instance.AlertShow(m_logUpgrade, -100);
     }
 
     void SlotStartCaslteBuildingUpgrade(CastleData _castleData)
@@ -223,14 +235,11 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         await UniTask.WaitUntil(() => m_popupTimeStone.statusType != StatusType.Wait);
 
         if (m_popupTimeStone.statusType == StatusType.Success)
-            DataManager.castle.building.UpgradeTimerBonus(m_castleData.type, m_popupTimeStone.timeBonus);
+            DataManager.castle.building.UpgradeTimerBonusAsync(m_castleData.type, m_popupTimeStone.timeBonus).Forget();
 
         await rtScroll.DOAnchorPosY(prevPos, 0.1f).AsyncWaitForCompletion();
 
-        m_popupTimeStone.CloseEscape();
         m_popupTimeStone = null;
-
-        await UniTask.Yield();
     }
 
     void SetBatchHero(bool _isForceUpdate = false)
@@ -381,7 +390,10 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             return false;
 
         if (m_popupTimeStone?.CloseEscape() == false)
+        {
+            m_popupTimeStone = null;
             return false;
+        }
 
         if (gameObject.activeSelf == true)
         {
@@ -413,7 +425,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         if (gameObject.activeInHierarchy == false || m_castleData.type != _castleData.type)
             return;
 
-        var maxAmount = DataManager.castle.GetMaxAmount(m_castleData);
+        var maxAmount = DataManager.castle.GetMaxAmount(_castleData);
 
         if (maxAmount == 0)
         {
@@ -505,6 +517,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         public ScrollRect scroll;
 
         public TextMeshProUGUI txtTitle;
+        public ButtonHelper btnChange;
 
         public Transform pHeroIcon;
         public ButtonHelper btnAdd;
@@ -523,6 +536,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         {
             scroll = _transform.GetComponent<ScrollRect>("Panel");
             txtTitle = scroll.content.GetComponent<TextMeshProUGUI>("txt_title");
+            btnChange = scroll.content.GetComponent<ButtonHelper>("btn_change");
 
             pHeroIcon = scroll.content.Find("Batch/Icons/List");
             btnAdd = pHeroIcon.parent.GetComponent<ButtonHelper>("btn_add");

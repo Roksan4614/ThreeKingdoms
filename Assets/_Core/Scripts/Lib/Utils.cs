@@ -175,9 +175,9 @@ public static class Utils
         return result;
     }
 
-    public static void SetActivePunch(Transform _transform, bool _isActive, bool _isAutoActive = true)
-        => SetActivePunchAsync(_transform, _isActive, _isAutoActive).Forget();
-    public static async UniTask SetActivePunchAsync(Transform _transform, bool _isActive, bool _isAutoActive = true)
+    public static void SetActivePunch(Transform _transform, bool _isActive, bool _isAutoActive = true, UnityAction _callback = null)
+        => SetActivePunchAsync(_transform, _isActive, _isAutoActive, _callback).Forget();
+    public static async UniTask SetActivePunchAsync(Transform _transform, bool _isActive, bool _isAutoActive = true, UnityAction _callback = null)
     {
         if (_isActive == true && _isAutoActive == true)
             _transform.gameObject.SetActive(true);
@@ -191,6 +191,8 @@ public static class Utils
 
         if (_isActive == false && _isAutoActive == true)
             _transform.gameObject.SetActive(false);
+
+        _callback?.Invoke();
     }
 
     public static void Shake(Transform _trns, bool _isForceShake = false, float strength = 10f, int vibrato = 1)

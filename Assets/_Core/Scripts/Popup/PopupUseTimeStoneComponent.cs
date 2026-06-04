@@ -19,8 +19,9 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
     public StatusType statusType { get; private set; }
 
+    int m_myTimeStone;      // 내 보유 시간석
     int m_secTimeStone;     // 궁성에 따른 시간석 하나가 감속할 초
-    int m_secAD;            // 광고당 감속 초
+    int m_minuteAD;            // 광고당 감속 초
     int m_totalSeconds;     // 남은 초
     int m_countTimeStone;   // 사용하게 될 시간석 갯수
 
@@ -33,8 +34,15 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
     protected override void Awake()
     {
+        base.Awake();
+
         m_element.btnPanel.onClick.AddListener(() => { if (m_element.rtCountMenu.gameObject.activeSelf == true) SetActiveCountPanel(false); });
         m_element.btnMenu.onClick.AddListener(OnButton_Menu);
+
+        // test
+        m_myTimeStone = 3234;
+        m_element.txtAsset.text = $"{m_myTimeStone:#,0}";
+        m_element.txtAsset.transform.ForceRebuildLayout();
 
         m_adCountData = PPWorker.Get<TimeStoneADCountData>(c_key + "_ad");
 
@@ -61,8 +69,8 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
         DataManager.castle.GetSecondTimeStone((_t, _a) =>
         {
             m_secTimeStone = _t;
-            m_secAD = _a;
-            m_element.btnAD.text = $"-{m_secAD}분 <color=#6D6D6D><size=90%>({m_adCountData.countAD}/5)";
+            m_minuteAD = _a;
+            m_element.btnAD.text = $"-{m_minuteAD}분 <color=#6D6D6D><size=90%>({m_adCountData.countAD}/5)";
         });
 
         m_element.btnTimeStone.onClick.AddListener(OnButton_TimeStone);
@@ -71,12 +79,17 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
     public override void OpenPopup(params object[] _args)
     {
+        m_countTimeStone = -1;
+
         statusType = StatusType.Wait;
         Utils.SetActivePunch(m_element.panel, true);
     }
 
     public void UpdateRemainTime(TimeSpan _ts)
     {
+        if (statusType != StatusType.Wait)
+            return;
+
         if (_ts.TotalMinutes > 0)
             m_element.txtTimer.text = $"{Utils.MSpace($"{Mathf.FloorToInt((float)_ts.TotalHours):00}:{_ts.ToString(@"mm\:ss")}", 65)}";
         else
@@ -87,45 +100,38 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
         UpdateTimeStoneCount();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            var dtNow = DateTime.Now;
-            var dt = dtNow.AddMinutes(40);
-            UpdateRemainTime(dt - dtNow);
-        }
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            var dtNow = DateTime.Now;
-            var dt = dtNow.AddHours(2);
-            UpdateRemainTime(dt - dtNow);
-        }
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            var dtNow = DateTime.Now;
-            var dt = dtNow.AddHours(25);
-            UpdateRemainTime(dt - dtNow);
-        }
-    }
-
     void UpdateTimeStoneCount()
     {
         int count = Mathf.CeilToInt(m_totalSeconds / (float)m_secTimeStone);
 
-        m_countTimeStone = m_countType switch
+        var countTimeStone = m_countType switch
         {
             TimeStoneCountType.type_1h => Mathf.Min(count, Mathf.CeilToInt(60 * 60 / (float)m_secTimeStone)),
             TimeStoneCountType.type_1d => Mathf.Min(count, Mathf.CeilToInt(60 * 60 * 24 / (float)m_secTimeStone)),
             _ => count
         };
 
-        m_element.btnTimeStone.text = m_countTimeStone.AmountKMBT();
+        countTimeStone = Mathf.Min(m_myTimeStone, countTimeStone);
+
+        if (m_countTimeStone == countTimeStone)
+            return;
+
+        m_countTimeStone = countTimeStone;
+
+        var dtNow = DateTime.Now;
+        var ts = dtNow.AddSeconds(m_countTimeStone * m_secTimeStone) - dtNow;
+
+        if (ts.TotalMinutes > 0)
+            m_element.txtBonus.text = $"(-{Utils.MSpace($"{Mathf.FloorToInt((float)ts.TotalHours):00}:{ts.ToString(@"mm\:ss")}", 30)})";
+        else
+            m_element.txtBonus.text = $"(-{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s)";
+
+        m_element.btnTimeStone.text = $"{m_countTimeStone.AmountKMBT()} <color=#6D6D6D><size=90%>({m_secTimeStone}s/ea)";
     }
 
     void OnButton_TimeStone()
     {
-        timeBonus = m_countTimeStone;
+        timeBonus = m_countTimeStone * m_secTimeStone;
 
         statusType = StatusType.Success;
         Close();
@@ -133,7 +139,9 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
     void OnButton_AD()
     {
-        timeBonus = m_secAD;
+        timeBonus = m_minuteAD * 60;
+        m_adCountData.countAD--;
+        SaveData_ADCount();
 
         statusType = StatusType.Success;
         Close();
@@ -188,7 +196,7 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
     public bool CloseEscape()
     {
-        base.Close();
+        Close();
         return true;
     }
 
@@ -200,7 +208,10 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
         if (statusType == StatusType.Wait)
             statusType = StatusType.Cancel;
 
+        dimm.SetActive(false);
+
         await Utils.SetActivePunchAsync(m_element.panel, false);
+        base.Close();
     }
 
     void SaveData_ADCount()
@@ -214,7 +225,9 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
     [System.Serializable]
     struct ElementData
     {
+        public TextMeshProUGUI txtAsset;
         public TextMeshProUGUI txtTimer;
+        public TextMeshProUGUI txtBonus;
 
         public Button btnPanel;
         public ButtonHelper btnTimeStone;
@@ -226,7 +239,9 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
         public void Initialize(Transform _transform)
         {
+            txtAsset = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_asset");
             txtTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_timer");
+            txtBonus = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_bonus");
 
             btnTimeStone = _transform.GetComponent<ButtonHelper>("Panel/Button/btn_start");
             btnAD = _transform.GetComponent<ButtonHelper>("Panel/Button/btn_ad");

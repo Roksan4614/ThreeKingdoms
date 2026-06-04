@@ -177,7 +177,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         }).Forget();
     }
 
-    public bool CloseEscape()
+    public virtual bool CloseEscape()
     {
         if (m_popupHeroInfo != null && m_popupHeroInfo.gameObject.activeSelf == true)
             return false;

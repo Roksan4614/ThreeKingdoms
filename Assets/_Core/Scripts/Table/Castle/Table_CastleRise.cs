@@ -43,8 +43,8 @@ public struct TableCastleRiseData
     public int level;
     [JsonProperty] int req_stat_value_1;        // 요구치
     [JsonProperty] int req_stat_value_2;        // 요구치
-    public int character_slot_max;     // 업그레이드 당 배치 수
-    [JsonProperty] int upgrade_seconds;// 업그레이드 소요 시간 (초)
+    public int character_slot_max;              // 업그레이드 당 배치 수
+    [JsonProperty] int upgrade_seconds;         // 업그레이드 소요 시간 (초)
 
     // CUSTOM
     public bool isActive => key.IsActive();

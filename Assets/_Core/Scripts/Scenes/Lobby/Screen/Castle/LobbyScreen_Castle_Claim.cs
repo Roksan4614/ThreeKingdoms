@@ -31,6 +31,8 @@ public class LobbyScreen_Castle_Claim : MonoBehaviour, IValidatable
                 ShakeRotation();
             return;
         }, Random.Range(.5f, 2.5f));
+
+        SlotUpdateFarmMarketData(DataManager.castle.GetCaslteData(m_objectType));
     }
 
     void ShakeRotation()

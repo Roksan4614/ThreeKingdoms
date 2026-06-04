@@ -110,6 +110,8 @@ public partial class Data_Castle
 
         while (true)
         {
+            UpdateCastleAmountData(castleData);
+
             if (castleData.totalAmount >= maxAmount)
             {
                 if (castleData.totalAmount > maxAmount_Table)
@@ -125,7 +127,6 @@ public partial class Data_Castle
 
             nextTime = nextTime.AddSeconds(1f);
             castleData.totalAmount = Mathf.Min(maxAmount, castleData.totalAmount + amount);
-            UpdateCastleAmountData(castleData);
         }
     }
 
