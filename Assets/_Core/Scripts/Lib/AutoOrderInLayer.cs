@@ -34,6 +34,10 @@ public enum OrderLayerType
     Popup,
     Popup_Front,
 
+    FrontUI_Bottom,
+    FrontUI_Screen,
+    FrontUI_Top,
+
     Alert,
     MAX,
 
