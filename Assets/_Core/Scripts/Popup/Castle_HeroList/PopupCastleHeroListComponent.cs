@@ -58,7 +58,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         m_castleData.heroes = new();
         m_castleData.heroes.AddRange(prev);
 
-        m_element.txtTitle.text = $"장수_목록: {DataManager.castle.GetObjectName(m_castleData.type)}";
+        m_element.txtTitle.text = $"장수_목록: {m_castleData.name}";
         //m_element.txtTitle.text = $"장수_목록: Lv.{m_castleData.level} {DataManager.castle.GetObjectName(m_castleData.type)}";
 
         for (int i = 0; i < m_element.gauges.Length; i++)

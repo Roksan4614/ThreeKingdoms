@@ -78,6 +78,8 @@ public partial class Data_Castle
                         UpdateCastleAmountData(marketData);
                     }
 
+                    OnUpdateClaim();
+
                     m_wallyData.tickSpawn = utc.Ticks;
                     m_wallyData.tickEndSpawn = utc.AddSeconds(durationNPCSec).Ticks;
                     Signal.instance.CastleWally_Spawn.Emit();

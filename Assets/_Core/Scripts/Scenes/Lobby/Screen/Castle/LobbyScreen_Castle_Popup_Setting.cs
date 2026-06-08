@@ -68,7 +68,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
             SetBatchHero(false);
             SetCoreStatInfo();
-            m_element.txtTitle.text = $"Lv.{m_castleData.level} {DataManager.castle.GetObjectName(m_castleData.type)}: {(m_isInfoVersion ? "_俺夸" : "_包府")}";
+            m_element.txtTitle.text = $"Lv.{m_castleData.level} {_castleData.name}: {(m_isInfoVersion ? "_俺夸" : "_包府")}";
 
             m_element.btnUpgrade.gameObject.SetActive(true);
             m_element.btnUpgradeTimer.gameObject.SetActive(false);
@@ -141,7 +141,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         }
         m_element.scroll.content.ForceRebuildLayout();
 
-        m_element.txtTitle.text = $"Lv.{m_castleData.level} {DataManager.castle.GetObjectName(_type)}: {(_isInfo ? "_俺夸" : "_包府")}";
+        m_element.txtTitle.text = $"Lv.{m_castleData.level} {m_castleData.name}: {(_isInfo ? "_俺夸" : "_包府")}";
 
         m_element.scroll.content.anchoredPosition = Vector2.zero;
         m_element.scroll.enabled = true;

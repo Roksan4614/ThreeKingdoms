@@ -430,6 +430,7 @@ public partial class Data_Castle
             }
         }
 
+        public string name => TableManager.stringTable.GetString("CASTLE_OBJECT_" + type.ToString().ToUpper());
         public bool isDoingUpgrade => tickUpgradeEnd > 0;
         public DateTime dtUpgradeEnd
             => new DateTime(tickUpgradeEnd, DateTimeKind.Utc);

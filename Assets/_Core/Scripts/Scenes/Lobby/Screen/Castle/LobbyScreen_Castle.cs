@@ -95,7 +95,7 @@ public class LobbyScreen_Castle : LobbyScreen_Base
         for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
             m_element.btnObject[(int)i].gameObject.SetActive(i == _objectType);
 
-        m_popupMenu.Open(m_element.btnObject[idx].transform, _objectType);
+        m_popupMenu.Open(m_element.btnObject[idx].rt, _objectType);
 
         await UniTask.WaitUntil(() => m_popupMenu.statusType != StatusType.Wait);
 
@@ -162,6 +162,21 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
     public Transform GetWallyPointRandom()
         => m_element.builds[UnityEngine.Random.Range(0, m_element.builds.Count)].GetWallyPointRandom();
+
+    //public void SlotUpgradeCastleObject(CastleObjectType _objectType)
+    //{
+    //    if (_objectType == CastleObjectType.NONE)
+    //    {
+    //        for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
+    //            SlotUpgradeCastleObject(i);
+    //        return;
+    //    }
+
+    //    var castleData = DataManager.castle.GetCaslteData(_objectType);
+    //    var btn = m_element.btnObject[(int)_objectType];
+    //    btn.text = $"Lv.{castleData.level} <size=120%>{castleData.name}";
+    //    btn.rt.ForceRebuildLayout();
+    //}
 
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);

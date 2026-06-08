@@ -54,11 +54,14 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
                 return;
 
             StopUpgrade();
-            button.text = TableManager.stringTable.GetString($"CASTLE_OBJECT_{m_objectType.ToString().ToUpper()}");
+
+            var castleData = DataManager.castle.GetCaslteData(m_objectType);
+            button.text = $"{castleData.name}";
             button.transform.ForceRebuildLayout();
         });
 
         Signal.instance.UpdateCaslteBuildingUpgrade.connect = SlotUpdateCaslteBuildingUpgrade;
+
     }
 
     private void OnEnable()
@@ -74,7 +77,7 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
                 StopUpgrade();
 
             if (castleData.remainUpgradeSeconds > 0)
-                button.text = TableManager.stringTable.GetString($"CASTLE_OBJECT_{m_objectType.ToString().ToUpper()}");
+                button.text = $"{castleData.name}";
             else
             {
                 var upgradeData = DataManager.castle.building.GetUpgradeData(castleData);
@@ -84,7 +87,7 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
         else
         {
             m_element.anim.Play($"Castle_BuildFX_{m_objectType}_None");
-            button.text = TableManager.stringTable.GetString($"CASTLE_OBJECT_{m_objectType.ToString().ToUpper()}");
+            button.text = $"{castleData.name}";
         }
         button.transform.ForceRebuildLayout();
     }
@@ -101,7 +104,8 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
     {
         m_element.anim.Play($"Castle_BuildFX_{m_objectType}_End");
 
-        button.text = TableManager.stringTable.GetString($"CASTLE_OBJECT_{m_objectType.ToString().ToUpper()}");
+        var castleData = DataManager.castle.GetCaslteData(m_objectType);
+        button.text = $"{castleData.name}";
         button.transform.ForceRebuildLayout();
         m_timeStepType = TimerStepType.Wait;
     }

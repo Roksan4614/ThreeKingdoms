@@ -16,7 +16,7 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
         m_element.btnEtc.onClick.AddListener(() => Close(StatusType.Cancel));
     }
 
-    public void Open(Transform _button, CastleObjectType _type)
+    public void Open(RectTransform _button, CastleObjectType _type)
     {
         statusType = StatusType.Wait;
         gameObject.SetActive(true);
@@ -39,9 +39,13 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
 
         // 위치 조정
         m_element.panel.position = _button.position;
+        //var anchorPos = m_element.panel.anchoredPosition;
+        //anchorPos.x +=
+        //    m_element.panel.rect.width * (anchorPos.x > 0 ? -.9f : .9f);
+
         var anchorPos = m_element.panel.anchoredPosition;
-        anchorPos.x +=
-            m_element.panel.rect.width * (anchorPos.x > 0 ? -.9f : .9f);
+        anchorPos.x += (_button.sizeDelta.x * 0.5f + m_element.panel.rect.width * 0.6f) * (anchorPos.x > 0 ? -1f : 1f);
+
         m_element.panel.anchoredPosition = anchorPos;
     }
 
