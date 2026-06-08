@@ -223,19 +223,19 @@ public static class Utils
         DateTime.Parse(_msgTime).AddSeconds(-Configure.instance.timeGapFromServer) :
         DateTime.Parse(_msgTime);
 
-    public static string GetRemainTime(TimeSpan _ts, bool _isDay = false)
-    {
-        string remain = "";
+    //public static string GetRemainTime(TimeSpan _ts, bool _isDay = false)
+    //{
+    //    string remain = "";
 
-        if (_ts.Days > 0 && _isDay == true)
-            remain += $"{_ts.Days}{_ts.Hours}:{_ts.Minutes:00}";
-        else if (_ts.Hours > 0)
-            remain += $"{_ts.Hours}:{_ts.Minutes:00}";
-        else if (_ts.Minutes > 0)
-            remain += $"{_ts.Minutes}:{_ts.Seconds:00}";
-        else
-            remain += $"{_ts.Seconds}:{_ts.Milliseconds:00}";
+    //    if (_ts.Days > 0 && _isDay == true)
+    //        remain += $"{_ts.Days}{_ts.Hours}:{_ts.Minutes:00}";
+    //    else if (_ts.Hours > 0)
+    //        remain += $"{_ts.Hours}:{_ts.Minutes:00}";
+    //    else if (_ts.Minutes > 0)
+    //        remain += $"{_ts.Minutes}:{_ts.Seconds:00}";
+    //    else
+    //        remain += $"{_ts.Seconds}:{_ts.Milliseconds:00}";
 
-        return remain;
-    }
+    //    return remain;
+    //}
 }

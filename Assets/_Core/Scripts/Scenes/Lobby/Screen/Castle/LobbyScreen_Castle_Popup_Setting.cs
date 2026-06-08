@@ -85,10 +85,11 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             var upgradeData = DataManager.castle.building.GetUpgradeData(m_castleData);
 
             var ts = upgradeData.ts;
-            if (ts.Minutes > 0)
-                m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
-            else
-                m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s\n남은_시간";
+            m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{ts.ToRemainTime(30)}\n남은_시간";
+            //if (ts.Minutes > 0)
+            //    m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
+            //else
+            //    m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s\n남은_시간";
         });
         Signal.instance.StartCaslteBuildingUpgrade.connect = SlotStartCaslteBuildingUpgrade;
         Signal.instance.UpdateCaslteBuildingUpgrade.connect = SlotUpdateCaslteBuildingUpgrade;
@@ -204,10 +205,11 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         }
 
         var ts = _upgradeData.ts;
-        if (ts.TotalMinutes > 0)
-            m_element.btnUpgradeTimer.text = $"{Utils.MSpace($"{ts.Hours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
-        else
-            m_element.btnUpgradeTimer.text = $"{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s\n남은_시간";
+        m_element.btnUpgradeTimer.text = $"{ts.ToRemainTime(30)}\n남은_시간";
+        //if (ts.TotalMinutes > 0)
+        //    m_element.btnUpgradeTimer.text = $"{Utils.MSpace($"{ts.Hours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
+        //else
+        //    m_element.btnUpgradeTimer.text = $"{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s\n남은_시간";
 
         m_popupTimeStone?.UpdateRemainTime(ts);
     }
@@ -277,7 +279,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         if (m_castleData.type == CastleObjectType.Office)
         {
             var levelInfo = DataManager.castle.mission.levelInfo;
-            m_element.txtBatchStat[0].text = $"경험치_:_{levelInfo.nowExp}/{levelInfo.maxExp}";
+            m_element.txtBatchStat[0].text = $"경험치_:_<color=#{(levelInfo.nowExp >= levelInfo.maxExp ? Palette.htmlString_Up : Palette.htmlString_Down)}>{levelInfo.nowExp}/{levelInfo.maxExp}";
 
             m_logUpgrade = levelInfo.isUpgradable ? "" : "경험치가_부족합니다.";
             m_element.txtBatchStat[1].gameObject.SetActive(false);

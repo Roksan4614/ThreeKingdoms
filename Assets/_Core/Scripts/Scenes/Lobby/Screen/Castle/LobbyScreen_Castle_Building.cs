@@ -121,9 +121,10 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
 
         var ts = _updateData.ts;
 
+        button.text = Utils.MSpace(ts.ToRemainTime(), 24);
+
         if (ts.Minutes > 0)
         {
-            button.text = Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 24);
 
             if (m_timeStepType != TimerStepType.Minute)
             {
@@ -133,8 +134,6 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
         }
         else
         {
-            button.text = Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 24) + "s";
-
             if (m_timeStepType != TimerStepType.Seconds)
             {
                 m_timeStepType = TimerStepType.Seconds;

@@ -10,7 +10,9 @@ public class ItemComponent : MonoBehaviour, IValidatable
 
     private void Awake()
     {
-        m_element.txtCount.text = "";
+        if (m_element.txtCount != null)
+            m_element.txtCount.text = "";
+
         SetIconAsync(null, true).Forget();
     }
 
@@ -104,7 +106,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
             iconPanel = panel.Find("Icon/Panel");
             txtCount = panel.GetComponent<TextMeshProUGUI>("txt_count");
 
-            badge = panel.Find("Badge").gameObject;
+            badge = panel.Find("Badge")?.gameObject;
             dimm = iconPanel.parent.Find("Dimm")?.gameObject;
         }
     }

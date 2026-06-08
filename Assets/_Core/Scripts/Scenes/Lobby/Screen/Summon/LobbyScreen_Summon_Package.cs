@@ -135,8 +135,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
         {
             m_lastRemainTimeValue = lastValue;
 
-            string remain = Utils.GetRemainTime(_ts);
-            m_element.txtRemainTime.text = $"_주최자 변경까지 남은시간: " + Utils.MSpace(remain, 23);
+            m_element.txtRemainTime.text = $"_주최자 변경까지 남은시간: " + _ts.ToRemainTime(23, _isStringMode:true);
         }
     }
 

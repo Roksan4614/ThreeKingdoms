@@ -222,4 +222,37 @@ public static class Extenssions
 
     public static bool Approximately(this float _float, float _value, float _gap = 0.0001f)
         => Mathf.Abs(_float - _value) <= _gap;
+
+    public static string ToRemainTime(this TimeSpan _ts, int _mspace = -1, bool _isDigitS = true, bool _isStringMode = false, bool _isStartMinute = false)
+    {
+        string result = "";
+
+        if (_isStringMode == true)
+        {
+            result = _ts.Days > 0 ?
+                    $"{_ts.Days}d {_ts.Hours}h" :
+                    _ts.Hours > 0 ?
+                    $"{_ts.Hours}h {_ts.Minutes}m" :
+                    _ts.Minutes > 0 ?
+                    $"{_ts.Minutes}m {_ts.Seconds}s" :
+                    $"{_ts.TotalSeconds:0.00}s";
+        }
+        else
+        {
+            if (_ts.TotalMinutes < 1)
+                result = _ts.TotalSeconds.ToString("0.00");
+            else if (_isStartMinute)
+                result = $"{Mathf.FloorToInt((float)_ts.TotalMinutes):00}:{_ts.ToString(@"ss")}";
+            else
+                result = $"{Mathf.FloorToInt((float)_ts.TotalHours):00}:{_ts.ToString(@"mm\:ss")}";
+
+            if (_mspace > -1)
+                result = Utils.MSpace(result, _mspace);
+
+            if (_isDigitS == true && _ts.TotalMinutes < 1)
+                result += "s";
+        }
+
+        return result;
+    }
 }

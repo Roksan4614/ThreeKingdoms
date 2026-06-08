@@ -64,13 +64,7 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
                 var dt = DateTime.Now;
                 var ts = dt.AddSeconds(m_castleData.dbRise.upgradeSeconds) - dt;
                 SetAddItem(i++, " 증축_시간", m_castleData.dbRise.upgradeSeconds == 0 ? "_즉시" :
-                    ts.Days > 0 ?
-                    $"{ts.Days}d {ts.Hours}h" :
-                    ts.Hours > 0 ?
-                    $"{ts.Hours}h {ts.Minutes}m" :
-                    ts.Minutes > 0 ?
-                    $"{ts.Minutes}m {ts.Seconds}s" :
-                    $"{ts.TotalSeconds:0.##}s", null);
+                    ts.ToRemainTime(_isStringMode: true), null);
             }
         }
 
@@ -82,7 +76,7 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         m_element.panel.ForceRebuildLayout();
     }
 
-    void SetAddItem(int _idx, string _name, string _now, string _after)
+    void SetAddItem(int _idx, string _name, string _now, string _after, bool _isUp = true)
     {
         var item = _idx == m_element.panel.childCount
             ? Instantiate(m_element.panel.GetChild(0), m_element.panel)
@@ -90,7 +84,7 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         item.gameObject.SetActive(true);
 
         item.SetText("txt_name", _name);
-        item.SetText("txt_value", $"{(_now.IsActive() ? _now : "")}{(_after.IsActive() ? $"  <size=70%>></size>  <color=#{Palette.htmlString_Up}>{_after}" : "")}");
+        item.SetText("txt_value", $"{(_now.IsActive() ? _now : "")}{(_after.IsActive() ? $"  <size=70%>></size>  <color=#{(_isUp ? Palette.htmlString_Up : Palette.htmlString_Down)}>{_after}" : "")}");
     }
 
     int SetInfo_Palace()
@@ -120,7 +114,7 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
             $"{DataManager.castle.GetAmountPerSecond(m_castleData).AmountKMBT()}/s",
             $"{DataManager.castle.GetAmountPerSecond(nextCastleData).AmountKMBT()}/s");
 
-        SetAddItem(i++, " 보유량 한도",
+        SetAddItem(i++, " 보유량_한도",
             $"{DataManager.castle.GetMaxAmount(m_castleData).AmountKMBT()}",
             $"{DataManager.castle.GetMaxAmount(nextCastleData).AmountKMBT()}");
 
@@ -128,7 +122,16 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
     }
     int SetInfo_Office() { int i = 0; return i; }
     int SetInfo_Merchant() { int i = 0; return i; }
-    int SetInfo_Gate() { int i = 0; return i; }
+    int SetInfo_Gate()
+    {
+        int i = 0;
+        var nextLevel = m_castleData.level + 1;
+
+        SetAddItem(i++, " 도적_유지_시간",
+            $"{TableManager.castleEffect[m_castleData.type].Get(m_castleData.level).npc_duration_sec}/s",
+            $"{TableManager.castleEffect[m_castleData.type].Get(nextLevel).npc_duration_sec}/s");
+        return i;
+    }
 
     //public void SetPalaceInfo(Data_Castle.CastleData _castleData)
     //{
@@ -160,27 +163,29 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         SetAddItem(i++, "<size=110%><color=#000000>청렴도 영향</color></size>", null, null);
         // 궁성
         {
-            var timeStoneSec = TableManager.castleEffect[CastleObjectType.Palace].Get(m_castleData.level).time_stone_sec ?? -1;
-            SetAddItem(i++, " 시간석_개당_단축", $"{timeStoneSec}s", probity == 1 ? null : $"{(timeStoneSec * probity):0.##}s");
+            var levelPalace = DataManager.castle.GetCaslteData(CastleObjectType.Palace).level;
+            var timeStoneSec = TableManager.castleEffect[CastleObjectType.Palace].Get(levelPalace).time_stone_sec ?? -1;
+            SetAddItem(i++, " 시간석_개당_단축", $"{timeStoneSec}s", probity == 1 ? null : $"{(timeStoneSec * probity):0.##}s", false);
         }
         // 상점
         {
-            var perSecond = DataManager.castle.GetAmountPerSecond(DataManager.castle.GetCaslteData(CastleObjectType.Market), false);
-            SetAddItem(i++, " 군량/금화_수령시_획득량", $"<color=#{Palette.htmlString_Up}>{probity * 100: 0.##}%", null);
+            SetAddItem(i++, " 군량/금화_수령시_획득량", $"<color=#{(probity < 1 ? Palette.htmlString_Down : Palette.htmlString_Up)}>{(probity) * 100: 0.##}%", null);
         }
         // 행상
         {
             // todo
             var discountRate = 0.1f;
-            SetAddItem(i++, " 상점 할인율", $"{discountRate * 100: 0.##}%", probity == 1 ? null : $"{discountRate * probity * 100: 0.##}%");
+            SetAddItem(i++, " 상점 할인율", $"{discountRate * 100: 0.##}%", probity == 1 ? null : $"{discountRate * probity * 100: 0.##}%", false);
         }
         // 관아
         {
             if (probity < 1)
             {
                 var orinProbity = DataManager.castle.GetGateProbityRate(true);
-                SetAddItem(i++, " 높은 등급 등장 확률 감소", $"<color=#{Palette.htmlString_Up}>-{(1 - orinProbity) * 100: 0.##}%", null);
+                SetAddItem(i++, " 높은 등급 등장 확률 감소", $"<color=#{Palette.htmlString_Down}>-{(1 - orinProbity) * 100: 0.##}%", null);
             }
+            else
+                SetAddItem(i++, " 높은 등급 등장 확률 감소", $"0%", null);
         }
 
         for (; i < m_element.panel.childCount; i++)

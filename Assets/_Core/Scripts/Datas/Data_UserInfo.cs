@@ -309,6 +309,7 @@ public class Data_UserInfo
     struct ElementData
     {
         public int uid;
+        public string nickname;
         public RegionType region;
         public List<HeroInfoData> myHero;
 

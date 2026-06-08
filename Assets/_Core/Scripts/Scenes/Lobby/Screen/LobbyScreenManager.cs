@@ -38,6 +38,9 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     {
         SetActiveDimm(false, false);
 
+        //시작과 동시에 그냥 생성해주자
+        InstantiateAsync();
+
         Signal.instance.CloseLobbyScreen.connect = CloseScreen;
     }
 
@@ -54,6 +57,24 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
 
         ControllerManager.instance.isSwitch = true;
         Signal.instance.CloseLobbyScreenFinished.Emit();
+    }
+
+    public async UniTask InstantiateAsync()
+    {
+        var instantiateScreen = new List<LobbyScreenType>() { LobbyScreenType.Hero, LobbyScreenType.Castle };
+
+        for (int i = 0; i < instantiateScreen.Count; i++)
+        {
+            var screenType = instantiateScreen[i];
+
+            var screen = await AddressableManager.instance.GetLobbyScreen(screenType);
+            var item = Instantiate(screen, transform).GetComponent<LobbyScreen_Base>();
+            item.name = screenType.ToString();
+
+            m_dicScreen.Add(screenType, item);
+            item.Initilize(screenType);
+            item.gameObject.SetActive(false);
+        }
     }
 
     public async UniTask OpenScreenAsync(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback)

@@ -8,7 +8,11 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
 {
     protected override void OnAwake()
     {
-        m_element.btnBossRaid.onClick.AddListener(() => BossRaidWorker.instance.Initialize(BossRaidWorker.BossRaidType.LuBu).Forget());
+        //m_element.btnBossRaid.onClick.AddListener(() => BossRaidWorker.instance.Initialize(BossRaidWorker.BossRaidType.LuBu).Forget());
+        m_element.btnBossRaid.onClick.AddListener(() =>
+        {
+            PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid).Forget();
+        });
 
         Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(false));
     }
@@ -27,7 +31,7 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
         {
             var right = _transform.Find("Right");
 
-            btnBossRaid = right.GetComponent<ButtonHelper>("brn_bossRaid");
+            btnBossRaid = right.GetComponent<ButtonHelper>("btn_bossRaid");
         }
     }
     #endregion VALIDATA

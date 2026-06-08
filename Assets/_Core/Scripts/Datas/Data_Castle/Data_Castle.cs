@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -348,11 +349,11 @@ public partial class Data_Castle
         var castleData = m_db[_objectType];
 
         var probity = GetGateProbityRate();
-        var count = (long)(castleData.totalAmount * probity);
+        var count = (int)(castleData.totalAmount * probity);
         var itemType = _objectType == CastleObjectType.Market ? ItemType.Gold : ItemType.Rice;
 
         castleData.totalAmount = 0;
-        castleData.addClaimAmount = count;
+        castleData.todayClaimAmount = castleData.todayClaimAmount + count;
         castleData.tickClaim = Utils.GetUTC().Ticks;
 
         m_db[_objectType] = castleData;
@@ -378,7 +379,7 @@ public partial class Data_Castle
 
         public long tickClaim;          // 회수한 시간
         public float totalAmount;       // 회수할 수 있는 총 재화량
-        public float todayClaimAmount;
+        [JsonProperty] float today_claim_amount;
 
         public long tickUpgradeEnd;     // 업그레이드 시작
         public float remainUpgradeSeconds;  // 중단되서 멈췄을 때 남은 시간
@@ -437,19 +438,21 @@ public partial class Data_Castle
 
         public DateTime dtClaim => new DateTime(tickClaim, DateTimeKind.Utc);
         public bool isDateChanged => Utils.GetUTC().Date > dtClaim.Date;
-        public long addClaimAmount
+        public int todayClaimAmount
         {
-            set
+            get
             {
                 CheckDate();
-                todayClaimAmount += value;
+                return Mathf.FloorToInt(today_claim_amount);
             }
+            set => today_claim_amount = value;
+
         }
         void CheckDate()
         {
             if (isDateChanged)
             {
-                todayClaimAmount = 0;
+                today_claim_amount = 0;
                 tickClaim = Utils.GetUTC().Ticks;
             }
         }

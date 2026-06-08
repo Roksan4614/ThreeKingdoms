@@ -71,7 +71,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         //소요시간
         var now = DateTime.Now;
         TimeSpan ts = now.AddSeconds(_mission.dbGradeData.durationSeconds) - now;
-        m_element.txtContent_Time.text = $"소요시간_:_{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}";
+        m_element.txtContent_Time.text = $"소요시간_:_{ts.ToRemainTime()}";
         m_element.txtContent_Exp.text = $"경험치_:_+{_mission.dbGradeData.missionXp.AmountKMBT()}";
         m_element.txtContent_Exp.transform.parent.ForceRebuildLayout();
 

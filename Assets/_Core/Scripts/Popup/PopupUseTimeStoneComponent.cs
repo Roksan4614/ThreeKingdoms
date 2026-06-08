@@ -90,11 +90,7 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
         if (statusType != StatusType.Wait)
             return;
 
-        if (_ts.TotalMinutes > 0)
-            m_element.txtTimer.text = $"{Utils.MSpace($"{Mathf.FloorToInt((float)_ts.TotalHours):00}:{_ts.ToString(@"mm\:ss")}", 65)}";
-        else
-            m_element.txtTimer.text = $"{Utils.MSpace(_ts.TotalSeconds.ToString("0.00"), 65)}s";
-
+        m_element.txtTimer.text = _ts.ToRemainTime(65);
         m_totalSeconds = (int)_ts.TotalSeconds;
 
         UpdateTimeStoneCount();
@@ -121,10 +117,11 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
         var dtNow = DateTime.Now;
         var ts = dtNow.AddSeconds(m_countTimeStone * m_secTimeStone) - dtNow;
 
-        if (ts.TotalMinutes > 0)
-            m_element.txtBonus.text = $"(-{Utils.MSpace($"{Mathf.FloorToInt((float)ts.TotalHours):00}:{ts.ToString(@"mm\:ss")}", 30)})";
-        else
-            m_element.txtBonus.text = $"(-{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s)";
+        m_element.txtBonus.text = $"(-{ts.ToRemainTime(30)})";
+        //if (ts.TotalMinutes > 0)
+        //    m_element.txtBonus.text = $"(-{Utils.MSpace($"{Mathf.FloorToInt((float)ts.TotalHours):00}:{ts.ToString(@"mm\:ss")}", 30)})";
+        //else
+        //    m_element.txtBonus.text = $"(-{Utils.MSpace(ts.TotalSeconds.ToString("0.00"), 30)}s)";
 
         m_element.btnTimeStone.text = $"{m_countTimeStone.AmountKMBT()} <color=#6D6D6D><size=90%>({m_secTimeStone}s/ea)";
     }
