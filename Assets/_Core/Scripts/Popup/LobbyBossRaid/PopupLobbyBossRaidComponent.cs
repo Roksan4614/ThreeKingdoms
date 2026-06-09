@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +7,12 @@ using UnityEngine.UI;
 public class PopupLobbyBossRaidComponent : BasePopupComponent
 {
     PopupLobbyBossRaidComponent() : base(PopupType.LobbyBossRaid) { }
+
+    CharacterComponent m_characterBoss;
+
+    [SerializeField]
+    List<BossPositionData> m_posData = new();
+
 
     protected override void Awake()
     {
@@ -19,21 +26,125 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
             popup.GetChild(i).gameObject.SetActive(false);
 
         m_element.btnRanking.onClick.AddListener(() => OnButtonAsync_Ranking().Forget());
+        m_element.btnHero.onClick.AddListener(OnButton_Hero);
     }
 
     public override void OpenPopup(params object[] _args)
     {
         Utils.SetActivePunch(m_element.panel, true);
+
+        var raidData = DataManager.bossRaid.data;
+
+        m_element.txtDifficult.text = $"[{Utils.GetString_GradeType(raidData.gradeMin)}~{Utils.GetString_GradeType(raidData.gradeMax)}]";
+
+        DoLoadBossCharacter().Forget();
+
+        OnUpdateRoundTimerAsync().Forget();
+        OnUpdateSeasonTimerAsync().Forget();
+    }
+
+    async UniTask DoLoadBossCharacter()
+    {
+        var raidData = DataManager.bossRaid.data;
+
+        // 일단 테스트로 있는거기때문에 없애주자.
+        m_characterBoss = null;
+        for (int i = 0; i < m_element.pHero.childCount; i++)
+        {
+            var item = m_element.pHero.GetChild(i).gameObject;
+            if (raidData.keyBoss == item.name)
+            {
+                m_characterBoss = item.GetComponent<CharacterComponent>();
+                break;
+            }
+            Destroy(item);
+        }
+
+        if (m_characterBoss == null)
+        {
+            var asset = await AddressableManager.instance.GetHeroCharacterAsync(raidData.keyBoss);
+            m_characterBoss = Instantiate(asset, m_element.pHero).GetComponent<CharacterComponent>();
+        }
+
+        if (m_characterBoss == null)
+            return;
+
+        m_characterBoss.transform.localPosition = Vector3.zero;
+
+        var anchorPos = m_element.rtHero.anchoredPosition;
+        anchorPos.x = m_posData.Find(x => x.key == raidData.keyBoss).x;
+        m_element.rtHero.anchoredPosition = anchorPos;
+
+        // 이전 라운드 정보
+        if (raidData.tickPrevRound == 0)
+            m_element.txtInfoPrevRound.text = "이전_라운드_정보_없음";
+        else
+            m_element.txtInfoPrevRound.text = $"이전_라운드_ :_[{Utils.GetString_GradeType(raidData.prevGrade)}]\n{raidData.dtPrevRound.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")}";
+    }
+    async UniTask OnUpdateSeasonTimerAsync()
+    {
+        var dtEnd = DataManager.bossRaid.data.dtEndSeason;
+
+        while (true)
+        {
+            var ts = dtEnd - Utils.GetUTC();
+
+            if (ts.TotalSeconds <= 0)
+                break;
+
+            m_element.txtSeasonRemainTimer.text = ts.ToRemainTime(40, _isStringMode: true);
+            await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
+        }
+
+        m_element.txtSeasonRemainTimer.text = "_정산중_";
+    }
+
+    async UniTask OnUpdateRoundTimerAsync()
+    {
+        var dtEnd = DataManager.bossRaid.data.dtNextRound;
+
+        var raidData = DataManager.bossRaid.data;
+        if (raidData.tickNextRound == 0)
+        {
+            m_element.btnStart.text = "_미출현_";
+            m_element.txtRoundRemainTimer.text = "";
+            m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Center;
+            return;
+        }
+
+        m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Top;
+
+        while (true)
+        {
+            var ts = dtEnd - Utils.GetUTC();
+
+            if (ts.TotalSeconds <= 0)
+                break;
+
+            m_element.btnStart.text = "_대기_";
+            m_element.txtRoundRemainTimer.text = $"({ts.ToRemainTime(25, _isStartMinute: true)})";
+            await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
+        }
+
+        m_element.btnStart.text = "_참가_";
+        m_element.txtRoundRemainTimer.text = "";
+        m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Center;
     }
 
     async UniTask OnButtonAsync_Ranking()
     {
+        await DataManager.bossRaid.DoLoadAsync_RankData();
         await Utils.SetActivePunchAsync(m_element.panel, false);
 
         m_element.popupRanking.OpenPopup();
-        await UniTask.WaitUntil(() => m_element.popupRanking.gameObject.activeSelf == false);
+        await UniTask.WaitUntil(() => m_element.popupRanking.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
 
         Utils.SetActivePunch(m_element.panel, true);
+    }
+
+    void OnButton_Hero()
+    {
+        //m_characterBoss.anim.PlayAttack();
     }
 
     public override void Close()
@@ -63,16 +174,16 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         public TextMeshProUGUI txtDifficult;
         public TextMeshProUGUI txtBossName;
-        public TextMeshProUGUI txtRoundRemainTimer; // 라운드 남은 시간
+        public TextMeshProUGUI txtSeasonRemainTimer; // 라운드 남은 시간
         public TextMeshProUGUI txtInfoPrevRound;
-        public TextMeshProUGUI txtRemainTimer;      // 보스 등장 남은 시간
+        public TextMeshProUGUI txtRoundRemainTimer;      // 보스 등장 남은 시간
 
         public ButtonHelper btnRanking;
         public ButtonHelper btnStart;
         public ButtonHelper btnShop;
 
         public Button btnHero;
-        public Transform trnsHero;
+        public Transform pHero;
 
         public PopupLobbyBossRaid_PopupRanking popupRanking;
 
@@ -85,20 +196,28 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
             txtPoint = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_point");
             txtDifficult = _transform.GetComponent<TextMeshProUGUI>("Panel/Info/txt_difficult");
             txtBossName = _transform.GetComponent<TextMeshProUGUI>("Panel/Info/txt_title");
-            txtRoundRemainTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/Info/txt_remain");
+            txtSeasonRemainTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/Info/txt_remain");
             txtInfoPrevRound = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_prev_round_info");
-            txtRemainTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/Button/btn_start/txt_timer");
+            txtRoundRemainTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/Button/btn_start/txt_timer");
 
             btnStart = _transform.GetComponent<ButtonHelper>("Panel/Button/btn_start");
             btnRanking = _transform.GetComponent<ButtonHelper>("Panel/Button/btn_ranking");
             btnShop = _transform.GetComponent<ButtonHelper>("Panel/Button/btn_shop");
 
             btnHero = _transform.GetComponent<Button>("Panel/btn_character");
-            trnsHero = btnHero.transform.Find("Panel");
+            pHero = btnHero.transform.Find("Panel");
 
             popupRanking = _transform.GetComponent<PopupLobbyBossRaid_PopupRanking>("Popup/Ranking");
         }
+
+        public RectTransform rtHero => (RectTransform)btnHero.transform;
     }
     #endregion VALIDATE
 
+    [System.Serializable]
+    struct BossPositionData
+    {
+        public string key;
+        public float x;
+    }
 }

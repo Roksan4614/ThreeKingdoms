@@ -1,10 +1,9 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -150,29 +149,43 @@ public static class Utils
 
     public static string MSpace(string _msgAmount, int _mspace = 20)
     {
-        List<char> ignores = new string[]
-        { ",", ".", "%", ":" }
-        .SelectMany(x => x.ToCharArray()).ToList();
+        if (string.IsNullOrEmpty(_msgAmount))
+            return string.Empty;
 
-        var msgs = _msgAmount.Split(ignores.ToArray());
+        StringBuilder sb = new StringBuilder(_msgAmount.Length * 2);
 
-        List<char> ignoreChar = new();
         foreach (char c in _msgAmount)
         {
-            if (ignores.Contains(c))
-                ignoreChar.Add(c);
+            if (char.IsDigit(c)) // '0' <= c && c <= '9'
+                sb.Append("<mspace=").Append(_mspace).Append(">").Append(c).Append("</mspace>");
+            else
+                sb.Append(c);
         }
 
-        int index = 0;
-        string result = "";
-        foreach (var msg in msgs)
-        {
-            if (msg.IsActive())
-                result += $"<mspace={_mspace}>{msgs[index]}</mspace>";
-            result += $"{(ignoreChar.Count > index ? ignoreChar[index++] : "")}";
-        }
+        return sb.ToString();
+        //List<char> ignores = new string[]
+        //{ ",", ".", "%", ":", "(", ")" }
+        //.SelectMany(x => x.ToCharArray()).ToList();
 
-        return result;
+        //var msgs = _msgAmount.Split(ignores.ToArray());
+
+        //List<char> ignoreChar = new();
+        //foreach (char c in _msgAmount)
+        //{
+        //    if (ignores.Contains(c))
+        //        ignoreChar.Add(c);
+        //}
+
+        //int index = 0;
+        //string result = "";
+        //foreach (var msg in msgs)
+        //{
+        //    if (msg.IsActive())
+        //        result += $"<mspace={_mspace}>{msgs[index]}</mspace>";
+        //    result += $"{(ignoreChar.Count > index ? ignoreChar[index++] : "")}";
+        //}
+
+        //return result;
     }
 
     public static void SetActivePunch(Transform _transform, bool _isActive, bool _isAutoActive = true, UnityAction _callback = null)
@@ -238,4 +251,7 @@ public static class Utils
 
     //    return remain;
     //}
+
+    public static string GetString_GradeType(GradeType _gradeType)
+        => TableManager.stringTable.GetString($"GRADE_{_gradeType.ToString().ToUpper()}");
 }

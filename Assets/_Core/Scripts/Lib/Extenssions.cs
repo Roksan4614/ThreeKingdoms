@@ -235,12 +235,15 @@ public static class Extenssions
                     $"{_ts.Hours}h {_ts.Minutes}m" :
                     _ts.Minutes > 0 ?
                     $"{_ts.Minutes}m {_ts.Seconds}s" :
-                    $"{_ts.TotalSeconds:0.00}s";
+                    _ts.Seconds >= 10 ?
+                    $"{_ts.Seconds}s" : $"{_ts.TotalSeconds:0.00}s";
         }
         else
         {
             if (_ts.TotalMinutes < 1)
-                result = _ts.TotalSeconds.ToString("0.00");
+            {
+                result = _ts.Seconds >= 10 ? _ts.Seconds.ToString() : _ts.TotalSeconds.ToString("0.00");
+            }
             else if (_isStartMinute)
                 result = $"{Mathf.FloorToInt((float)_ts.TotalMinutes):00}:{_ts.ToString(@"ss")}";
             else

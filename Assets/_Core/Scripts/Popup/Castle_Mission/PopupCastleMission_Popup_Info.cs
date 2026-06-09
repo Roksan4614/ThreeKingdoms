@@ -39,7 +39,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         Utils.SetActivePunch(m_element.panel, true);
         resultType = StatusType.Wait;
 
-        m_element.txtTitle.text = $"임무_:_[{TableManager.stringTable.GetString($"GRADE_{_mission.grade.ToString().ToUpper()}")}]";
+        m_element.txtTitle.text = $"임무_:_[{Utils.GetString_GradeType(_mission.grade)}]";
         m_element.txtName.text = _mission.missionNameStat;
         m_element.gauge.textTitle = $"고유_능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.statType.ToString().ToUpper()}")})_요구치";
 

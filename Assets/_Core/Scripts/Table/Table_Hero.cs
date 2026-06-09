@@ -130,7 +130,7 @@ public struct HeroInfoData
     public bool isActive => key.IsActive();
     public string regionKey => $"{m_regionType}_{key}".ToUpper();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
-    public string gradeName => TableManager.stringTable.GetString($"GRADE_" + grade.ToString().ToUpper());
+    public string gradeName => Utils.GetString_GradeType(grade);
     public string className => TableManager.stringHero.GetString($"CLASSTYPE_" + m_classType.ToString().ToUpper());
     public string gradeClass => $"{gradeName} {className}";
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);

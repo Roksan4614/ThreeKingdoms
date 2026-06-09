@@ -374,7 +374,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             while (itemComp.data.count > soulCount)
                 soulCount = TableManager.hero.GetNeedSoul(grade++);
 
-            var stringGrade = TableManager.stringTable.GetString($"GRADE_" + grade.ToString().ToUpper());
+            var stringGrade = Utils.GetString_GradeType(grade);
 
             PopupManager.instance.AlertShow(
                 $"[{stringGrade}] {dbHeroData.name.WithJosa()} 진영에 합류합니다.", 55);

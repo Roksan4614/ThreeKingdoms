@@ -22,7 +22,15 @@ public class Editor_Menu
     [MenuItem("Rev9/PlayerPrefabs RESET: Castle", false, 10001)]
     static void ResetPlayerPrefabsCastle()
     {
+        Debug.Log("ResetPlayerPrefabsCastle");
         PlayerPrefs.DeleteKey("pp_castle_data");
+    }
+
+    [MenuItem("Rev9/PlayerPrefabs RESET: BossRaid", false, 10002)]
+    static void ResetPlayerPrefabsBossRaid()
+    {
+        Debug.Log("ResetPlayerPrefabsBossRaid");
+        PlayerPrefs.DeleteKey("pp_bossraid");
     }
 
     [MenuItem("Rev9/Restart UNITY", false, 10000)]
