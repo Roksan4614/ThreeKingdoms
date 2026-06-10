@@ -12,13 +12,18 @@ public class PopupLobbyBossRaid_PopupRanking_PodiumItem : MonoBehaviour, IValida
             DestroyImmediate(m_element.pHero.GetChild(0).gameObject);
     }
 
-    public async UniTask SetRankerInfoAsync(Data_BossRaid.BossRaidRankerUserData _rankerData, UnityAction<Data_BossRaid.BossRaidRankerUserData> _callback)
+    public async UniTask SetRankerInfoAsync(
+        PopupLobbyBossRaid_PopupRanking.TabType _tabType,
+        Data_BossRaid.BossRaidRankerUserData _rankerData, UnityAction<Data_BossRaid.BossRaidRankerUserData> _callback)
     {
         m_element.btnUserInfo.onClick.RemoveAllListeners();
         m_element.btnUserInfo.onClick.AddListener(() => _callback(_rankerData));
 
         m_element.txtName.text = _rankerData.nickname;
-        m_element.txtPoint.text = $"{_rankerData.point:#,0}p";
+        if( _tabType == PopupLobbyBossRaid_PopupRanking.TabType.Point)
+            m_element.txtPoint.text = $"{_rankerData.point:#,0}p";
+        else
+            m_element.txtPoint.text = $"{_rankerData.point:#,0}";
 
         // 캐릭터 생성
         {

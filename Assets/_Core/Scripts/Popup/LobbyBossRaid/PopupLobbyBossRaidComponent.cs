@@ -29,6 +29,17 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         m_element.btnHero.onClick.AddListener(OnButton_Hero);
     }
 
+    private void Start()
+    {
+        Utils.WaitEscape(this, () =>
+        {
+            if (m_element.popupRanking.CloseEscape() == false)
+                return;
+
+            Close();
+        });
+    }
+
     public override void OpenPopup(params object[] _args)
     {
         Utils.SetActivePunch(m_element.panel, true);

@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
@@ -16,12 +17,11 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
     TabType m_curTabType = TabType.NONE;
 
+    PopupUserInfoComponent m_popupUserInfo;
+
     private void Awake()
     {
         m_element.imgPanel.enabled = true;
-
-        //m_element.baseRanker.transform.SetParent(m_element.scroll.viewport);
-        //m_element.baseRanker.gameObject.SetActive(false);
 
         m_element.btnClose.onClick.AddListener(OnButton_Close);
 
@@ -30,6 +30,20 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
             var tabType = (TabType)i;
             m_element.tabs[i].onClick.AddListener(() => OnButton_Tab(tabType));
         }
+    }
+
+    public bool CloseEscape()
+    {
+        if (gameObject.activeSelf == true)
+        {
+            if (m_popupUserInfo?.EscapeClose() == false)
+                return false;
+
+            OnButton_Close();
+            return false;
+        }
+
+        return true;
     }
 
     public void OpenPopup()
@@ -52,7 +66,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
             m_element.tabs[i].SetDrawSelect(i == (int)_tabType);
 
         SetPodium();
-        //SetRanking();
+        SetRanking();
     }
 
     void SetPodium()
@@ -60,7 +74,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         Data_BossRaid.BossRaidRankerUserData[] ranker = (m_curTabType == TabType.Point ? DataManager.bossRaid.rankPoint : DataManager.bossRaid.rankPrevRaid).ranker.Take(3).ToArray();
 
         for (int i = 0; i < ranker.Length; i++)
-            m_element.podiums[i].SetRankerInfoAsync(ranker[i], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget()).Forget();
+            m_element.podiums[i].SetRankerInfoAsync(m_curTabType, ranker[i], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget()).Forget();
     }
 
     void SetRanking()
@@ -76,47 +90,53 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
             rankData.ranker = rankData.ranker.GetRange(startIndex, endIndex - startIndex + 1);
         }
 
-        int userIndex = -1;
-        int i = 0;
+        m_element.scroll.Initialize<PopupLobbyBossRaid_PopupRanking_Item>(rankData.ranker.Count,
+            (_item, _idxData) =>
+            {
+                _item.SetRankerInfoAsync(m_curTabType, rankData.ranker[_idxData], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget()).Forget();
+#if UNITY_EDITOR
+                _item.name = rankData.ranker[_idxData].rank.ToString();
+#endif
+            });
+
         var content = m_element.scroll.content;
-        for (; i < rankData.ranker.Count; i++)
+
+        //유저 찾기
+        UnityAction actionFind = () =>
         {
-            var item = i == content.childCount ? Instantiate(m_element.baseRanker, content) : content.GetChild(i).GetComponent<PopupLobbyBossRaid_PopupRanking_Item>();
-            item.SetRankerInfoAsync(m_curTabType, rankData.ranker[i], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget()).Forget();
-            item.gameObject.SetActive(true);
-
-            if (userIndex == -1 && rankData.ranker[i].uid == rankData.my.uid)
-                userIndex = i;
-        }
-
-        for (; i < content.childCount; i++)
-            content.GetChild(i).gameObject.SetActive(false);
-
-        content.ForceRebuildLayout();
+            for (int i = 0; i < rankData.ranker.Count; i++)
+            {
+                if (rankData.ranker[i].uid == rankData.my.uid)
+                {
+                    m_element.scroll.MoveToIndex(i);
+                    break;
+                }
+            }
+        };
 
         // 콘텐츠 위치 설정
         if (m_curTabType == TabType.Point)
-        {
-            VerticalLayoutGroup layout = content.GetComponent<VerticalLayoutGroup>();
-
-            var heightItem = content.rect.height - layout.padding.top - layout.padding.bottom - layout.spacing * (rankData.ranker.Count - 1);
-            heightItem /= rankData.ranker.Count;
-
-            var pos = content.anchoredPosition;
-            pos.y = heightItem * Mathf.Max(0, userIndex - 2) + layout.padding.top + (layout.spacing * userIndex);
-            content.anchoredPosition = pos;
-        }
+            actionFind();
         else
-        {
             content.anchoredPosition = Vector2.zero;
-        }
 
-        m_element.myRankInfo.SetRankerInfoAsync(m_curTabType, rankData.my, null).Forget();
+        // 내 정보쪽으로 가기
+        m_element.myRankInfo.SetRankerInfoAsync(m_curTabType, rankData.my, _rankerData => actionFind()).Forget();
     }
 
+    bool m_isOpenUserInfo;
     async UniTask OnButtonAsync_UserInfo(Data_BossRaid.BossRaidRankerUserData _rankerData)
     {
+        if (m_isOpenUserInfo == true || _rankerData.uid == DataManager.userInfo.uid)
+            return;
+        m_isOpenUserInfo = true;
 
+        m_popupUserInfo = await PopupManager.instance.OpenPopup<PopupUserInfoComponent>(PopupType.UserInfo, _rankerData.nickname);
+
+        await UniTask.WaitUntil(() => m_popupUserInfo.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
+
+        m_popupUserInfo = null;
+        m_isOpenUserInfo = false;
     }
 
     void OnButton_Close()
@@ -141,7 +161,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
         public ButtonHelper[] tabs;
 
-        public ScrollRect scroll;
+        public LoopScrollHelper scroll;
 
         public PopupLobbyBossRaid_PopupRanking_PodiumItem[] podiums;
         public PopupLobbyBossRaid_PopupRanking_Item baseRanker;
@@ -157,10 +177,10 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
             tabs = _transform.Find("Tab").GetComponentsInChildren<ButtonHelper>();
 
-            scroll = _transform.GetComponent<ScrollRect>("Scroll");
+            scroll = _transform.GetComponent<LoopScrollHelper>("Scroll");
             podiums = _transform.Find("Podium").GetComponentsInChildren<PopupLobbyBossRaid_PopupRanking_PodiumItem>();
             baseRanker = scroll.content.GetChild(0).GetComponent<PopupLobbyBossRaid_PopupRanking_Item>();
-            myRankInfo = scroll.viewport.GetComponent<PopupLobbyBossRaid_PopupRanking_Item>("MyInfo");
+            myRankInfo = scroll.transform.GetComponent<PopupLobbyBossRaid_PopupRanking_Item>("MyInfo");
         }
     }
     #endregion VALIDATE

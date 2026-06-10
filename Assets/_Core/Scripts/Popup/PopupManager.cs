@@ -27,6 +27,7 @@ public enum PopupType
     UseTimeStone,
 
     LobbyBossRaid,
+    UserInfo,
 
     Modal_Start,
     Modal,

@@ -17,7 +17,8 @@ public class ProfileIconCompoent : MonoBehaviour, IValidatable
             var rtParent = icon.transform.parent as RectTransform;
             await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0);
 
-            icon.AutoResizeParent().name = _skin;
+            if (icon != null)
+                icon.AutoResizeParent().name = _skin;
         }
     }
 

@@ -7,24 +7,17 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     float m_moveValueY;
     int m_countItem;
 
+    public RectTransform content => m_element.scroll.content;
+
     private void Awake()
     {
-        m_element.scroll.content.GetComponent<ContentSizeFitter>().enabled = false;
-
-        var content = m_element.scroll.content;
         float availableHeight = m_element.scroll.viewport.rect.height - m_element.layout.padding.top - m_element.layout.padding.bottom;
         float spacing = m_element.layout.spacing;
         int visibleCount = Mathf.CeilToInt((availableHeight + spacing) / (m_element.rtBaseItem.rect.height + spacing)) + 2;
 
         m_element.rtBaseItem.name = "0";
         for (int i = 1; i < visibleCount; i++)
-        {
-            var rtItem = Instantiate(m_element.rtBaseItem, m_element.scroll.content);
-            rtItem.name = i.ToString();
-
-            var pos = rtItem.anchoredPosition;
-            pos.y = m_element.layout.padding.top + rtItem.rect.height * i + m_element.layout.spacing * (i - 1);
-        }
+            Instantiate(m_element.rtBaseItem, m_element.scroll.content);
 
         m_moveValueY = visibleCount * m_element.rtBaseItem.rect.height + (m_element.layout.spacing * visibleCount);
     }
@@ -33,20 +26,20 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     {
         m_element.scroll.content.ForceRebuildLayout();
         m_element.layout.enabled = false;
-
-        //test
-        Initialize(40, _idx =>
-        {
-            var childIndex = _idx - m_curIndex;
-
-            IngameLog.Add($"{childIndex} / {_idx}");
-
-            m_element.scroll.content.GetChild(childIndex).name = _idx.ToString();
-        });
     }
 
-    void Initialize(int _count, UnityAction<int> _onUpdate)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="_count">데이타가 몇개야??</param>
+    /// <param name="_onUpdate">아이템이랑, 데이타 인덱스</param>
+    public void Initialize<T>(int _count, UnityAction<T, int> _onUpdate)
     {
+        m_element.scroll.onValueChanged.RemoveAllListeners();
+        m_element.scroll.velocity = m_element.scroll.content.anchoredPosition = Vector2.zero;
+
+        m_curIndex = 0;
         m_countItem = _count;
 
         var sizeDelta = m_element.scroll.content.sizeDelta;
@@ -55,18 +48,34 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
             + ((_count - 1) * m_element.layout.spacing);
         m_element.scroll.content.sizeDelta = sizeDelta;
 
+        for (int i = 0; i < m_element.scroll.content.childCount; i++)
+        {
+            var item = (RectTransform)m_element.scroll.content.GetChild(i);
+            item.gameObject.SetActive(i < _count);
 
+            if (item.gameObject.activeSelf)
+                _onUpdate(item.GetComponent<T>(), i);
+        }
 
-        m_element.scroll.onValueChanged.RemoveAllListeners();
+        m_element.layout.enabled = true;
+        m_element.scroll.content.ForceRebuildLayout();
+        m_element.layout.enabled = false;
+
         m_element.scroll.onValueChanged.AddListener(_pos =>
         {
-            OnValueChanged(_pos, _onUpdate);
+            OnValueChanged(_pos, (_indexChild, _indexData) =>
+            {
+                _onUpdate(m_element.scroll.content.GetChild(_indexChild).GetComponent<T>(), _indexData);
+            });
         });
     }
 
     int m_curIndex = 0;
-    private void OnValueChanged(Vector2 _pos, UnityAction<int> _onUpdate)
+    private void OnValueChanged(Vector2 _pos, UnityAction<int, int> _onUpdate)
     {
+        if (_pos.y < 0 || _pos.y > 1)
+            return;
+
         var content = m_element.scroll.content;
 
         float itemChunkHeight = m_element.rtBaseItem.sizeDelta.y + m_element.layout.spacing;
@@ -76,6 +85,7 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
         var curIndex = m_curIndex = Mathf.Max(0, (int)(scrolledDistance / itemChunkHeight));
 
         // 스크롤을 내렸을 때
+        int count = prevIndex;
         while (prevIndex < curIndex)
         {
             //맨 위에 있는 걸 아래로 내려줄꺼야
@@ -84,14 +94,13 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
 
             var pos = first.anchoredPosition;
             pos.y -= m_moveValueY;
+
             first.anchoredPosition = pos;
 
-            if (curIndex + content.childCount >= m_countItem)
+            if (prevIndex++ + content.childCount >= m_countItem)
                 first.gameObject.SetActive(false);
-
-            curIndex--;
-
-            _onUpdate?.Invoke(curIndex + content.childCount);
+            else
+                _onUpdate?.Invoke(content.childCount - 1, count++ + content.childCount);
         }
 
         // 스크롤을 올렸을 때
@@ -107,9 +116,29 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
 
             last.gameObject.SetActive(true);
 
-            _onUpdate?.Invoke(curIndex);
+            _onUpdate?.Invoke(0, --count);
             curIndex++;
         }
+    }
+
+    public void MoveToIndex(int _index)
+    {
+        var pos = content.anchoredPosition;
+
+        _index -= (int)(m_element.scroll.content.childCount * 0.5f);
+        if (_index < 0)
+            pos.y = 0;
+        else
+        {
+            if (_index > m_countItem - m_element.scroll.content.childCount + 2)
+                _index = m_countItem - m_element.scroll.content.childCount + 2;
+
+            var value = m_element.layout.padding.top + m_element.rtBaseItem.rect.height * (_index + 1) + m_element.layout.spacing * (_index);
+            pos.y = Mathf.Min(m_element.scroll.content.rect.height - m_element.scroll.viewport.rect.height, value);
+        }
+
+        m_element.scroll.velocity = Vector2.zero;
+        content.anchoredPosition = pos;
     }
 
     #region VALIDATE
