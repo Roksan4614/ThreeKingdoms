@@ -1,39 +1,40 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class Data_Stat_Relic
 {
-    const string key = "PP_Stat_Relic_Hero";
     const string key_Relic = "PP_Stat_Relic_Relic";
+    const string key_Treasure = "PP_Stat_Relic_Treasure";
 
-    Dictionary<string, int> m_dataHero;
-    public IReadOnlyDictionary<string, int> dataHero => m_dataHero;
+    Dictionary<string, int> m_dataRelic;
+    public IReadOnlyDictionary<string, int> dataRelic => m_dataRelic;
 
     Dictionary<HeroClassType, float> m_bonusClassBonus = new();
     public IReadOnlyDictionary<HeroClassType, float> bonusClassBonus => m_bonusClassBonus;
 
 
-    List<(string key, bool isBatch)> m_dataRelic;
-    public IReadOnlyList<(string key, bool isBatch)> dataRelic => m_dataRelic;
+    List<TreasureBatchData> m_dataTreasure;
+    public IReadOnlyList<TreasureBatchData> dataTreasure => m_dataTreasure;
 
-    Dictionary<BattleStatType, BattleStatData> m_bonusRelicBonus = new();
-    public IReadOnlyDictionary<BattleStatType, BattleStatData> bonusRelicBonus => m_bonusRelicBonus;
+    Dictionary<BattleStatType, BattleStatData> m_bonusTreasureBonus = new();
+    public IReadOnlyDictionary<BattleStatType, BattleStatData> bonusTreasureBonus => m_bonusTreasureBonus;
 
     public async UniTask InitializeAsync()
     {
         await UniTask.Yield();
 
-        m_dataHero = PPWorker.Get<Dictionary<string, int>>(key);
+        m_dataRelic = PPWorker.Get<Dictionary<string, int>>(key_Relic);
 
         // 히어로 유물 관련
         {
-            if (m_dataHero == null)
+            if (m_dataRelic == null)
             {
-                m_dataHero = new();
+                m_dataRelic = new();
 
                 foreach (var hero in TableManager.hero.list)
-                    m_dataHero.Add(hero.key, 0);
+                    m_dataRelic.Add(hero.key, 0);
 
                 SaveData_Hero();
             }
@@ -41,7 +42,7 @@ public class Data_Stat_Relic
             for (var t = HeroClassType.NONE + 1; t < HeroClassType.MAX; t++)
                 m_bonusClassBonus.Add(t, 0);
 
-            foreach (var d in m_dataHero)
+            foreach (var d in m_dataRelic)
             {
                 if (d.Value == 0)
                     continue;
@@ -51,88 +52,104 @@ public class Data_Stat_Relic
             }
         }
 
-        m_dataRelic = PPWorker.Get<List<(string key, bool isBatch)>>(key_Relic);
+        PlayerPrefs.DeleteKey(key_Treasure);
+        m_dataTreasure = PPWorker.Get<List<TreasureBatchData>>(key_Treasure);
 
         // 보물
         {
-            if (m_dataRelic == null)
+            if (m_dataTreasure == null)
             {
-                m_dataRelic = new();
-                m_dataRelic.Add(("막야검", false));
-                m_dataRelic.Add(("적토마", false));
-                m_dataRelic.Add(("손자병법서", false));
-                SaveData_Relic();
+                m_dataTreasure = TableManager.treasure.list.Where(x => x.isActive)
+                    .Select(x => new TreasureBatchData()
+                    {
+                        key = x.key,
+                        isBatch = false
+                    }).ToList();
+
+                SaveData_Treasure();
             }
 
-            for (int i = 0; i < m_dataRelic.Count; i++)
+            for (int i = 0; i < m_dataTreasure.Count; i++)
             {
-                if (m_dataRelic[i].isBatch == true)
-                    SetBonusRelicBonus(m_dataRelic[i].key, true);
+                if (m_dataTreasure[i].isBatch == true)
+                    SetBonusTreasureBonus(m_dataTreasure[i].key, true);
             }
         }
     }
+
+    public TreasureBatchData GetTreasureData(string _key)
+        => m_dataTreasure.Find(x => x.key == _key);
 
     public void Upgrade_HeroRelic(HeroInfoData _heroInfoData)
     {
         var key = _heroInfoData.key;
         var classType = _heroInfoData.classType;
 
-        int level = m_dataHero[key];
+        int level = m_dataRelic[key];
         m_bonusClassBonus[classType] -= level * 0.1f;
 
-        m_dataHero[key]++;
-        m_bonusClassBonus[classType] += m_dataHero[key] * 0.1f;
+        m_dataRelic[key]++;
+        m_bonusClassBonus[classType] += m_dataRelic[key] * 0.1f;
 
         SaveData_Hero();
     }
 
     void SaveData_Hero()
     {
-        PPWorker.Set(key, m_dataHero);
+        PPWorker.Set(key_Relic, m_dataRelic);
     }
 
-    public void SetRelicStatus(string _key, bool _isBatch)
+    public void SetTreasureStatus(string _key, bool _isBatch)
     {
-        var idx = m_dataRelic.FindIndex(x => x.key == _key);
+        var idx = m_dataTreasure.FindIndex(x => x.key == _key);
 
-        if (_isBatch == true && m_dataRelic.Count(x => x.isBatch) >= 3)
+        if (_isBatch == true && m_dataTreasure.Count(x => x.isBatch) >= 3)
             return;
 
         if (idx > -1)
         {
-            var data = m_dataRelic[idx];
+            var data = m_dataTreasure[idx];
             data.isBatch = _isBatch;
-            m_dataRelic[idx] = data;
-            SaveData_Relic();
+            data.tickBatch = _isBatch ? System.DateTime.UtcNow.Ticks : 0;
 
-            SetBonusRelicBonus(_key, _isBatch);
+            m_dataTreasure[idx] = data;
+            SaveData_Treasure();
+
+            SetBonusTreasureBonus(_key, _isBatch);
         }
     }
 
-    void SetBonusRelicBonus(string _key, bool _isAdd)
+    void SetBonusTreasureBonus(string _key, bool _isAdd)
     {
-        var relicData = TableManager.relic.GetGroupData(_key);
+        var treasureData = TableManager.treasure.Get(_key);
 
-        foreach (var d in relicData.statData)
+        foreach (var d in treasureData.dbEffect)
         {
-            if (m_bonusRelicBonus.ContainsKey(d.statType) == false)
+            if (m_bonusTreasureBonus.ContainsKey(d.Key) == false)
             {
-                m_bonusRelicBonus.Add(d.statType, new() { statType = d.statType });
-                m_bonusRelicBonus = m_bonusRelicBonus.OrderBy(x => x.Value.statType).ToDictionary(x => x.Value.statType, x => x.Value);
+                m_bonusTreasureBonus.Add(d.Key, new() { statType = d.Key });
+                m_bonusTreasureBonus = m_bonusTreasureBonus.OrderBy(x => x.Value.statType).ToDictionary(x => x.Value.statType, x => x.Value);
             }
 
-            var prev = m_bonusRelicBonus[d.statType];
-            prev.value += d.value * (_isAdd ? 1 : -1);
-            m_bonusRelicBonus[d.statType] = prev;
+            var prev = m_bonusTreasureBonus[d.Key];
+            prev.value += d.Value.value * (_isAdd ? 1 : -1);
+            m_bonusTreasureBonus[d.Key] = prev;
 
             if (prev.value.Approximately(0))
-                m_bonusRelicBonus.Remove(prev.statType);
+                m_bonusTreasureBonus.Remove(prev.statType);
         }
     }
 
-    void SaveData_Relic()
+    void SaveData_Treasure()
     {
-        PPWorker.Set(key_Relic, m_dataRelic);
+        PPWorker.Set(key_Treasure, m_dataTreasure);
+    }
+
+    public struct TreasureBatchData
+    {
+        public string key;
+        public bool isBatch;
+        public long tickBatch;
     }
 }
 

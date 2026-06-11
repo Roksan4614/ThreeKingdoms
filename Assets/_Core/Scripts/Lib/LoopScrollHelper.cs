@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -73,7 +74,7 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     int m_curIndex = 0;
     private void OnValueChanged(Vector2 _pos, UnityAction<int, int> _onUpdate)
     {
-        if (_pos.y < 0 || _pos.y > 1)
+        if (_pos.y < -0.001 || _pos.y > 1.001)
             return;
 
         var content = m_element.scroll.content;
@@ -121,7 +122,7 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
         }
     }
 
-    public void MoveToIndex(int _index)
+    public void MoveToIndex(int _index, bool _isTween)
     {
         var pos = content.anchoredPosition;
 
@@ -137,8 +138,10 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
             pos.y = Mathf.Min(m_element.scroll.content.rect.height - m_element.scroll.viewport.rect.height, value);
         }
 
-        m_element.scroll.velocity = Vector2.zero;
-        content.anchoredPosition = pos;
+        if (_isTween)
+            content.DOAnchorPosY(pos.y, 0.1f).OnComplete(() => m_element.scroll.velocity = Vector2.zero);
+        else
+            content.anchoredPosition = pos;
     }
 
     #region VALIDATE

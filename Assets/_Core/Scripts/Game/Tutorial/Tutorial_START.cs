@@ -76,7 +76,7 @@ public class Tutorial_START : TutorialBase
 
                     RewardWorker.instance.isSwitchReceive = false;
                     RewardWorker.instance.Run(enemy.transform.position,
-                        ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1), _durationWait: 1.5f);
+                        ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1), _durationWait: 2f);
 
                     await UniTask.WaitForEndOfFrame();
                 }

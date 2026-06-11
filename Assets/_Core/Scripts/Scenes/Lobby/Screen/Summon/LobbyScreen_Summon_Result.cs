@@ -111,7 +111,8 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                 {
                     key = ItemType.Dedicated_Soul_Stone,
                     value = _hostKey,
-                    count = TableManager.hero.GetNeedSoul(GradeType.Normal)
+                    count = TableManager.hero.GetNeedSoul(GradeType.Normal),
+                    category = ItemCategoryType.Soul_Stone,
                 });
 
                 var startHero = TableManager.region.Get(
@@ -124,6 +125,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                         key = ItemType.Dedicated_Soul_Stone,
                         value = startHero[i],
                         count = 10,
+                        category = ItemCategoryType.Soul_Stone,
                     });
                 }
             }
@@ -134,6 +136,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     TableItemData itemData = TableManager.item.Get(ItemType.Dedicated_Soul_Stone);
                     itemData.value = _hostKey;
                     itemData.count = TableManager.hero.GetNeedSoul(GradeType.Normal);
+                    itemData.category = ItemCategoryType.Soul_Stone;
                     result.Add(itemData);
                     i++;
                 }
@@ -155,6 +158,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                         grade++;
 
                     itemData.count = TableManager.hero.GetNeedSoul(grade);
+                    itemData.category = ItemCategoryType.Soul_Stone;
                     result.Add(itemData);
                 }
             }
@@ -213,6 +217,8 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                 {
                     data.isNew = DataManager.userInfo.GetHeroInfoData(data.value).isMine == false;
                     resultSoul.Add(data.value, data.count);
+
+                    m_itemComps[i].SetActiveBadge(data.isNew);
                 }
             }
 
@@ -374,7 +380,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             while (itemComp.data.count > soulCount)
                 soulCount = TableManager.hero.GetNeedSoul(grade++);
 
-            var stringGrade = Utils.GetString_GradeType(grade);
+            var stringGrade = TableManager.stringTable.GetGradeType(grade);
 
             PopupManager.instance.AlertShow(
                 $"[{stringGrade}] {dbHeroData.name.WithJosa()} 진영에 합류합니다.", 55);

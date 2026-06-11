@@ -2,12 +2,15 @@ using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Triggers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 public enum TutorialType
 {
     START,
+
+    CASTLE_FINISHED,
 }
 
 public class TutorialManager
@@ -31,6 +34,9 @@ public class TutorialManager
             SaveData();
         }
     }
+
+    public static async UniTask WaitComplete(TutorialType _type, CancellationToken _token)
+        => await UniTask.WaitUntil(() => instance.IsComplete(_type), cancellationToken: _token);
 
     public bool IsComplete(TutorialType _type)
         => m_loadData.Contains(_type);

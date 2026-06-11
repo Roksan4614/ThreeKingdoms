@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class PopupUserInfoComponent : BasePopupComponent, IValidatable
 {
@@ -9,35 +9,40 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
 
     public StatusType statusType;
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        m_element.btnConfirm.onClick.AddListener(Close);
+    }
+
     public override void OpenPopup(params object[] _args)
     {
         statusType = StatusType.Wait;
-        string uid = (string)_args[0];
+        var userInfo = (UserInfoData)_args[0];
 
-        SetUserInfoAsync(uid).Forget();
+        SetUserInfoAsync(userInfo).Forget();
     }
 
-    public bool EscapeClose()
-    {
-        if (m_element.infDesc.isFocused == true)
-        {
-            return false;
-        }
-
-        statusType = StatusType.Cancel;
-        Close();
-
-        return false;
-    }
-
-    async UniTask SetUserInfoAsync(string _uid)
+    async UniTask SetUserInfoAsync(UserInfoData _userInfo)
     {
         m_element.panel.gameObject.SetActive(false);
         await UniTask.Yield();
 
         Utils.SetActivePunch(m_element.panel, true);
 
-        m_element.txtNickname.text = _uid;
+        m_element.profile.SetProfileData(_userInfo.profileIdx, _userInfo.batchHeroes[0].key);
+        m_element.txtNickname.text = _userInfo.nickname;
+        m_element.txtInfo.text = $"UID : {_userInfo.uid}\n¼Ò¼Ó_: {_userInfo.regionName}";
+        m_element.txtDesc.text = $"\"{(_userInfo.descript ?? "...")}\"";
+    }
+
+    public bool EscapeClose()
+    {
+        statusType = StatusType.Cancel;
+        Close();
+
+        return false;
     }
 
     public override void Close()
@@ -56,16 +61,26 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
     struct ElementData
     {
         public Transform panel;
-        public TextMeshProUGUI txtNickname;
 
-        public TMP_InputField infDesc;
+        public ProfileIconCompoent profile;
+        public TextMeshProUGUI txtNickname;
+        public TextMeshProUGUI txtInfo;
+
+        public TextMeshProUGUI txtDesc;
+
+        public ButtonHelper btnConfirm;
 
         public void Initialize(Transform _transform)
         {
             panel = _transform.Find("Panel");
-            txtNickname = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/Name/txt_name");
 
-            infDesc = _transform.GetComponent<TMP_InputField>("Panel/FrontPanel/inf_desc");
+            profile = _transform.GetComponent<ProfileIconCompoent>("Panel/FrontPanel/Slot_Profile");
+            txtNickname = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/Name/txt_name");
+            txtInfo = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/txt_info");
+
+            txtDesc = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/txt_desc");
+
+            btnConfirm = _transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
         }
     }
     #endregion VALIDATE
@@ -74,5 +89,24 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
 
 public struct UserInfoData
 {
+    public int uid;
+    public string nickname;
+    public RegionType region;
+    public string descript;
+    public int profileIdx;
 
+    public List<UserInfoUserData> batchHeroes;
+    public List<string> treasures;
+
+    public string regionName => TableManager.stringTable.GetRegionType(region);
+}
+
+public struct UserInfoUserData
+{
+    public string key;
+    public GradeType grade;
+    public HeroPositionType positionType;
+    public int enchantLevel;
+    public int relicLevel;
+    public bool isMain;
 }

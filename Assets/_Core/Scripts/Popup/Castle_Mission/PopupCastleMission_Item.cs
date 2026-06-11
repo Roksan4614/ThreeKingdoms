@@ -40,7 +40,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         m_missionData = _missionData;
 
         m_element.txt_title.text = _missionData.missionNameStat;
-        m_element.txt_exp.text = $"난이도_:_{_missionData.gradeName} <size=90%>(+{_missionData.dbGradeData.missionXp.AmountKMBT()}경험치)";
+        m_element.txt_exp.text = $"난이도_:_{TableManager.stringTable.GetGradeType(_missionData.grade, _isDifficult: true)} <size=90%>(+{_missionData.dbGradeData.missionXp.AmountKMBT()}경험치)";
 
         var dbRewards = TableManager.castleMissonReward.GetReward(_missionData);
 

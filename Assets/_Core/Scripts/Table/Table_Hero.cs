@@ -98,6 +98,7 @@ public struct HeroInfoData
     public string key;
     public string skin;
     public GradeType grade;
+    public HeroPositionType positionType;
     public int soulCount;
     public int enchantLevel;
     public bool isBatch;
@@ -109,11 +110,12 @@ public struct HeroInfoData
     public HeroClassType classType => m_classType;
     public RegionType regionType => m_regionType;
 
-    public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, string _skin = null,
+    public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, HeroPositionType _heroPositionType = HeroPositionType.NONE, string _skin = null,
         int _soulCount = 0, int _enchantLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
     {
         key = _key;
         grade = _grade;
+        positionType = _heroPositionType;
         skin = _skin.IsActive() ? _skin : key;
         soulCount = _soulCount;
         enchantLevel = _enchantLevel;
@@ -130,7 +132,7 @@ public struct HeroInfoData
     public bool isActive => key.IsActive();
     public string regionKey => $"{m_regionType}_{key}".ToUpper();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
-    public string gradeName => Utils.GetString_GradeType(grade);
+    public string gradeName => TableManager.stringTable.GetGradeType(grade);
     public string className => TableManager.stringHero.GetString($"CLASSTYPE_" + m_classType.ToString().ToUpper());
     public string gradeClass => $"{gradeName} {className}";
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);

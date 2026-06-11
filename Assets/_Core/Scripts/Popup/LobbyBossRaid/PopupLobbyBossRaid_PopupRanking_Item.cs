@@ -48,10 +48,7 @@ public class PopupLobbyBossRaid_PopupRanking_Item : MonoBehaviour, IValidatable
             m_element.imgPanel.color = Color.white;
 
         // ¾ÆÀÌÄÜ
-        if (_rankerData.indexProfile > 0)
-            m_element.profile.SetProfileData(_rankerData.indexProfile);
-        else
-            m_element.profile.SetProfileDataAsync(_rankerData.skin).Forget();
+        m_element.profile.SetProfileData(_rankerData.indexProfile, _rankerData.skin);
     }
 
     #region VALIDATE

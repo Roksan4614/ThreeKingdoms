@@ -21,6 +21,15 @@ public class ItemComponent : MonoBehaviour, IValidatable
         data = _itemData;
 
         gameObject.SetActive(true);
+
+        m_element.icon.SetActive(_itemData.isActive);
+        m_element.empty.SetActive(_itemData.isActive == false);
+        if (_itemData.isActive == false)
+        {
+            txtCount = "";
+            return;
+        }
+
         //m_element.panel.gameObject.SetActive(false);
 
         if (_itemData.category == ItemCategoryType.Soul_Stone)
@@ -28,7 +37,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         else
             SetIconAsync(_itemData.key.ToString(), false).Forget();
 
-        m_element.txtCount.text = _itemData.count > 0 ? $"x{_itemData.count.AmountKMBT()}" : "";
+        txtCount = _itemData.count > 0 ? $"x{_itemData.count.AmountKMBT()}" : "";
     }
 
     async UniTask SetIconAsync(string _key, bool _isHero)
@@ -47,7 +56,9 @@ public class ItemComponent : MonoBehaviour, IValidatable
         {
             var result = await AddressableManager.instance.GetIconAsync(_key, _isHero);
             if (result == null)
+            {
                 return;
+            }
 
             var icon = Instantiate(result, m_element.iconPanel);
             icon.AutoResizeParent();
@@ -68,12 +79,14 @@ public class ItemComponent : MonoBehaviour, IValidatable
         //m_element.panel.gameObject.SetActive(true);
         m_element.iconPanel.parent.gameObject.SetActive(false);
 
-        m_element.txtCount.text = _count == 0 ? "" : $"x{_count.AmountKMBT()}";
+        txtCount = _count == 0 ? "" : $"x{_count.AmountKMBT()}";
         SetActiveBadge(false);
     }
 
+    public string txtCount { set { if (m_element.txtCount != null) m_element.txtCount.text = value; } }
+
     public void SetCountText(long _count, bool _isRange = false)
-        => m_element.txtCount.text = _count <= 1 ? "" : $"{(_isRange ? "~ " : "")}{_count.AmountKMBT()}";
+        => txtCount = _count <= 1 ? "" : $"{(_isRange ? "~ " : "")}{_count.AmountKMBT()}";
 
     public void SetActivePanel(bool _isActive)
         => m_element.panel.gameObject.SetActive(_isActive);
@@ -92,6 +105,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
     struct ElementData
     {
         public Transform panel;
+        public GameObject empty;
 
         public TextMeshProUGUI txtCount;
         public Transform iconPanel;
@@ -103,12 +117,16 @@ public class ItemComponent : MonoBehaviour, IValidatable
         {
             panel = _transform.Find("Panel");
 
+            empty = panel.Find("Empty").gameObject;
+
             iconPanel = panel.Find("Icon/Panel");
             txtCount = panel.GetComponent<TextMeshProUGUI>("txt_count");
 
             badge = panel.Find("Badge")?.gameObject;
             dimm = iconPanel.parent.Find("Dimm")?.gameObject;
         }
+
+        public GameObject icon => iconPanel.parent.gameObject;
     }
     #endregion VALIDATA
 }

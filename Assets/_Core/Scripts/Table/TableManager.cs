@@ -23,7 +23,7 @@ public class TableManager
     public static Table_StringTalk scenarioTalk { get; private set; }
     public static Table_String stringMission { get; private set; }
 
-    public static Table_Relic relic { get; private set; }
+    public static Table_Treasure treasure { get; private set; }
     public static Table_FriendShip friendShip { get; private set; }
 
     public static Table_Castle castle { get; private set; }
@@ -53,7 +53,8 @@ public class TableManager
             stringMission = new(LoadList<TableStringData>(_result, "String_Mission"));
 
             // TODO
-            relic = new(new());
+            treasure = new(LoadList<TableTreasureData>(_result, "Treasure"));
+            treasure.InitializeStringTable(new Table_String(LoadList<TableStringData>(_result, "String_Treasure")));
             friendShip = new(new());
 
             castle = new(LoadList<TableCastleData>(_result, "Castle"));

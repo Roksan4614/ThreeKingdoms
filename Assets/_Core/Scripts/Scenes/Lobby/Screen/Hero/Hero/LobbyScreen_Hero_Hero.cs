@@ -77,6 +77,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
     private void Start()
     {
+        m_myHero.Clear();
         m_myHero.AddRange(DataManager.userInfo.myHero);
 
         m_teamPosition = m_teamPosition == TeamPositionType.Front ? TeamPositionType.Back : TeamPositionType.Front;
@@ -131,13 +132,16 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         }
 
         SetLayout_List();
+        m_isStarted = true;
     }
+
+    bool m_isStarted = false;
 
     protected void OnEnable()
     {
         m_openHeroSkins = DataManager.userInfo.myHero.Where(x => x.isBatch).Select(x => x.skin).ToList();
 
-        if (m_isNeedUpdateLayout)
+        if (m_isNeedUpdateLayout && m_isStarted == true)
         {
             m_myHero.Clear();
             m_myHero.AddRange(DataManager.userInfo.myHero);

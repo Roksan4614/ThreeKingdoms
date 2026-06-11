@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using System;
-using System.Drawing;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -44,8 +43,14 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
     {
         await UniTask.Yield();
 
+        if (DataManager.stat.relic.dataTreasure.Count(x => x.isBatch == true) >= 3 && m_heroInfoData.isBatch == false)
+        {
+            PopupManager.instance.AlertShow("최대_3개까지만_장착_가능합니다.");
+            return;
+        }
+
         m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
-        DataManager.stat.relic.SetRelicStatus(m_heroInfoData.skin, m_heroInfoData.isBatch);
+        DataManager.stat.relic.SetTreasureStatus(m_heroInfoData.skin, m_heroInfoData.isBatch);
 
         m_element.btn_select.SetDrawSelect(m_heroInfoData.isBatch);
         m_element.btn_select.text = m_heroInfoData.isBatch ? "_선택중_" : "선택_하기";
@@ -53,35 +58,50 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         _onCallback(m_heroInfoData);
     }
 
-    public async UniTask SetRelicDataAsync(TableRelicData _relicData)
+    public async UniTask SetTreasureDataAsync(TableTreasureData _treasureData)
     {
-        var myRelicData = DataManager.stat.relic.dataRelic.Where(x => x.key == _relicData.key).FirstOrDefault();
+        var myTreasureData = DataManager.stat.relic.dataTreasure.Where(x => x.key == _treasureData.key).FirstOrDefault();
 
         m_heroInfoData = new();
-        m_heroInfoData.skin = _relicData.key;
-        m_element.btn_select.interactable = m_heroInfoData.isMine = myRelicData.key.IsActive();
-        m_heroInfoData.isBatch = m_heroInfoData.isMine && myRelicData.isBatch;
+        m_heroInfoData.skin = _treasureData.key;
+        m_element.btn_select.interactable = m_heroInfoData.isMine = _treasureData.key.IsActive();
+        m_heroInfoData.isBatch = m_heroInfoData.isMine && myTreasureData.isBatch;
 
         m_element.btn_enchant.gameObject.SetActive(false);
         m_element.btn_select.gameObject.SetActive(true);
 
-        m_element.txt_title.text = $"{_relicData.key}";
+        m_element.txt_title.text = _treasureData.name;
 
         m_element.txt_stat.text = "";
 
         if (m_heroInfoData.isMine == true)
         {
-            for (int i = 0; i < _relicData.statData.Count; i++)
+            int i = 0;
+            foreach (var effect in _treasureData.dbEffect)
             {
-                var data = _relicData.statData[i];
-
+                var data = effect.Value;
                 m_element.txt_stat.text += $"{data.statName} {data.stringPercent}";
 
-                if (i < _relicData.statData.Count - 1)
-                    m_element.txt_stat.text += "\n";
+                // 두개이하면 위아래로
+                if (_treasureData.dbEffect.Count <= 2)
+                {
+                    if (i == 0)
+                        m_element.txt_stat.text += "\n";
+                }
+                else
+                {
+                    if (i == 1)
+                        m_element.txt_stat.text += "\n";
+                    else if (i < _treasureData.dbEffect.Count - 1)
+                        m_element.txt_stat.text += "  ";
+                }
+
+                i++;
             }
 
-            m_element.btn_select.text = myRelicData.isBatch ? "_선택중_" : "선택_하기";
+            m_element.imgPanel.color = myTreasureData.isBatch == true ? Color.gray8 : Color.white;
+
+            m_element.btn_select.text = myTreasureData.isBatch ? "_선택중_" : "선택_하기";
         }
         else
         {
@@ -89,7 +109,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
             m_element.btn_select.text = "_잠김_";
         }
 
-        m_element.btn_select.SetDrawSelect(myRelicData.isBatch);
+        m_element.btn_select.SetDrawSelect(myTreasureData.isBatch);
 
         await UniTask.Yield();
     }
@@ -146,12 +166,13 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     ElementData m_element;
 
     [Serializable]
     struct ElementData
     {
+        public Image imgPanel;
         public Transform parentIcon;
 
         public TextMeshProUGUI txt_title;
@@ -166,6 +187,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         public void Initialize(Transform _transform)
         {
             var panel = _transform.Find("Panel");
+            imgPanel = panel.GetComponent<Image>();
             parentIcon = panel.Find("Icon/Panel");
 
             txt_title = panel.GetComponent<TextMeshProUGUI>("txt_title");

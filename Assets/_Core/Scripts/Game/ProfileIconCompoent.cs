@@ -3,7 +3,15 @@ using UnityEngine;
 
 public class ProfileIconCompoent : MonoBehaviour, IValidatable
 {
-    public async UniTask SetProfileDataAsync(string _skin)
+    public void SetProfileData(int _idxProfile, string _skin)
+    {
+        if (_idxProfile > -1)
+            SetProfileData(_idxProfile);
+        else
+            SetProfileDataAsync(_skin).Forget();
+    }
+
+    async UniTask SetProfileDataAsync(string _skin)
     {
         for (int i = 0; i < m_element.panel.childCount; i++)
             Destroy(m_element.panel.GetChild(i).gameObject);
@@ -22,7 +30,7 @@ public class ProfileIconCompoent : MonoBehaviour, IValidatable
         }
     }
 
-    public void SetProfileData(int _idxProfile) { }
+    void SetProfileData(int _idxProfile) { }
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

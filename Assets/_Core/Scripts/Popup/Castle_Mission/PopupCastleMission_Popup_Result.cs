@@ -29,7 +29,7 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
 
         var firstMission = _missionDatas.First();
 
-        m_element.txtTitle.text = $"임무_결과_:_[{(_missionDatas.Length > 1 ? "전체" : Utils.GetString_GradeType(firstMission.grade))}]";
+        m_element.txtTitle.text = $"임무_결과_:_[{(_missionDatas.Length > 1 ? "전체" : TableManager.stringTable.GetGradeType(firstMission.grade))}]";
 
         m_element.txtName.text = firstMission.missionNameStat;
 

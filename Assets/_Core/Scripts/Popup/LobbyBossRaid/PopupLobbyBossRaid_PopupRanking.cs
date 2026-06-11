@@ -101,14 +101,14 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
         var content = m_element.scroll.content;
 
-        //유저 찾기
-        UnityAction actionFind = () =>
+        // 유저 찾기
+        UnityAction<bool> actionFind = _isTween =>
         {
             for (int i = 0; i < rankData.ranker.Count; i++)
             {
                 if (rankData.ranker[i].uid == rankData.my.uid)
                 {
-                    m_element.scroll.MoveToIndex(i);
+                    m_element.scroll.MoveToIndex(i, _isTween);
                     break;
                 }
             }
@@ -116,12 +116,12 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
         // 콘텐츠 위치 설정
         if (m_curTabType == TabType.Point)
-            actionFind();
+            actionFind(false);
         else
             content.anchoredPosition = Vector2.zero;
 
         // 내 정보쪽으로 가기
-        m_element.myRankInfo.SetRankerInfoAsync(m_curTabType, rankData.my, _rankerData => actionFind()).Forget();
+        m_element.myRankInfo.SetRankerInfoAsync(m_curTabType, rankData.my, _rankerData => actionFind(true)).Forget();
     }
 
     bool m_isOpenUserInfo;
@@ -131,7 +131,37 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
             return;
         m_isOpenUserInfo = true;
 
-        m_popupUserInfo = await PopupManager.instance.OpenPopup<PopupUserInfoComponent>(PopupType.UserInfo, _rankerData.nickname);
+        // TODO: TestUserInfo
+        UserInfoData userInfo = new()
+        {
+            nickname = _rankerData.nickname,
+            profileIdx = -1,
+            region = Random.Range(0, (int)RegionType.MAX) + RegionType.NONE + 1,
+            uid = _rankerData.uid,
+            batchHeroes = new(),
+            treasures = new(),
+        };
+
+        {
+
+            for (int i = 0; i < 4; i++)
+            {
+                userInfo.batchHeroes.Add(new()
+                {
+                    enchantLevel = Random.Range(10, 17),
+                    grade = Random.Range(0, (int)GradeType.MAX) + GradeType.NONE + 1,
+                    key = TableManager.hero.list.OrderBy(x => Random.value).First().key,
+                    isMain = i == 0,
+                    relicLevel = Random.Range(50, 100),
+                    positionType = Random.Range(0, (int)HeroPositionType.MAX) + HeroPositionType.NONE + 1,
+                });
+
+                if (i < 3)
+                    userInfo.treasures.Add(TableManager.treasure.list.Where(x=>x.isActive).OrderBy(x => Random.value).First().key);
+            }
+        }
+
+        m_popupUserInfo = await PopupManager.instance.OpenPopup<PopupUserInfoComponent>(PopupType.UserInfo, userInfo);
 
         await UniTask.WaitUntil(() => m_popupUserInfo.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
 

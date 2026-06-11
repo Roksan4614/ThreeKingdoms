@@ -254,7 +254,7 @@ public class Data_Castle_Mission
         //TODO : stringtable 에서 가져와야 해.
         string missionName => TableManager.stringMission.GetString(key.ToUpper() + "_TITLE");
         public string missionNameStat => $"[{TableManager.stringTable.GetString($"CORESTAT_{dbData.statType.ToString().ToUpper()}")}] {missionName}";
-        public string gradeName => TableManager.stringMission.GetString($"GRADETYPE_{grade.ToString().ToUpper()}");
+        public string gradeName => TableManager.stringTable.GetGradeType(grade);
 
         public int coreStatMax => dbGradeData.reqStatValue;
         public int xp => dbGradeData.missionXp;

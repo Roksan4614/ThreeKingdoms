@@ -252,6 +252,4 @@ public static class Utils
     //    return remain;
     //}
 
-    public static string GetString_GradeType(GradeType _gradeType)
-        => TableManager.stringTable.GetString($"GRADE_{_gradeType.ToString().ToUpper()}");
 }

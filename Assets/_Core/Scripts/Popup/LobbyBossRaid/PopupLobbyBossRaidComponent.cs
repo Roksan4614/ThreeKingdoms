@@ -46,7 +46,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         var raidData = DataManager.bossRaid.data;
 
-        m_element.txtDifficult.text = $"[{Utils.GetString_GradeType(raidData.gradeMin)}~{Utils.GetString_GradeType(raidData.gradeMax)}]";
+        m_element.txtDifficult.text = $"[{TableManager.stringTable.GetGradeType(raidData.gradeMin)}~{TableManager.stringTable.GetGradeType(raidData.gradeMax)}]";
 
         DoLoadBossCharacter().Forget();
 
@@ -90,7 +90,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         if (raidData.tickPrevRound == 0)
             m_element.txtInfoPrevRound.text = "이전_라운드_정보_없음";
         else
-            m_element.txtInfoPrevRound.text = $"이전_라운드_ :_[{Utils.GetString_GradeType(raidData.prevGrade)}]\n{raidData.dtPrevRound.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")}";
+            m_element.txtInfoPrevRound.text = $"이전_라운드_ :_[{TableManager.stringTable.GetGradeType(raidData.prevGrade)}]\n{raidData.dtPrevRound.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")}";
     }
     async UniTask OnUpdateSeasonTimerAsync()
     {

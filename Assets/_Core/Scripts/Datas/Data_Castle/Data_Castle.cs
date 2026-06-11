@@ -67,10 +67,12 @@ public partial class Data_Castle
 
     }
 
+    CancellationToken m_ctsToken;
     public void OnUpdateClaim(bool _isInit = false)
     {
         Release_CTS();
         m_cts = new();
+        m_ctsToken = m_cts.Token;
 
         UpdateClaimAmountAsync(CastleObjectType.Farm).Forget();
         UpdateClaimAmountAsync(CastleObjectType.Market).Forget();
@@ -78,6 +80,8 @@ public partial class Data_Castle
 
     async UniTask UpdateClaimAmountAsync(CastleObjectType _objectType)
     {
+        await TutorialManager.WaitComplete(TutorialType.CASTLE_FINISHED, m_ctsToken);
+
         CastleData castleData = GetCaslteData(_objectType);
         var amount = GetAmountPerSecond(castleData);
         var maxAmount = GetMaxAmount(castleData);
@@ -121,10 +125,10 @@ public partial class Data_Castle
                     UpdateCastleAmountData(castleData);
                 }
 
-                await UniTask.WaitUntil(() => castleData.totalAmount < maxAmount, cancellationToken: m_cts.Token);
+                await UniTask.WaitUntil(() => castleData.totalAmount < maxAmount, cancellationToken: m_ctsToken);
             }
 
-            await UniTask.WaitUntil(() => nextTime <= Utils.GetUTC(), cancellationToken: m_cts.Token);
+            await UniTask.WaitUntil(() => nextTime <= Utils.GetUTC(), cancellationToken: m_ctsToken);
 
             nextTime = nextTime.AddSeconds(1f);
             castleData.totalAmount = Mathf.Min(maxAmount, castleData.totalAmount + amount);

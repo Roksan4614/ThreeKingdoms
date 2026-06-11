@@ -67,9 +67,13 @@ public enum CategoryType_HeroPositon
 
 public enum HeroPositionType
 {
+    NONE = -1,
+
     GENERAL_WU,
     GENERAL_PYO,
     ETC_HOO,
+
+    MAX
 }
 
 public struct TableHeroPositionData
