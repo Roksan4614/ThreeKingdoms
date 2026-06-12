@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -124,6 +125,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         m_element.myRankInfo.SetRankerInfoAsync(m_curTabType, rankData.my, _rankerData => actionFind(true)).Forget();
     }
 
+    Dictionary<int, List<HeroInfoData>> m_dbBatch = new();
     bool m_isOpenUserInfo;
     async UniTask OnButtonAsync_UserInfo(Data_BossRaid.BossRaidRankerUserData _rankerData)
     {
@@ -140,24 +142,38 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
             uid = _rankerData.uid,
             batchHeroes = new(),
             treasures = new(),
+            descript = $"Áî¸£¶ó½º¶ßºÎÀÌÂÅ.\n¹Ì³Ä ÀÚº× [{_rankerData.nickname}]."
         };
 
         {
+            for (int i = 0; i < 3; i++)
+                userInfo.treasures.Add(TableManager.treasure.list.Where(x => x.isActive).OrderBy(x => Random.value).First().key);
 
-            for (int i = 0; i < 4; i++)
+            if (m_dbBatch.ContainsKey(userInfo.uid))
+                userInfo.batchHeroes = m_dbBatch[userInfo.uid];
+            else
             {
-                userInfo.batchHeroes.Add(new()
-                {
-                    enchantLevel = Random.Range(10, 17),
-                    grade = Random.Range(0, (int)GradeType.MAX) + GradeType.NONE + 1,
-                    key = TableManager.hero.list.OrderBy(x => Random.value).First().key,
-                    isMain = i == 0,
-                    relicLevel = Random.Range(50, 100),
-                    positionType = Random.Range(0, (int)HeroPositionType.MAX) + HeroPositionType.NONE + 1,
-                });
+                List<HeroPositionType> dbPosition = new();
+                for (var i = HeroPositionType.NONE + 1; i < HeroPositionType.MAX; i++)
+                    dbPosition.Add(i);
+                dbPosition = dbPosition.OrderBy(x => Random.value).ToList();
 
-                if (i < 3)
-                    userInfo.treasures.Add(TableManager.treasure.list.Where(x=>x.isActive).OrderBy(x => Random.value).First().key);
+                var dbHero = TableManager.hero.list.OrderBy(x => Random.value).ToList();
+                for (int i = 0; i < 4; i++)
+                {
+                    var key = dbHero[i].key;
+                    userInfo.batchHeroes.Add(new HeroInfoData(
+                        key,
+                        _grade: Random.Range(0, (int)GradeType.MAX) + GradeType.NONE + 1,
+                        _heroPositionType: dbPosition[i],
+                        _skin: key,
+                        _enchantLevel: Random.Range(10, 17),
+                        _isMine: true,
+                        _isMain: i == 0,
+                        _relicLevel: Random.Range(50, 100)
+                        ));
+                }
+                m_dbBatch.Add(userInfo.uid, userInfo.batchHeroes);
             }
         }
 

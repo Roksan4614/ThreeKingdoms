@@ -175,7 +175,15 @@ public class Data_UserInfo
     }
 
     public HeroInfoData GetHeroInfoData(string _key)
-        => m_element.myHero.Where(x => x.key.Equals(_key)).FirstOrDefault();
+    {
+        for(int i = 0; i < m_element.myHero.Count; i++)
+        {
+            var heroData = m_element.myHero[i];
+            if (heroData.key.IsEquals(_key))
+                return heroData;
+        }
+        return default;
+    }
 
     public void Update(HeroInfoData _heroData)
     {

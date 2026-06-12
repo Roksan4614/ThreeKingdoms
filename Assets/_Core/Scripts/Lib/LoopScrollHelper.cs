@@ -21,12 +21,13 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
             Instantiate(m_element.rtBaseItem, m_element.scroll.content);
 
         m_moveValueY = visibleCount * m_element.rtBaseItem.rect.height + (m_element.layout.spacing * visibleCount);
+        m_element.layout.enabled = false;
     }
 
     private void Start()
     {
-        m_element.scroll.content.ForceRebuildLayout();
-        m_element.layout.enabled = false;
+        ////m_element.scroll.content.ForceRebuildLayout();
+        ////m_element.layout.enabled = false;
     }
 
     /// <summary>
@@ -37,8 +38,6 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     /// <param name="_onUpdate">아이템이랑, 데이타 인덱스</param>
     public void Initialize<T>(int _count, UnityAction<T, int> _onUpdate)
     {
-        m_element.scroll.onValueChanged.RemoveAllListeners();
-        m_element.scroll.velocity = m_element.scroll.content.anchoredPosition = Vector2.zero;
 
         m_curIndex = 0;
         m_countItem = _count;
@@ -49,18 +48,23 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
             + ((_count - 1) * m_element.layout.spacing);
         m_element.scroll.content.sizeDelta = sizeDelta;
 
+        float itemChunkHeight = m_element.rtBaseItem.sizeDelta.y + m_element.layout.spacing;
         for (int i = 0; i < m_element.scroll.content.childCount; i++)
         {
-            var item = (RectTransform)m_element.scroll.content.GetChild(i);
-            item.gameObject.SetActive(i < _count);
+            var rtItem = (RectTransform)m_element.scroll.content.GetChild(i);
+            rtItem.gameObject.SetActive(i < _count);
 
-            if (item.gameObject.activeSelf)
-                _onUpdate(item.GetComponent<T>(), i);
+            if (rtItem.gameObject.activeSelf == true)
+            {
+                _onUpdate(rtItem.GetComponent<T>(), i);
+                var pos = rtItem.anchoredPosition;
+                pos.y = -m_element.layout.padding.top - itemChunkHeight * i - (1 - m_element.rtBaseItem.pivot.y) * m_element.rtBaseItem.rect.height;
+                rtItem.anchoredPosition = pos;
+            }
         }
 
-        m_element.layout.enabled = true;
-        m_element.scroll.content.ForceRebuildLayout();
-        m_element.layout.enabled = false;
+        m_element.scroll.velocity = m_element.scroll.content.anchoredPosition = Vector2.zero;
+        m_element.scroll.onValueChanged.RemoveAllListeners();
 
         m_element.scroll.onValueChanged.AddListener(_pos =>
         {
@@ -156,7 +160,6 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
         public ScrollRect scroll;
         public RectTransform rtBaseItem;
         public HorizontalOrVerticalLayoutGroup layout;
-
 
         public void Initialize(Transform _transform)
         {

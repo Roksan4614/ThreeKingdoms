@@ -29,11 +29,14 @@ public class Team_HeroInfo
         for (int i = 0; i < layout.childCount; i++)
             m_lstHeroInfo.Add(layout.GetChild(i).GetComponent<HeroInfoComponent>());
 
-        _heroInfo.GetComponent<Button>("btn_hide").onClick.AddListener(() => OnButtonAsync_Hide().Forget());
+        _heroInfo.GetComponent<Button>("btn_hide").onClick.AddListener(() => OnButtonAsync_Hide(true).Forget());
         m_arrowHide = _heroInfo.Find("btn_hide/Text");
+
+        m_isHide = true;
+        OnButtonAsync_Hide(false).Forget();
     }
 
-    async UniTask OnButtonAsync_Hide()
+    async UniTask OnButtonAsync_Hide(bool _isTween)
     {
         m_isHide = !m_isHide;
 
@@ -48,10 +51,16 @@ public class Team_HeroInfo
         ControllerManager.instance.SetMoveActionArea(m_isHide, true, duration);
         MissionComponent.instance.SetMoveArea(m_isHide, true, duration);
 
-        var targetPosY = m_isHide ? m_prevPosY - m_panel.rect.height : m_prevPosY;
+        var pos = m_panel.anchoredPosition;
+        pos.y = m_isHide ? m_prevPosY - m_panel.rect.height : m_prevPosY;
 
-        await m_panel.DOAnchorPosY(targetPosY, duration)//.SetEase(m_isHide ? Ease.InBack : Ease.OutBack)
-            .AsyncWaitForCompletion();
+        if (_isTween == true)
+        {
+            await m_panel.DOAnchorPosY(pos.y, duration)//.SetEase(m_isHide ? Ease.InBack : Ease.OutBack)
+                .AsyncWaitForCompletion();
+        }
+        else
+            m_panel.anchoredPosition = pos;
 
         if (m_isHide == true)
             m_panel.gameObject.SetActive(false);

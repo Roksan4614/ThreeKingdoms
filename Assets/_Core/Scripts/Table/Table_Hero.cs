@@ -101,6 +101,7 @@ public struct HeroInfoData
     public HeroPositionType positionType;
     public int soulCount;
     public int enchantLevel;
+    public int relicLevel;
     public bool isBatch;
     public bool isMain;
     public bool isMine;
@@ -111,7 +112,7 @@ public struct HeroInfoData
     public RegionType regionType => m_regionType;
 
     public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, HeroPositionType _heroPositionType = HeroPositionType.NONE, string _skin = null,
-        int _soulCount = 0, int _enchantLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
+        int _soulCount = 0, int _enchantLevel = 0, int _relicLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
     {
         key = _key;
         grade = _grade;
@@ -119,6 +120,7 @@ public struct HeroInfoData
         skin = _skin.IsActive() ? _skin : key;
         soulCount = _soulCount;
         enchantLevel = _enchantLevel;
+        relicLevel = _relicLevel;
         isBatch = _isBatch;
         isMain = _isMain;
         isMine = _isMine;

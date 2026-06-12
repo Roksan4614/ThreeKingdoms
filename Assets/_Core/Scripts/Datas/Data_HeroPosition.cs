@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,11 +11,38 @@ public class Data_HeroPosition : MonoBehaviour
     {
         // TODO TEST DATA
         List<TableHeroPositionData> db = new();
-        db.Add(new() { position = HeroPositionType.GENERAL_WU, battleStatType = BattleStatType.attack_power, value = .1f });
-        db.Add(new() { position = HeroPositionType.GENERAL_WU, battleStatType = BattleStatType.health_max, value = .1f });
-        db.Add(new() { position = HeroPositionType.GENERAL_WU, battleStatType = BattleStatType.defence, value = .1f });
-        db.Add(new() { position = HeroPositionType.GENERAL_PYO, battleStatType = BattleStatType.attack_power, value = .1f });
-        db.Add(new() { category = CategoryType_HeroPositon.ETC, position = HeroPositionType.ETC_HOO, battleStatType = BattleStatType.health_max, value = .1f });
+
+        List<BattleStatType> dbStat = new();
+        for (var type = BattleStatType.NONE + 1; type < BattleStatType.MAX; type++)
+            dbStat.Add(type);
+
+        dbStat = dbStat.OrderBy(x => Random.value).ToList();
+        float percent = .5f;
+        for (var type = HeroPositionType.NONE + 1; type < HeroPositionType.MAX; type++)
+        {
+            int idx = (int)type;
+            db.Add(new()
+            {
+                position = type,
+                battleStatType = dbStat[idx],
+                value = .1f
+            });
+
+            while (Random.value < percent)
+            {
+                idx++;
+                db.Add(new()
+                {
+                    position = type,
+                    battleStatType = dbStat[idx],
+                    value = .1f
+                });
+                percent *= .5f;
+            }
+            percent = .5f;
+            dbStat = dbStat.OrderBy(x => Random.value).ToList();
+        }
+
         data = db.GroupBy(x => x.category).ToDictionary(x => x.Key, x =>
         {
             return x.GroupBy(x => x.position).Select(_group =>
@@ -69,9 +95,12 @@ public enum HeroPositionType
 {
     NONE = -1,
 
-    GENERAL_WU,
-    GENERAL_PYO,
-    ETC_HOO,
+    PRIME_MINISTER,
+    GENERAL_CHIEF,
+    GENERAL_VANGUARD,
+    GENERAL_LEFT,
+    GENERAL_RIGHT,
+    GENERAL_REAR,
 
     MAX
 }
@@ -85,7 +114,7 @@ public struct TableHeroPositionData
 }
 
 
-[Serializable]
+[System.Serializable]
 public struct HeroPositionData
 {
     public HeroPositionType key;
@@ -99,7 +128,7 @@ public struct HeroPositionData
         set => m_heroKey = value;
     }
 
-    public string name => TableManager.stringTable.GetString(key.ToString());
+    public string name => TableManager.stringTable.GetHeroPositionType(key);
     public string stringAttribute
     {
         get

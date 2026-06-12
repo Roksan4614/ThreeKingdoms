@@ -14,7 +14,11 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
             PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid).Forget();
         });
 
-        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(false));
+        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive =>
+        {
+            for (int i = 0; i < transform.childCount; i++)
+                transform.GetChild(i).gameObject.SetActive(_isActive);
+        });
     }
 
     #region VALIDATE

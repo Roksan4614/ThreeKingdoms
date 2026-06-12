@@ -1,24 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatable
 {
     List<TotalStatData> m_totalStat = new();
 
-    public LobbyScreen_Hero_Collection_Item m_baseScrollItem;
-
     bool m_isNeedUpdate = false;
 
     protected override void Awake()
     {
-        m_baseScrollItem = m_element.scroll.content.GetChild(0).GetComponent<LobbyScreen_Hero_Collection_Item>();
-        m_baseScrollItem.transform.SetParent(m_element.scroll.viewport);
-        m_baseScrollItem.gameObject.SetActive(false);
-
         TotalStatData baseData = new();
         baseData.Create(m_element.pTotalStat.GetChild(0));
         m_totalStat.Add(baseData);
@@ -59,18 +51,27 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
         var dbList = DataManager.stat.friendShip.dbFriendShip;
         var content = m_element.scroll.content;
 
-        int i = 0;
-        for (; i < dbList.Count; i++)
-        {
-            var item = i == content.childCount ?
-                Instantiate(m_baseScrollItem, content) :
-                content.GetChild(i).GetComponent<LobbyScreen_Hero_Collection_Item>();
+        m_element.scroll.Initialize<LobbyScreen_Hero_Collection_Item>(dbList.Count,
+            (_item, _idxData) =>
+            {
+                _item.SetData(dbList[_idxData]);
+#if UNITY_EDITOR
+                _item.name = dbList[_idxData].key;
+#endif
+            });
 
-            item.SetData(dbList[i]);
-        }
+        //int i = 0;
+        //for (; i < dbList.Count; i++)
+        //{
+        //    var item = i == content.childCount ?
+        //        Instantiate(m_baseScrollItem, content) :
+        //        content.GetChild(i).GetComponent<LobbyScreen_Hero_Collection_Item>();
 
-        for (; i < content.childCount; i++)
-            content.GetChild(i).gameObject.SetActive(false);
+        //    item.SetData(dbList[i]);
+        //}
+
+        //for (; i < content.childCount; i++)
+        //    content.GetChild(i).gameObject.SetActive(false);
 
         SetTextTotalStat();
     }
@@ -133,7 +134,7 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
     {
         public Transform pTotalStat;
 
-        public ScrollRect scroll;
+        public LoopScrollHelper scroll;
 
         public void Initialize(Transform _transform)
         {
@@ -141,7 +142,7 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
 
             pTotalStat = panel.Find("Total_Stat");
 
-            scroll = panel.Find("List/Scroll").GetComponent<ScrollRect>();
+            scroll = panel.Find("List/Scroll").GetComponent<LoopScrollHelper>();
         }
 
         public RectTransform rtPanel => (RectTransform)pTotalStat.parent;

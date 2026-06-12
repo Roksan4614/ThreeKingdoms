@@ -36,7 +36,6 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         });
     }
 
-
     public void SetHeroData(HeroInfoData _data
         , UnityAction<HeroIconComponent, bool> _onClick //bool > isRightClick
         , UnityAction<HeroIconComponent> _onClickAction
@@ -78,7 +77,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
             m_element.badge.SetActive(_data.isBatch);
 
         if (m_element.txtLevel)
-            m_element.txtLevel.text = _data.enchantLevel.ToString();
+            m_element.txtLevel.text = $"+{_data.enchantLevel}";
 
         if (m_element.txtName)
             m_element.txtName.text = _data.name;
@@ -115,8 +114,11 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
                 var rtParent = icon.transform.parent as RectTransform;
                 await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0);
 
-                icon.AutoResizeParent().name = _data.skin;
+                if (icon != null)
+                    icon.AutoResizeParent().name = _data.skin;
             }
+            else
+                IngameLog.Add("UpdateHeroInfoAsync: prefab is null");
         }
     }
 
@@ -145,11 +147,6 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void IsValide(string _keyHero)
         => data.key.Equals(_keyHero);
-
-    public void OnManualValidate()
-    {
-        m_element.Initialize(transform);
-    }
 
     private CancellationTokenSource m_cts;
     public async void OnPointerDown(PointerEventData eventData)
@@ -202,9 +199,10 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         }
     }
 
+    public virtual void OnManualValidate()
+        => m_element.Initialize(transform);
 
-    [SerializeField]
-    //[SerializeField, HideInInspector]
+    [SerializeField, HideInInspector]
     ElementData m_element;
     public ElementData element => m_element;
     [Serializable]

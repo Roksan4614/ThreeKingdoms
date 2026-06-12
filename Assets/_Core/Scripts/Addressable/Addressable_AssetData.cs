@@ -35,6 +35,7 @@ public partial class AddressableManager
             return await GetItemIconAsync(_key);
     }
 
+    #region HERO_ICON
     public async UniTask Load_HeroIconAsync(params string[] _key)
     {
         List<string> keys = new();
@@ -53,6 +54,7 @@ public partial class AddressableManager
         if (keys.Count == 0)
             return;
 
+        //m_isLogSwitch = true;
         await LoadAssetAsync<GameObject>(_result =>
         {
             foreach (var data in _result)
@@ -77,6 +79,7 @@ public partial class AddressableManager
     public async UniTask<GameObject> GetHeroIconAsync(string _key)
     {
         string key = $"Icon_{_key}";
+
         if (m_heroIcon.ContainsKey(key))
             return m_heroIcon[key].IsValid() ? m_heroIcon[key].Result : null;
 
@@ -84,7 +87,9 @@ public partial class AddressableManager
 
         return m_heroIcon.ContainsKey(key) ? m_heroIcon[key].Result : null;
     }
+    #endregion HERO_ICON
 
+    #region ITEM_ICON
     public async UniTask Load_ItemIconAsync(params string[] _key)
     {
         List<string> keys = new();
@@ -132,7 +137,9 @@ public partial class AddressableManager
 
         return await GetItemIconAsync(_key);
     }
+    #endregion ITEM_ICON
 
+    #region HERO_CHARACTER
     public async UniTask Load_HeroCharacterAsync(params string[] _key)
     {
         List<string> keys = new();
@@ -180,6 +187,61 @@ public partial class AddressableManager
 
         return m_heroCharacter.ContainsKey(_key) ? m_heroCharacter[_key].Result : null;
     }
+    #endregion HERO_CHARACTER
+
+    #region RELIC_ICON
+    public async UniTask<GameObject> GetRelicIconAsync(string _heroKey)
+    {
+        //일단 영웅 아이콘으로. 유물 아이콘 만들면 바꿔주자
+        string key = $"Icon_{_heroKey}";
+        //string key = $"Relic_{_heroKey}";
+
+        if (m_heroIcon.ContainsKey(key))
+            return m_heroIcon[key].IsValid() ? m_heroIcon[key].Result : null;
+
+        //await Load_RelicIconAsync(key);
+        await Load_HeroIconAsync(_heroKey);
+
+        return m_heroIcon.ContainsKey(key) ? m_heroIcon[key].Result : null;
+    }
+    public async UniTask Load_RelicIconAsync(params string[] _key)
+    {
+        List<string> keys = new();
+        List<string> paths = new();
+
+        for (int i = 0; i < _key.Length; i++)
+        {
+            if (m_heroIcon.ContainsKey(_key[i]) == false && keys.Contains(_key[i]) == false)
+            {
+                paths.Add($"Relic_Icon/{_key[i]}.prefab");
+                keys.Add(_key[i]);
+            }
+        }
+
+        if (keys.Count == 0)
+            return;
+
+        await LoadAssetAsync<GameObject>(_result =>
+        {
+            foreach (var data in _result)
+            {
+                if (m_heroIcon.ContainsKey(data.Key) == false)
+                {
+                    m_heroIcon.Add(data.Key, data.Value);
+                    keys.Remove(data.Key);
+                }
+                else
+                    data.Value.Release();
+            }
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                if (m_heroIcon.ContainsKey(keys[i]) == false)
+                    m_heroIcon.Add(keys[i], default);
+            }
+        }, null, paths.ToArray());
+    }
+    #endregion RELIC_ICON
 
     public async UniTask<Sprite[]> GetAtlasAsync_CastleNPC(int _index)
     {

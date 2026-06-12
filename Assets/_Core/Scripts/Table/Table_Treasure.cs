@@ -37,18 +37,21 @@ public struct TableTreasureData
             if (m_dbEffect == null)
             {
                 m_dbEffect = new();
-                var jobject = JObject.Parse(effect);
-
-                for (var stat = BattleStatType.NONE + 1; stat < BattleStatType.MAX; stat++)
+                if (effect.IsActive() == true)
                 {
-                    string key = stat.ToString();
-                    if (jobject.ContainsKey(key))
+                    var jobject = JObject.Parse(effect);
+
+                    for (var stat = BattleStatType.NONE + 1; stat < BattleStatType.MAX; stat++)
                     {
-                        m_dbEffect.Add(stat, new()
+                        string key = stat.ToString();
+                        if (jobject.ContainsKey(key))
                         {
-                            statType = stat,
-                            value = float.Parse(jobject[key].ToString())
-                        });
+                            m_dbEffect.Add(stat, new()
+                            {
+                                statType = stat,
+                                value = float.Parse(jobject[key].ToString())
+                            });
+                        }
                     }
                 }
             }

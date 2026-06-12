@@ -33,9 +33,6 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 
     protected override void Awake()
     {
-        m_element.baseScrollItem.transform.SetParent(m_element.scroll.viewport);
-        m_element.baseScrollItem.gameObject.SetActive(false);
-
         TotalRelicData baseData = new();
         baseData.Create(m_element.pTotalTreasure.GetChild(0));
         m_totalRelic.Add(baseData);
@@ -149,29 +146,15 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
     {
         var myHero = DataManager.userInfo.GetHeroSortData().ToArray();
 
-        int i = 0;
-        var scroll = m_element.scroll;
-        for (; i < myHero.Length; i++)
-        {
-            var heroInfo = myHero[i];
-            LobbyScreen_Hero_Relic_Item item = null;
-            if (i == scroll.content.childCount)
+        m_element.scroll.Initialize<LobbyScreen_Hero_Relic_Item>(myHero.Length,
+            (_item, _idxData) =>
             {
-                item = Instantiate(m_element.baseScrollItem, scroll.content);
-                item.Bind(_data => { OnButton_Item(_data.key.IsActive() ? TabType.Relic : TabType.Treasure, _data); });
-            }
-            else
-                item = scroll.content.GetChild(i).GetComponent<LobbyScreen_Hero_Relic_Item>();
-
-            heroInfo.enchantLevel = DataManager.stat.relic.dataRelic[heroInfo.key];
-
-            item.gameObject.SetActive(true);
-            item.SetHeroDataAsync(heroInfo).Forget();
-        }
-
-        // 나머지 숨기기
-        for (; i < scroll.content.childCount; i++)
-            scroll.content.GetChild(i).gameObject.SetActive(false);
+                _item.SetRelicDataAsync(myHero[_idxData], false
+                    , _heroInfo => OnButton_Item(_heroInfo.key.IsActive() ? TabType.Relic : TabType.Treasure, _heroInfo)).Forget();
+#if UNITY_EDITOR
+                _item.name = myHero[_idxData].key;
+#endif
+            });
 
         m_element.pTotalClass.gameObject.SetActive(true);
         m_element.pTotalTreasure.gameObject.SetActive(false);
@@ -202,25 +185,17 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         var dbTreasure = TableManager.treasure.list.Where(x => x.isActive)
             .OrderByDescending(x => DataManager.stat.relic.GetTreasureData(x.key).isBatch)
             .ThenBy(x => DataManager.stat.relic.GetTreasureData(x.key).tickBatch)
-            .ToList();
+            .ToArray();
 
-        for (; i < dbTreasure.Count; i++)
-        {
-            LobbyScreen_Hero_Relic_Item item = null;
-            if (i == scroll.content.childCount)
+        m_element.scroll.Initialize<LobbyScreen_Hero_Relic_Item>(dbTreasure.Length,
+            (_item, _idxData) =>
             {
-                item = Instantiate(m_element.baseScrollItem, scroll.content);
-                item.Bind(_data => { OnButton_Item(_data.key.IsActive() ? TabType.Relic : TabType.Treasure, _data); });
-            }
-            else
-                item = scroll.content.GetChild(i).GetComponent<LobbyScreen_Hero_Relic_Item>();
-
-            item.gameObject.SetActive(true);
-            item.SetTreasureDataAsync(dbTreasure[i]).Forget();
-        }
-
-        for (; i < scroll.content.childCount; i++)
-            scroll.content.GetChild(i).gameObject.SetActive(false);
+                _item.SetTreasureDataAsync(dbTreasure[_idxData]
+                    , _heroInfo => OnButton_Item(_heroInfo.key.IsActive() ? TabType.Relic : TabType.Treasure, _heroInfo)).Forget();
+#if UNITY_EDITOR
+                _item.name = dbTreasure[_idxData].key;
+#endif
+            });
 
         m_element.pTotalClass.gameObject.SetActive(false);
         m_element.pTotalTreasure.gameObject.SetActive(true);
@@ -290,6 +265,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             SetTextTotalClass(_heroInfoData.classType);
         else
         {
+            m_element.scroll.content.anchoredPosition = Vector2.zero;
             UpdateTreasure_TotalStat();
             SetTextTotalTreasure();
         }
@@ -308,8 +284,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         public TextMeshProUGUI[] txtTotalClass;
         public Transform pTotalTreasure;
 
-        public ScrollRect scroll;
-        public LobbyScreen_Hero_Relic_Item baseScrollItem;
+        public LoopScrollHelper scroll;
 
         public ButtonHelper[] btnTabs;
 
@@ -321,8 +296,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             txtTreasureCount = panel.GetComponent<TextMeshProUGUI>("txt_treasure_count");
             txtTotalClass = panel.Find("Total_Class").GetComponentsInChildren<TextMeshProUGUI>(true);
 
-            scroll = panel.Find("List/Scroll").GetComponent<ScrollRect>();
-            baseScrollItem = scroll.content.GetChild(0).GetComponent<LobbyScreen_Hero_Relic_Item>();
+            scroll = panel.Find("List/Scroll").GetComponent<LoopScrollHelper>();
 
             pTotalTreasure = panel.Find("Total_Treasure");
 

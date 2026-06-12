@@ -228,6 +228,8 @@ public class Tutorial_START : TutorialBase
         StageManager.instance.ClearEnemyList();
         // 딤 켜주자
         await PopupManager.instance.ShowDimmAsync(true);
+
+        Signal.instance.ActiveHUD.Emit(true);
     }
 
     async UniTask SummonHeroAsync()

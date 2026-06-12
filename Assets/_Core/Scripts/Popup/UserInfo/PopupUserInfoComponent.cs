@@ -34,7 +34,10 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
         m_element.profile.SetProfileData(_userInfo.profileIdx, _userInfo.batchHeroes[0].key);
         m_element.txtNickname.text = _userInfo.nickname;
         m_element.txtInfo.text = $"UID : {_userInfo.uid}\n¼Ò¼Ó_: {_userInfo.regionName}";
-        m_element.txtDesc.text = $"\"{(_userInfo.descript ?? "...")}\"";
+        m_element.txtDesc.text = $"\"{(_userInfo.descript ?? "......")}\"";
+
+        for (int i = 0; i < m_element.slotHeroes.Length; i++)
+            m_element.slotHeroes[i].SetHeroData_UserInfoAsync(_userInfo.batchHeroes[i]).Forget();
     }
 
     public bool EscapeClose()
@@ -65,8 +68,9 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
         public ProfileIconCompoent profile;
         public TextMeshProUGUI txtNickname;
         public TextMeshProUGUI txtInfo;
-
         public TextMeshProUGUI txtDesc;
+
+        public HeroIconComponent_UserInfo[] slotHeroes;
 
         public ButtonHelper btnConfirm;
 
@@ -77,8 +81,9 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
             profile = _transform.GetComponent<ProfileIconCompoent>("Panel/FrontPanel/Slot_Profile");
             txtNickname = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/Name/txt_name");
             txtInfo = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/txt_info");
-
             txtDesc = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/txt_desc");
+
+            slotHeroes = _transform.Find("Panel/Batch/Layout").GetComponentsInChildren<HeroIconComponent_UserInfo>();
 
             btnConfirm = _transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
         }
@@ -95,18 +100,8 @@ public struct UserInfoData
     public string descript;
     public int profileIdx;
 
-    public List<UserInfoUserData> batchHeroes;
+    public List<HeroInfoData> batchHeroes;
     public List<string> treasures;
 
     public string regionName => TableManager.stringTable.GetRegionType(region);
-}
-
-public struct UserInfoUserData
-{
-    public string key;
-    public GradeType grade;
-    public HeroPositionType positionType;
-    public int enchantLevel;
-    public int relicLevel;
-    public bool isMain;
 }

@@ -1,15 +1,11 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class Data_Stat_Relic
 {
-    const string key_Relic = "PP_Stat_Relic_Relic";
     const string key_Treasure = "PP_Stat_Relic_Treasure";
 
-    Dictionary<string, int> m_dataRelic;
-    public IReadOnlyDictionary<string, int> dataRelic => m_dataRelic;
 
     Dictionary<HeroClassType, float> m_bonusClassBonus = new();
     public IReadOnlyDictionary<HeroClassType, float> bonusClassBonus => m_bonusClassBonus;
@@ -25,34 +21,16 @@ public class Data_Stat_Relic
     {
         await UniTask.Yield();
 
-        m_dataRelic = PPWorker.Get<Dictionary<string, int>>(key_Relic);
-
         // 히어로 유물 관련
         {
-            if (m_dataRelic == null)
-            {
-                m_dataRelic = new();
-
-                foreach (var hero in TableManager.hero.list)
-                    m_dataRelic.Add(hero.key, 0);
-
-                SaveData_Hero();
-            }
-
             for (var t = HeroClassType.NONE + 1; t < HeroClassType.MAX; t++)
                 m_bonusClassBonus.Add(t, 0);
 
-            foreach (var d in m_dataRelic)
-            {
-                if (d.Value == 0)
-                    continue;
-
-                var classType = TableManager.hero.Get(d.Key).classType;
-                m_bonusClassBonus[classType] += d.Value * 0.1f;
-            }
+            var myHero = DataManager.userInfo.myHero;
+            for (int i = 0; i < myHero.Count; i++)
+                m_bonusClassBonus[myHero[i].classType] += myHero[i].relicLevel * 0.1f;
         }
 
-        PlayerPrefs.DeleteKey(key_Treasure);
         m_dataTreasure = PPWorker.Get<List<TreasureBatchData>>(key_Treasure);
 
         // 보물
@@ -79,24 +57,20 @@ public class Data_Stat_Relic
 
     public TreasureBatchData GetTreasureData(string _key)
         => m_dataTreasure.Find(x => x.key == _key);
+    public int GetRelicLevel(string _key)
+        => DataManager.userInfo.GetHeroInfoData(_key).relicLevel;
 
     public void Upgrade_HeroRelic(HeroInfoData _heroInfoData)
     {
-        var key = _heroInfoData.key;
+        var heroData = DataManager.userInfo.GetHeroInfoData(_heroInfoData.key);
         var classType = _heroInfoData.classType;
 
-        int level = m_dataRelic[key];
-        m_bonusClassBonus[classType] -= level * 0.1f;
+        m_bonusClassBonus[classType] -= heroData.relicLevel * 0.1f;
 
-        m_dataRelic[key]++;
-        m_bonusClassBonus[classType] += m_dataRelic[key] * 0.1f;
+        heroData.relicLevel++;
+        m_bonusClassBonus[classType] += heroData.relicLevel * 0.1f;
 
-        SaveData_Hero();
-    }
-
-    void SaveData_Hero()
-    {
-        PPWorker.Set(key_Relic, m_dataRelic);
+        DataManager.userInfo.Update(heroData);
     }
 
     public void SetTreasureStatus(string _key, bool _isBatch)

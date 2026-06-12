@@ -53,6 +53,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
             }
 
             string key = $"Atlas/{_tag}.spriteatlasv2";
+            IngameLog.Add("SpriteAtlasManager.atlasRequested: " + key);
             LoadAssetAsync<SpriteAtlas>(_result =>
             {
                 foreach (var s in _result)
@@ -213,25 +214,50 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         await LoadAssetAsync<T>(_onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
     }
 
+    bool m_isLogSwitch;
     Addressables.MergeMode m_mergeMode = Addressables.MergeMode.Union; // 포함한거 전체
     public async UniTask LoadAssetAsync<T>(
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         IProgress<float> _onProgress,
         params string[] _keys)
     {
+        bool isLogSwitch = m_isLogSwitch;
+        m_isLogSwitch = false;
+
+        if (isLogSwitch)
+            IngameLog.Add("Addressable: LoadAsset: " + _keys[0]);
+
         Dictionary<string, AsyncOperationHandle<T>> resultData = _onComplete == null ? null : new();
         DownloadData downloadData = new();
 
+        if (isLogSwitch)
+            IngameLog.Add("Addressable: totalFileSize: Start");
+
         downloadData.totalFileSize = await GetDownloadSizeAsync(_keys);
+
+        if (isLogSwitch)
+            IngameLog.Add("Addressable: totalFileSize: " + downloadData.totalFileSize);
 
         var handle = Addressables.LoadResourceLocationsAsync(_keys.Select(x => x.ToString()).ToList(), m_mergeMode);
 
+        if (isLogSwitch)
+            IngameLog.Add("Addressable: LoadAsset: HANDLE CHECK: " + handle.IsValid());
+
         var locations = await handle.ToUniTask();
 
+        if (isLogSwitch)
+            IngameLog.Add("Addressable: LoadAsset: HANDLE CHECK: FINISHED");
+
         if (locations == null)
-            IngameLog.Add("Addressable: LoadAsset: Failed: " + string.Join(", ", _keys));
+        {
+            if (isLogSwitch)
+                IngameLog.Add("Addressable: LoadAsset: Failed: " + string.Join(", ", _keys));
+        }
         else if (locations.Count > 0)
         {
+            if (isLogSwitch)
+                IngameLog.Add("Addressable: LoadAsset: Start: " + locations.Count);
+
             var tasks = new List<UniTask>();
             for (int i = 0; i < locations.Count; i++)
                 tasks.Add(LoadAssetParallel(locations[i]));
@@ -246,6 +272,9 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
                 try
                 {
+                    if (isLogSwitch)
+                        IngameLog.Add("Addressable: LoadAsset: Parallel: " + _location.PrimaryKey + ": Start");
+
                     var result = await h.ToUniTask(progress: Progress.Create<float>(_p =>
                     {
                         if (downloadData.totalFileSize > 0)
@@ -259,8 +288,12 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
                     if (h.Status == AsyncOperationStatus.Succeeded)
                     {
-                        if (resultData?.ContainsKey(_location.PrimaryKey) == false)
-                            resultData.Add(_location.PrimaryKey.Split("/").Last().Split(".").First(), h);
+                        if (isLogSwitch)
+                            IngameLog.Add("Addressable: LoadAsset: Succeeded: " + _location.PrimaryKey);
+
+                        string resultKey = _location.PrimaryKey.Split("/").Last().Split(".").First();
+                        if (resultData?.ContainsKey(resultKey) == false)
+                            resultData.Add(resultKey, h);
                     }
                     else
                     {
@@ -268,10 +301,14 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
                         h.Release();
                     }
                 }
-                catch
+                catch (Exception _e)
                 {
+                    IngameLog.Add("Addressable: LoadAsset: Failed: try catch error: " + _location.PrimaryKey + ": " + _e.Message);
                     h.Release();
                 }
+
+                if (isLogSwitch)
+                    IngameLog.Add("Addressable: LoadAsset: Finished: " + _location.PrimaryKey);
             }
         }
 

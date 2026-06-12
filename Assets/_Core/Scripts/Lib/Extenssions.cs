@@ -134,6 +134,8 @@ public static class Extenssions
     }
     public static bool IsActive(this string _string)
         => string.IsNullOrWhiteSpace(_string) == false;
+    public static bool IsEquals(this string _string, string _value)
+        => _string.Equals(_value, StringComparison.Ordinal);
 
     #region AMOUNT
     public static string AmountKMBT(this int _value, bool _isDot = true, bool _isFullDot = false, bool _isMBT = false, bool _isEastAsia = false)

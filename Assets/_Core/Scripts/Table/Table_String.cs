@@ -39,6 +39,9 @@ public class Table_String : BaseTable<string, TableStringData>
 
     public string GetBattleStat(BattleStatType _statType)
         => GetString("BATTLESTAT_" + _statType.ToString().ToUpper());
+
+    public string GetHeroPositionType(HeroPositionType _positionType)
+        => _positionType.ToString().ToUpper().Split("_").Last(); //GetString("HERO_POSITION_" + _positionType.ToString().ToUpper());
 }
 
 public struct TableStringData
