@@ -189,7 +189,7 @@ public class LobbyScreen_Castle : LobbyScreen_Base
     {
         public List<Vector2> objectPosition;
 
-        public ScrollRect scroll;
+        public CustomScrollRect scroll;
 
         public RectTransform panelMap;
         public Transform pButtons;
@@ -202,7 +202,7 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
         public void Initialize(Transform _transform)
         {
-            scroll = _transform.GetComponent<ScrollRect>("Panel/Scroll");
+            scroll = _transform.GetComponent<CustomScrollRect>("Panel/Scroll");
 
             panelMap = scroll.content.GetComponent<RectTransform>("Map/Panel");
             pButtons = scroll.content.Find("Buttons");

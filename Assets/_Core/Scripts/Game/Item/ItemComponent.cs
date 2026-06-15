@@ -14,6 +14,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
             m_element.txtCount.text = "";
 
         SetIconAsync(null, true).Forget();
+        SetActiveRewardEffect(false);
     }
 
     public void SetItemData(TableItemData _itemData)
@@ -71,6 +72,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         m_element.iconPanel.parent.gameObject.SetActive(true);
 
         SetActiveBadge(data.isNew);
+        SetActiveRewardEffect(false);
     }
 
     public void SetSoulCount(long _count = 0)
@@ -94,6 +96,8 @@ public class ItemComponent : MonoBehaviour, IValidatable
         => m_element.badge.SetActive(_isActive);
     public void SetActiveDimm(bool _isActive)
         => m_element.dimm?.SetActive(_isActive);
+    public void SetActiveRewardEffect(bool _isActive)
+        => m_element.rewardEffect?.SetActive(_isActive);
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
@@ -113,6 +117,8 @@ public class ItemComponent : MonoBehaviour, IValidatable
         public GameObject badge;
         public GameObject dimm;
 
+        public GameObject rewardEffect;
+
         public void Initialize(Transform _transform)
         {
             panel = _transform.Find("Panel");
@@ -124,6 +130,8 @@ public class ItemComponent : MonoBehaviour, IValidatable
 
             badge = panel.Find("Badge")?.gameObject;
             dimm = iconPanel.parent.Find("Dimm")?.gameObject;
+
+            rewardEffect = _transform.Find("RewardEffect")?.gameObject;
         }
 
         public GameObject icon => iconPanel.parent.gameObject;

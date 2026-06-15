@@ -34,7 +34,9 @@ public class Scene_Login : SceneBase
 
         await UniTask.WhenAll(tasks);
 
+#if !UNITY_EDITOR
         IngameLog.Add("LOAD ASSET: " + (System.DateTime.Now - dtStart).TotalSeconds);
+#endif
 
         AddressableManager.instance.LoadScene("02_Lobby");
     }

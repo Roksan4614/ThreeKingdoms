@@ -46,14 +46,14 @@ public class RewardItemComponent : TargetComponent, IValidatable
         isSwitchSorting = true;
         m_element.sg.sortingOrder = 1;
         m_element.character.gameObject.SetActive(true);
-        m_element.ps.gameObject.SetActive(_isFXStart);
+        m_element.rewardEffect.gameObject.SetActive(_isFXStart);
         m_element.sg.sortingLayerID = m_element.psRenderer.sortingLayerID =
             _spawnType == RewardSpawnType.Character ? m_element.layerCharacter : m_element.layerPopup;
 
         //if (_spawnType > RewardSpawnType.Character)
         m_element.sg.sortingOrder = (int)OrderLayerType.MAX;
 
-        var main = m_element.ps.main;
+        var main = m_element.rewardEffect.main;
         var minMax = main.startDelay;
         minMax.constantMin = _isFXStart ? 0 : 0.2f;
         minMax.constantMax = _isFXStart ? 0 : 0.3f;
@@ -85,7 +85,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
     {
         isSwitchSorting = false;
 
-        m_element.ps.gameObject.SetActive(true);
+        m_element.rewardEffect.gameObject.SetActive(true);
 
         // ¹æÇâ °î¼±!!
         {
@@ -130,7 +130,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         if (m_data.isCurrency)
             Signal.instance.UpdateAsset.Emit((true, m_data.itemType));
 
-        await UniTask.WaitUntil(() => m_element.ps.particleCount == 0);
+        await UniTask.WaitUntil(() => m_element.rewardEffect.particleCount == 0);
         gameObject.SetActive(false);
     }
     protected override void LateUpdate()
@@ -154,7 +154,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         public int layerCharacter;
 
         public SortingGroup sg;
-        public ParticleSystem ps;
+        public ParticleSystem rewardEffect;
         public ParticleSystemRenderer psRenderer;
 
         public Transform character;
@@ -166,7 +166,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         public void Initialize(Transform _transform)
         {
             sg = _transform.GetComponent<SortingGroup>("Character");
-            ps = _transform.GetComponent<ParticleSystem>("RewardEffect");
+            rewardEffect = _transform.GetComponent<ParticleSystem>("RewardEffect");
             psRenderer = _transform.GetComponent<ParticleSystemRenderer>("RewardEffect");
 
             character = _transform.Find("Character");

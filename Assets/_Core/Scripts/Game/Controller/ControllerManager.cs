@@ -1,10 +1,8 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,7 +18,9 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     bool m_isSkillClick = false;
     bool m_isDashClick = false;
-    bool m_isPush = false;
+
+    bool m_isPointerDown = false;
+    int m_pointerId = -1;
 
     public bool isSwitch { get; set; } = false;
     public bool isDoing => m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
@@ -79,6 +79,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
         Signal.instance.UpdateTeamPosition.connect = SlotUpdateTeamPosition;
 
+        m_element.pointer.gameObject.SetActive(false);
     }
 
     void SlotUpdateTeamPosition()
@@ -98,6 +99,9 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         if (isSwitch == false || m_mainHero?.isLive == false)
             return;
+
+        if (m_isPointerDown)
+            m_element.pointer.position = CameraManager.GetPosPointer(m_pointerId);
 
         OnUpdateMove();
 
@@ -308,11 +312,15 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     public void OnPointerDown(PointerEventData _eventData)
     {
-        m_isPush = true;
-
-        if (isSwitch == false)
+        if (m_isPointerDown == true || isSwitch == false)
+        {
+            _eventData.pointerDrag = null;
             return;
+        }
 
+        m_isPointerDown = true;
+
+        // 키보드 모드일 때 클릭은 공격
         if (m_isKeyboardMode)
         {
             if (isLeftClick_Down && m_isSkillClick == false)
@@ -325,7 +333,11 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             return;
         }
 
+        // 모바일 때만 들어올듯
+        // 핑거 아이디 저장해둬야 해
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 startPos);
+
+        m_pointerId = _eventData.pointerId;
 
         m_element.pad.anchoredPosition = startPos;
         m_element.pad.gameObject.SetActive(true);
@@ -342,7 +354,10 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     public void OnPointerUp(PointerEventData _eventData)
     {
-        m_isDashClick = m_isPush = false;
+        if (m_pointerId != _eventData.pointerId)
+            return;
+
+        m_isDashClick = m_isPointerDown = false;
 
         if (m_isSkillClick == true && isRightClick == false)
         {
@@ -362,6 +377,12 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         if (isDoing == false)
             return;
+
+        if (m_pointerId != _eventData.pointerId)
+        {
+            _eventData.pointerDrag = null;
+            return;
+        }
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 targetPos);
 
@@ -418,6 +439,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         public TextMeshProUGUI txtDashTimer;
         public Image imgDashTimer;
         public List<GameObject> iconDashCount;
+
+        public Transform pointer;
 
         public void Initialize(Transform _transform)
         {

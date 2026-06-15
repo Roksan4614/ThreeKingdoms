@@ -150,6 +150,7 @@ public class Character_Worker_Attack : Character_Worker
 
     public bool isRunningSlash => m_weapon.isRunningSlash;
 
+    public RectTransform rtSkillRange => m_weapon.rtSkillRange;
     public void OnDrag_ControllSkill(Vector3 _targetPos)
         => m_weapon.OnDrag_ControllSkill(_targetPos);
     public void OnUp_ControllSkill()

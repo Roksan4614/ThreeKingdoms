@@ -56,7 +56,8 @@ public class CameraManager : MonoSingleton<CameraManager>
         {
             for (int i = 0; i < Input.touchCount; i++)
             {
-                var touchPos = Input.GetTouch(i).position;
+                Vector3 touchPos = Input.GetTouch(i).position;
+                touchPos.z = -m_camera.transform.position.z;
                 var pos = m_camera.ScreenToWorldPoint(touchPos);
                 pos.z = 0;
 
@@ -140,17 +141,48 @@ public class CameraManager : MonoSingleton<CameraManager>
     public static Transform pointer => m_instance.m_pointer[0];
 
     public static Vector3 GetPosPointer(int _fingerId)
+        => m_instance.GetPosPointerManager(_fingerId);
+
+    Vector3 GetPosPointerManager(int _fingerId)
     {
         if (_fingerId == -1)
-            return m_instance.m_pointer[0].position;
+            return m_pointer[0].position;
 
         for (int i = 0; i < Input.touchCount; i++)
         {
             if (Input.GetTouch(i).fingerId == _fingerId)
-                return m_instance.m_pointer[i].position;
+            {
+                Vector3 touchPos = Input.GetTouch(i).position;
+                touchPos.z = -m_camera.transform.position.z;
+                var pos = m_camera.ScreenToWorldPoint(touchPos);
+                pos.z = 0;
+
+                if (i == m_pointer.Count)
+                {
+                    var pointer = Instantiate(m_pointer[0], transform);
+                    pointer.position = pos;
+
+                    m_pointer.Add(pointer);
+                }
+
+                return pos;
+            }
         }
 
         return Vector3.zero;
+    }
+
+    public void ScreenLogTouchPosition()
+    {
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            var touch = Input.GetTouch(i);
+
+            Vector3 touchPos = touch.position;
+            touchPos.z = -m_camera.transform.position.z;
+            var pos = m_instance.m_camera.ScreenToWorldPoint(touchPos);
+            pos.z = 0;
+        }
     }
 
     //public Vector3 GetMousePosition()

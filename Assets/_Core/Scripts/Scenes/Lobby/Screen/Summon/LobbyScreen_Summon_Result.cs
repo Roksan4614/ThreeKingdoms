@@ -287,6 +287,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     // ¿µ¿õ µîÀå!!
                     await HeroActionAsync(idx);
 
+                m_itemComps[i].SetActiveRewardEffect(true); 
                 item.DOLocalMove(m_prevPos[m_prevPos.Count - idx - 1], duration).SetEase(Ease.InCubic)
                     .OnComplete(() =>
                     {

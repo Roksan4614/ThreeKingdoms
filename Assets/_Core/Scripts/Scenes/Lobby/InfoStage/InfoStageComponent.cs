@@ -65,10 +65,10 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
         //일반, 어려움, 지옥, 심연, 전설
         Dictionary<string, string> dbString = new();
         dbString.Add("DIFFICULTY_NORMAL", "일반");
-        dbString.Add("DIFFICULTY_ELITE", "어려움");
-        dbString.Add("DIFFICULTY_GENERAL", "지옥");
-        dbString.Add("DIFFICULTY_HERO", "심연");
-        dbString.Add("DIFFICULTY_LEGEND", "전설");
+        dbString.Add("DIFFICULTY_ELITE", "난세");
+        dbString.Add("DIFFICULTY_GENERAL", "극한");
+        dbString.Add("DIFFICULTY_HERO", "지옥");
+        dbString.Add("DIFFICULTY_LEGEND", "심연");
 
         var sf = "[{0}] <size=150%><color=#000000>{1}-{2}";
 

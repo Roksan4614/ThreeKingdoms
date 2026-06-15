@@ -8,9 +8,10 @@ using UnityEngine.UI;
 public class Controller_Skill : Controller_Attack
 {
     public bool isReady => m_elementSkill.imgTimer.gameObject.activeSelf == false;
-    public bool isDrag = false;
 
     float m_magnitude;
+
+    bool m_isDragging;
 
     protected override void Start()
     {
@@ -37,11 +38,13 @@ public class Controller_Skill : Controller_Attack
 
     public void Update()
     {
-        if (m_pointer == null || isDrag == false)
+        if (m_pointer == null || m_isDragging == false)
             return;
 
-        var mousePosition = CameraManager.GetPosPointer(m_touchFingerId);
+        var mousePosition = CameraManager.GetPosPointer(m_pointerId);
         var dist = (m_element.startPosition.position - mousePosition);
+
+        m_element.pointer.transform.position = mousePosition;
 
         if (Mathf.Approximately(m_magnitude, dist.sqrMagnitude) == false)
         {
@@ -61,39 +64,53 @@ public class Controller_Skill : Controller_Attack
         }
     }
 
-    public override void OnDrag(PointerEventData eventData)
+    public override void OnDrag(PointerEventData _eventData)
     {
         if (m_hero.isLive == false || m_pointer == null)
             return;
 
-        var mousePosition = CameraManager.GetPosPointer(m_touchFingerId);
+        if (m_pointerId != _eventData.pointerId)
+        {
+            _eventData.pointerDrag = null;
+            return;
+        }
+
+        var mousePosition = CameraManager.GetPosPointer(m_pointerId);
         var dist = (m_element.startPosition.position - mousePosition);
 
         if (dist.sqrMagnitude > 0.5f)
         {
-            //ControllerManager.instance.isSwitch = false;
-            isDrag = true;
-            m_element.startPosition.gameObject.SetActive(true);
-            button.interactable = false;
-            m_pointer.gameObject.SetActive(true);
+            if (m_isDragging == false)
+            {
+                //ControllerManager.instance.isSwitch = false;
+                m_isDragging = true;
+                m_element.startPosition.gameObject.SetActive(true);
+                button.interactable = false;
+                m_pointer.gameObject.SetActive(true);
+            }
         }
         else if (m_pointer.gameObject.activeSelf == true)
         {
             m_pointer.gameObject.SetActive(false);
-            isDrag = false;
+            m_isDragging = false;
         }
     }
-    public override void OnPointerUp(PointerEventData eventData)
+    public override void OnPointerUp(PointerEventData _eventData)
     {
+        IngameLog.Add($"OnPointerUp: {_eventData.pointerId}: myID: {m_pointerId}");
+        if (m_pointerId != _eventData.pointerId)
+            return;
+
         if (button.interactable == false)
         {
             Utils.AfterSecond(() => button.interactable = true);
 
             //ControllerManager.instance.isSwitch = true;
-            isDrag = false;
             m_element.startPosition.gameObject.SetActive(false);
             m_hero.attack.OnUp_ControllSkill();
         }
+
+        m_isPointerDown = m_isDragging = false;
     }
 
     public void UpdateColltime(float _duration, float _progress)

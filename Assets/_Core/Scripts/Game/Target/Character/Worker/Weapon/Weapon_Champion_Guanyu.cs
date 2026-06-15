@@ -157,6 +157,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         var lookAt = Vector3.ClampMagnitude(_targetPos - ownerPos, m_maxMagnitude);
 
         m_skillRange.position = ownerPos + lookAt;
+
         UpdateEnemyStatus();
     }
 

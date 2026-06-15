@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,7 +13,8 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
     protected CharacterComponent m_hero;
     CharacterComponent m_target;
 
-    protected int m_touchFingerId;
+    protected int m_pointerId;
+    protected bool m_isPointerDown;
 
     protected virtual void Start()
     {
@@ -43,9 +42,15 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
         }
     }
 
-    public virtual void OnDrag(PointerEventData eventData)
+    public virtual void OnDrag(PointerEventData _eventData)
     {
-        var mousePosition = CameraManager.GetPosPointer(m_touchFingerId);
+        if (m_pointerId != _eventData.pointerId)
+        {
+            _eventData.pointerDrag = null;
+            return;
+        }
+
+        var mousePosition = CameraManager.GetPosPointer(m_pointerId);
 
         var dist = (m_element.startPosition.position - mousePosition);
 
@@ -63,14 +68,30 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
         }
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData _eventData)
     {
-        m_touchFingerId = Input.touchCount == 0 ? -1 : Input.GetTouch(Input.touchCount - 1).fingerId;
-        m_element.startPosition.position = CameraManager.GetPosPointer(m_touchFingerId);
+        if (m_isPointerDown == true)
+        {
+            _eventData.pointerDrag = null;
+            return;
+        }
+
+        m_isPointerDown = true;
+
+        m_pointerId = _eventData.pointerId;
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 startPos);
+        m_element.startPosition.anchoredPosition = startPos;
+
+        IngameLog.Add($"OnPointerDown: {_eventData.pointerId}: {m_element.startPosition.localPosition}");
     }
 
-    public virtual void OnPointerUp(PointerEventData eventData)
+    public virtual void OnPointerUp(PointerEventData _eventData)
     {
+        IngameLog.Add($"OnPointerUp: {_eventData.pointerId}: myID: {m_pointerId}");
+        if (m_pointerId != _eventData.pointerId)
+            return;
+
         if (button.interactable == false)
         {
             Utils.AfterSecond(() => button.interactable = true);
@@ -80,6 +101,8 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
             m_element.pointer.gameObject.SetActive(false);
         }
+
+        m_isPointerDown = false;
     }
 
     #region VALIDATE
@@ -92,12 +115,13 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
     protected struct ElementData
     {
         public Controll_Attack_Pointer pointer;
-        public Transform startPosition;
+        public RectTransform startPosition;
+        public Transform updatePosition;
 
         public void Initialize(Transform _transform)
         {
             pointer = _transform.GetComponent<Controll_Attack_Pointer>("MousePosition");
-            startPosition = _transform.Find("StartPosition");
+            startPosition = (RectTransform)_transform.Find("StartPosition");
         }
     }
     #endregion VALIDATA

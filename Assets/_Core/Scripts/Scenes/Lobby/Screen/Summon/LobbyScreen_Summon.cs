@@ -163,8 +163,8 @@ public class LobbyScreen_Summon : LobbyScreen_Base
             hero.move.SetFlip(false);
             m_element.hostDash.SetActive(true);
 
-            var prevPos = hero.transform.position;
-            hero.transform.DOMoveX(prevPos.x - 4, .2f).SetEase(Ease.InBack)
+            var prevPos = hero.transform.localPosition;
+            hero.transform.DOLocalMoveX(prevPos.x - 4, .2f).SetEase(Ease.InBack)
                 .OnComplete(() => hero.gameObject.SetActive(false));
 
             await UniTask.WaitUntil(() => m_element.result.step == LobbyScreen_Summon_Result.ResultStepType.ReceiveEnd);
@@ -173,7 +173,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
             hero.move.SetFlip(true);
             hero.gameObject.SetActive(true);
-            hero.transform.DOMoveX(prevPos.x, .2f).SetEase(Ease.InCubic);
+            hero.transform.DOLocalMoveX(prevPos.x, .2f).SetEase(Ease.InCubic);
         }
 
         hero.anim.PlayAttack();
@@ -204,7 +204,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         m_element.Initialize(transform);
     }
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     ElementData m_element;
 
     [Serializable]

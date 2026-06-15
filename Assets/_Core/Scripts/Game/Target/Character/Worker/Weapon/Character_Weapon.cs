@@ -9,11 +9,13 @@ using UnityEngine;
 public class Character_Weapon : MonoBehaviour, IValidatable
 {
     [SerializeField]
-    public CharacterComponent m_owner;
+    protected CharacterComponent m_owner;
     [SerializeField]
-    public List<SpriteAnimaion> m_animSlash = new();
+    protected List<SpriteAnimaion> m_animSlash = new();
     [SerializeField]
-    public Transform m_skillRange;
+    protected RectTransform m_skillRange;
+
+    public RectTransform rtSkillRange => m_skillRange;
 
     protected bool m_isCritial;
     public bool isUseSkill { get; protected set; }
@@ -46,7 +48,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     public void OnManualValidate()
     {
         m_owner = transform.parent?.GetComponent<CharacterComponent>();
-        m_skillRange = m_owner.transform.Find("SkillRange");
+        m_skillRange = (RectTransform)m_owner.transform.Find("SkillRange");
 
         m_animSlash.Clear();
         var fxAttack = transform.GetComponent<SpriteAnimaion>("Panel/FxAttack");
@@ -73,7 +75,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
             ShowSlashEffect(
                 _isForceShake: m_owner.isMain == true || ControllerManager.instance.isDoing == false);
 
-        if( m_owner.move.isMoving)
+        if (m_owner.move.isMoving)
             m_owner.anim.Play(CharacterAnimType.Attack_Move, 1);
         else
             m_owner.anim.Play(CharacterAnimType.Attack, 0);
