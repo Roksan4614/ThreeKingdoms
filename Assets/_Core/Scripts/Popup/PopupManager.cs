@@ -219,6 +219,20 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         canvasScaler.matchWidthOrHeight = _isLandscape ? 1 : 0;
     }
 
+    public void CloseAll()
+    {
+        int max = Mathf.Max(m_element.pPopup.childCount, m_element.pModal.childCount);
+
+        for (int i = 0; i < max; i++)
+        {
+            if (i < m_element.pPopup.childCount)
+                m_element.pPopup.GetChild(i).GetComponent<BasePopupComponent>().Close();
+            if (i < m_element.pModal.childCount)
+                m_element.pModal.GetChild(i).GetComponent<BasePopupComponent>().Close();
+        }
+
+    }
+
     public Vector2 canvasSize => m_element.canvasScaler.referenceResolution;
 
     public Vector2 lt => m_element.lt.position;

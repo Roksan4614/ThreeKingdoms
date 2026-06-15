@@ -15,11 +15,12 @@ public abstract class SceneBase : Singleton<SceneBase>, IValidatable
         base.Awake();
         m_elementBase.canvas.worldCamera = CameraManager.instance.main;
     }
+
     public Canvas canvas => m_elementBase.canvas;
 
     public virtual void OnManualValidate() { m_elementBase.Initialize(transform); }
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     protected ElementBaseData m_elementBase;
 
     [Serializable]

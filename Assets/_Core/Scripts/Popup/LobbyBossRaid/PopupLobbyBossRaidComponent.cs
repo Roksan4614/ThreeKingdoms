@@ -27,6 +27,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         m_element.btnRanking.onClick.AddListener(() => OnButtonAsync_Ranking().Forget());
         m_element.btnHero.onClick.AddListener(OnButton_Hero);
+        m_element.btnStart.onClick.AddListener(() => BossRaidWorker.instance.InitializeAsync(BossRaidWorker.BossRaidType.LuBu).Forget());
     }
 
     private void Start()

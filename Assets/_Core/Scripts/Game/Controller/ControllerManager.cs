@@ -78,8 +78,16 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         SlotUpdateTeamPosition();
 
         Signal.instance.UpdateTeamPosition.connect = SlotUpdateTeamPosition;
+    }
 
-        m_element.pointer.gameObject.SetActive(false);
+    protected override void OnDestroy()
+    {
+        if (m_ctsDash != null)
+        {
+            m_ctsDash.Cancel();
+            m_ctsDash.Dispose();
+            m_ctsDash = null;
+        }
     }
 
     void SlotUpdateTeamPosition()
@@ -99,9 +107,6 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         if (isSwitch == false || m_mainHero?.isLive == false)
             return;
-
-        if (m_isPointerDown)
-            m_element.pointer.position = CameraManager.GetPosPointer(m_pointerId);
 
         OnUpdateMove();
 
@@ -439,8 +444,6 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         public TextMeshProUGUI txtDashTimer;
         public Image imgDashTimer;
         public List<GameObject> iconDashCount;
-
-        public Transform pointer;
 
         public void Initialize(Transform _transform)
         {

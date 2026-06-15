@@ -12,12 +12,13 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
     protected override void OnAwake()
     {
         m_element.boss.gameObject.SetActive(false);
-        m_element.infoStage.gameObject.SetActive(false);
-        m_element.btn_challenge.gameObject.SetActive(false);
+        m_element.infoStage?.gameObject.SetActive(false);
+        m_element.btn_challenge?.gameObject.SetActive(false);
         m_element.rtIconBoss.gameObject.SetActive(false);
-        m_element.txtLevel.text = "";
+        if (m_element.txtLevel != null)
+                m_element.txtLevel.text = "";
 
-        m_element.btn_challenge.onClick.AddListener(OnButton_Challenge);
+        m_element.btn_challenge?.onClick.AddListener(OnButton_Challenge);
     }
 
     void Start()
@@ -205,7 +206,10 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
             rtIconBoss = _transform.GetComponent<RectTransform>("img_iconBoss");
 
             startPosIconBoss = rtIconBoss.anchoredPosition;
-            targetPosIconBoss = ((RectTransform)_transform.Find("targetPos_iconBoss")).anchoredPosition.x;
+
+            var iconBoss = _transform.Find("targetPos_iconBoss");
+            if (iconBoss != null)
+                targetPosIconBoss = ((RectTransform)iconBoss).anchoredPosition.x;
         }
     }
 }
