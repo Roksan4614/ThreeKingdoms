@@ -31,17 +31,20 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
     protected override void OnAwake()
     {
-        if (PPWorker.HasKey(PlayerPrefsType.CHAPTER_STAGE_INFO))
-            m_loadData = PPWorker.Get<LoadData_Stage>(PlayerPrefsType.CHAPTER_STAGE_INFO);
-        else
+        if (BossRaidWorker.instance.isRunning == false)
         {
-            m_loadData = new()
+            if (PPWorker.HasKey(PlayerPrefsType.CHAPTER_STAGE_INFO))
+                m_loadData = PPWorker.Get<LoadData_Stage>(PlayerPrefsType.CHAPTER_STAGE_INFO);
+            else
             {
-                level = 1,
-                chapterNumber = 1,
-                stageNumber = 1,
-            };
-            SaveData();
+                m_loadData = new()
+                {
+                    level = 1,
+                    chapterNumber = 1,
+                    stageNumber = 1,
+                };
+                SaveData();
+            }
         }
 
         for (int i = 0; i < m_element.chapter.childCount; i++)

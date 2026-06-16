@@ -16,6 +16,11 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
     bool m_isDoing = false;
     AsyncOperationHandle<GameObject> m_handle;
 
+    BossRaidType m_bossType = BossRaidType.NONE;
+    public BossRaidType bossType => m_bossType;
+    public bool isRunning => m_bossType > BossRaidType.NONE;
+
+
     public async UniTask InitializeAsync(BossRaidType _bossType)
     {
         if (m_isDoing == false)
@@ -23,13 +28,26 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
         await PopupManager.instance.ShowDimmAsync(true);
 
+        m_bossType = _bossType;
         PopupManager.instance.CloseAll();
+
+        await UniTask.WaitForEndOfFrame();
+
         AddressableManager.instance.LoadScene("03_BossRaid");
 
         //bool isStart = await StartAsync(_bossType);
         //await PopupManager.instance.ShowDimmAsync(false, _duration: isStart ? 1f : .5f);
 
         m_isDoing = false;
+    }
+
+    public async UniTask FinishedAsync()
+    {
+        m_bossType = BossRaidType.NONE;
+
+        await PopupManager.instance.ShowDimmAsync(true);
+        await UniTask.WaitForEndOfFrame();
+        AddressableManager.instance.LoadScene("02_Lobby");
     }
 
     async UniTask<bool> StartAsync(BossRaidType _bossType)

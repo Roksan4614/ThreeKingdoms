@@ -226,11 +226,10 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         for (int i = 0; i < max; i++)
         {
             if (i < m_element.pPopup.childCount)
-                m_element.pPopup.GetChild(i).GetComponent<BasePopupComponent>().Close();
+                Destroy(m_element.pPopup.GetChild(i).gameObject);
             if (i < m_element.pModal.childCount)
-                m_element.pModal.GetChild(i).GetComponent<BasePopupComponent>().Close();
+                Destroy(m_element.pModal.GetChild(i).gameObject);
         }
-
     }
 
     public Vector2 canvasSize => m_element.canvasScaler.referenceResolution;

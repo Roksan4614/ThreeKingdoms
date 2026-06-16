@@ -6,6 +6,12 @@ public class Scene_BossRaid : SceneBase
     bool m_isExit;
     private void Start()
     {
+        StartAsync().Forget();
+    }
+
+    async UniTask StartAsync()
+    {
+        await UniTask.WaitForEndOfFrame();
         PopupManager.instance.ShowDimm(false);
     }
 
@@ -13,14 +19,8 @@ public class Scene_BossRaid : SceneBase
     {
         if (m_isExit == false && Input.GetKeyDown(KeyCode.Escape))
         {
-            ExitAsync().Forget();
+            m_isExit = true;
+            BossRaidWorker.instance.FinishedAsync().Forget();
         }
-    }
-
-    async UniTask ExitAsync()
-    {
-        m_isExit = true;
-        await PopupManager.instance.ShowDimmAsync(true, false);
-        AddressableManager.instance.LoadScene("02_Lobby");
     }
 }
