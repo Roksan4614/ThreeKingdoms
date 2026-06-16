@@ -9,7 +9,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class StageManager : Singleton<StageManager>, IValidatable
+public partial class StageManager : Singleton<StageManager>, IValidatable
 {
     const int c_maxChapter = 2;
     const int c_maxStage = 2;
