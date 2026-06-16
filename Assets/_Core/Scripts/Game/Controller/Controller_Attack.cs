@@ -68,7 +68,7 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
         }
     }
 
-    public void OnPointerDown(PointerEventData _eventData)
+    public virtual void OnPointerDown(PointerEventData _eventData)
     {
         if (m_isPointerDown == true)
         {
@@ -82,13 +82,10 @@ public class Controller_Attack : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 startPos);
         m_element.startPosition.anchoredPosition = startPos;
-
-        IngameLog.Add($"OnPointerDown: {_eventData.pointerId}: {m_element.startPosition.localPosition}");
     }
 
     public virtual void OnPointerUp(PointerEventData _eventData)
     {
-        IngameLog.Add($"OnPointerUp: {_eventData.pointerId}: myID: {m_pointerId}");
         if (m_pointerId != _eventData.pointerId)
             return;
 

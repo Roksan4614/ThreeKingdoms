@@ -9,12 +9,14 @@ public partial class HeroInfoComponent : IPointerDownHandler, IPointerUpHandler,
 
     bool m_isReady = false;
 
-    public void OnDrag(PointerEventData eventData)
+    int m_pointerId = -100;
+
+    public void OnDrag(PointerEventData _eventData)
     {
-        if (m_hero.isLive == false || m_hero.element.skillRange == null)
+        if (m_hero.isLive == false || m_hero.element.skillRange == null || m_pointerId != _eventData.pointerId)
             return;
 
-        var mousePosition = CameraManager.posPointer;
+        var mousePosition = CameraManager.GetPosPointer(m_pointerId);
         var dist = (m_element.startPosition.position - mousePosition);
 
         if (dist.sqrMagnitude > 0.5f)
@@ -30,13 +32,22 @@ public partial class HeroInfoComponent : IPointerDownHandler, IPointerUpHandler,
         }
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData _eventData)
     {
-        m_element.startPosition.position = CameraManager.posPointer;
+        if (m_statusSkill != StatusType.Valid)
+        {
+            _eventData.pointerDrag = null;
+            return;
+        }
+        m_pointerId = _eventData.pointerId;
+        m_element.startPosition.position = CameraManager.GetPosPointer(m_pointerId);
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    public void OnPointerUp(PointerEventData _eventData)
     {
+        if (m_pointerId != _eventData.pointerId)
+            return;
+
         if (m_element.button.interactable == false)
         {
             m_isReady = false;
@@ -45,6 +56,8 @@ public partial class HeroInfoComponent : IPointerDownHandler, IPointerUpHandler,
             m_element.startPosition.gameObject.SetActive(false);
             m_hero.attack.OnUp_ControllSkill();
         }
+
+        m_pointerId = -100;
     }
 
     public void Update()
@@ -53,7 +66,7 @@ public partial class HeroInfoComponent : IPointerDownHandler, IPointerUpHandler,
             return;
 
         var startPosition = m_element.startPosition.position;
-        var mousePosition = CameraManager.posPointer;
+        var mousePosition = CameraManager.GetPosPointer(m_pointerId);
         var dist = (startPosition - mousePosition);
 
         if (Mathf.Approximately(m_magnitude, dist.sqrMagnitude) == false)

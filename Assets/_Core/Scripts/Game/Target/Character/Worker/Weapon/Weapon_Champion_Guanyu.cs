@@ -85,7 +85,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         }
 
         ControllerManager.instance.SetPunchSkill();
-        ControllerManager.instance.isSwitch = false;
+        ControllerManager.instance.SetSwitch(false);
 
         m_owner.move.MoveStop();
         m_owner.move.SetFlip(targetPos.x > m_owner.transform.position.x);
@@ -146,7 +146,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             m_owner.move.MoveTarget(StageManager.instance.GetNearestEnemy(targetPos), true);
 
         m_isUseSkillControll = false;
-        ControllerManager.instance.isSwitch = true;
+        ControllerManager.instance.SetSwitch(true);
     }
 
     public override void OnDrag_ControllSkill(Vector3 _targetPos)

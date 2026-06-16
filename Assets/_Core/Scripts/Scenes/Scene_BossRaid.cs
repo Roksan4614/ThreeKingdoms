@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Scene_BossRaid : SceneBase
@@ -7,12 +8,28 @@ public class Scene_BossRaid : SceneBase
     private void Start()
     {
         StartAsync().Forget();
+
+        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => { });
     }
 
     async UniTask StartAsync()
     {
-        await UniTask.WaitForEndOfFrame();
+        List<UniTask> tasks = new();
+        tasks.Add(TeamManager.instance.SpawnUpdateAsync());
+        tasks.Add(StageManager.instance.InitializeAsync_BossRaid());
+
+        await UniTask.WhenAll(tasks);
+
+        TeamManager.instance.StartStage();
+        TeamManager.instance.StartPhase(false);
+
+        ControllerManager.instance.SetSwitch(true);
+        ControllerManager.instance.SlotStartStage();
+
+        InfoStageComponent.instance.SetBossRaid(true);
+
         PopupManager.instance.ShowDimm(false);
+
     }
 
     private void Update()
@@ -23,4 +40,11 @@ public class Scene_BossRaid : SceneBase
             BossRaidWorker.instance.FinishedAsync().Forget();
         }
     }
+
+    public override void OnManualValidate() { m_elementBase.Initialize(transform); }
+
+    struct ElementData
+    {
+    }
+
 }

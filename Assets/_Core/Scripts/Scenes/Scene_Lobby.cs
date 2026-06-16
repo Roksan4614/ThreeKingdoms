@@ -8,11 +8,6 @@ public class Scene_Lobby : SceneBase
 {
     async void Start()
     {
-        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive =>
-        {
-            m_element.heroInfo.gameObject.SetActive(_isActive);
-        });
-
         await UniTask.WaitForEndOfFrame();
 
         // 캐릭터가 없다면 선택 화면부터
@@ -30,52 +25,8 @@ public class Scene_Lobby : SceneBase
 
         StageManager.instance.StartStageAsync().Forget();
 
-        ControllerManager.instance.isSwitch = true;
-
-        m_element.btnAuto.onClick.AddListener(OnButton_Auto);
-        SetAutoUIAsync().Forget();
+        ControllerManager.instance.SetSwitch(true);
     }
-
-    void OnButton_Auto()
-    {
-        DataManager.option.isAutoSkill = !DataManager.option.isAutoSkill;
-        SetAutoUIAsync().Forget();
-    }
-
-    CancellationTokenSource m_ctsAutoSkill;
-    async UniTask SetAutoUIAsync()
-    {
-        if (m_ctsAutoSkill != null)
-        {
-            m_ctsAutoSkill.Cancel();
-            m_ctsAutoSkill.Dispose();
-            m_ctsAutoSkill = null;
-        }
-
-        bool isAutoSkill = DataManager.option.isAutoSkill;
-
-        var rtAuto = m_element.imgAuto.rectTransform;
-
-        ColorUtility.TryParseHtmlString(isAutoSkill ? "#000000" : "#a4a4a4", out Color color);
-        m_element.imgAuto.color = color;
-        m_element.btnAuto.TMPText.color = color;
-        m_element.outline.effectColor = color;
-
-        if (DataManager.option.isAutoSkill)
-        {
-            m_ctsAutoSkill = new();
-            var token = m_ctsAutoSkill.Token;
-
-            while (true)
-            {
-                rtAuto.Rotate(0, 0, -200 * Time.deltaTime);
-                await UniTask.WaitForEndOfFrame(cancellationToken: token);
-            }
-        }
-        else
-            rtAuto.rotation = Quaternion.Euler(0, 0, 0);
-    }
-
 
     public override void OnManualValidate() { m_element.Initialize(transform); }
 
@@ -85,19 +36,8 @@ public class Scene_Lobby : SceneBase
     [Serializable]
     struct ElementData
     {
-        public Transform heroInfo;
-
-        public ButtonHelper btnAuto;
-        public Image imgAuto;
-        public Outline outline;
-
         public void Initialize(Transform _transform)
         {
-            heroInfo = _transform.Find("Canvas/HeroInfo");
-
-            btnAuto = heroInfo.GetComponent<ButtonHelper>("btn_auto");
-            imgAuto = btnAuto.transform.GetComponent<Image>("img_auto");
-            outline = imgAuto.transform.GetComponent<Outline>();
         }
     }
 }

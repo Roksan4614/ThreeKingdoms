@@ -138,7 +138,7 @@ public class Character_Worker_Talkbox : Character_Worker
                     m_txtTalk.text = totalMsg;
 
                     await UniTask.WaitForEndOfFrame();
-                    ControllerManager.instance.isSwitch = true;
+                    ControllerManager.instance.SetSwitch(true);
                     isTyping = false;
                     return;
                 }
@@ -148,7 +148,7 @@ public class Character_Worker_Talkbox : Character_Worker
         }
 
         await UniTask.WaitForEndOfFrame();
-        ControllerManager.instance.isSwitch = true;
+        ControllerManager.instance.SetSwitch(true);
         isTyping = false;
     }
 

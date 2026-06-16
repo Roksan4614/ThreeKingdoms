@@ -16,7 +16,7 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
         m_element.btn_challenge?.gameObject.SetActive(false);
         m_element.rtIconBoss.gameObject.SetActive(false);
         if (m_element.txtLevel != null)
-                m_element.txtLevel.text = "";
+            m_element.txtLevel.text = "";
 
         m_element.btn_challenge?.onClick.AddListener(OnButton_Challenge);
     }
@@ -32,9 +32,10 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
         bool isBossWait = StageManager.instance.data.isBossWait;
 
         bool _isDisableStart = _isStart == false;
-        m_element.txtLevel.gameObject.SetActive(_isDisableStart);
-        m_element.infoStage.gameObject.SetActive(_isDisableStart && isBossWait == false);
-        m_element.btn_challenge.gameObject.SetActive(_isDisableStart && isBossWait);
+        m_element.txtLevel?.gameObject.SetActive(_isDisableStart);
+        m_element.infoStage?.gameObject.SetActive(_isDisableStart && isBossWait == false);
+        m_element.btn_challenge?.gameObject.SetActive(_isDisableStart && isBossWait);
+        m_element.rtIconBoss.gameObject.SetActive(_isStart);
 
         Vector3 anchorPos = m_element.rtIconBoss.anchoredPosition;
         if (_isStart)
@@ -58,7 +59,7 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
             m_element.rtIconBoss.localScale = scale;
         }
 
-        m_element.rtIconBoss.rotation = Quaternion.Euler(Vector3.zero);
+        //m_element.rtIconBoss.rotation = Quaternion.Euler(Vector3.zero);
     }
 
     void SlotStartStage(StageManager.LoadData_Stage _data)

@@ -1,0 +1,78 @@
+using Cysharp.Threading.Tasks;
+using System.Threading;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class HeroNavigationComponent : MonoBehaviour, IValidatable
+{
+    private void Start()
+    {
+        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(_isActive));
+
+        m_element.btnAuto.onClick.AddListener(OnButton_Auto);
+        SetAutoUIAsync().Forget();
+    }
+
+    void OnButton_Auto()
+    {
+        DataManager.option.isAutoSkill = !DataManager.option.isAutoSkill;
+        SetAutoUIAsync().Forget();
+    }
+
+    CancellationTokenSource m_ctsAutoSkill;
+    async UniTask SetAutoUIAsync()
+    {
+        if (m_ctsAutoSkill != null)
+        {
+            m_ctsAutoSkill.Cancel();
+            m_ctsAutoSkill.Dispose();
+            m_ctsAutoSkill = null;
+        }
+
+        bool isAutoSkill = DataManager.option.isAutoSkill;
+
+        var rtAuto = m_element.imgAuto.rectTransform;
+
+        ColorUtility.TryParseHtmlString(isAutoSkill ? "#000000" : "#a4a4a4", out Color color);
+        m_element.imgAuto.color = color;
+        m_element.btnAuto.TMPText.color = color;
+        m_element.outline.effectColor = color;
+
+        if (DataManager.option.isAutoSkill)
+        {
+            m_ctsAutoSkill = new();
+            var token = m_ctsAutoSkill.Token;
+
+            while (true)
+            {
+                rtAuto.Rotate(0, 0, -200 * Time.deltaTime);
+                await UniTask.WaitForEndOfFrame(cancellationToken: token);
+            }
+        }
+        else
+            rtAuto.rotation = Quaternion.Euler(0, 0, 0);
+    }
+
+    #region VALIDATE
+    public void OnManualValidate() => m_element.Initialize(transform);
+
+    [SerializeField, HideInInspector]
+    ElementData m_element;
+
+    [System.Serializable]
+    struct ElementData
+    {
+        public ButtonHelper btnAuto;
+        public Image imgAuto;
+        public Outline outline;
+
+        public void Initialize(Transform _transform)
+        {
+            btnAuto = _transform.GetComponent<ButtonHelper>("btn_auto");
+            imgAuto = btnAuto.transform.GetComponent<Image>("img_auto");
+            outline = imgAuto.transform.GetComponent<Outline>();
+        }
+    }
+    #endregion VALIDATE
+
+}

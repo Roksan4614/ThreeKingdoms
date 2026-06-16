@@ -49,7 +49,11 @@ public class Team_HeroInfo
 
         var duration = 0.05f;
         ControllerManager.instance.SetMoveActionArea(m_isHide, true, duration);
-        MissionComponent.instance?.SetMoveArea(m_isHide, true, duration);
+
+        if (BossRaidWorker.instance.isRunning == true)
+            RankBossRaidComponent.instance.SetMoveArea(m_isHide, true, duration);
+        else
+            MissionComponent.instance.SetMoveArea(m_isHide, true, duration);
 
         var pos = m_panel.anchoredPosition;
         pos.y = m_isHide ? m_prevPosY - m_panel.rect.height : m_prevPosY;
