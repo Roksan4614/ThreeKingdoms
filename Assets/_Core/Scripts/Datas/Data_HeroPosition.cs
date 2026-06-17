@@ -16,7 +16,7 @@ public class Data_HeroPosition : MonoBehaviour
         for (var type = BattleStatType.NONE + 1; type < BattleStatType.MAX; type++)
             dbStat.Add(type);
 
-        dbStat = dbStat.OrderBy(x => Random.value).ToList();
+        dbStat = dbStat.SortBy(x => Random.value);
         float percent = .5f;
         for (var type = HeroPositionType.NONE + 1; type < HeroPositionType.MAX; type++)
         {
@@ -40,7 +40,7 @@ public class Data_HeroPosition : MonoBehaviour
                 percent *= .5f;
             }
             percent = .5f;
-            dbStat = dbStat.OrderBy(x => Random.value).ToList();
+            dbStat = dbStat.SortBy(x => Random.value);
         }
 
         data = db.GroupBy(x => x.category).ToDictionary(x => x.Key, x =>

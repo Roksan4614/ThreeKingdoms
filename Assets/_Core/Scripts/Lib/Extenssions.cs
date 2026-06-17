@@ -260,4 +260,66 @@ public static class Extenssions
 
         return result;
     }
+
+    #region SORTBY
+    private struct KeyComparer<T, V> : IComparer<T> where V : IComparable<V>
+    {
+        private readonly bool m_isDescending;
+        private readonly Func<T, V> m_keySelector;
+
+        public KeyComparer(Func<T, V> _keySelector, bool _isDescending)
+        {
+            m_keySelector = _keySelector;
+            m_isDescending = _isDescending;
+        }
+
+        public int Compare(T _x, T _y)
+        {
+            var x = m_keySelector(_x);
+            var y = m_keySelector(_y);
+
+            if (x == null && y == null) return 0;
+            if (x == null) return m_isDescending ? 1 : -1;
+            if (y == null) return m_isDescending ? -1 : 1;
+
+            return m_isDescending ? y.CompareTo(x) : x.CompareTo(y);
+        }
+    }
+    public static List<T> SortBy<T, V>(this List<T> _source, Func<T, V> _keySelector, bool _isDescending = false) where V : IComparable<V>
+    {
+        List<T> sortedList = new List<T>(_source);
+        sortedList.Sort(new KeyComparer<T, V>(_keySelector, _isDescending));
+        return sortedList;
+    }
+    public static List<T> SortByDescending<T, V>(this List<T> _source, Func<T, V> _keySelector) where V : IComparable<V>
+        => _source.SortBy(_keySelector, true);
+
+    public static List<T> SortBy<T, V>(this IReadOnlyList<T> _source, Func<T, V> _keySelector, bool _isDescending = false) where V : IComparable<V>
+    {
+        List<T> sortedList = new List<T>(_source);
+        sortedList.Sort(new KeyComparer<T, V>(_keySelector, _isDescending));
+        return sortedList;
+    }
+    public static List<T> SortByDescending<T, V>(this IReadOnlyList<T> _source, Func<T, V> _keySelector) where V : IComparable<V>
+        => _source.SortBy(_keySelector, true);
+
+    public static T[] SortBy<T, V>(this T[] _source, Func<T, V> _keySelector, bool _isDescending = false) where V : IComparable<V>
+    {
+        T[] sortedArray = new T[_source.Length];
+        Array.Copy(_source, sortedArray, _source.Length);
+        Array.Sort(sortedArray, new KeyComparer<T, V>(_keySelector, _isDescending));
+        return sortedArray;
+    }
+    public static T[] SortByDescending<T, V>(this T[] _source, Func<T, V> _keySelector) where V : IComparable<V>
+        => _source.SortBy(_keySelector, true);
+
+    public static T RandomFirst<T>(this List<T> _source)
+        => _source[UnityEngine.Random.Range(0, _source.Count)];
+    public static T RandomFirst<T>(this T[] _source)
+        => _source[UnityEngine.Random.Range(0, _source.Length)];
+    public static T RandomFirst<T>(this IReadOnlyList<T> _source)
+        => _source[UnityEngine.Random.Range(0, _source.Count)];
+
+
+    #endregion SORTBY
 }

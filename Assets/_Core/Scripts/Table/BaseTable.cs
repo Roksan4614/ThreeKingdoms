@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-public abstract class BaseTable<T,V> : MonoBehaviour
+public abstract class BaseTable<T, V> : MonoBehaviour
 {
     protected readonly List<V> m_list;
     protected Dictionary<T, V> m_dictionary;

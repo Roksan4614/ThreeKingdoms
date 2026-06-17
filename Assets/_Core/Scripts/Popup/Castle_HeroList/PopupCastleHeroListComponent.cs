@@ -87,7 +87,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         if (coreStat.Contains(_coreStats) == false)
             return false;
 
-        var myHero = DataManager.userInfo.myHero.OrderByDescending(x => x.resultCoreStat[_coreStats]);
+        var myHero = DataManager.userInfo.myHero.SortByDescending(x => x.resultCoreStat[_coreStats]);
 
         int i = 0;
         var content = m_element.scroll.content;

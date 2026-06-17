@@ -59,6 +59,7 @@ public struct TableHeroData
     public HeroClassType classType;
     public RegionType regionType;
 
+    [JsonProperty] bool is_lock; public bool isLock => is_lock;
     [JsonProperty] float percent_start_cooldown;
     [JsonProperty] float skill_cooltime;
 

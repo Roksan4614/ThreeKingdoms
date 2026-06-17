@@ -95,7 +95,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         #region 영웅 불러오기
         {
             await UniTask.WaitForEndOfFrame();
-            List<TableHeroData> dbHeroes = TableManager.hero.list.Where(x => x.key.Equals(_hostKey) == false).ToList();
+            List<TableHeroData> dbHeroes = TableManager.hero.list.Where(x => x.key.Equals(_hostKey) == false && x.isLock == false).ToList();
 
             // 특정 국가면 하나 더 넣자
             if (_regionType > RegionType.NONE)
@@ -287,7 +287,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     // 영웅 등장!!
                     await HeroActionAsync(idx);
 
-                m_itemComps[i].SetActiveRewardEffect(true); 
+                m_itemComps[i].SetActiveRewardEffect(true);
                 item.DOLocalMove(m_prevPos[m_prevPos.Count - idx - 1], duration).SetEase(Ease.InCubic)
                     .OnComplete(() =>
                     {

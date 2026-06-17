@@ -138,9 +138,9 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
         m_tweenHP?.Kill();
 
-        if (stat.health == 0)
+        if (stat.health <= 0)
         {
-            if (TeamManager.instance.IsAllDie() == false)
+            if (TeamManager.instance.IsAllDie() == false || BossRaidWorker.instance.isRunning == true)
             {
                 bar.DOAnchorPosX(targetX, 0.1f);
                 if (m_ctsRespawn != null)
@@ -182,8 +182,8 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
             m_element.imgRespawn.fillAmount = 1 - progress;
 
             var remainTime = m_cooltime_Revive.endTime - Time.realtimeSinceStartup;
-            m_element.txtRespawnTimer.text = remainTime >= 10 ? Math.Truncate(remainTime).ToString() :
-                    (Math.Truncate(remainTime * 10) / 10).ToString("0.0");
+            m_element.txtRespawnTimer.text = Utils.MSpace(remainTime >= 10 ? Math.Truncate(remainTime).ToString() :
+                    (Math.Truncate(remainTime * 10) / 10).ToString("0.0"), 55);
 
             await UniTask.WaitForEndOfFrame(this, m_ctsRespawn.Token);
         }

@@ -34,8 +34,8 @@ public class Table_String : BaseTable<string, TableStringData>
     public string GetGradeType(GradeType _gradeType, bool _isDifficult = false)
         => GetString($"GRADE_{(_isDifficult ? "DIFFICULT_" : "")}{_gradeType.ToString().ToUpper()}");
 
-    public string GetRegionType(RegionType _regionType)
-        => GetString("REGION_NAME_" + _regionType.ToString().ToUpper());
+    public string GetRegionType(RegionType _regionType, bool _isFull)
+        => GetString("REGION_NAME_" + (_isFull ? "FULL_" : "") + _regionType.ToString().ToUpper());
 
     public string GetBattleStat(BattleStatType _statType)
         => GetString("BATTLESTAT_" + _statType.ToString().ToUpper());

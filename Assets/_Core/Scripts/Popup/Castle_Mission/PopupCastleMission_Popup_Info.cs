@@ -48,8 +48,8 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
             var coreStat = m_missionData.dbData.statType;
             int coreStatMax = m_missionData.coreStatMax;
 
-            var myHero = DataManager.userInfo.myHero.Where(x => DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1)
-                .OrderByDescending(x => x.resultCoreStat[coreStat]);
+            var myHero = DataManager.userInfo.myHero.Where(x => DataManager.castle.mission.GetMissionIdxBatchHero(x.key) == -1).ToList()
+                .SortByDescending(x => x.resultCoreStat[coreStat]);
 
             int totalCoreStat = 0;
 

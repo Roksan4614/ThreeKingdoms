@@ -131,7 +131,9 @@ public class CharacterComponent : TargetComponent
             isLive == true &&
             ControllerManager.instance.IsControll(this) == false)
         {
-            move.MoveTarget(_attacker, true);
+            if (m_stateType != CharacterStateType.Battle)
+                TeamManager.instance.SetState(CharacterStateType.Battle);
+            //move.MoveTarget(_attacker, true);
         }
 
         if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE) == false)
@@ -141,11 +143,12 @@ public class CharacterComponent : TargetComponent
             {
                 m_stat.health = 0;
                 m_state?.Stop();
+
                 anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
 
                 m_element.collider.enabled = false;
                 StopAllCoroutines();
-                target.RemoveAll();
+                //target.RemoveAll();
             }
 
             Signal.instance.UpdateHP.Emit(this);
@@ -159,7 +162,7 @@ public class CharacterComponent : TargetComponent
         if (_isSetState)
             SetState(TeamManager.instance.teamState);
 
-        target.RemoveAll();
+        //target.RemoveAll();
         move.MoveStop();
         attack.ResetFX();
 

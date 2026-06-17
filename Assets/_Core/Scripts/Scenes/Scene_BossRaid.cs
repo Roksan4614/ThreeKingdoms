@@ -23,6 +23,8 @@ public class Scene_BossRaid : SceneBase
         TeamManager.instance.StartStage();
         TeamManager.instance.StartPhase(false);
 
+        StageManager.instance.SetState(CharacterStateType.Battle);
+
         ControllerManager.instance.SetSwitch(true);
         ControllerManager.instance.SlotStartStage();
 

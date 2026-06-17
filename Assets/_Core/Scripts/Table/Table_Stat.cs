@@ -149,6 +149,12 @@ public struct TableStatData
         set => attack_power = Math.Max(1, value);
     }
 
+    public float defenceValue
+    {
+        get => defence;
+        set => defence = value;
+    }
+
     public float attackSpeed
     {
         get => attack_speed;

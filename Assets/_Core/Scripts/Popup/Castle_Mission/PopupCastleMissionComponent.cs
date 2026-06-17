@@ -98,7 +98,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
         var missionList = DataManager.castle.mission.data.Where(x => (x.tickStart == 0) == (_isRunning == false)).ToArray();
 
         if (_isRunning)
-            missionList = missionList.OrderByDescending(x => x.tickEnd < Utils.GetUTC().Ticks).ToArray();
+            missionList = missionList.SortByDescending(x => x.tickEnd < Utils.GetUTC().Ticks);
 
         int i = 0;
         for (; i < missionList.Length; i++)

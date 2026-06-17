@@ -502,13 +502,12 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             .Select((_data, _index) => new { _data, _index })
             .ToDictionary(x => x._data.key, x => x._index);
 
-        m_itemList = m_itemList.OrderBy(x =>
-        {
-            string key = x.data.key;
-            int result = orderMap.ContainsKey(key) ? orderMap[key] : int.MaxValue;
-            return result;
-        }
-            ).ToList();
+        m_itemList = m_itemList.SortBy(x =>
+            {
+                string key = x.data.key;
+                int result = orderMap.ContainsKey(key) ? orderMap[key] : int.MaxValue;
+                return result;
+            });
 
         for (int i = m_itemList.Count - 1; i > -1; i--)
             m_itemList[i].transform.SetAsFirstSibling();

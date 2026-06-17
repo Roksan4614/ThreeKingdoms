@@ -27,13 +27,17 @@ public class Character_Enemy : CharacterComponent
         SetFaction(FactionType.Enemy);
     }
 
-    public void SetBuffStat(float _percent)
+    public void SetBuffStat(float _percent, bool _isAttackPower = true, bool _isHealth = true, bool _isDefence = true)
     {
-        m_stat.attackPower *= _percent;
-        m_stat.health = m_stat.healthMax = m_stat.healthMax * _percent;
+        if (_isAttackPower)
+            m_stat.attackPower *= _percent;
+        if (_isHealth)
+            m_stat.health = m_stat.healthMax = m_stat.healthMax * _percent;
+        if (_isDefence)
+            m_stat.defenceValue *= _percent;
     }
 
-    public void SetBossData(string _key = null)
+    public virtual void SetBossData(string _key = null)
     {
         if (_key.IsActive())
             m_stat = TableManager.statEnemy.GetStatData(_key);

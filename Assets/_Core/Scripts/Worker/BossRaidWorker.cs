@@ -20,6 +20,8 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
     public BossRaidType bossType => m_bossType;
     public bool isRunning => m_bossType > BossRaidType.NONE;
 
+    bool m_isSecondStep;
+    public bool isSecondStep => m_isSecondStep;
 
     public async UniTask InitializeAsync(BossRaidType _bossType)
     {
@@ -27,6 +29,8 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
             m_isDoing = true;
 
         await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
+
+        DataManager.bossRaid.StartBossRaid();
 
         m_bossType = _bossType;
         PopupManager.instance.CloseAll();

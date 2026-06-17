@@ -30,7 +30,7 @@ public class Data_Castle_Mission
         {
             m_idxMission = 1;
             m_data = new();
-            var dbTable = TableManager.castleMisson.list.OrderBy(x => Random.value).ToArray();
+            var dbTable = TableManager.castleMisson.list.SortBy(x => Random.value);
 
             for (int i = 0; i < 3; i++)
             {
@@ -38,7 +38,7 @@ public class Data_Castle_Mission
                 CastleMissionData newData = new()
                 {
                     idx = m_idxMission++,
-                    key = dbTable[UnityEngine.Random.Range(0, dbTable.Length)].key,
+                    key = dbTable[UnityEngine.Random.Range(0, dbTable.Count)].key,
                     grade = grade,
                     heroes = new()
                 };
@@ -48,7 +48,7 @@ public class Data_Castle_Mission
             }
         }
         else
-            m_idxMission = m_data.OrderBy(x => x.idx).Last().idx + 1;
+            m_idxMission = m_data.SortByDescending(x => x.idx)[0].idx + 1;
 
         //PlayerPrefs.DeleteKey(c_key + "_levelinfo");
 
@@ -85,10 +85,10 @@ public class Data_Castle_Mission
 
     public void AddNewMission(bool _isAutoSave, int _prevNumber)
     {
-        var newMission = TableManager.castleMisson.list.Where(x => m_data.Any(x => x.key.Equals(x.key) == false)).OrderBy(x => Random.value).FirstOrDefault();
+        var newMission = TableManager.castleMisson.list.Where(x => m_data.Any(x => x.key.Equals(x.key) == false)).ToList().SortBy(x => Random.value)[0];
 
         if (newMission.isActive == false)
-            newMission = TableManager.castleMisson.list.OrderBy(x => Random.value).FirstOrDefault();
+            newMission = TableManager.castleMisson.list.RandomFirst();
 
         var grade = GradeType.NONE + 1 + Random.Range(0, 3) * 2;
         CastleMissionData newData = new()

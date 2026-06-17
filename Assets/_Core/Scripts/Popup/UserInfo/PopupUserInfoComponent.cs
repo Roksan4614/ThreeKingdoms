@@ -103,5 +103,5 @@ public struct UserInfoData
     public List<HeroInfoData> batchHeroes;
     public List<string> treasures;
 
-    public string regionName => TableManager.stringTable.GetRegionType(region);
+    public string regionName => TableManager.stringTable.GetRegionType(region, true);
 }

@@ -58,7 +58,7 @@ public class Data_UserInfo
     public void SaveData()
     {
         if (m_element.myHero.Count > 1)
-            m_element.myHero = m_element.myHero.OrderByDescending(x => x.isMain).ToList();
+            m_element.myHero = m_element.myHero.SortByDescending(x => x.isMain);
 
         PPWorker.Set(PlayerPrefsType.USER_DATA, m_element);
     }
@@ -144,7 +144,7 @@ public class Data_UserInfo
 
         // 보유한걸 위로 올려주자
         if (_isWithNotMine == true)
-            lstNotBatch = lstNotBatch.OrderByDescending(x => x.isMine).ToList();
+            lstNotBatch = lstNotBatch.SortByDescending(x => x.isMine);
 
         result.AddRange(lstNotBatch);
 
@@ -216,14 +216,14 @@ public class Data_UserInfo
             .Select((_item, _idx) => new { _item.key, _idx })
             .ToDictionary(x => x.key, x => x._idx);
 
-        m_element.myHero = m_element.myHero.OrderBy(x =>
+        m_element.myHero = m_element.myHero.SortBy(x =>
         {
             if (indexMap.TryGetValue(x.key, out int index))
             {
                 return index;
             }
             return int.MaxValue;
-        }).ToList();
+        });
 
         SaveData();
     }

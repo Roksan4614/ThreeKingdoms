@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6182821017471498839}
-  - component: {fileID: 1080572775049398487}
   - component: {fileID: -638875615084983825}
+  - component: {fileID: 6472985713529349175}
   m_Layer: 0
   m_Name: Boss_Zhangjue
   m_TagString: Untagged
@@ -34,46 +34,6 @@ Transform:
   - {fileID: 1875413610791200785}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1080572775049398487
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5321107220624196040}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65bf6a8a371bc1745bc6f4ea9f86f27c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_sortingGroup: {fileID: 1306652750154072652}
-  m_canvas: {fileID: 1844631069813262495}
-  m_stat:
-    key: 
-  m_faction: 0
-  m_stateType: 0
-  m_element:
-    m_panel: {fileID: 3560643808921088407}
-    m_rig: {fileID: -638875615084983825}
-    m_animator: {fileID: 7271813618393996605}
-    m_effect_canvas: {fileID: 3417134082813307022}
-    m_effect_renderer: {fileID: 8712913464254431943}
-    m_cameraPos: {fileID: 3980539653630533220}
-    m_skillRage: {fileID: 0}
-    m_collider: {fileID: 5794771202197673162}
-    m_txtTalk: {fileID: 7322664580016903976}
-    m_animationClipData:
-      attack: {fileID: 7400000, guid: 22b3407d714a90c4faca359933ee07d9, type: 2}
-      attack_move: {fileID: 0}
-      skill: {fileID: 0}
-    partsRenders:
-    - {fileID: 1520895847076009533}
-    - {fileID: 6451110362788914327}
-    - {fileID: 3040379647822775204}
-    colorParts:
-    - {r: 1, g: 1, b: 1, a: 1}
-    - {r: 1, g: 1, b: 1, a: 1}
-    - {r: 1, g: 1, b: 1, a: 1}
 --- !u!50 &-638875615084983825
 Rigidbody2D:
   serializedVersion: 5
@@ -101,6 +61,46 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &6472985713529349175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5321107220624196040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ef5a3f4cd1e4a545a8b4da51c6beca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Character_Enemy_Boss
+  m_sortingGroup: {fileID: 1306652750154072652}
+  m_canvas: {fileID: 1844631069813262495}
+  m_stat:
+    key: 
+  m_faction: 0
+  m_stateType: 0
+  m_element:
+    m_panel: {fileID: 3560643808921088407}
+    m_rig: {fileID: -638875615084983825}
+    m_animator: {fileID: 7271813618393996605}
+    m_effect_canvas: {fileID: 3417134082813307022}
+    m_effect_renderer: {fileID: 8712913464254431943}
+    m_cameraPos: {fileID: 3980539653630533220}
+    m_skillRage: {fileID: 0}
+    m_collider: {fileID: 5794771202197673162}
+    m_txtTalk: {fileID: 7322664580016903976}
+    m_animationClipData:
+      attack: {fileID: 0}
+      attack_move: {fileID: 0}
+      skill: {fileID: 0}
+    partsRenders:
+    - {fileID: 1520895847076009533}
+    - {fileID: 6451110362788914327}
+    - {fileID: 3040379647822775204}
+    colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &11561660513192953
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -268,7 +268,7 @@ PrefabInstance:
     - target: {fileID: 8860257806905419174, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_owner
       value: 
-      objectReference: {fileID: 1080572775049398487}
+      objectReference: {fileID: 6472985713529349175}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 2692883751194285822, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

@@ -107,8 +107,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
                     backs = _members.Where(x => x.info.classType == HeroClassType.Archer).ToList();
 
                 character = backs.Count > 0
-                    ? backs.OrderByDescending(x => x.stat.attackPower).First()
-                    : _members.OrderBy(x => x.stat.healthMax).First();
+                    ? backs.SortByDescending(x => x.stat.attackPower)[0]
+                    : _members.SortBy(x => x.stat.healthMax)[0];
 
                 m_member.Add(TeamPositionType.Back, character);
             }
@@ -120,7 +120,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
                 if (fronts.Count == 0)
                     fronts = _members;
 
-                character = fronts.OrderByDescending(x => x.stat.health).First();
+                character = fronts.SortByDescending(x => x.stat.health)[0];
 
                 m_member.Add(TeamPositionType.Front, character);
             }
@@ -154,7 +154,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         StartStage();
 
-        teamState = CharacterStateType.Wait;
+        SetState(CharacterStateType.Wait);
         foreach (var member in m_member.Values)
             member.Respawn();
         heroInfo.StartStage();
@@ -178,7 +178,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         RepositionToMain();
 
-        teamState = CharacterStateType.SearchEnemy;
+        SetState(CharacterStateType.SearchEnemy);
         foreach (var member in m_member.Values)
         {
             if (member.isLive == false)

@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -252,4 +253,38 @@ public static class Utils
     //    return remain;
     //}
 
+    public static string[] GetRandomNicknameArray(int _count = 100)
+    {
+        var first = new List<string>
+            {
+                "망각의", "비명의", "저주받은", "유령의", "심해의",
+                "핏빛의", "환각의", "악마의", "안개의", "거미의"
+            };
+
+        var last = new List<string>
+            {
+                "속삭임", "열쇠", "제단", "인형", "거울",
+                "일기", "독약", "까마귀", "가면", "발자국"
+            };
+
+        List<string> result = new();
+        for( int i = 0; i <first.Count; i++)
+        {
+            for (int j = 0; j < last.Count; j++)
+                result.Add(first[i] + last[j]);
+        }
+
+        result.SortBy(x => UnityEngine.Random.value);
+
+        for (int i = result.Count - 1; i > 0; i--)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, i + 1);
+            string temp = result[i];
+            result[i] = result[randomIndex];
+            result[randomIndex] = temp;
+        }
+
+        return result.Take(_count).ToArray();
+
+    }
 }

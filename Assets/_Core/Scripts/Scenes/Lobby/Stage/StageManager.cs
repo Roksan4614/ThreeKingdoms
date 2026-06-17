@@ -339,7 +339,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
         get
         {
             var enemies = liveEnemyList
-                .OrderBy(_x => (_x.transform.position - TeamManager.instance.mainHero.transform.position).sqrMagnitude).Take(4).ToList();
+                .SortBy(_x => (_x.transform.position - TeamManager.instance.mainHero.transform.position).sqrMagnitude).Take(4).ToList();
 
             Vector3 sum = Vector3.zero;
 

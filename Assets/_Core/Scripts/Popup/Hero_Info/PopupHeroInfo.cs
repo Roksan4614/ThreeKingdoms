@@ -108,7 +108,7 @@ public class PopupHeroInfo : BasePopupComponent
         m_element.txtName.text = $"{TableManager.stringHero.GetString("NAME_" + key)}<size=80%><color=#888888> {TableManager.stringHero.GetString("COURTESY_" + key)}";
         m_element.txtDescTalk.text = _data.talk;
         m_element.txtEnchantLevel.text = _isJustWatch ? "" : $"(+{_data.enchantLevel})";
-        m_element.txtGrade.text = $"등급:_{_data.gradeClass}";
+        SetHeroInfoText($"등급_:_{_data.gradeClass}");
 
         // 고유 능력치
         SetHeroInfo_CoreStat(m_heroInfoData);
@@ -171,7 +171,7 @@ public class PopupHeroInfo : BasePopupComponent
                 return;
             }
 
-            m_element.txtGrade.text = $"등급:_<color=#BA0700>{heroInfoData.gradeClass}";
+            SetHeroInfoText($"등급_:_<color=#BA0700>{heroInfoData.gradeClass}");
         }
         else
         {
@@ -203,7 +203,7 @@ public class PopupHeroInfo : BasePopupComponent
         SetHeroInfo_CoreStat(m_heroInfoData);
 
         if (_isUpgrade)
-            m_element.txtGrade.text = $"등급:_{m_heroInfoData.gradeClass}";
+            SetHeroInfoText($"등급_:_{m_heroInfoData.gradeClass}");
         else
             m_element.txtEnchantLevel.text = $"(+{m_heroInfoData.enchantLevel})";
     }
@@ -217,7 +217,13 @@ public class PopupHeroInfo : BasePopupComponent
         SetHeroInfo_CoreStat(heroInfoData, true);
         m_element.statBattle.SetCompareData(heroInfoData);
 
-        m_element.txtGrade.text = $"등급:_<color=#BA0700>{heroInfoData.gradeClass}";
+        SetHeroInfoText($"등급_:_<color=#BA0700>{heroInfoData.gradeClass}");
+    }
+
+    void SetHeroInfoText(string _gradeInfo)
+    {
+        m_element.txtInfo.text = _gradeInfo;
+        m_element.txtInfo.text += $"\n소속_:_{TableManager.stringTable.GetRegionType(m_heroInfoData.regionType, true)}";
     }
 
     public async UniTask AutoCloseAsync(float _duration)
@@ -264,7 +270,7 @@ public class PopupHeroInfo : BasePopupComponent
 
         await Utils.SetActivePunchAsync(m_element.panel, false, false);
 
-        if( isDontDestroy == true)
+        if (isDontDestroy == true)
             gameObject.SetActive(false);
         else
             Destroy(gameObject);
@@ -284,7 +290,7 @@ public class PopupHeroInfo : BasePopupComponent
         public Button btnStatus;
 
         public TextMeshProUGUI txtName;
-        public TextMeshProUGUI txtGrade;
+        public TextMeshProUGUI txtInfo;
         public TextMeshProUGUI txtEnchantLevel;
         public TextMeshProUGUI txtDescTalk;
 
@@ -313,7 +319,7 @@ public class PopupHeroInfo : BasePopupComponent
             var frontPanel = panel.Find("FrontPanel");
             btnStatus = frontPanel.GetComponent<Button>("btn_status");
             txtName = frontPanel.GetComponent<TextMeshProUGUI>("txt_name");
-            txtGrade = frontPanel.GetComponent<TextMeshProUGUI>("txt_class");
+            txtInfo = frontPanel.GetComponent<TextMeshProUGUI>("txt_info");
             txtEnchantLevel = frontPanel.GetComponent<TextMeshProUGUI>("txt_level");
             txtDescTalk = frontPanel.GetComponent<TextMeshProUGUI>("txt_desc");
 

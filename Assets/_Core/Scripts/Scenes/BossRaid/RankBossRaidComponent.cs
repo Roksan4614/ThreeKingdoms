@@ -86,6 +86,11 @@ public class RankBossRaidComponent : Singleton<RankBossRaidComponent>, IValidata
         m_tweenMovePanel = rt.DOAnchorPosY(target, _duration);
     }
 
+    public void UpdateRanker()
+    {
+
+    }
+
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 

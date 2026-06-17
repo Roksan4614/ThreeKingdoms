@@ -147,7 +147,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
         {
             for (int i = 0; i < 3; i++)
-                userInfo.treasures.Add(TableManager.treasure.list.Where(x => x.isActive).OrderBy(x => Random.value).First().key);
+                userInfo.treasures.Add(TableManager.treasure.list.Where(x => x.isActive).ToArray().RandomFirst().key);
 
             if (m_dbBatch.ContainsKey(userInfo.uid))
                 userInfo.batchHeroes = m_dbBatch[userInfo.uid];
@@ -156,9 +156,9 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
                 List<HeroPositionType> dbPosition = new();
                 for (var i = HeroPositionType.NONE + 1; i < HeroPositionType.MAX; i++)
                     dbPosition.Add(i);
-                dbPosition = dbPosition.OrderBy(x => Random.value).ToList();
+                dbPosition = dbPosition.SortBy(x => Random.value);
 
-                var dbHero = TableManager.hero.list.OrderBy(x => Random.value).ToList();
+                var dbHero = TableManager.hero.list.SortBy(x => Random.value).ToList();
                 for (int i = 0; i < 4; i++)
                 {
                     var key = dbHero[i].key;

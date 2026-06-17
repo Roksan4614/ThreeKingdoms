@@ -71,7 +71,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
         // 기타아이템
         {
-            var db = dbRewards.OrderByDescending(x => x.unlock_pct)
+            var db = dbRewards.SortByDescending(x => x.unlock_pct)
                 .Where(x => x.unlock_pct > 0);
 
             //진행중이라면

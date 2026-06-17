@@ -14,6 +14,9 @@ public class Data_BossRaid
     BossRaidRankerData m_rankPrevRaid = new();
     public BossRaidRankerData rankPrevRaid => m_rankPrevRaid;
 
+    List<BossRaidRankerUserData> m_rankNow;
+    public IReadOnlyList<BossRaidRankerUserData> rankNow => m_rankNow;
+
     const string c_key = "pp_bossraid";
 
     public async UniTask InitializeAsync()
@@ -48,7 +51,7 @@ public class Data_BossRaid
             userData.nickname = isMine ? DataManager.userInfo.uid.ToString() : $"Nickname_{userData.prevRank:00#}";
             userData.point = UnityEngine.Random.Range(100, 10000);
             userData.power = UnityEngine.Random.Range(1000, 3000);
-            userData.skin = TableManager.hero.list.OrderBy(x => UnityEngine.Random.value).First().key;
+            userData.skin = TableManager.hero.list.RandomFirst().key;
 
             m_rankPoint.ranker.Add(userData);
 
@@ -56,7 +59,7 @@ public class Data_BossRaid
                 m_rankPoint.my = userData;
         }
 
-        m_rankPoint.ranker = m_rankPoint.ranker.OrderByDescending(x => x.point).ToList();
+        m_rankPoint.ranker = m_rankPoint.ranker.SortByDescending(x => x.point);
 
         for (int i = 0; i < m_rankPoint.ranker.Count; i++)
         {
@@ -80,7 +83,7 @@ public class Data_BossRaid
             userData.nickname = isMine ? DataManager.userInfo.uid.ToString() : $"Nickname_{userData.prevRank:00#}";
             userData.point = UnityEngine.Random.Range(1000, 1000000);
             userData.power = UnityEngine.Random.Range(1000, 3000);
-            userData.skin = TableManager.hero.list.OrderBy(x => UnityEngine.Random.value).First().key;
+            userData.skin = TableManager.hero.list.RandomFirst().key;
 
             m_rankPrevRaid.ranker.Add(userData);
 
@@ -88,7 +91,7 @@ public class Data_BossRaid
                 m_rankPrevRaid.my = userData;
         }
 
-        m_rankPrevRaid.ranker = m_rankPrevRaid.ranker.OrderByDescending(x => x.point).ToList();
+        m_rankPrevRaid.ranker = m_rankPrevRaid.ranker.SortByDescending(x => x.point);
 
         for (int i = 0; i < m_rankPrevRaid.ranker.Count; i++)
         {
@@ -101,6 +104,22 @@ public class Data_BossRaid
         }
     }
 
+    public void StartBossRaid()
+    {
+        m_data.nowGrade = (GradeType)UnityEngine.Random.Range((int)m_data.gradeMin, (int)m_data.gradeMax + 1);
+        SaveData();
+    }
+
+    public async UniTask TestAutoAttackDamageAsync()
+    {
+        //m_rankNow.OrderByDescending
+    }
+
+    public void FinishedBossRaid()
+    {
+        m_rankNow = null;
+    }
+
     void SaveData()
         => PPWorker.Set(c_key, m_data);
 
@@ -111,6 +130,7 @@ public class Data_BossRaid
         public string keyBoss;
 
         public GradeType prevGrade;
+        public GradeType nowGrade;
 
         public GradeType gradeMin;
         public GradeType gradeMax;
