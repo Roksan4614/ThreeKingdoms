@@ -33,6 +33,6 @@ public class Scene_Field : SceneBase
         comp.SetHeroData(mainHeroData.key);
 
         Signal.instance.ConnectMainHero.Emit(comp);
-        ControllerManager.instance.isSwitch = true;
+        ControllerManager.instance.SetSwitch(true);
     }
 }

@@ -64,9 +64,17 @@ public class Controller_Skill : Controller_Attack
         }
     }
 
+    public override void OnPointerDown(PointerEventData _eventData)
+    {
+        if (isReady == false)
+            _eventData.pointerDrag = null;
+        else
+            base.OnPointerDown(_eventData);
+    }
+
     public override void OnDrag(PointerEventData _eventData)
     {
-        if (m_hero.isLive == false || m_pointer == null)
+        if (m_hero.isLive == false || m_pointer == null || m_isPointerDown == false)
             return;
 
         if (m_pointerId != _eventData.pointerId)
@@ -97,7 +105,6 @@ public class Controller_Skill : Controller_Attack
     }
     public override void OnPointerUp(PointerEventData _eventData)
     {
-        IngameLog.Add($"OnPointerUp: {_eventData.pointerId}: myID: {m_pointerId}");
         if (m_pointerId != _eventData.pointerId)
             return;
 

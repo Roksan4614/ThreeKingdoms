@@ -39,7 +39,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         SetActiveDimm(false, false);
 
         //시작과 동시에 그냥 생성해주자
-        InstantiateAsync();
+        InstantiateAsync().Forget();
 
         Signal.instance.CloseLobbyScreen.connect = CloseScreen;
     }
@@ -55,7 +55,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
 
         m_curScreen = LobbyScreenType.None;
 
-        ControllerManager.instance.isSwitch = true;
+        ControllerManager.instance.SetSwitch(true);
         Signal.instance.CloseLobbyScreenFinished.Emit();
     }
 
@@ -79,7 +79,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
 
     public async UniTask OpenScreenAsync(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback)
     {
-        ControllerManager.instance.isSwitch = true;
+        ControllerManager.instance.SetSwitch(true);
 
         if (m_doing_ActiveDimm == true)
         {
@@ -130,7 +130,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         m_dicScreen[_screenType].Open(m_curScreen);
         m_curScreen = _screenType;
 
-        ControllerManager.instance.isSwitch = false;
+        ControllerManager.instance.SetSwitch(false);
         _callback(m_dicScreen[_screenType]);
     }
 

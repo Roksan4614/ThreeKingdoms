@@ -26,7 +26,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
         if (m_isDoing == false)
             m_isDoing = true;
 
-        await PopupManager.instance.ShowDimmAsync(true);
+        await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
 
         m_bossType = _bossType;
         PopupManager.instance.CloseAll();
@@ -45,69 +45,69 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
     {
         m_bossType = BossRaidType.NONE;
 
-        await PopupManager.instance.ShowDimmAsync(true);
+        await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
         await UniTask.WaitForEndOfFrame();
         AddressableManager.instance.LoadScene("02_Lobby");
     }
 
-    async UniTask<bool> StartAsync(BossRaidType _bossType)
-    {
-        string key = $"BossRaid/BossRaid_{_bossType}.prefab";
+    //async UniTask<bool> StartAsync(BossRaidType _bossType)
+    //{
+    //    string key = $"BossRaid/BossRaid_{_bossType}.prefab";
 
-        if (await ConnectAsync() == false)
-            return false;
+    //    if (await ConnectAsync() == false)
+    //        return false;
 
-        await AddressableManager.instance.LoadAssetAsync<GameObject>(
-            _result =>
-            {
-                if (_result.Count > 0)
-                    m_handle = _result.First().Value;
-            }, null, key);
+    //    await AddressableManager.instance.LoadAssetAsync<GameObject>(
+    //        _result =>
+    //        {
+    //            if (_result.Count > 0)
+    //                m_handle = _result.First().Value;
+    //        }, null, key);
 
-        if (m_handle.IsValid() == false)
-            return false;
+    //    if (m_handle.IsValid() == false)
+    //        return false;
 
-        var bossRaid = Instantiate(m_handle.Result, StageManager.instance.transform).transform;
-        var boss = bossRaid.Find("Boss").GetChild(0).GetComponent<Character_Enemy>();
+    //    var bossRaid = Instantiate(m_handle.Result, StageManager.instance.transform).transform;
+    //    var boss = bossRaid.Find("Boss").GetChild(0).GetComponent<Character_Enemy>();
 
-        if (boss != null)
-        {
-            // º¸½º ½ºÅÈ ³Ö¾îÁà¾ß ÇØ
-            boss.SetBossData("");
+    //    if (boss != null)
+    //    {
+    //        // º¸½º ½ºÅÈ ³Ö¾îÁà¾ß ÇØ
+    //        boss.SetBossData("");
 
-            StageManager.instance.RestartStage(false);
-            MapManager.instance.FadeDimm(false, 0);
+    //        StageManager.instance.RestartStage(false);
+    //        MapManager.instance.FadeDimm(false, 0);
 
-            InfoStageComponent.instance.SetBossRaid(true);
+    //        InfoStageComponent.instance.SetBossRaid(true);
 
-            await PopupManager.instance.ShowDimmAsync(false);
+    //        await PopupManager.instance.ShowDimmAsync(false);
 
-            boss.move.MoveTarget(TeamManager.instance.GetNearestHero(boss.transform.position), true);
-            TeamManager.instance.MoveAttactTarget(boss);
+    //        boss.move.MoveTarget(TeamManager.instance.GetNearestHero(boss.transform.position), true);
+    //        TeamManager.instance.MoveAttactTarget(boss);
 
-            await UniTask.WaitUntil(() => boss.isLive == false);
+    //        await UniTask.WaitUntil(() => boss.isLive == false);
 
-            await OpenResultAsync();
+    //        await OpenResultAsync();
 
-            await UniTask.WaitUntil(() => ControllerManager.isClickDown);
+    //        await UniTask.WaitUntil(() => ControllerManager.isClickDown);
 
-            await PopupManager.instance.ShowDimmAsync(true, _duration: 1f, _durationWait: 0f);
+    //        await PopupManager.instance.ShowDimmAsync(true, _duration: 1f, _durationWait: 0f);
 
-            Destroy(bossRaid.gameObject);
-            m_handle.Release();
-            InfoStageComponent.instance.SetBossRaid(false);
-            StageManager.instance.RestartStage();
+    //        Destroy(bossRaid.gameObject);
+    //        m_handle.Release();
+    //        InfoStageComponent.instance.SetBossRaid(false);
+    //        StageManager.instance.RestartStage();
 
-            return true;
-        }
-        else
-        {
-            Destroy(bossRaid.gameObject);
-            m_handle.Release();
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        Destroy(bossRaid.gameObject);
+    //        m_handle.Release();
 
-            return false;
-        }
-    }
+    //        return false;
+    //    }
+    //}
 
     async UniTask<bool> ConnectAsync()
     {

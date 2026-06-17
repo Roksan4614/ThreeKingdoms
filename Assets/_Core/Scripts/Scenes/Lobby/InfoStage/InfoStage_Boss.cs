@@ -18,7 +18,11 @@ public class InfoStage_Boss : MonoBehaviour, IValidatable
         gameObject.SetActive(true);
         rt.DOPunchScale(Vector3.one * 0.1f, 0.2f);
 
-        m_element.txtName.text = "";
+        // TODO
+        if (BossRaidWorker.instance.isRunning)
+            m_element.txtName.text = "여포<color=#6D6D6D><size=80%> 최강무장</size></color>";
+        else
+            m_element.txtName.text = "";
 
         m_element.rtBar.anchoredPosition = Vector2.zero;
     }

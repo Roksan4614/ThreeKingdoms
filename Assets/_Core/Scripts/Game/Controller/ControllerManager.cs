@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -22,7 +23,10 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     bool m_isPointerDown = false;
     int m_pointerId = -1;
 
-    public bool isSwitch { get; set; } = false;
+    bool m_isSwitch;
+    public bool isSwitch => m_isSwitch;
+    public void SetSwitch(bool _isSwitch) => m_isSwitch = _isSwitch;
+
     public bool isDoing => m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
     public bool isKeyboardMode => m_isKeyboardMode;
 
@@ -62,11 +66,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         m_element.btnCall.onClick.AddListener(() => OnButton_Call());
 
         Signal.instance.ConnectMainHero.connectLambda = new(this, _mainHero => m_mainHero = _mainHero);
-        Signal.instance.StartStage.connectLambda = new(this, _ =>
-        {
-            TimerCallAsync().Forget();
-            DashTimerStartAsync().Forget();
-        });
+        Signal.instance.StartStage.connectLambda = new(this, _ => SlotStartStage());
 
         Signal.instance.ActiveHUD.connectLambda = new(this, _isActive =>
         {
@@ -87,6 +87,13 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             m_ctsDash.Cancel();
             m_ctsDash.Dispose();
             m_ctsDash = null;
+        }
+
+        if (m_ctsCall != null)
+        {
+            m_ctsCall.Cancel();
+            m_ctsCall.Dispose();
+            m_ctsCall = null;
         }
     }
 
@@ -255,10 +262,25 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         }
     }
 
+    CancellationTokenSource m_ctsCall;
+    public void SlotStartStage()
+    {
+        TimerCallAsync().Forget();
+        DashTimerStartAsync().Forget();
+    }
+
     async UniTask TimerCallAsync()
     {
         if (m_mainHero.isLive == false)
             return;
+
+        if (m_ctsCall != null)
+        {
+            m_ctsCall.Cancel();
+            m_ctsCall.Dispose();
+        }
+        m_ctsCall = new();
+        var token = m_ctsCall.Token;
 
         // TODO: 어딘가에서 값을 가져와야 하지 않을까?
         float durationCall = 5f;
@@ -276,7 +298,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             float progress = (Time.time - startTime) / (endTime - startTime);
             m_element.imgDashTimer.fillAmount = 1 - progress;
 
-            await UniTask.Yield(cancellationToken: destroyCancellationToken);
+            await UniTask.Yield(cancellationToken: token);
         }
 
         m_element.imgCallTimer.gameObject.SetActive(false);
@@ -324,6 +346,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         }
 
         m_isPointerDown = true;
+        m_pointerId = _eventData.pointerId;
 
         // 키보드 모드일 때 클릭은 공격
         if (m_isKeyboardMode)
@@ -341,8 +364,6 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         // 모바일 때만 들어올듯
         // 핑거 아이디 저장해둬야 해
         RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform, _eventData.position, _eventData.pressEventCamera, out Vector2 startPos);
-
-        m_pointerId = _eventData.pointerId;
 
         m_element.pad.anchoredPosition = startPos;
         m_element.pad.gameObject.SetActive(true);
