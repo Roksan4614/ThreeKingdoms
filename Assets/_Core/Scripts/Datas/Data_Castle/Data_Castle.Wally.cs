@@ -14,14 +14,7 @@ public partial class Data_Castle
     public bool m_isUISpawn;
 
     void Release_CTSWally()
-    {
-        if (m_ctsWally != null)
-        {
-            m_ctsWally.Cancel();
-            m_ctsWally.Dispose();
-            m_ctsWally = null;
-        }
-    }
+        => m_ctsWally = m_ctsWally.Release();
 
     public void SetWallyUISpawn(bool _isSpawn)
         => m_isUISpawn = _isSpawn;

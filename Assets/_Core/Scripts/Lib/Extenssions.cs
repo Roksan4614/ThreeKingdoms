@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -245,6 +246,9 @@ public static class Extenssions
             if (_ts.TotalMinutes < 1)
             {
                 result = _ts.Seconds >= 10 ? _ts.Seconds.ToString() : _ts.TotalSeconds.ToString("0.00");
+
+                if (_isDigitS == true)
+                    result += "s";
             }
             else if (_isStartMinute)
                 result = $"{Mathf.FloorToInt((float)_ts.TotalMinutes):00}:{_ts.ToString(@"ss")}";
@@ -253,9 +257,6 @@ public static class Extenssions
 
             if (_mspace > -1)
                 result = Utils.MSpace(result, _mspace);
-
-            if (_isDigitS == true && _ts.TotalMinutes < 1)
-                result += "s";
         }
 
         return result;
@@ -322,4 +323,15 @@ public static class Extenssions
 
 
     #endregion SORTBY
+
+    public static CancellationTokenSource Release(this CancellationTokenSource _cts, bool _isNew = false)
+    {
+        if (_cts != null)
+        {
+            _cts.Cancel();
+            _cts.Dispose();
+        }
+
+        return _isNew ? new() : null;
+    }
 }

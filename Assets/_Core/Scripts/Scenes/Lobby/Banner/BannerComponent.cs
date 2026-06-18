@@ -1,19 +1,10 @@
-using Cysharp.Threading.Tasks;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class BannerComponent : Singleton<BannerComponent>, IValidatable
 {
     protected override void OnAwake()
     {
-        //m_element.btnBossRaid.onClick.AddListener(() => BossRaidWorker.instance.Initialize(BossRaidWorker.BossRaidType.LuBu).Forget());
-        m_element.btnBossRaid.onClick.AddListener(() =>
-        {
-            PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid).Forget();
-        });
-
         Signal.instance.ActiveHUD.connectLambda = new(this, _isActive =>
         {
             for (int i = 0; i < transform.childCount; i++)
@@ -30,12 +21,8 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     [Serializable]
     struct ElementData
     {
-        public ButtonHelper btnBossRaid;
         public void Initialize(Transform _transform)
         {
-            var right = _transform.Find("Right");
-
-            btnBossRaid = right.GetComponent<ButtonHelper>("btn_bossRaid");
         }
     }
     #endregion VALIDATA

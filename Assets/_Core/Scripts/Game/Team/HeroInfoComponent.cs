@@ -25,9 +25,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
     }
 
     private void OnDestroy()
-    {
-        CTSRelease_CooldownSkill();
-    }
+        => m_ctsCooldownSkill = m_ctsCooldownSkill.Release();
 
     public bool isActive => m_hero != null;
 
@@ -98,8 +96,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
         StopAllCoroutines();
 
-        CTSRelease_CooldownSkill();
-        //m_coCooltimeSkill = null;
+        m_ctsCooldownSkill = m_ctsCooldownSkill.Release();
         StopRespawn();
 
         m_hero = null;
@@ -121,8 +118,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public void StopRespawn()
     {
-        if (m_ctsRespawn != null)
-            m_ctsRespawn.Cancel();
+        m_ctsRespawn = m_ctsRespawn.Release();
 
         m_element.txtRespawnTimer.text = "";
         m_element.imgRespawn.gameObject.SetActive(false);
@@ -143,12 +139,8 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
             if (TeamManager.instance.IsAllDie() == false || BossRaidWorker.instance.isRunning == true)
             {
                 bar.DOAnchorPosX(targetX, 0.1f);
-                if (m_ctsRespawn != null)
-                {
-                    m_ctsRespawn.Cancel();
-                    m_ctsRespawn.Dispose();
-                }
-                m_ctsRespawn = new();
+
+                m_ctsRespawn = m_ctsRespawn.Release(true);
                 RespawnAsync(bar, 30).Forget();
             }
         }
@@ -214,23 +206,12 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         m_cooltime_Revive.endTime -= (m_cooltime_Revive.endTime - Time.realtimeSinceStartup) * _percent;
     }
 
-    public void CTSRelease_CooldownSkill()
-    {
-        if (m_ctsCooldownSkill != null)
-        {
-            m_ctsCooldownSkill.Cancel();
-            m_ctsCooldownSkill.Dispose();
-            m_ctsCooldownSkill = null;
-        }
-    }
-
     CancellationTokenSource m_ctsCooldownSkill;
     StatusType m_statusSkill = StatusType.Wait;
 
     async UniTask CooldownSkillAsync()
     {
-        CTSRelease_CooldownSkill();
-        m_ctsCooldownSkill = new();
+        m_ctsCooldownSkill = m_ctsCooldownSkill.Release(true);
 
         m_element.objOnSkill.SetActive(false);
 

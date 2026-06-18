@@ -122,12 +122,7 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
 
     void StopChageBossPhase()
     {
-        if (m_ctsChangeBoss != null)
-        {
-            m_ctsChangeBoss.Cancel();
-            m_ctsChangeBoss.Dispose();
-            m_ctsChangeBoss = null;
-        }
+        m_ctsChangeBoss = m_ctsChangeBoss.Release();
 
         m_element.infoStage.element.cg.DOKill();
         m_element.rtIconBoss.DOKill();

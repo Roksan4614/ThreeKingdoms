@@ -23,6 +23,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     bool m_isPointerDown = false;
     int m_pointerId = -1;
 
+    float m_startPosY;
+
     bool m_isSwitch;
     public bool isSwitch => m_isSwitch;
     public void SetSwitch(bool _isSwitch) => m_isSwitch = _isSwitch;
@@ -32,6 +34,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     private void Start()
     {
+        m_startPosY = m_element.rt.offsetMin.y;
         m_element.pad.gameObject.SetActive(false);
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -82,19 +85,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     protected override void OnDestroy()
     {
-        if (m_ctsDash != null)
-        {
-            m_ctsDash.Cancel();
-            m_ctsDash.Dispose();
-            m_ctsDash = null;
-        }
-
-        if (m_ctsCall != null)
-        {
-            m_ctsCall.Cancel();
-            m_ctsCall.Dispose();
-            m_ctsCall = null;
-        }
+        m_ctsDash = m_ctsDash.Release();
+        m_ctsCall = m_ctsCall.Release();
     }
 
     void SlotUpdateTeamPosition()
@@ -274,12 +266,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         if (m_mainHero.isLive == false)
             return;
 
-        if (m_ctsCall != null)
-        {
-            m_ctsCall.Cancel();
-            m_ctsCall.Dispose();
-        }
-        m_ctsCall = new();
+        m_ctsCall = m_ctsCall.Release(true);
         var token = m_ctsCall.Token;
 
         // TODO: 어딘가에서 값을 가져와야 하지 않을까?
@@ -424,7 +411,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public void SetMoveActionArea(bool _isBottom, bool _isTween = true, float _duration = .2f)
     {
         var target = m_element.rt.offsetMin;
-        target.y = _isBottom ? 300 : 455;
+        target.y = m_startPosY - (_isBottom ? 400 : 0);
 
         DOTween.To(() => m_element.rt.offsetMin,
             _offsetMin => m_element.rt.offsetMin = _offsetMin,

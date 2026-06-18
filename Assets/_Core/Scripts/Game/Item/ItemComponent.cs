@@ -95,9 +95,15 @@ public class ItemComponent : MonoBehaviour, IValidatable
     public void SetActiveBadge(bool _isActive)
         => m_element.badge.SetActive(_isActive);
     public void SetActiveDimm(bool _isActive)
-        => m_element.dimm?.SetActive(_isActive);
+    {
+        if (m_element.dimm)
+            m_element.dimm.SetActive(_isActive);
+    }
     public void SetActiveRewardEffect(bool _isActive)
-        => m_element.rewardEffect?.SetActive(_isActive);
+    {
+        if (m_element.rewardEffect)
+            m_element.rewardEffect.SetActive(_isActive);
+    }
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

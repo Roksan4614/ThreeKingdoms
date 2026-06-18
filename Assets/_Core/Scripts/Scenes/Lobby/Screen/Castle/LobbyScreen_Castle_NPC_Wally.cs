@@ -91,12 +91,7 @@ public class LobbyScreen_Castle_NPC_Wally : MonoBehaviour, IValidatable, IPointe
 
     void Release_CTS()
     {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
+        m_cts = m_cts.Release();
         DataManager.castle.SetWallyUISpawn(false);
     }
 

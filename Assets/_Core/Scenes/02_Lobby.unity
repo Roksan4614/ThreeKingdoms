@@ -194,17 +194,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 24282914}
   m_CullTransparentMesh: 1
---- !u!114 &24349502 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4718911516802824731, guid: bd635ef9d6f85d647adf77ddd343037d, type: 3}
-  m_PrefabInstance: {fileID: 7801155589247914355}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08be4068aba223343ac6976ab55a83fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ButtonHelper
 --- !u!210 &41480484 stripped
 SortingGroup:
   m_CorrespondingSourceObject: {fileID: 9151736259838882691, guid: dd5c187bdc3f74c47868ab8013bdc250, type: 3}
@@ -2626,28 +2615,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 30986347979974387, guid: 04b92c70b798a1645807a3677c72a498, type: 3}
   m_PrefabInstance: {fileID: 1179084840}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1066474198 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2162568026644104339, guid: bd635ef9d6f85d647adf77ddd343037d, type: 3}
-  m_PrefabInstance: {fileID: 7801155589247914355}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
---- !u!114 &1066474199 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5902055501507143606, guid: bd635ef9d6f85d647adf77ddd343037d, type: 3}
-  m_PrefabInstance: {fileID: 7801155589247914355}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!114 &1071675834 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 221742378074418689, guid: 7e0d77c8bd228fe49b1a78b6eafb0421, type: 3}
@@ -2890,11 +2857,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Scene_Lobby
   m_elementBase:
     m_canvas: {fileID: 645891911}
-  m_element:
-    heroInfo: {fileID: 145997397}
-    btnAuto: {fileID: 24349502}
-    imgAuto: {fileID: 1066474199}
-    outline: {fileID: 1066474198}
 --- !u!224 &1330610317 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 22034825120153421, guid: 2c94f143a2a4fb2429c96b421f262249, type: 3}
@@ -3284,8 +3246,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a267ff67d978bd4eba5e583eb443c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BannerComponent
-  m_element:
-    btnBossRaid: {fileID: 9132504053173117884}
 --- !u!224 &1555282506 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3637611197112465913, guid: 49514849aada2274198a436e82ea2d28, type: 3}
@@ -4564,7 +4524,7 @@ GameObject:
   - component: {fileID: 677279086402711852}
   - component: {fileID: 4816660342913734403}
   m_Layer: 5
-  m_Name: txt_name
+  m_Name: txt_timer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4579,6 +4539,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5376828140319079960}
+  - component: {fileID: 9132504053173117885}
   - component: {fileID: 9132504053173117884}
   - component: {fileID: 9132504053173117883}
   - component: {fileID: 7420730599174236746}
@@ -4610,7 +4571,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TEST
+  m_text: "\uBBF8\uCD9C\uD604"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2998ed1f59a9fb548a0056a5b7846534, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: ac02337f2f1c8e245b0093af0b4a6773, type: 2}
@@ -6058,6 +6019,21 @@ MonoBehaviour:
   m_prevColorData:
     button: {r: 0, g: 0, b: 0, a: 0}
     text: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &9132504053173117885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4805605854258288517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ea6345bc5abd7047860be2b4eb77570, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Banner_BossRaid
+  m_element:
+    button: {fileID: 9132504053173117884}
+    txtTimer: {fileID: 4816660342913734403}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

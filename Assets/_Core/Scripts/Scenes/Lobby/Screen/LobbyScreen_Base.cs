@@ -32,9 +32,8 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 
     protected virtual void OnEnable()
     {
-        Release_CTS();
+        m_cts = m_cts.Release(true);
 
-        m_cts = new();
         Utils.WaitEscape(this, () =>
         {
             if (IsCloseScreen())
@@ -43,17 +42,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
     }
 
     protected virtual void OnDisable()
-        => Release_CTS();
-
-    void Release_CTS()
-    {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
-    }
+        => m_cts = m_cts.Release();
 
     protected virtual bool IsCloseScreen() => true;
 

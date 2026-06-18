@@ -22,12 +22,7 @@ public class HeroNavigationComponent : MonoBehaviour, IValidatable
     CancellationTokenSource m_ctsAutoSkill;
     async UniTask SetAutoUIAsync()
     {
-        if (m_ctsAutoSkill != null)
-        {
-            m_ctsAutoSkill.Cancel();
-            m_ctsAutoSkill.Dispose();
-            m_ctsAutoSkill = null;
-        }
+        m_ctsAutoSkill = m_ctsAutoSkill.Release();
 
         bool isAutoSkill = DataManager.option.isAutoSkill;
 

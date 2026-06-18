@@ -53,5 +53,7 @@ public class DataManager
 
             m_instance = null;
         }
+
+        bossRaid.ReleaseCTS();
     }
 }

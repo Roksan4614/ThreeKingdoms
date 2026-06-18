@@ -1,10 +1,11 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class InfoStage_Boss : MonoBehaviour, IValidatable
+public partial class InfoStage_Boss : MonoBehaviour, IValidatable
 {
     public RectTransform rt => (RectTransform)transform;
 
@@ -20,7 +21,7 @@ public class InfoStage_Boss : MonoBehaviour, IValidatable
 
         // TODO
         if (BossRaidWorker.instance.isRunning)
-            m_element.txtName.text = "여포<color=#6D6D6D><size=80%> 최강무장</size></color>";
+            StartBossRaidAsync().Forget();
         else
             m_element.txtName.text = "";
 

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -54,13 +55,13 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
     {
         Utils.SetActivePunch(m_element.panel, true);
 
-        var raidData = DataManager.bossRaid.data;
+        var dataRaid = DataManager.bossRaid.data;
 
-        m_element.txtDifficult.text = $"[{TableManager.stringTable.GetGradeType(raidData.gradeMin)}~{TableManager.stringTable.GetGradeType(raidData.gradeMax)}]";
+        m_element.txtDifficult.text = $"[{TableManager.stringTable.GetGradeType(dataRaid.gradeMin)}~{TableManager.stringTable.GetGradeType(dataRaid.gradeMax)}]";
 
         DoLoadBossCharacter().Forget();
 
-        OnUpdateRoundTimerAsync().Forget();
+        TimerAsync_Round().Forget();
         OnUpdateSeasonTimerAsync().Forget();
     }
 
@@ -120,36 +121,59 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         m_element.txtSeasonRemainTimer.text = "_정산중_";
     }
 
-    async UniTask OnUpdateRoundTimerAsync()
+    async UniTask TimerAsync_Round()
     {
-        var dtEnd = DataManager.bossRaid.data.dtNextRound;
+        m_element.btnStart.interactable = false;
 
-        var raidData = DataManager.bossRaid.data;
-        if (raidData.tickNextRound == 0)
+        if (DataManager.bossRaid.data.tickNextRound == 0)
         {
             m_element.btnStart.text = "_미출현_";
             m_element.txtRoundRemainTimer.text = "";
             m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Center;
-            return;
+
+            await UniTask.WaitUntil(() => DataManager.bossRaid.data.tickNextRound > 0, cancellationToken: destroyCancellationToken);
         }
 
+        // 시작까지 남은 시간
+        var dtStart = DataManager.bossRaid.data.dtNextRound.AddSeconds(-Configure.instance.timeGapFromServer);
+        m_element.btnStart.text = "_대기_";
         m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Top;
 
         while (true)
         {
-            var ts = dtEnd - Utils.GetUTC();
+            var ts = dtStart - DateTime.UtcNow;
 
             if (ts.TotalSeconds <= 0)
                 break;
 
-            m_element.btnStart.text = "_대기_";
-            m_element.txtRoundRemainTimer.text = $"({ts.ToRemainTime(25, _isStartMinute: true)})";
+            m_element.txtRoundRemainTimer.text = $"({ts.ToRemainTime(25, _isStartMinute: true)} 후 시작)";
             await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
         }
 
+        // 진행 남은 시간
+        var dtFinished = DataManager.bossRaid.data.dtNextRound
+            .AddMinutes(DataManager.bossRaid.timerRunning)
+            .AddSeconds(-Configure.instance.timeGapFromServer);
+
+        m_element.btnStart.interactable = true;
         m_element.btnStart.text = "_참가_";
-        m_element.txtRoundRemainTimer.text = "";
-        m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Center;
+
+        while (true)
+        {
+            var ts = dtFinished - DateTime.UtcNow;
+
+            if (ts.TotalSeconds <= 0)
+                break;
+
+            m_element.txtRoundRemainTimer.text = $"<color=#{Palette.htmlString_Up}>({ts.ToRemainTime(25, _isStartMinute: true)} 남음)</color>";
+            await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
+        }
+
+        //m_element.txtRoundRemainTimer.text = "";
+        //m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Center;
+
+        await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
+        TimerAsync_Round().Forget();
     }
 
     async UniTask OnButtonAsync_Ranking()

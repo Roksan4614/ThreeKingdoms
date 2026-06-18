@@ -125,6 +125,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09945c54b88e6894386fa9f5a783e32b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RankBossRaid_Slot
+  m_element:
+    txtRank: {fileID: 4296315053034679224}
+    txtNickname: {fileID: 7379316210403307868}
+    txtPoint: {fileID: 7960188012437085655}
 --- !u!1 &1814091280105050098
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,7 +597,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4325128086184465182, guid: 168b7a0e01ccf4c4cab908d1bd0cacc3, type: 3}
       propertyPath: m_Name
-      value: TextPanelHelper
+      value: txt_nickname
       objectReference: {fileID: 0}
     - target: {fileID: 5765872002779963114, guid: 168b7a0e01ccf4c4cab908d1bd0cacc3, type: 3}
       propertyPath: m_text
@@ -657,3 +661,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2091940426262553150, guid: 168b7a0e01ccf4c4cab908d1bd0cacc3, type: 3}
   m_PrefabInstance: {fileID: 1972290010173333929}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7379316210403307868 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9022508504408133877, guid: 168b7a0e01ccf4c4cab908d1bd0cacc3, type: 3}
+  m_PrefabInstance: {fileID: 1972290010173333929}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaca72949d2b04e439ac30e3d83a64ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TextPanelHelper

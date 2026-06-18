@@ -290,14 +290,7 @@ public partial class Data_Castle
     }
 
     void Release_CTS()
-    {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
-    }
+        => m_cts = m_cts.Release();
 
     public string GetObjectName(CastleObjectType _type)
         => TableManager.stringTable.GetString("CASTLE_OBJECT_" + _type.ToString().ToUpper());

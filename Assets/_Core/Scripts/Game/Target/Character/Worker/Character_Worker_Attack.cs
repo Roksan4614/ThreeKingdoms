@@ -48,20 +48,11 @@ public class Character_Worker_Attack : Character_Worker
     }
 
     CancellationTokenSource m_ctsAttackPush;
-    public void CancelAttackPush()
-    {
-        if (m_ctsAttackPush != null)
-        {
-            m_ctsAttackPush.Cancel();
-            m_ctsAttackPush.Dispose();
-            m_ctsAttackPush = null;
-        }
-    }
+
 
     public async UniTask ControlAttackAsync(UnityAction _onAttack, bool _isPushButton)
     {
-        CancelAttackPush();
-        m_ctsAttackPush = new();
+        m_ctsAttackPush = m_ctsAttackPush.Release(true);
         var token = m_ctsAttackPush.Token;
 
         if (m_timeAttack - m_owner.stat.attackSpeed * 0.5f > Time.realtimeSinceStartup)
@@ -95,7 +86,7 @@ public class Character_Worker_Attack : Character_Worker
             await UniTask.Yield(token, true);
         }
 
-        CancelAttackPush();
+        m_ctsAttackPush = null;
     }
 
     //public void ControlAttack()

@@ -143,14 +143,7 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
         m_element.canvas.sortingOrder = 10000 - (int)(transform.localPosition.y * 10);
     }
     void ReleaseCTS()
-    {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
-    }
+        => m_cts = m_cts.Release();
 
     public virtual void OnPointerDown(PointerEventData _eventData)
     {

@@ -100,12 +100,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
     public async UniTask StartStageAsync()
     {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-        }
-        m_cts = new();
+        m_cts = m_cts.Release(true);
         var ctsToken = m_cts.Token;
 
         if (m_stage == null || m_stage.IsNow(m_loadData) == false)
@@ -295,12 +290,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
     public void RestartStage(bool _isRestart = true)
     {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
+        m_cts = m_cts.Release();
 
         MapManager.instance.FadeDimm(true, 0f);
 

@@ -17,12 +17,11 @@ public class TextPanelHelper : MonoBehaviour, IValidatable
     }
 
     private void OnDestroy()
-        => Release_CTS();
+        => m_cts = m_cts.Release();
 
     async UniTask MovePanelAsync()
     {
-        Release_CTS();
-        m_cts = new();
+        m_cts = m_cts.Release(true);
         var token = m_cts.Token;
 
         m_element.panel.ForceRebuildLayout();
@@ -30,9 +29,12 @@ public class TextPanelHelper : MonoBehaviour, IValidatable
         // 사이즈가 안에 있다면,
         if (m_element.width >= m_element.panel.sizeDelta.x)
         {
-            var pos = m_element.panel.anchoredPosition;
-            pos.x = m_element.width * 0.5f - m_element.panel.sizeDelta.x * 0.5f;
-            m_element.panel.anchoredPosition = pos;
+            if (m_element.isCenter)
+            {
+                var pos = m_element.panel.anchoredPosition;
+                pos.x = m_element.width * 0.5f - m_element.panel.sizeDelta.x * 0.5f;
+                m_element.panel.anchoredPosition = pos;
+            }
 
             return;
         }
@@ -62,16 +64,6 @@ public class TextPanelHelper : MonoBehaviour, IValidatable
         }
     }
 
-    void Release_CTS()
-    {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
-    }
-
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
@@ -87,13 +79,20 @@ public class TextPanelHelper : MonoBehaviour, IValidatable
         public float width;
         public float spacing;
 
+        public bool isCenter;
+
         public void Initialize(Transform _transform)
         {
             width = ((RectTransform)_transform).rect.width;
             panel = (RectTransform)_transform.Find("Panel");
             txt = panel.GetComponent<TextMeshProUGUI>("Text");
 
-            spacing = panel.GetComponent<HorizontalLayoutGroup>().spacing;
+            var layout = panel.GetComponent<HorizontalLayoutGroup>();
+            spacing = layout.spacing;
+
+            isCenter = layout.childAlignment == TextAnchor.UpperCenter ||
+                layout.childAlignment == TextAnchor.MiddleCenter ||
+                layout.childAlignment == TextAnchor.LowerCenter;
         }
     }
     #endregion VALIDATE

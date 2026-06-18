@@ -13,12 +13,15 @@ public class RankBossRaidComponent : Singleton<RankBossRaidComponent>, IValidata
 
     RectTransform rt => (RectTransform)transform;
 
-    protected override void OnAwake()
+    void Start()
     {
         m_startPosY = rt.anchoredPosition.y;
 
         m_element.btnHide.onClick.AddListener(() => OnButtonAsync_Hide().Forget());
         Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(_isActive));
+
+        DataManager.bossRaid.TestAutoAttackDamageAsync().Forget();
+        UpdateRanker();
     }
 
     async UniTask OnButtonAsync_Hide()
@@ -88,7 +91,49 @@ public class RankBossRaidComponent : Singleton<RankBossRaidComponent>, IValidata
 
     public void UpdateRanker()
     {
+        var dbRanker = DataManager.bossRaid.rankNow.SortByDescending(x => x.point);
 
+        var index = -1;
+        var prevRank = 1;
+        var prevPoint = dbRanker[0].point + 1;
+
+        for (int i = 0; i < dbRanker.Count; i++)
+        {
+            var ranker = dbRanker[i];
+
+            if (ranker.point < prevPoint)
+            {
+                ranker.rank = i + 1;
+                prevRank = ranker.rank;
+                prevPoint = ranker.point;
+            }
+            else
+                ranker.rank = prevRank;
+
+            dbRanker[i] = ranker;
+
+            if (ranker.uid == DataManager.userInfo.uid)
+                index = i;
+        }
+
+        var startIndex = index - 2;
+        for (int i = 0; i < m_element.slots.Length; i++, startIndex++)
+        {
+            if (startIndex < 0)
+            {
+                m_element.slots[i].gameObject.SetActive(false);
+                continue;
+            }
+
+            m_element.slots[i].gameObject.SetActive(true);
+
+            if (startIndex >= dbRanker.Count)
+                m_element.slots[i].SetEmpty();
+            else
+            {
+                m_element.slots[i].SetRankData(dbRanker[startIndex]);
+            }
+        }
     }
 
     #region VALIDATE

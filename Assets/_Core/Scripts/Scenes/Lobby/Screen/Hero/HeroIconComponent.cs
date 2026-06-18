@@ -190,14 +190,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
     }
 
     void RelaseCTS()
-    {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
-    }
+        => m_cts = m_cts.Release();
 
     public virtual void OnManualValidate()
         => m_element.Initialize(transform);

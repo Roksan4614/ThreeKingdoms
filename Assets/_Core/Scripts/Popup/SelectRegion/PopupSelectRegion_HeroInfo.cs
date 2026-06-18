@@ -27,11 +27,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
     }
 
     void OnDisable()
-    {
-        m_cts.Cancel();
-        m_cts.Dispose();
-        m_cts = null;
-    }
+        => m_cts = m_cts.Release();
 
     public async UniTask OpenAsync(PopupSelectRegionComponent.RegionData _regionData)
     {

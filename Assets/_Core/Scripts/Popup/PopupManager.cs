@@ -152,11 +152,8 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     public async UniTask ShowDimmAsync(bool _isShow, bool _isFade = true, bool _isOpercity = false, float _duration = .5f, float _durationWait = .5f)
     {
         m_tweenDimm?.Kill();
-        if (m_ctsDimm != null)
-        {
-            m_ctsDimm.Cancel(); m_ctsDimm.Dispose();
-        }
-        m_ctsDimm = new();
+        
+        m_ctsDimm = m_ctsDimm.Release(true);
 
         if (_isFade)
         {
@@ -244,12 +241,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     public async UniTask AlertShowAsync(string _message, float _addPosY = 0, bool _isTyping = false, float _duration = 3f)
     {
-        if (m_ctsAlert != null)
-        {
-            m_ctsAlert.Cancel();
-            m_ctsAlert.Dispose();
-        }
-        m_ctsAlert = new();
+        m_ctsAlert = m_ctsAlert.Release(true);
 
         await m_element.alertData.ShowAsync(_message, m_ctsAlert.Token, _addPosY, _isTyping, _duration);
 
@@ -259,12 +251,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     public async UniTask AlertDisableAsync()
     {
-        if (m_ctsAlert != null)
-        {
-            m_ctsAlert.Cancel();
-            m_ctsAlert.Dispose();
-            m_ctsAlert = null;
-        }
+        m_ctsAlert = m_ctsAlert.Release();
         await m_element.alertData.DisableAsync();
     }
 

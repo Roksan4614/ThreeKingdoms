@@ -11,6 +11,7 @@ public class Data_UserInfo
     public HeroSortData sortData => m_sortData;
 
     public int uid => m_element.uid;
+    public string nickname => m_element.nickname;
     public RegionType region => m_element.region;
     public IReadOnlyList<HeroInfoData> myHero => m_element.myHero;
 
@@ -176,7 +177,7 @@ public class Data_UserInfo
 
     public HeroInfoData GetHeroInfoData(string _key)
     {
-        for(int i = 0; i < m_element.myHero.Count; i++)
+        for (int i = 0; i < m_element.myHero.Count; i++)
         {
             var heroData = m_element.myHero[i];
             if (heroData.key.IsEquals(_key))
@@ -327,6 +328,7 @@ public class Data_UserInfo
         public void Default()
         {
             region = RegionType.Shu;
+            nickname = "·Ï»ê";
             myHero = new();
         }
     }

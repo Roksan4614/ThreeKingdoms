@@ -46,14 +46,7 @@ public class TooltipWorker : MonoBehaviour, IValidatable
     }
 
     void ReleaseCTS()
-    {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
-    }
+        => m_cts = m_cts.Release();
 
     async UniTask ShowAsync()
     {

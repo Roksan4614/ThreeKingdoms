@@ -231,6 +231,9 @@ public static class Utils
         return DateTime.UtcNow;
     }
 
+    public static DateTime GetDateTime(long _tick)
+        => new DateTime(_tick, DateTimeKind.Utc).AddSeconds(Configure.instance.timeGapFromServer);
+
     // 서버 시간이 더 빠르다면, 빠른만큼 빼줘야 로컬과 계산이 맞는다.
     public static DateTime DateTimeParse(string _msgTime, bool _isFromServerTime = true)
         => _isFromServerTime ?
@@ -268,13 +271,11 @@ public static class Utils
             };
 
         List<string> result = new();
-        for( int i = 0; i <first.Count; i++)
+        for (int i = 0; i < first.Count; i++)
         {
             for (int j = 0; j < last.Count; j++)
                 result.Add(first[i] + last[j]);
         }
-
-        result.SortBy(x => UnityEngine.Random.value);
 
         for (int i = result.Count - 1; i > 0; i--)
         {

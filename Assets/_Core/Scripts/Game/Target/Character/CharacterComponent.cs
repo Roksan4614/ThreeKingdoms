@@ -136,6 +136,9 @@ public class CharacterComponent : TargetComponent
             //move.MoveTarget(_attacker, true);
         }
 
+        if (_attacker?.factionType == FactionType.Alliance)
+            DataManager.bossRaid.TestDamageBoss((long)_damage);
+
         if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE) == false)
         {
             m_stat.health -= _damage;

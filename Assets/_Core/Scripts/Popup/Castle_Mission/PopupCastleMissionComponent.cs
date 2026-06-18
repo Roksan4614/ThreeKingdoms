@@ -242,14 +242,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
     }
 
     void ReleaseCTS()
-    {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
-    }
+        => m_cts = m_cts.Release();
 
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);

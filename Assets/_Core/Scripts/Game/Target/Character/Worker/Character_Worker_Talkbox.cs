@@ -67,14 +67,7 @@ public class Character_Worker_Talkbox : Character_Worker
 
     CancellationTokenSource m_cts;
     public void Cancel()
-    {
-        if (m_cts != null)
-        {
-            m_cts.Cancel();
-            m_cts.Dispose();
-            m_cts = null;
-        }
-    }
+        => m_cts = m_cts.Release();
 
     public async UniTask StartAsyncClickDisable(params string[] _talks)
     {
