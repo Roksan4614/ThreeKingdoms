@@ -48,10 +48,10 @@ public class Team_HeroInfo
         m_arrowHide.localScale = scaleArrow;
 
         var duration = 0.05f;
-        ControllerManager.instance.SetMoveActionArea(m_isHide, true, duration);
+        ControllerManager.instance.SetMove_HeroInfoDown(m_isHide, true, duration);
 
         if (BossRaidWorker.instance.isRunning == true)
-            RankBossRaidComponent.instance.SetMoveArea(m_isHide, true, duration);
+            RankBossRaidComponent.instance.SetMove_HeroInfoDown(m_isHide, true, duration);
         else
             MissionComponent.instance.SetMoveArea(m_isHide, true, duration);
 

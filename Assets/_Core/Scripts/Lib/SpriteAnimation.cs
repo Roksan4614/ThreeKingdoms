@@ -69,7 +69,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
         int increaseValue = 1;
         int indexSprite = 0;
 
-        DateTime dtTimer = DateTime.Now;
+        var time = Time.time;
 
         var effectData = m_effectData;
 
@@ -80,10 +80,10 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
             else
                 m_element.renderer.sprite = m_element.sprite[indexSprite];
 
-            while ((DateTime.Now - dtTimer).TotalSeconds < effectData.duration)
-                yield return null;
+            while (Time.time - time < effectData.duration)
+                yield return new WaitForEndOfFrame();
 
-            dtTimer = DateTime.Now;
+            time = Time.time;
             indexSprite += increaseValue;
 
             if (m_element.sprite.Length == indexSprite)

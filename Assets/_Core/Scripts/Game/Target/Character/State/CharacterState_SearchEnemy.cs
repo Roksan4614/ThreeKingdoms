@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -7,7 +8,7 @@ public class CharacterState_SearchEnemy : CharacterState
     public CharacterState_SearchEnemy(CharacterComponent _owner)
         : base(CharacterStateType.SearchEnemy, _owner) { }
 
-    public override IEnumerator DoUpdate()
+    public override async UniTask UpdateAsync()
     {
         var mainHero = TeamManager.instance.mainHero;
         var posTarget = StageManager.instance.centerPosition;
@@ -17,7 +18,7 @@ public class CharacterState_SearchEnemy : CharacterState
         while (nearestEnemy == null)
         {
             nearestEnemy = StageManager.instance.GetNearestEnemy(mainHero.transform.position);
-            yield return null;
+            await UniTask.Yield(cancellationToken: m_cts.Token);
         }
 
         var posNearestEnemy = nearestEnemy.transform.position;
@@ -36,7 +37,7 @@ public class CharacterState_SearchEnemy : CharacterState
                 break;
             }
 
-            yield return null;
+            await UniTask.Yield(cancellationToken: m_cts.Token);
         }
     }
 }

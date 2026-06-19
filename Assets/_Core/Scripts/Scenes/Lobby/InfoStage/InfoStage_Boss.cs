@@ -9,6 +9,16 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
 {
     public RectTransform rt => (RectTransform)transform;
 
+    void Awake()
+    {
+#if UNITY_EDITOR
+        if (Configure.instance.isBooted == false)
+            return;
+#endif
+
+        Awake_BossRaid();
+    }
+
     private void Start()
     {
         Signal.instance.UpdageBossHP.connect = SlotUpdateBossHP;
@@ -21,7 +31,7 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
 
         // TODO
         if (BossRaidWorker.instance.isRunning)
-            StartBossRaidAsync().Forget();
+            StartBossRaid();
         else
             m_element.txtName.text = "";
 

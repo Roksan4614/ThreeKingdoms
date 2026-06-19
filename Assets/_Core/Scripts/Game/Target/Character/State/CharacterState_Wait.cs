@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using UnityEngine;
 
@@ -14,10 +15,10 @@ public class CharacterState_Wait : CharacterState
             base.Start(_data);
     }
 
-    public override IEnumerator DoUpdate()
+    public override async UniTask UpdateAsync()
     {
         // 캐릭터 재 정렬할 시간이 필요해.
-        yield return new WaitForSeconds(.5f);
+        await UniTask.WaitForSeconds(.5f, cancellationToken: m_cts.Token);
 
         while (true)
         {
@@ -34,7 +35,8 @@ public class CharacterState_Wait : CharacterState
                     break;
                 }
             }
-            yield return null;
+
+            await UniTask.Yield(cancellationToken: m_cts.Token);
         }
     }
 }

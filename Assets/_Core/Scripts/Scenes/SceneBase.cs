@@ -6,11 +6,14 @@ public abstract class SceneBase : Singleton<SceneBase>, IValidatable
 {
     protected override void Awake()
     {
+#if UNITY_EDITOR
+
         if (Configure.instance.isBooted == false)
         {
             SceneManager.LoadScene("00_Boot");
             return;
         }
+#endif
 
         base.Awake();
         m_elementBase.canvas.worldCamera = CameraManager.instance.main;

@@ -7,10 +7,16 @@ public class Character_Enemy : CharacterComponent
     public override void SetHeroData(string _key = null)
     {
         if (_key.IsActive())
-            m_stat = TableManager.statEnemy.GetStatData(_key);
+            m_stat = TableManager.statHero.GetStatData(_key);
 
         if (m_stat.isActive == false)
-            m_stat = TableManager.statEnemy.GetStatData("Enemy");
+        {
+            if (_key.IsActive())
+                m_stat = TableManager.statEnemy.GetStatData(_key);
+
+            if (m_stat.isActive == false)
+                m_stat = TableManager.statEnemy.GetStatData("Enemy");
+        }
 
         var stageData = StageManager.instance.data;
 

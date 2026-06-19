@@ -1,37 +1,66 @@
 using Cysharp.Threading.Tasks;
+using System;
+using System.Threading;
 using UnityEngine;
+using static Data_BossRaid;
 
 public partial class InfoStage_Boss
 {
+    RectTransform m_rtTimer;
+    CancellationTokenSource m_ctsBossRaid;
 
-    async UniTask StartBossRaidAsync()
+    void Awake_BossRaid()
+    {
+        m_rtTimer = transform.GetComponent<RectTransform>("Timer");
+
+        Signal.instance.BossRaidStatus.connect = SlotBossRaidStatus;
+    }
+
+    void SlotBossRaidStatus(BossRaidStatusType _status)
+    {
+        if (_status == BossRaidStatusType.Finish_FirstPhase)
+        {
+            m_ctsBossRaid = m_ctsBossRaid.Release();
+            m_rtTimer.gameObject.SetActive(false);
+        }
+    }
+
+    void StartBossRaid()
     {
         var dataRaid = DataManager.bossRaid.data;
 
-        var rtTimer = transform.GetComponent<RectTransform>("Timer");
-        rtTimer.gameObject.SetActive(true);
-
         //"여포<color=#6D6D6D><size=80%> 최강무장</size></color>";
-        m_element.txtName.text = $"[{TableManager.stringTable.GetGradeType(dataRaid.nowGrade)}] {TableManager.hero.Get(dataRaid.keyBoss).name}";
+        m_element.txtName.text = $"[<color=#{Palette.GetHexa_GradeText(dataRaid.nowGrade)}>{TableManager.stringTable.GetGradeType(dataRaid.nowGrade)}</color>] {TableManager.hero.Get(dataRaid.keyBoss).name}";
+
+        TimerAsync((dataRaid.dtEndRound - dataRaid.dtNextRound).TotalMinutes).Forget();
+    }
+
+    async UniTask TimerAsync(double _ramainTime)
+    {
+        m_ctsBossRaid = m_ctsBossRaid.Release(true);
+        var token = m_ctsBossRaid.Token;
+
+        var dataRaid = DataManager.bossRaid.data;
+
+        m_rtTimer.gameObject.SetActive(true);
 
         var width = -((RectTransform)transform).rect.width;
-        var minute = DataManager.bossRaid.timerRunning;
-        var dtEnd = dataRaid.dtNextRound.AddMinutes(minute);
+        var dtEnd = dataRaid.dtEndRound.AddSeconds(-Configure.instance.timeGapFromServer);
         while (true)
         {
-            var dtNow = Utils.GetUTC();
-            var process = 1 - (dtEnd - dtNow).TotalMinutes / minute;
+            var process = 1 - (dtEnd - DateTime.UtcNow).TotalMinutes / _ramainTime;
 
-            var pos = rtTimer.anchoredPosition;
+            var pos = m_rtTimer.anchoredPosition;
             pos.x = width * (float)process;
-            rtTimer.anchoredPosition = pos;
+            m_rtTimer.anchoredPosition = pos;
 
             if (process >= 1)
                 break;
 
-            await UniTask.WaitForEndOfFrame();
+            await UniTask.WaitForEndOfFrame(cancellationToken: token);
         }
 
-        rtTimer.gameObject.SetActive(false);
+        m_ctsBossRaid = m_ctsBossRaid.Release();
+        m_rtTimer.gameObject.SetActive(false);
     }
 }

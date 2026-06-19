@@ -1,30 +1,33 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 
 public class Data_BossRaid
 {
 #if UNITY_EDITOR
-    public int timerRunning { get; private set; } = 1;
+    const int c_timerRunning = 1;
 #else
-    public int timerRunning { get; private set; } = 5;
+    const int c_timerRunning = 5;
 #endif
+    public double remainSeconds { get; private set; }
+
 
     CancellationTokenSource m_cts;
 
     BossRaidData m_data;
     public BossRaidData data => m_data;
 
-    BossRaidRankerData m_rankPoint = new();
+    BossRaidRankerData m_rankPoint = new(); // 포인트 랭킹
     public BossRaidRankerData rankPoint => m_rankPoint;
 
-    BossRaidRankerData m_rankPrevRaid = new();
+    BossRaidRankerData m_rankPrevRaid = new();  //이전 라운드 랭킹
     public BossRaidRankerData rankPrevRaid => m_rankPrevRaid;
 
-    List<BossRaidRankerUserData> m_rankNow;
+    List<BossRaidRankerUserData> m_rankNow = new(); //현재랭킹
     public IReadOnlyList<BossRaidRankerUserData> rankNow => m_rankNow;
+
+    BossRaidStatusType m_raidStatus; public BossRaidStatusType raidStatus => m_raidStatus;
 
     const string c_key = "pp_bossraid";
 
@@ -49,8 +52,7 @@ public class Data_BossRaid
 
     async UniTask TimerAsync()
     {
-        ReleaseCTS();
-        m_cts = new();
+        m_cts = m_cts.Release(true);
         var token = m_cts.Token;
 
         if (m_data.tickNextRound == 0)
@@ -61,24 +63,69 @@ public class Data_BossRaid
             SaveData();
         }
 
+        m_raidStatus = BossRaidStatusType.Wait;
         // 대기중
         await UniTask.WaitUntil(() => System.DateTime.UtcNow.Ticks > m_data.tickNextRound);
 
         // 게임시작
-        var tickEndRound = m_data.dtNextRound
-            .AddMinutes(timerRunning)
-            .AddSeconds(-Configure.instance.timeGapFromServer).Ticks;
+
+        m_raidStatus = BossRaidStatusType.FirstPhase;
+        Signal.instance.BossRaidStatus.Emit(m_raidStatus);
+
+        remainSeconds = c_timerRunning * 60;
+        var dtEnd = m_data.dtNextRound.AddMinutes(c_timerRunning);
+        var tickEndRound = dtEnd.AddSeconds(-Configure.instance.timeGapFromServer).Ticks;
+
+        m_data.tickEndRound = dtEnd.Ticks;
 
         await UniTask.WaitUntil(() => tickEndRound < System.DateTime.UtcNow.Ticks, cancellationToken: token);
 
+        Finish_BossRaid();
+        TimerAsync().Forget();
+    }
+
+    public void Start_BossRaid()
+    {
+        m_data.nowGrade = (GradeType)UnityEngine.Random.Range((int)m_data.gradeMin, (int)m_data.gradeMax + 1);
+        SaveData();
+    }
+
+    public void Finish_FirstPhase()
+    {
+        m_raidStatus = BossRaidStatusType.Finish_FirstPhase;
+        Signal.instance.BossRaidStatus.Emit(m_raidStatus);
+
+        m_cts = m_cts.Release();
+        remainSeconds = (m_data.dtEndRound - Utils.GetUTC()).TotalSeconds;
+
+
+    }
+
+    public void Start_SecondPhase()
+    {
+        var dtNow = Utils.GetUTC();
+        m_data.tickSecondPhase = dtNow.Ticks;
+        //남은 시간 + 3분 일껄?
+        m_data.tickEndRound = dtNow.AddSeconds(remainSeconds + 60 * 3).Ticks;
+
+        m_raidStatus = BossRaidStatusType.SecondPhase;
+        Signal.instance.BossRaidStatus.Emit(m_raidStatus);
+    }
+
+    public void Finish_BossRaid()
+    {
+        m_raidStatus = BossRaidStatusType.Finished;
+        Signal.instance.BossRaidStatus.Emit(m_raidStatus);
+
         m_data.tickPrevRound = m_data.tickNextRound;
-        m_data.tickNextRound = 0;
+        m_data.tickNextRound = m_data.tickEndRound = m_data.tickSecondPhase = 0;
         m_data.round++;
         m_data.prevGrade = m_data.nowGrade;
 
         SaveData();
 
-        TimerAsync().Forget();
+        m_ctsTestDamage = m_ctsTestDamage.Release();
+        m_rankNow = null;
     }
 
     public async UniTask DoLoadAsync_RankData()
@@ -152,14 +199,8 @@ public class Data_BossRaid
         }
     }
 
-    public void StartBossRaid()
-    {
-        m_data.nowGrade = (GradeType)UnityEngine.Random.Range((int)m_data.gradeMin, (int)m_data.gradeMax + 1);
-        SaveData();
-    }
-
     CancellationTokenSource m_ctsTestDamage;
-    public async UniTask TestAutoAttackDamageAsync()
+    public void TestAddTestUser()
     {
         m_ctsTestDamage = m_ctsTestDamage.Release(true);
         var token = m_ctsTestDamage.Token;
@@ -180,27 +221,6 @@ public class Data_BossRaid
 
             m_rankNow.Add(user);
         }
-
-        //while (true)
-        //{
-        //    await UniTask.WaitForSeconds(TeamManager.instance.mainHero.stat.attackSpeed);
-
-        //    for (int i = 0; i < m_rankNow.Count; i++)
-        //    {
-        //        if (m_rankNow[i].uid == DataManager.userInfo.uid)
-        //            continue;
-
-        //        var damage = UnityEngine.Random.Range(50, 500);
-
-        //        var ranker = m_rankNow[i];
-        //        ranker.point += damage;
-        //        m_rankNow[i] = ranker;
-
-        //        StageManager.instance.enemyList[0].OnDamage(null, damage);
-
-        //        RankBossRaidComponent.instance.UpdateRanker();
-        //    }
-        //}
     }
 
     public void TestDamageBoss(long _damage)
@@ -232,12 +252,6 @@ public class Data_BossRaid
         RankBossRaidComponent.instance.UpdateRanker();
     }
 
-    public void FinishedBossRaid()
-    {
-        m_ctsTestDamage = m_ctsTestDamage.Release();
-        m_rankNow = null;
-    }
-
     void SaveData()
         => PPWorker.Set(c_key, m_data);
 
@@ -256,11 +270,15 @@ public class Data_BossRaid
         public long tickEndSeason;
         public long tickPrevRound;
         public long tickNextRound;
+        public long tickSecondPhase;
+        public long tickEndRound;
 
         public bool isActive => keyBoss.IsActive();
+        public System.DateTime dtEndSeason => Utils.GetDateTime(tickEndSeason);
         public System.DateTime dtPrevRound => Utils.GetDateTime(tickPrevRound);
         public System.DateTime dtNextRound => Utils.GetDateTime(tickNextRound);
-        public System.DateTime dtEndSeason => Utils.GetDateTime(tickEndSeason);
+        public System.DateTime dtEndRound => Utils.GetDateTime(tickEndRound);
+        public System.DateTime dtSecondPhase => Utils.GetDateTime(tickSecondPhase);
 
         public void TestDefault()
         {
@@ -292,5 +310,14 @@ public class Data_BossRaid
         public int uid;
         public long point;
         public int power;
+    }
+
+    public enum BossRaidStatusType
+    {
+        Wait,
+        FirstPhase,
+        Finish_FirstPhase,
+        SecondPhase,
+        Finished,
     }
 }

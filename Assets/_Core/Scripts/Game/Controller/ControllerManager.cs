@@ -408,10 +408,10 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             m_mainHero.SetState(TeamManager.instance.teamState);
     }
 
-    public void SetMoveActionArea(bool _isBottom, bool _isTween = true, float _duration = .2f)
+    public void SetMove_HeroInfoDown(bool _isBottom, bool _isTween = true, float _duration = .2f)
     {
         var target = m_element.rt.offsetMin;
-        target.y = m_startPosY - (_isBottom ? 400 : 0);
+        target.y = m_startPosY - (_isBottom ? 240 : 0);
 
         DOTween.To(() => m_element.rt.offsetMin,
             _offsetMin => m_element.rt.offsetMin = _offsetMin,

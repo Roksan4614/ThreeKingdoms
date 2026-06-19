@@ -102,7 +102,7 @@ public class Tutorial_START : TutorialBase
         await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
 
         ControllerManager.instance.gameObject.SetActive(true);
-        ControllerManager.instance.SetMoveActionArea(true, false);
+        ControllerManager.instance.SetMove_HeroInfoDown(true, false);
         ControllerManager.instance.SetActive_Action(false);
         // "키보드 조작으로 내가 움직일 수 있을거 같은데?"
         mainHero.talkbox.Start(talk.Dequeue().talkArray);
@@ -130,7 +130,7 @@ public class Tutorial_START : TutorialBase
         enemy.move.MoveTarget(mainHero, true);
         mainHero.move.MoveTarget(enemy, true);
 
-        ControllerManager.instance.SetMoveActionArea(false);
+        ControllerManager.instance.SetMove_HeroInfoDown(false);
 
         var heroInfo = Scene_Lobby.instance.canvas.transform.Find("HeroInfo");
         Utils.SetActivePunch(heroInfo, true);
@@ -217,18 +217,23 @@ public class Tutorial_START : TutorialBase
 
         TutorialManager.instance.Complete(TutorialType.START);
 
+        ControllerManager.instance.SetSwitch(false);
+
         // 자아! 이제 출발이다!!
         await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
 
+        mainHero.anim.PlayAttack();
         await UniTask.WaitForSeconds(0.5f);
 
         for (int i = 0; i < bottomButton.Count; i++)
             bottomButton[i].interactable = true;
-
         StageManager.instance.ClearEnemyList();
+
         // 딤 켜주자
         await PopupManager.instance.ShowDimmAsync(true);
 
+        ControllerManager.instance.SetSwitch(true);
+        TeamManager.instance.SetState(CharacterStateType.Wait);
         Signal.instance.ActiveHUD.Emit(true);
     }
 

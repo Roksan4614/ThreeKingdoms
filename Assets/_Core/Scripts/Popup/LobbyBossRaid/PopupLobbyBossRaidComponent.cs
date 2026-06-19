@@ -33,6 +33,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
     async UniTask OnButtonAsync_Start()
     {
+        m_element.btnStart.interactable = false;
         m_characterBoss.anim.Play(CharacterAnimType.Attack);
 
         await UniTask.WaitForSeconds(1f);
@@ -151,9 +152,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         }
 
         // 진행 남은 시간
-        var dtFinished = DataManager.bossRaid.data.dtNextRound
-            .AddMinutes(DataManager.bossRaid.timerRunning)
-            .AddSeconds(-Configure.instance.timeGapFromServer);
+        var dtFinished = DataManager.bossRaid.data.dtEndRound.AddSeconds(-Configure.instance.timeGapFromServer);
 
         m_element.btnStart.interactable = true;
         m_element.btnStart.text = "_참가_";

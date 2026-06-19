@@ -18,6 +18,7 @@ public class CharacterComponent : TargetComponent
 
     [SerializeField]
     CharacterStateType m_stateType;
+    public CharacterStateType stateType => m_stateType;
 
     CharacterState m_state;
 
@@ -131,12 +132,19 @@ public class CharacterComponent : TargetComponent
             isLive == true &&
             ControllerManager.instance.IsControll(this) == false)
         {
-            if (m_stateType != CharacterStateType.Battle)
-                TeamManager.instance.SetState(CharacterStateType.Battle);
+            if (m_faction == FactionType.Alliance)
+            {
+                if (m_stateType != CharacterStateType.Battle)
+                    TeamManager.instance.SetState(CharacterStateType.Battle);
+            }
+            else if (m_stateType != CharacterStateType.Battle)
+                StageManager.instance.SetState(CharacterStateType.Battle);
             //move.MoveTarget(_attacker, true);
         }
 
-        if (_attacker?.factionType == FactionType.Alliance)
+
+        if (BossRaidWorker.instance.isRunning == true &&
+            _attacker?.factionType == FactionType.Alliance)
             DataManager.bossRaid.TestDamageBoss((long)_damage);
 
         if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE) == false)
@@ -146,11 +154,12 @@ public class CharacterComponent : TargetComponent
             {
                 m_stat.health = 0;
                 m_state?.Stop();
+                move.MoveStop();
 
                 anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
 
                 m_element.collider.enabled = false;
-                StopAllCoroutines();
+
                 //target.RemoveAll();
             }
 

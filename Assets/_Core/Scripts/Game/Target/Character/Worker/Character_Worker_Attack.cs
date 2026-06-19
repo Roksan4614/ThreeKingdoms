@@ -27,7 +27,7 @@ public class Character_Worker_Attack : Character_Worker
 
     float m_timeAttack;
 
-    public IEnumerator DoAttack()
+    public async UniTask AttackAsync(CancellationToken _token)
     {
         while (true)
         {
@@ -43,7 +43,8 @@ public class Character_Worker_Attack : Character_Worker
             }
             else if (m_timeAttack < Time.realtimeSinceStartup)
                 break;
-            yield return null;
+
+            await UniTask.Yield(cancellationToken: _token);
         }
     }
 

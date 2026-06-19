@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
+using System.Threading;
 using UnityEngine;
 
 public enum CharacterStateType
@@ -25,23 +27,18 @@ public class CharacterState
         m_owner = _owner;
     }
 
-    protected Coroutine m_coUpdate;
+    protected CancellationTokenSource m_cts;
 
     public virtual void Start(params object[] _data)
     {
-        if (m_coUpdate != null)
-            m_owner.StopCoroutine(m_coUpdate);
-        m_coUpdate = m_owner.StartCoroutine(DoUpdate());
-    }
-    public virtual void Stop() {
-
-        if (m_coUpdate != null)
-            m_owner.StopCoroutine(m_coUpdate);
-        m_coUpdate = null;
+        m_cts = m_cts.Release(true);
+        UpdateAsync().Forget();
     }
 
-    public virtual IEnumerator DoUpdate()
-    {
-        yield return null;
-    }
+    public virtual void Stop()
+        => m_cts = m_cts.Release();
+
+    public virtual async UniTask UpdateAsync()
+        => await UniTask.Yield();
+
 }

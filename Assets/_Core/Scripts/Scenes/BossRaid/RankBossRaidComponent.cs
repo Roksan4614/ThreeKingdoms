@@ -20,8 +20,8 @@ public class RankBossRaidComponent : Singleton<RankBossRaidComponent>, IValidata
         m_element.btnHide.onClick.AddListener(() => OnButtonAsync_Hide().Forget());
         Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(_isActive));
 
-        DataManager.bossRaid.TestAutoAttackDamageAsync().Forget();
         UpdateRanker();
+        DataManager.bossRaid.TestAddTestUser();
     }
 
     async UniTask OnButtonAsync_Hide()
@@ -82,10 +82,10 @@ public class RankBossRaidComponent : Singleton<RankBossRaidComponent>, IValidata
     }
 
     Tween m_tweenMovePanel;
-    public void SetMoveArea(bool _isBottom, bool _isTween = true, float _duration = .2f)
+    public void SetMove_HeroInfoDown(bool _isBottom, bool _isTween = true, float _duration = .2f)
     {
         m_tweenMovePanel?.Kill();
-        float target = _isBottom ? 12 : m_startPosY;
+        float target = m_startPosY - (_isBottom ? 240 : 0);
         m_tweenMovePanel = rt.DOAnchorPosY(target, _duration);
     }
 
@@ -93,9 +93,15 @@ public class RankBossRaidComponent : Singleton<RankBossRaidComponent>, IValidata
     {
         var dbRanker = DataManager.bossRaid.rankNow.SortByDescending(x => x.point);
 
+        if (dbRanker.Count == 0)
+            dbRanker.Add(new()
+            {
+                nickname = DataManager.userInfo.nickname
+            });
+
         var index = -1;
         var prevRank = 1;
-        var prevPoint = dbRanker[0].point + 1;
+        var prevPoint = long.MaxValue;
 
         for (int i = 0; i < dbRanker.Count; i++)
         {

@@ -366,7 +366,10 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
     public void SetState(CharacterStateType _stateType)
     {
         foreach (var enemy in m_enemyList)
-            enemy.SetState(_stateType);
+        {
+            if (enemy.isLive)
+                enemy.SetState(_stateType);
+        }
     }
 
     public void BossKillAllDieEnemy()

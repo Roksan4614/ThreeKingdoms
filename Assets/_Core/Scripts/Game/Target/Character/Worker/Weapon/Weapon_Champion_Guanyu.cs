@@ -79,7 +79,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             Vector3 enemyPos = enemy.transform.position;
             Vector3 ownerPos = m_owner.transform.position;
 
-            float keepDistance = 1.5f;
+            float keepDistance = 3f;
 
             targetPos = enemyPos - ((enemyPos - ownerPos).normalized * keepDistance);
         }

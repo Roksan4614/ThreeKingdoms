@@ -173,7 +173,6 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public void StartPhase(bool _isFlip)
     {
-        SetState(CharacterStateType.Wait);
         mainHero.move.SetFlip(_isFlip == false);
 
         RepositionToMain();
@@ -199,7 +198,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     public void SetState(CharacterStateType _stateType)
     {
         foreach (var member in m_member.Values)
-            member.SetState(_stateType);
+        {
+            if (member.stateType != _stateType)
+                member.SetState(_stateType);
+        }
 
         teamState = _stateType;
     }

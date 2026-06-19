@@ -299,5 +299,7 @@ public class Signal
     public SignalObject CastleWally_Failed = new();
 
     public SignalObject Event_ActivePunch_Start = new();
+
+    public SignalObject<Data_BossRaid.BossRaidStatusType> BossRaidStatus = new();
     #endregion
 }

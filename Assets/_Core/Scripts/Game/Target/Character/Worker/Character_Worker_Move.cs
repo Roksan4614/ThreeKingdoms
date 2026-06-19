@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
-using System.Collections;
+using System.Threading;
 using UnityEngine;
 
 public class Character_Worker_Move : Character_Worker
@@ -20,11 +20,7 @@ public class Character_Worker_Move : Character_Worker
         m_owner.rig.linearVelocity = Vector2.zero;
         m_owner.anim.Play(CharacterAnimType.Idle);
 
-        if (m_coMoveTarget != null)
-        {
-            m_owner.StopCoroutine(m_coMoveTarget);
-            m_coMoveTarget = null;
-        }
+        m_ctsMoveTarget = m_ctsMoveTarget.Release();
     }
 
     public void OnMoveUpdate(Vector2 _velocity, bool _isAnim = true)
@@ -64,23 +60,22 @@ public class Character_Worker_Move : Character_Worker
         }
     }
 
-    Coroutine m_coMoveTarget;
     public void MoveTarget(CharacterComponent _target, bool _isAttack)
     {
-        if (m_coMoveTarget != null)
-            m_owner.StopCoroutine(m_coMoveTarget);
-
-        m_coMoveTarget = m_owner.StartCoroutine(DoMoveTarget(_target, _isAttack));
+        MoveTargetAsync(_target, _isAttack).Forget();
     }
 
-    public IEnumerator DoMoveTarget(CharacterComponent _target, bool _isAttack)
+    CancellationTokenSource m_ctsMoveTarget;
+    public async UniTask MoveTargetAsync(CharacterComponent _target, bool _isAttack)
     {
+        m_ctsMoveTarget = m_ctsMoveTarget.Release(true);
+
         while (_target != null && _target.isLive)
         {
             // 컨트롤 중일 땐 그냥 넘어가자.
             if (ControllerManager.instance.IsControll(m_owner))
             {
-                yield return null;
+                await UniTask.Yield(cancellationToken: m_ctsMoveTarget.Token);
                 continue;
             }
 
@@ -94,7 +89,7 @@ public class Character_Worker_Move : Character_Worker
                 m_owner.target.SetTarget(_target);
                 m_owner.rig.linearVelocity = Vector2.zero;
 
-                yield return m_owner.attack.DoAttack();
+                await m_owner.attack.AttackAsync(m_ctsMoveTarget.Token);
             }
 
             //공격을 멈췄는데 적이ㅣ 아직 있으면 따라가야하는거 아닌가?
@@ -110,10 +105,8 @@ public class Character_Worker_Move : Character_Worker
                 //    m_owner.target.SetTarget(_target);
             }
 
-            yield return null;
+            await UniTask.Yield(cancellationToken: m_ctsMoveTarget.Token);
         }
-
-        m_coMoveTarget = null;
     }
 
     Tween m_tweenDash;
