@@ -32,9 +32,13 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public bool isDoing => m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
     public bool isKeyboardMode => m_isKeyboardMode;
 
-    private void Start()
+    protected override void OnAwake()
     {
         m_startPosY = m_element.rt.offsetMin.y;
+    }
+
+    private void Start()
+    {
         m_element.pad.gameObject.SetActive(false);
 
 #if !UNITY_EDITOR && UNITY_WEBGL

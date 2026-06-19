@@ -12,11 +12,14 @@ public class RankBossRaidComponent : Singleton<RankBossRaidComponent>, IValidata
     bool m_isHide;
 
     RectTransform rt => (RectTransform)transform;
+    protected override void OnAwake()
+    {
+        m_startPosY = rt.anchoredPosition.y;
+        base.OnAwake();
+    }
 
     void Start()
     {
-        m_startPosY = rt.anchoredPosition.y;
-
         m_element.btnHide.onClick.AddListener(() => OnButtonAsync_Hide().Forget());
         Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(_isActive));
 

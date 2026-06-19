@@ -51,6 +51,12 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
             Destroy(m_element.chapter.GetChild(i).gameObject);
     }
 
+    protected override void OnDestroy()
+    {
+        m_cts = m_cts.Release();
+        base.OnDestroy();
+    }
+
     public async UniTask TestDevSelectAsync()
     {
         m_stopStageStart = true;

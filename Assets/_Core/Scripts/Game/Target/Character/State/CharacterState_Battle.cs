@@ -20,16 +20,8 @@ public class CharacterState_Battle : CharacterState
             if (target != null)
                 await m_owner.move.MoveTargetAsync(target, true).SuppressCancellationThrow();
 
-            await UniTask.WaitUntil(() => m_owner.target.target != target, cancellationToken: token);
-            await UniTask.WaitUntil(() =>
-            {
-                if (m_owner == null || m_owner.anim == null)
-                {
-
-                }
-                return m_owner.anim.IsType(CharacterAnimType.Attack) == false;
-            }
-            , cancellationToken: token);
+            await UniTask.WaitUntil(() => m_owner.target.target != target || target == null || target.isLive == false, cancellationToken: token);
+            await UniTask.WaitUntil(() => m_owner.anim.IsType(CharacterAnimType.Attack) == false, cancellationToken: token);
 
             target = GetNearestHero();
 
