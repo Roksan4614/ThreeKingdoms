@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -333,5 +332,21 @@ public static class Extenssions
         }
 
         return _isNew ? new() : null;
+    }
+    public static void SetAnchoredPositionX(this RectTransform _rt, int _posX)
+        => _rt.SetAnchoredPosition(_posX, null);
+    public static void SetAnchoredPositionY(this RectTransform _rt, int _posY)
+        => _rt.SetAnchoredPosition(null, _posY);
+
+    public static void SetAnchoredPosition(this RectTransform _rt, int? _posX, int? _posY)
+    {
+        var pos = _rt.anchoredPosition;
+        if (_posX != null)
+            pos.x = _posX.Value;
+        if (_posY != null)
+            pos.y = _posY.Value;
+
+        _rt.anchoredPosition = pos;
+
     }
 }

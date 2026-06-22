@@ -13,6 +13,9 @@ public class HeroNavigationComponent : MonoBehaviour, IValidatable
         SetAutoUIAsync().Forget();
     }
 
+    private void OnDestroy()
+        => m_ctsAutoSkill = m_ctsAutoSkill.Release();
+
     void OnButton_Auto()
     {
         DataManager.option.isAutoSkill = !DataManager.option.isAutoSkill;

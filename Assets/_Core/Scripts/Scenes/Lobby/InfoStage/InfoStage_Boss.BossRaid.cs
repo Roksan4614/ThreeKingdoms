@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -22,6 +23,17 @@ public partial class InfoStage_Boss
         {
             m_ctsBossRaid = m_ctsBossRaid.Release();
             m_rtTimer.gameObject.SetActive(false);
+        }
+        else if (_status == BossRaidStatusType.Wait_SecondPhase)
+        {
+            InfoStageComponent.instance.SetActive(true, true);
+            m_element.rtBar.DOAnchorPosX(0, 0.5f).SetEase(Ease.OutCubic).OnComplete(() =>
+                Utils.AfterSecond(() => BossRaidWorker.instance.Start_SecondPhase(), .3f));
+        }
+        else if (_status == BossRaidStatusType.SecondPhase)
+        {
+            m_rtTimer.SetAnchoredPositionX(0);
+            m_rtTimer.gameObject.SetActive(true);
         }
     }
 

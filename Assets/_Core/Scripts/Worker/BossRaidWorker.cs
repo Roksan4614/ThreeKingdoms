@@ -1,8 +1,10 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using static Data_BossRaid;
 
 public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 {
@@ -27,14 +29,15 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
         await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
 
-        DataManager.bossRaid.Start_BossRaid();
-
-        m_bossType = _bossType;
         PopupManager.instance.CloseAll();
+
+        TeamManager.instance.SetState(CharacterStateType.None);
+        StageManager.instance.SetState(CharacterStateType.None);
 
         await UniTask.WaitForEndOfFrame();
 
         AddressableManager.instance.LoadScene("03_BossRaid");
+        m_bossType = _bossType;
 
         //bool isStart = await StartAsync(_bossType);
         //await PopupManager.instance.ShowDimmAsync(false, _duration: isStart ? 1f : .5f);
@@ -50,65 +53,6 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
         await UniTask.WaitForEndOfFrame();
         AddressableManager.instance.LoadScene("02_Lobby");
     }
-
-    //async UniTask<bool> StartAsync(BossRaidType _bossType)
-    //{
-    //    string key = $"BossRaid/BossRaid_{_bossType}.prefab";
-
-    //    if (await ConnectAsync() == false)
-    //        return false;
-
-    //    await AddressableManager.instance.LoadAssetAsync<GameObject>(
-    //        _result =>
-    //        {
-    //            if (_result.Count > 0)
-    //                m_handle = _result.First().Value;
-    //        }, null, key);
-
-    //    if (m_handle.IsValid() == false)
-    //        return false;
-
-    //    var bossRaid = Instantiate(m_handle.Result, StageManager.instance.transform).transform;
-    //    var boss = bossRaid.Find("Boss").GetChild(0).GetComponent<Character_Enemy>();
-
-    //    if (boss != null)
-    //    {
-    //        // 보스 스탯 넣어줘야 해
-    //        boss.SetBossData("");
-
-    //        StageManager.instance.RestartStage(false);
-    //        MapManager.instance.FadeDimm(false, 0);
-
-    //        InfoStageComponent.instance.SetBossRaid(true);
-
-    //        await PopupManager.instance.ShowDimmAsync(false);
-
-    //        boss.move.MoveTarget(TeamManager.instance.GetNearestHero(boss.transform.position), true);
-    //        TeamManager.instance.MoveAttactTarget(boss);
-
-    //        await UniTask.WaitUntil(() => boss.isLive == false);
-
-    //        await OpenResultAsync();
-
-    //        await UniTask.WaitUntil(() => ControllerManager.isClickDown);
-
-    //        await PopupManager.instance.ShowDimmAsync(true, _duration: 1f, _durationWait: 0f);
-
-    //        Destroy(bossRaid.gameObject);
-    //        m_handle.Release();
-    //        InfoStageComponent.instance.SetBossRaid(false);
-    //        StageManager.instance.RestartStage();
-
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        Destroy(bossRaid.gameObject);
-    //        m_handle.Release();
-
-    //        return false;
-    //    }
-    //}
 
     async UniTask<bool> ConnectAsync()
     {
@@ -128,5 +72,61 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
             m_handle.Release();
 
         base.OnDestroy();
+    }
+
+    public void StartBossRaid()
+    {
+        DataManager.bossRaid.Start_BossRaid();
+
+        TeamManager.instance.StartStage();
+        TeamManager.instance.StartPhase(false);
+
+        StageManager.instance.SetState(CharacterStateType.Battle);
+
+        ControllerManager.instance.SetSwitch(true);
+        ControllerManager.instance.SlotStartStage();
+
+        InfoStageComponent.instance.SetBossRaid(true);
+    }
+
+    public void Finish_FirstPhase(CharacterComponent _boss)
+    {
+        float fTimeScale = 0.05f; // 느려지는 타임스케일
+        float fMoveX = 3f;        // 뒤로 밀쳐지는 거리
+        float fSlowDuration = 0.1f;   // 느려지는 거 유지 시간
+
+        Time.timeScale = fTimeScale;
+
+        // 보스 이펙트 초기화
+        _boss.attack.ResetFX();
+
+        // 카메라 흔들리면서 보스 따라가기
+        CameraManager.instance.Shake();
+        CameraManager.instance.SetCameraPosTarget(_boss.element.cameraPos, false);
+
+        // 시간 다시 원래대로
+        Utils.AfterSecond(() => Time.timeScale = 1f, fSlowDuration);
+
+        // 뒤로 밀치기
+        var targetPos = _boss.transform.position;
+        targetPos.x = _boss.transform.position.x + (fMoveX * (_boss.move.isFlip ? -1 : 1));
+        DOTween.To(() => _boss.transform.position, _pos => _boss.rig.MovePosition(_pos), targetPos, 0.3f)
+            .OnComplete(() =>
+            {
+                if (DataManager.bossRaid.raidStatus == BossRaidStatusType.FirstPhase)
+                    DataManager.bossRaid.Finish_FirstPhase();
+                else
+                    DataManager.bossRaid.Finish_BossRaid();
+            });
+    }
+
+    public void Wait_SecondPhase()
+    {
+        Signal.instance.BossRaidStatus.Emit(BossRaidStatusType.Wait_SecondPhase);
+    }
+
+    public void Start_SecondPhase()
+    {
+        DataManager.bossRaid.Start_SecondPhase();
     }
 }

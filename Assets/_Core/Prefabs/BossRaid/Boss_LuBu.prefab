@@ -155,14 +155,14 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 3974590461730064522, guid: ac4561b1337c3b04db9a739900a4c705, type: 3}
   m_PrefabInstance: {fileID: 382736369904531985}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &3843932015211156839 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3465418200276119414, guid: ac4561b1337c3b04db9a739900a4c705, type: 3}
+  m_PrefabInstance: {fileID: 382736369904531985}
+  m_PrefabAsset: {fileID: 0}
 --- !u!212 &3952731700475022470 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 3716925692298229399, guid: ac4561b1337c3b04db9a739900a4c705, type: 3}
-  m_PrefabInstance: {fileID: 382736369904531985}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &3979726581422741937 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3635834878016742304, guid: ac4561b1337c3b04db9a739900a4c705, type: 3}
   m_PrefabInstance: {fileID: 382736369904531985}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &4061266407924910462 stripped
@@ -186,13 +186,24 @@ MonoBehaviour:
   m_canvas: {fileID: 130533218343991712}
   m_stat:
     key: 
+    attack_power: 0
+    defence: 0
+    critical_damage: 0
+    critical_rate: 0
+    health_max: 0
+    move_speed: 0
+    attack_speed: 0
+    cooldown_rate: 0
+    life_steal: 0
+    boss_damage: 0
   m_faction: 0
+  targetTest: []
   m_stateType: 0
   m_element:
     m_panel: {fileID: 2972164405929246888}
     m_rig: {fileID: 8321637565119628314}
     m_animator: {fileID: 8988171790386637826}
-    m_effect_canvas: {fileID: 3979726581422741937}
+    m_effect_canvas_damage: {fileID: 3843932015211156839}
     m_effect_renderer: {fileID: 6970641811057210360}
     m_cameraPos: {fileID: 3416959792472092507}
     m_skillRage: {fileID: 0}
@@ -1083,13 +1094,24 @@ MonoBehaviour:
   m_canvas: {fileID: 44582914156931282}
   m_stat:
     key: 
+    attack_power: 0
+    defence: 0
+    critical_damage: 0
+    critical_rate: 0
+    health_max: 0
+    move_speed: 0
+    attack_speed: 0
+    cooldown_rate: 0
+    life_steal: 0
+    boss_damage: 0
   m_faction: 0
+  targetTest: []
   m_stateType: 0
   m_element:
     m_panel: {fileID: 2913516070722671066}
     m_rig: {fileID: 5893301681906600308}
     m_animator: {fileID: 9074113567955271024}
-    m_effect_canvas: {fileID: 3921237332896368835}
+    m_effect_canvas_damage: {fileID: 3749738604818170901}
     m_effect_renderer: {fileID: 7056416459557495434}
     m_cameraPos: {fileID: 3331157919285607977}
     m_skillRage: {fileID: 0}
@@ -1156,9 +1178,9 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 5006654782193728531, guid: afd6aad0175f2624c88e94e454457a38, type: 3}
   m_PrefabInstance: {fileID: 8524677558847496186}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &3921237332896368835 stripped
+--- !u!224 &3749738604818170901 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4622581658238883641, guid: afd6aad0175f2624c88e94e454457a38, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4774944211069361135, guid: afd6aad0175f2624c88e94e454457a38, type: 3}
   m_PrefabInstance: {fileID: 8524677558847496186}
   m_PrefabAsset: {fileID: 0}
 --- !u!212 &4099106051104799091 stripped

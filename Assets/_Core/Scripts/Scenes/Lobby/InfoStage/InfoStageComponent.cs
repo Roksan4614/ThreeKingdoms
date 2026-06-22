@@ -176,6 +176,14 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
         StageManager.instance.RechallengeBoss();
     }
 
+    public void SetActive(bool _isActive, bool _isWithAction)
+    {
+        if (_isWithAction)
+            Utils.SetActivePunch(transform, _isActive);
+        else
+            gameObject.SetActive(_isActive);
+    }
+
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField]

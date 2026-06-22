@@ -16,6 +16,8 @@ public class CharacterComponent : TargetComponent
     [SerializeField]
     HeroInfoData m_info;
 
+    public List<CharacterComponent> targetTest = new();
+
     [SerializeField]
     CharacterStateType m_stateType;
     public CharacterStateType stateType => m_stateType;
@@ -55,6 +57,12 @@ public class CharacterComponent : TargetComponent
         SetState(CharacterStateType.None);
 
         Signal.instance.UpdateHeroStat.connect = SlotUpdateHeroStat;
+    }
+
+    private void OnDestroy()
+    {
+        move.MoveStop();
+        m_state?.Stop();
     }
 
     //private void Update()
@@ -142,9 +150,9 @@ public class CharacterComponent : TargetComponent
             //move.MoveTarget(_attacker, true);
         }
 
-
-        if (BossRaidWorker.instance.isRunning == true &&
-            _attacker?.factionType == FactionType.Alliance)
+        // 레이드 진행중이고
+        // 공격자가 내 장수들ㅇ라면, 
+        if (BossRaidWorker.instance.isRunning == true && _attacker?.factionType == FactionType.Alliance)
             DataManager.bossRaid.TestDamageBoss((long)_damage);
 
         if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE) == false)
@@ -169,7 +177,7 @@ public class CharacterComponent : TargetComponent
         return m_stat.health == 0;
     }
 
-    public void Respawn(bool _isSetState = true)
+    public virtual void Respawn(bool _isSetState = true)
     {
         if (_isSetState)
             SetState(TeamManager.instance.teamState);
@@ -177,6 +185,7 @@ public class CharacterComponent : TargetComponent
         //target.RemoveAll();
         move.MoveStop();
         attack.ResetFX();
+        buff.RemoveAll();
 
         m_stat.health = m_stat.healthMax;
         m_element.collider.enabled = true;
@@ -187,7 +196,7 @@ public class CharacterComponent : TargetComponent
     public void DeleteElement()
     {
         Destroy(m_element.effect_renderer.gameObject);
-        m_element.effect_canvas.parent.gameObject.SetActive(false);
+        m_element.effect_canvas_damage.parent.parent.gameObject.SetActive(false);
     }
 
     public void DestroyCharacter()
@@ -245,7 +254,7 @@ public class CharacterComponent : TargetComponent
         [SerializeField] Transform m_panel;
         [SerializeField] Rigidbody2D m_rig;
         [SerializeField] Animator m_animator;
-        [SerializeField] Transform m_effect_canvas;
+        [SerializeField] Transform m_effect_canvas_damage;
         [SerializeField] Transform m_effect_renderer;
         [SerializeField] Transform m_cameraPos;
         [SerializeField] Transform m_skillRage;
@@ -259,7 +268,7 @@ public class CharacterComponent : TargetComponent
         public Transform panel => m_panel;
         public Rigidbody2D rig => m_rig;
         public Animator animator => m_animator;
-        public Transform effect_canvas => m_effect_canvas;
+        public Transform effect_canvas_damage => m_effect_canvas_damage;
         public Transform effect_renderer => m_effect_renderer;
         public Transform cameraPos => m_cameraPos;
         public Transform skillRange => m_skillRage;
@@ -274,7 +283,7 @@ public class CharacterComponent : TargetComponent
             m_rig = _transform.GetComponent<Rigidbody2D>();
             m_panel = _transform.Find("Character/Panel");
             m_animator = _transform.GetComponent<Animator>("Character/Panel/Parts");
-            m_effect_canvas = _transform.Find("Character/Canvas/Effect");
+            m_effect_canvas_damage = _transform.Find("Character/Canvas/Effect/Damage");
             m_effect_renderer = _transform.Find("Character/Effect_Renderer");
             m_cameraPos = panel.Find("CameraPos");
             m_skillRage = _transform.Find("SkillRange");

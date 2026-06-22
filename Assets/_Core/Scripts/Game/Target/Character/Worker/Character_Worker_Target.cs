@@ -25,9 +25,10 @@ public class Character_Worker_Target : Character_Worker
         => SetTarget(nearestEnemy);
     public void AddTarget(CharacterComponent _target)
     {
-        if (m_owner.isLive == false || IsEnemy(_target) == false || m_targetList.Contains(_target) == true)
+        if (IsEnemy(_target) == false || m_targetList.Contains(_target) == true)
             return;
 
+        m_owner.targetTest.Add(_target);
         m_targetList.Add(_target);
     }
 
@@ -35,13 +36,17 @@ public class Character_Worker_Target : Character_Worker
     {
         m_targetList.Clear();
         target = null;
+
+        m_owner.targetTest.Clear();
     }
 
     public void RemoveTarget(CharacterComponent _target)
     {
-        if (m_owner.isLive == false || IsEnemy(_target) == false)
+        if (IsEnemy(_target) == false)
+            //if (m_owner.isLive == false || IsEnemy(_target) == false)
             return;
 
+        m_owner.targetTest.Remove(_target);
         m_targetList.Remove(_target);
     }
 
@@ -77,7 +82,7 @@ public class Character_Worker_Target : Character_Worker
             {
                 var enemy = m_targetList[i];
 
-                if (enemy.isLive == false)
+                if (enemy == null || enemy.isLive == false)
                     continue;
 
                 float sqrDist = (enemy.transform.position - posOwner).sqrMagnitude;

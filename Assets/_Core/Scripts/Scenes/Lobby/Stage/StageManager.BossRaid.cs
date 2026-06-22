@@ -24,8 +24,6 @@ public partial class StageManager
         }, null, key);
 
         var slot = Instantiate(m_handleBoss.Result, m_element.chapter).GetComponent<BossRaid_BossSlotComponent>();
-
-        m_enemyList.Add(slot.boss);
     }
 
     void FinishedBossRaid()

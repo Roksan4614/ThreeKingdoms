@@ -42,6 +42,14 @@ public class StageComponent : MonoBehaviour, IValidatable
         }
     }
 
+    private void OnDestroy()
+    {
+        for (int i = 0; i < m_stage.Count; i++)
+            m_stage[i] = m_stage[i].ResetCTS();
+
+        m_stage = null;
+    }
+
     public bool IsNow(StageManager.LoadData_Stage _data)
         => data.level == _data.level && data.chapterNumber == _data.chapterNumber && data.stageNumber == _data.stageNumber;
     public void SetData(StageManager.LoadData_Stage _data) => data = _data;
@@ -95,7 +103,7 @@ public class StageComponent : MonoBehaviour, IValidatable
             var parts = e.Find("Character/Panel/Parts");
             parts.Find("Sub").gameObject.SetActive(true);
             parts.Find("Weapon").gameObject.SetActive(true);
-            
+
         }
 
         phase.gameObject.SetActive(false);

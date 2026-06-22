@@ -160,6 +160,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
                     e.transform.SetParent(MapManager.instance.element.pEnemy);
                     e.move.SetFlip(isFlip);
                     e.SetColorParts(Color.white);
+                    e.Respawn();
 
                     var scale = e.transform.localScale;
                     if (scale.x < 0)
@@ -355,7 +356,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
         {
             var enemy = m_enemyList[i];
 
-            if (enemy.isLive == false)
+            if (enemy == null || enemy.isLive == false)
                 continue;
 
             float sqrDist = (enemy.transform.position - _position).sqrMagnitude;

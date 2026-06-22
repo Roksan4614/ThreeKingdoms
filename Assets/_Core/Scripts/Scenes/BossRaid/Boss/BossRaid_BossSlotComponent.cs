@@ -1,10 +1,21 @@
+using DG.Tweening;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using TMPro;
 using UnityEngine;
 using static Data_BossRaid;
 
 public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
 {
+    [SerializeField] float m_durationChange = 1.5f;
+    [SerializeField] float m_distanceKnockback = 3f;
+    [SerializeField] float m_weidhtKnockback = .5f;
+
+    CancellationTokenSource m_cts;
+
     public Character_Enemy_RaidBoss boss =>
-        DataManager.bossRaid.raidStatus == BossRaidStatusType.SecondPhase ? m_element.bossJIN : m_element.boss;
+        DataManager.bossRaid.raidStatus >= BossRaidStatusType.Wait_SecondPhase ? m_element.bossJIN : m_element.boss;
 
     protected virtual void Awake()
     {
@@ -13,37 +24,125 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
             return;
 #endif
 
-        m_element.boss.gameObject.SetActive(DataManager.bossRaid.raidStatus != BossRaidStatusType.SecondPhase);
-        m_element.bossJIN.gameObject.SetActive(DataManager.bossRaid.raidStatus == BossRaidStatusType.SecondPhase);
+        m_element.boss.gameObject.SetActive(DataManager.bossRaid.raidStatus < BossRaidStatusType.Wait_SecondPhase);
+        m_element.bossJIN.gameObject.SetActive(DataManager.bossRaid.raidStatus >= BossRaidStatusType.Wait_SecondPhase);
 
         boss.SetBossData(DataManager.bossRaid.data.keyBoss);
 
         Signal.instance.BossRaidStatus.connect = SlotBossRaidStatus;
     }
 
+    private void OnDestroy()
+    {
+        m_cts = m_cts.Release();
+    }
+
     void SlotBossRaidStatus(BossRaidStatusType _status)
     {
-        if (_status == BossRaidStatusType.Finish_FirstPhase)
-        {
-            Utils.AfterSecond(() =>
-            {
-                m_element.fxChangeBoss.transform.position = m_element.bossJIN.transform.position = m_element.boss.transform.position;
+        m_cts = m_cts.Release(true);
+        var token = m_cts.Token;
 
-                m_element.fxChangeBoss.SetActive(true);
-                Utils.AfterSecond(() =>
+        switch (_status)
+        {
+            case BossRaidStatusType.FirstPhase:
                 {
-                    m_element.boss.gameObject.SetActive(false);
-                    m_element.bossJIN.gameObject.SetActive(true);
+                    StageManager.instance.ClearEnemyList();
+                    StageManager.instance.AddEnemyList(boss);
+                }
+                break;
+            case BossRaidStatusType.Finish_FirstPhase:
+            case BossRaidStatusType.Finished:
+                {
+                    StageManager.instance.SetState(CharacterStateType.None);
+                    TeamManager.instance.SetState(CharacterStateType.None);
 
-                    m_element.bossJIN.anim.Play("Boss_Die_End");
+                    (Scene_BossRaid.instance as Scene_BossRaid).SetActiveResult(true, true);
+                    InfoStageComponent.instance.SetActive(false, true);
 
-                }, 1.5f);
-            }, 3f);
-        }
-        else if (_status == BossRaidStatusType.SecondPhase)
-        {
+                    if (_status == BossRaidStatusType.Finish_FirstPhase)
+                    {
+                        // 진여포 각성
+                        Utils.AfterSecond(() =>
+                        {
+                            // todo 확률로 떠야 해
+                            //(Scene_BossRaid.instance as Scene_BossRaid).SetActiveResult(false, true);
+
+                            m_element.fxChangeBoss.transform.position = m_element.bossJIN.transform.position = m_element.boss.transform.position;
+                            m_element.fxChangeBoss.SetActive(true);
+
+                            // 오브젝트 바꾸기
+                            Utils.AfterSecond(() =>
+                            {
+                                m_element.boss.gameObject.SetActive(false);
+                                m_element.bossJIN.gameObject.SetActive(true);
+
+                                m_element.bossJIN.anim.Play("Boss_Die_End");
+
+                                (Scene_BossRaid.instance as Scene_BossRaid).SetActiveResult(false, true);
+
+                                // 근처 적들 뒤로 밀치기
+                                Utils.AfterSecond(KnockbackCharacter, 0.07f, token);
+                            }, m_durationChange);
+                        }, 1f, token);
+                    }
+                }
+                break;
+            case BossRaidStatusType.SecondPhase:
+                {
+                    StageManager.instance.ClearEnemyList();
+                    StageManager.instance.AddEnemyList(boss);
+
+                    boss.SetBossData(DataManager.bossRaid.data.keyBoss);
+
+                    TeamManager.instance.SetState(CharacterStateType.SearchEnemy);
+                    StageManager.instance.SetState(CharacterStateType.Battle);
+                }
+                break;
         }
     }
+
+    List<Vector3> m_prevPosition;
+
+    void KnockbackCharacter()
+    {
+        List<CharacterComponent> heroes = new();
+        TeamManager.instance.GetHeroes(heroes, true);
+
+        if (m_prevPosition == null)
+            m_prevPosition = heroes.Select(x => x.transform.position).ToList();
+
+        var posBoss = boss.transform.position;
+
+        for (int i = 0; i < heroes.Count; i++)
+        {
+            var hero = heroes[i];
+
+            // TEST
+            hero.transform.position = m_prevPosition[i];
+
+            var lookAt = hero.transform.position - posBoss;
+            var distance = lookAt.magnitude;
+
+            if (distance < m_distanceKnockback)
+            {
+                var bonusDistance = (m_distanceKnockback - distance) * m_weidhtKnockback;
+                Vector3 targetKnocback = posBoss + lookAt.normalized * (m_distanceKnockback + bonusDistance);
+                targetKnocback.z = hero.transform.position.z;
+
+                DOTween.To(() => hero.transform.position, _pos => hero.rig.MovePosition(_pos), targetKnocback, 0.2f);
+            }
+        }
+
+        Utils.AfterSecond(() => BossRaidWorker.instance.Wait_SecondPhase(), 1f);
+    }
+
+#if UNITY_EDITOR
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+            KnockbackCharacter();
+    }
+#endif
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

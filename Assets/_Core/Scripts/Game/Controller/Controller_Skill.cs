@@ -137,11 +137,18 @@ public class Controller_Skill : Controller_Attack
         }
         else if (imgTimer.gameObject.gameObject.activeSelf == true)
         {
-            button.transform.DOPunchScale(Vector3.one * .05f, 0.1f);
+            SetPunchScale();
 
             imgTimer.gameObject.gameObject.SetActive(false);
             m_elementSkill.txtTimer.gameObject.SetActive(false);
         }
+    }
+
+    public void SetPunchScale()
+    {
+        button.transform.DOKill();
+        button.transform.localScale = Vector3.one * 0.6f;
+        button.transform.DOPunchScale(Vector3.one * .05f, 0.1f);
     }
 
     public override void OnManualValidate()

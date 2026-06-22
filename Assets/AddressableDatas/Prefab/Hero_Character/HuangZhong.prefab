@@ -143,13 +143,24 @@ MonoBehaviour:
   m_canvas: {fileID: 7045488851192435257}
   m_stat:
     key: 
+    attack_power: 0
+    defence: 0
+    critical_damage: 0
+    critical_rate: 0
+    health_max: 0
+    move_speed: 0
+    attack_speed: 0
+    cooldown_rate: 0
+    life_steal: 0
+    boss_damage: 0
   m_faction: 0
+  targetTest: []
   m_stateType: 0
   m_element:
     m_panel: {fileID: 5275432920922581809}
     m_rig: {fileID: 1334958584268646887}
     m_animator: {fileID: 2068633348714678171}
-    m_effect_canvas: {fileID: 6283631646254379560}
+    m_effect_canvas_damage: {fileID: 6147772208806461182}
     m_effect_renderer: {fileID: 51110001938798689}
     m_cameraPos: {fileID: 5720239338215933122}
     m_skillRage: {fileID: 0}
@@ -730,9 +741,9 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 3033326539072260189, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 8680402011557302623}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &6283631646254379560 stripped
+--- !u!224 &6147772208806461182 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3406139770568483703, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_CorrespondingSourceObject: {fileID: 3253778042473476001, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 8680402011557302623}
   m_PrefabAsset: {fileID: 0}
 --- !u!223 &7045488851192435257 stripped

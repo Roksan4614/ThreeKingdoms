@@ -427,14 +427,15 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         => m_element.skill.UpdateColltime(_duration, _progress);
 
     public void SetPunchSkill()
-        => m_element.skill.transform.DOPunchScale(Vector3.one * .05f, 0.1f);
+    {
+        m_element.skill.SetPunchScale();
+    }
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
     ElementData m_element;
-    public ElementData element => m_element;
     [Serializable]
     public struct ElementData
     {
@@ -470,7 +471,6 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             panelCall = btnCall.transform.Find("Panel");
             txtCallTimer = panelCall.GetComponent<TextMeshProUGUI>("txt_timer");
             imgCallTimer = panelCall.GetComponent<Image>("Timer");
-
 
             btnDash = _transform.GetComponent<Button>("Action/btn_dash");
             panelDash = btnDash.transform.Find("Panel");

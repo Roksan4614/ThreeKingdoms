@@ -147,8 +147,14 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     }
 
     public float teamMoveSpeed => mainHero.stat.moveSpeed;
-    public CharacterComponent mainHero => m_member[DataManager.option.mainTeamPosition];
-
+    public CharacterComponent mainHero
+    {
+        get
+        {
+            var teamPosition = DataManager.option.mainTeamPosition;
+            return m_member.ContainsKey(teamPosition) ? m_member[teamPosition] : null;
+        }
+    }
 
     public void RestartStage()
     {
@@ -349,6 +355,17 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         foreach (var hero in m_member.Values)
             hero.gameObject.SetActive(_isShow);
+    }
+
+    public void GetHeroes(List<CharacterComponent> _result, bool _isWithLive = false)
+    {
+        _result.Clear();
+
+        foreach (var character in m_member.Values)
+        {
+            if (_isWithLive == false || character.isLive)
+                _result.Add(character);
+        }
     }
 
     public void OnManualValidate() => m_element.Initialize(transform);

@@ -20,15 +20,21 @@ public class Character_Enemy : CharacterComponent
 
         var stageData = StageManager.instance.data;
 
-        float percent = (float)(stageData.level + GradeType.NONE + 1);
-        percent += (stageData.chapterNumber - 1) * 0.1f;
-        percent += (stageData.stageNumber - 1) * 0.1f;
-        SetBuffStat(percent);
 
         if (stageData.isBossWait)
+        {
             SetBuffStat(0.1f);
-        if (isBoss == false)
-            SetBuffStat(0.5f);
+        }
+        else
+        {
+            float percent = (float)(stageData.level + GradeType.NONE + 1);
+            percent += (stageData.chapterNumber - 1) * 0.1f;
+            percent += (stageData.stageNumber - 1) * 0.1f;
+            if (isBoss == false)
+                percent *= 0.5f;
+
+            SetBuffStat(percent);
+        }
 
         SetFaction(FactionType.Enemy);
     }
@@ -55,5 +61,13 @@ public class Character_Enemy : CharacterComponent
         m_stat.health = m_stat.healthMax = m_stat.healthMax * 2;
 
         SetFaction(FactionType.Enemy);
+    }
+    public override void Respawn(bool _isSetState = true)
+    {
+        move.MoveStop();
+        attack.ResetFX();
+        buff.RemoveAll();
+
+        SetColorParts(Color.white);
     }
 }

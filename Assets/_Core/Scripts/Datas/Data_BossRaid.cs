@@ -77,6 +77,8 @@ public class Data_BossRaid
         var tickEndRound = dtEnd.AddSeconds(-Configure.instance.timeGapFromServer).Ticks;
 
         m_data.tickEndRound = dtEnd.Ticks;
+        m_data.nowGrade = (GradeType)UnityEngine.Random.Range((int)m_data.gradeMin, (int)m_data.gradeMax + 1);
+        SaveData();
 
         await UniTask.WaitUntil(() => tickEndRound < System.DateTime.UtcNow.Ticks, cancellationToken: token);
 
@@ -86,8 +88,8 @@ public class Data_BossRaid
 
     public void Start_BossRaid()
     {
-        m_data.nowGrade = (GradeType)UnityEngine.Random.Range((int)m_data.gradeMin, (int)m_data.gradeMax + 1);
-        SaveData();
+        m_raidStatus = BossRaidStatusType.FirstPhase;
+        Signal.instance.BossRaidStatus.Emit(m_raidStatus);
     }
 
     public void Finish_FirstPhase()
@@ -97,8 +99,6 @@ public class Data_BossRaid
 
         m_cts = m_cts.Release();
         remainSeconds = (m_data.dtEndRound - Utils.GetUTC()).TotalSeconds;
-
-
     }
 
     public void Start_SecondPhase()
@@ -125,7 +125,7 @@ public class Data_BossRaid
         SaveData();
 
         m_ctsTestDamage = m_ctsTestDamage.Release();
-        m_rankNow = null;
+        m_rankNow.Clear();
     }
 
     public async UniTask DoLoadAsync_RankData()
@@ -206,7 +206,7 @@ public class Data_BossRaid
         var token = m_ctsTestDamage.Token;
 
         var nickname = Utils.GetRandomNicknameArray(20);
-        m_rankNow = new();
+        m_rankNow.Clear();
 
         var my = new BossRaidRankerUserData();
         my.nickname = DataManager.userInfo.nickname;
@@ -225,6 +225,9 @@ public class Data_BossRaid
 
     public void TestDamageBoss(long _damage)
     {
+        if (m_rankNow.Count == 0)
+            return;
+
         var my = m_rankNow[0];
         my.point += _damage;
         m_rankNow[0] = my;
@@ -240,6 +243,10 @@ public class Data_BossRaid
     async UniTask TestAttackAsync(int _index, long _damage)
     {
         await UniTask.WaitForSeconds(UnityEngine.Random.Range(0.2f, 1f));
+
+        if (m_raidStatus != BossRaidStatusType.FirstPhase &&
+            m_raidStatus != BossRaidStatusType.SecondPhase)
+            return;
 
         var damage = (long)(_damage * UnityEngine.Random.Range(0.5f, 1.5f));
 
@@ -315,9 +322,13 @@ public class Data_BossRaid
     public enum BossRaidStatusType
     {
         Wait,
+
         FirstPhase,
         Finish_FirstPhase,
+
+        Wait_SecondPhase,
         SecondPhase,
+
         Finished,
     }
 }

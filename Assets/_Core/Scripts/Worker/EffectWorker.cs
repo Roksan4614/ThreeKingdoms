@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
@@ -82,7 +83,7 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
         // 데미지 표시해주자
         if (_hitData.value != 0)
         {
-            var targetParent = _hitData.target.element.effect_canvas;
+            var targetParent = _hitData.target.element.effect_canvas_damage;
 
             var txtdamage = m_fx_text[EffectType.damage].Find(x => x.gameObject.activeSelf == false);
 
@@ -107,8 +108,7 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
             if (_hitData.isCritical)
                 trns.DOPunchScale(Vector3.one * 1.2f, 0.2f);
 
-            StartCoroutine(DoShowEffectValue(txtdamage.gameObject, _hitData.target.transform.position,
-                () => trns.SetParent(m_element.canvas)));
+            ShowEffectValueAsync(txtdamage.gameObject, targetParent.position, () => trns.SetParent(m_element.canvas)).Forget();
         }
 
         // effect 연출해주자
@@ -143,26 +143,24 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
         }
     }
 
-    IEnumerator DoShowEffectValue(GameObject _damageObject, Vector3 _posTarget, Action _onCompleted)
+    async UniTask ShowEffectValueAsync(GameObject _damageObject, Vector3 _posTarget, Action _onCompleted)
     {
         _damageObject.SetActive(true);
         Utils.SetObjectAlpha(_damageObject, 1f);
         _damageObject.transform.position =
-            _posTarget + new Vector3(UnityEngine.Random.Range(-.5f, .5f), 2.5f);
+            _posTarget + new Vector3(UnityEngine.Random.Range(-.5f, .5f), 0);
 
         var rt = _damageObject.GetComponent<RectTransform>();
-
 
         var cg = _damageObject.GetComponent<CanvasGroup>();
         if (cg != null)
             cg.alpha = 1;
 
-        yield return rt.DOAnchorPos(
-            rt.anchoredPosition + new Vector2(0, UnityEngine.Random.Range(20, 50f))
-            , 0.5f).SetEase(Ease.OutCubic).WaitForCompletion();
+        await rt.DOAnchorPosY(rt.anchoredPosition.y + UnityEngine.Random.Range(20, 50f)
+            , 0.5f).SetEase(Ease.OutCubic).AsyncWaitForCompletion();
 
         if (cg != null)
-            yield return cg.DOFade(0f, 0.2f).SetEase(Ease.OutCubic).WaitForCompletion();
+            await cg.DOFade(0f, 0.2f).SetEase(Ease.OutCubic).AsyncWaitForCompletion();
 
         if (_damageObject != null)
         {
