@@ -45,15 +45,6 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
         m_isDoing = false;
     }
 
-    public async UniTask FinishedAsync()
-    {
-        m_bossType = BossRaidType.NONE;
-
-        await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
-        await UniTask.WaitForEndOfFrame();
-        AddressableManager.instance.LoadScene("02_Lobby");
-    }
-
     async UniTask<bool> ConnectAsync()
     {
         await UniTask.Yield();
@@ -87,10 +78,14 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
         ControllerManager.instance.SlotStartStage();
 
         InfoStageComponent.instance.SetBossRaid(true);
+
+        TeamManager.instance.SetLockSkill(false);
     }
 
-    public void Finish_FirstPhase(CharacterComponent _boss)
+    public void Finish_Phase(CharacterComponent _boss)
     {
+        TeamManager.instance.SetLockSkill(true);
+
         float fTimeScale = 0.05f; // 느려지는 타임스케일
         float fMoveX = 3f;        // 뒤로 밀쳐지는 거리
         float fSlowDuration = 0.1f;   // 느려지는 거 유지 시간
@@ -116,7 +111,9 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
                 if (DataManager.bossRaid.raidStatus == BossRaidStatusType.FirstPhase)
                     DataManager.bossRaid.Finish_FirstPhase();
                 else
+                
                     DataManager.bossRaid.Finish_BossRaid();
+                
             });
     }
 
@@ -127,6 +124,19 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
     public void Start_SecondPhase()
     {
+        TeamManager.instance.SetLockSkill(false);
+        CameraManager.instance.SetCameraPosTarget(TeamManager.instance.mainHero.element.cameraPos, false);
         DataManager.bossRaid.Start_SecondPhase();
+    }
+
+    public async UniTask ExitAsync()
+    {
+        m_bossType = BossRaidType.NONE;
+        DataManager.bossRaid.ExitBossRaid();
+
+        await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
+        PopupManager.instance.CloseAll();
+        await UniTask.WaitForEndOfFrame();
+        AddressableManager.instance.LoadScene("02_Lobby");
     }
 }

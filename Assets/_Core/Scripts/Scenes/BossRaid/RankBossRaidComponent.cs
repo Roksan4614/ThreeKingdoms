@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -102,30 +103,15 @@ public class RankBossRaidComponent : Singleton<RankBossRaidComponent>, IValidata
                 nickname = DataManager.userInfo.nickname
             });
 
-        var index = -1;
-        var prevRank = 1;
-        var prevPoint = long.MaxValue;
-
+        int startIndex = -2;
         for (int i = 0; i < dbRanker.Count; i++)
         {
-            var ranker = dbRanker[i];
-
-            if (ranker.point < prevPoint)
-            {
-                ranker.rank = i + 1;
-                prevRank = ranker.rank;
-                prevPoint = ranker.point;
+            if (dbRanker[i].uid == DataManager.userInfo.uid){
+                startIndex = i - 2;
+                break;
             }
-            else
-                ranker.rank = prevRank;
-
-            dbRanker[i] = ranker;
-
-            if (ranker.uid == DataManager.userInfo.uid)
-                index = i;
         }
 
-        var startIndex = index - 2;
         for (int i = 0; i < m_element.slots.Length; i++, startIndex++)
         {
             if (startIndex < 0)

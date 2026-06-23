@@ -19,7 +19,7 @@ public class Character_Enemy_RaidBoss : Character_Enemy
                 m_stat = TableManager.statEnemy.GetStatData("Enemy");
         }
 
-        SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 10, _isAttackPower: false);
+        SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 100, _isAttackPower: false);
         SetFaction(FactionType.Enemy);
     }
 
@@ -33,7 +33,7 @@ public class Character_Enemy_RaidBoss : Character_Enemy
 
         // todo
         if (isLive == false)
-            BossRaidWorker.instance.Finish_FirstPhase(this);
+            BossRaidWorker.instance.Finish_Phase(this);
 
         return result;
     }

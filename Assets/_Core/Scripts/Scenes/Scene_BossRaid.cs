@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class Scene_BossRaid : SceneBase
 {
-    bool m_isExit;
     private void Start()
     {
         StartAsync().Forget();
@@ -31,15 +30,6 @@ public class Scene_BossRaid : SceneBase
 
         PopupManager.instance.ShowDimm(false);
 
-    }
-
-    private void Update()
-    {
-        if (m_isExit == false && Input.GetKeyDown(KeyCode.Escape))
-        {
-            m_isExit = true;
-            BossRaidWorker.instance.FinishedAsync().Forget();
-        }
     }
 
     public void SetActiveResult(bool _isActive, bool _isWithTween)

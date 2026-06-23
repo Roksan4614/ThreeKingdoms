@@ -24,6 +24,11 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
         Signal.instance.UpdageBossHP.connect = SlotUpdateBossHP;
     }
 
+    private void OnDestroy()
+    {
+        m_ctsBossRaid = m_ctsBossRaid.Release();
+    }
+
     public void SetBossInfo()
     {
         gameObject.SetActive(true);
@@ -31,7 +36,7 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
 
         // TODO
         if (BossRaidWorker.instance.isRunning)
-            StartBossRaid();
+            StartBossRaid(true);
         else
             m_element.txtName.text = "";
 

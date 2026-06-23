@@ -177,7 +177,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
             }
         }
 
-        m_popupUserInfo = await PopupManager.instance.OpenPopup<PopupUserInfoComponent>(PopupType.UserInfo, userInfo);
+        m_popupUserInfo = await PopupManager.instance.OpenPopupAsync<PopupUserInfoComponent>(PopupType.UserInfo, userInfo);
 
         await UniTask.WaitUntil(() => m_popupUserInfo.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
 

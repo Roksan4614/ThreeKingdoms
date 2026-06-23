@@ -34,7 +34,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             async () =>
             {
                 if (m_popupFilter == null)
-                    m_popupFilter = await PopupManager.instance.OpenPopup<PopupHeroFilter>(PopupType.Hero_Filter);
+                    m_popupFilter = await PopupManager.instance.OpenPopupAsync<PopupHeroFilter>(PopupType.Hero_Filter);
                 else
                     m_popupFilter.OpenPopup();
 
@@ -48,7 +48,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             async () =>
             {
                 if (m_popupSort == null)
-                    m_popupSort = await PopupManager.instance.OpenPopup<PopupHeroSort>(PopupType.Hero_Sort);
+                    m_popupSort = await PopupManager.instance.OpenPopupAsync<PopupHeroSort>(PopupType.Hero_Sort);
                 else
                     m_popupSort.OpenPopup();
 
@@ -306,7 +306,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     {
         if (m_popupHeroInfo == null)
         {
-            m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo, _data);
+            m_popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo, _data);
             m_popupHeroInfo.isDontDestroy = true;
         }
         else

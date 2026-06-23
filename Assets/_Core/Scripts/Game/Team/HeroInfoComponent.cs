@@ -29,8 +29,15 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public bool isActive => m_hero != null;
 
+    bool m_isLock_Skill;
+
+    public void SetLockSkill(bool _isLock) => m_isLock_Skill = _isLock;
+
     public void OnButton_UseSkill()
     {
+        if (m_isLock_Skill == true)
+            return;
+
         if (m_statusSkill == StatusType.Valid &&
             m_hero.attack.IsValidUseSkill())
         {
@@ -136,7 +143,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
         if (stat.health <= 0)
         {
-            if (TeamManager.instance.IsAllDie() == false || BossRaidWorker.instance.isRunning == true)
+            if (BossRaidWorker.instance.isRunning == true || TeamManager.instance.IsAllDie() == false)
             {
                 bar.DOAnchorPosX(targetX, 0.1f);
 

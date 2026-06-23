@@ -386,7 +386,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             PopupManager.instance.AlertShow(
                 $"[{stringGrade}] {dbHeroData.name.WithJosa()} 진영에 합류합니다.", 55);
 
-            PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo);
+            PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
             popupHeroInfo.AutoCloseAsync(5f).Forget();
 
             var heroInfoData = DataManager.userInfo.GetHeroInfoData(itemComp.data.value);

@@ -196,7 +196,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
     async UniTask OpenUseTimeStoneAsync(CastleMissionData _missionData)
     {
-        m_popupTimeStone = await PopupManager.instance.OpenPopup<PopupUseTimeStoneComponent>(PopupType.UseTimeStone);
+        m_popupTimeStone = await PopupManager.instance.OpenPopupAsync<PopupUseTimeStoneComponent>(PopupType.UseTimeStone);
 
         var endTime = new DateTime(_missionData.tickEnd, DateTimeKind.Utc);
         var ts = endTime - Utils.GetUTC();

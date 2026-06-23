@@ -368,6 +368,11 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         }
     }
 
+    public void SetLockSkill(bool _isLock)
+    {
+        heroInfo.SetLockSkill(_isLock);
+    }
+
     public void OnManualValidate() => m_element.Initialize(transform);
 
     //[SerializeField]

@@ -27,6 +27,8 @@ public partial class InfoStage_Boss
         else if (_status == BossRaidStatusType.Wait_SecondPhase)
         {
             InfoStageComponent.instance.SetActive(true, true);
+            StartBossRaid(false);
+
             m_element.rtBar.DOAnchorPosX(0, 0.5f).SetEase(Ease.OutCubic).OnComplete(() =>
                 Utils.AfterSecond(() => BossRaidWorker.instance.Start_SecondPhase(), .3f));
         }
@@ -34,17 +36,20 @@ public partial class InfoStage_Boss
         {
             m_rtTimer.SetAnchoredPositionX(0);
             m_rtTimer.gameObject.SetActive(true);
+
+            var dataRaid = DataManager.bossRaid.data;
+            TimerAsync((dataRaid.dtEndRound - dataRaid.dtSecondPhase).TotalMinutes).Forget();
         }
     }
 
-    void StartBossRaid()
+    void StartBossRaid(bool _isStartTimer)
     {
         var dataRaid = DataManager.bossRaid.data;
 
-        //"여포<color=#6D6D6D><size=80%> 최강무장</size></color>";
-        m_element.txtName.text = $"[<color=#{Palette.GetHexa_GradeText(dataRaid.nowGrade)}>{TableManager.stringTable.GetGradeType(dataRaid.nowGrade)}</color>] {TableManager.hero.Get(dataRaid.keyBoss).name}";
+        m_element.txtName.text = dataRaid.bossName;
 
-        TimerAsync((dataRaid.dtEndRound - dataRaid.dtNextRound).TotalMinutes).Forget();
+        if (_isStartTimer)
+            TimerAsync((dataRaid.dtEndRound - dataRaid.dtNextRound).TotalMinutes).Forget();
     }
 
     async UniTask TimerAsync(double _ramainTime)

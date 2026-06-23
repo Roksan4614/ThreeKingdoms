@@ -82,6 +82,7 @@ public class Data_BossRaid
 
         await UniTask.WaitUntil(() => tickEndRound < System.DateTime.UtcNow.Ticks, cancellationToken: token);
 
+        TeamManager.instance.SetLockSkill(true);
         Finish_BossRaid();
         TimerAsync().Forget();
     }
@@ -125,6 +126,10 @@ public class Data_BossRaid
         SaveData();
 
         m_ctsTestDamage = m_ctsTestDamage.Release();
+    }
+
+    public void ExitBossRaid()
+    {
         m_rankNow.Clear();
     }
 
@@ -223,7 +228,7 @@ public class Data_BossRaid
         }
     }
 
-    public void TestDamageBoss(long _damage)
+    public void SendDamageBossAsync(long _damage)
     {
         if (m_rankNow.Count == 0)
             return;
@@ -232,12 +237,31 @@ public class Data_BossRaid
         my.point += _damage;
         m_rankNow[0] = my;
 
-        RankBossRaidComponent.instance.UpdateRanker();
-
         for (int i = 1; i < m_rankNow.Count; i++)
-        {
             TestAttackAsync(i, _damage).Forget();
+
+        m_rankNow = m_rankNow.SortByDescending(x => x.point);
+
+        var prevRank = 1;
+        var prevPoint = long.MaxValue;
+
+        for (int i = 0; i < m_rankNow.Count; i++)
+        {
+            var ranker = m_rankNow[i];
+
+            if (ranker.point < prevPoint)
+            {
+                ranker.rank = i + 1;
+                prevRank = ranker.rank;
+                prevPoint = ranker.point;
+            }
+            else
+                ranker.rank = prevRank;
+
+            m_rankNow[i] = ranker;
         }
+
+        RankBossRaidComponent.instance.UpdateRanker();
     }
 
     async UniTask TestAttackAsync(int _index, long _damage)
@@ -255,8 +279,6 @@ public class Data_BossRaid
         m_rankNow[_index] = ranker;
 
         StageManager.instance.enemyList[0].OnDamage(null, damage);
-
-        RankBossRaidComponent.instance.UpdateRanker();
     }
 
     void SaveData()
@@ -286,6 +308,18 @@ public class Data_BossRaid
         public System.DateTime dtNextRound => Utils.GetDateTime(tickNextRound);
         public System.DateTime dtEndRound => Utils.GetDateTime(tickEndRound);
         public System.DateTime dtSecondPhase => Utils.GetDateTime(tickSecondPhase);
+
+        public string bossName
+        {
+            get
+            {
+                string name = $"[<color=#{Palette.GetHexa_GradeText(nowGrade)}>{TableManager.stringTable.GetGradeType(nowGrade)}</color>] ";
+                if (DataManager.bossRaid.raidStatus > BossRaidStatusType.Wait_SecondPhase)
+                    name += "Áø.";
+                name += TableManager.hero.Get(keyBoss).name;
+                return name;
+            }
+        }
 
         public void TestDefault()
         {

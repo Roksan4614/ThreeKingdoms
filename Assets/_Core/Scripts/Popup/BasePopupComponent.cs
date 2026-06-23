@@ -11,7 +11,6 @@ public abstract class BasePopupComponent : MonoBehaviour, IValidatable
 
     protected virtual void Awake()
     {
-
         transform.GetComponent<Button>("Panel/btn_close")?.onClick.AddListener(Close);
         var btnDimm = transform.GetComponent<Button>("Dimm");
         if (btnDimm != null)

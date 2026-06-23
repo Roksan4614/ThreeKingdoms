@@ -20,6 +20,7 @@ public class Character_Worker_Move : Character_Worker
         m_owner.rig.linearVelocity = Vector2.zero;
         m_owner.anim.Play(CharacterAnimType.Idle);
 
+        m_owner.target.SetTarget(null);
         m_ctsMoveTarget = m_ctsMoveTarget.Release();
     }
 
@@ -70,6 +71,9 @@ public class Character_Worker_Move : Character_Worker
     {
         m_ctsMoveTarget = m_ctsMoveTarget.Release(true);
         var token = m_ctsMoveTarget.Token;
+
+        if (m_owner.buff.IsActive(BuffType.DEBUFF_NO_MOVE))
+            return;
 
         while (_target != null && _target.isLive)
         {

@@ -140,6 +140,11 @@ public class Character_Worker_Attack : Character_Worker
         isRunningAttack = false;
     }
 
+    public void Die()
+    {
+        m_weapon.Die();
+    }
+
     public bool isRunningSlash => m_weapon.isRunningSlash;
 
     public void OnDrag_ControllSkill(Vector3 _targetPos)

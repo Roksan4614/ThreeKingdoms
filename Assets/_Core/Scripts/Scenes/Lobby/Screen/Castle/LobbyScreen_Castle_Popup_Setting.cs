@@ -227,7 +227,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     async UniTask OnButton_TimeStoneAsync()
     {
-        m_popupTimeStone = await PopupManager.instance.OpenPopup<PopupUseTimeStoneComponent>(PopupType.UseTimeStone);
+        m_popupTimeStone = await PopupManager.instance.OpenPopupAsync<PopupUseTimeStoneComponent>(PopupType.UseTimeStone);
         m_popupTimeStone.UpdateRemainTime(DataManager.castle.building.GetUpgradeData(m_castleData).ts);
 
         var rtScroll = (RectTransform)m_element.scroll.transform;
@@ -453,9 +453,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         rtScroll.DOAnchorPosY(0, 0.1f);
 
         if (m_popupHeroList == null)
-            m_popupHeroList = await PopupManager.instance
-                .OpenPopup<PopupCastleHeroListComponent>(PopupType.Castle_HeroList,
-                m_castleData);
+            m_popupHeroList = await PopupManager.instance.OpenPopupAsync<PopupCastleHeroListComponent>(PopupType.Castle_HeroList, m_castleData);
         else
         {
             m_popupHeroList.gameObject.SetActive(true);
@@ -491,7 +489,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         if (m_popupHeroInfo == null)
         {
-            m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo, _heroInfoData);
+            m_popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo, _heroInfoData);
             m_popupHeroInfo.isDontDestroy = true;
         }
         else

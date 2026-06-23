@@ -10,10 +10,7 @@ public class Banner_BossRaid : MonoBehaviour, IValidatable
 
     void Start()
     {
-        m_element.button.onClick.AddListener(() =>
-        {
-            PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid).Forget();
-        });
+        m_element.button.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid));
 
         TimerAsync().Forget();
     }

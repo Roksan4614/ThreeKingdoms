@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,9 @@ using static Data_BossRaid;
 
 public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
 {
-    [SerializeField] float m_durationChange = 1.5f;
-    [SerializeField] float m_distanceKnockback = 3f;
-    [SerializeField] float m_weidhtKnockback = .5f;
+    float m_durationChange = 1.5f;
+    float m_distanceKnockback = 7f;
+    float m_weidhtKnockback = .5f;
 
     CancellationTokenSource m_cts;
 
@@ -33,9 +34,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
     }
 
     private void OnDestroy()
-    {
-        m_cts = m_cts.Release();
-    }
+        => m_cts = m_cts.Release();
 
     void SlotBossRaidStatus(BossRaidStatusType _status)
     {
@@ -53,38 +52,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
             case BossRaidStatusType.Finish_FirstPhase:
             case BossRaidStatusType.Finished:
                 {
-                    StageManager.instance.SetState(CharacterStateType.None);
-                    TeamManager.instance.SetState(CharacterStateType.None);
-
-                    (Scene_BossRaid.instance as Scene_BossRaid).SetActiveResult(true, true);
-                    InfoStageComponent.instance.SetActive(false, true);
-
-                    if (_status == BossRaidStatusType.Finish_FirstPhase)
-                    {
-                        // 진여포 각성
-                        Utils.AfterSecond(() =>
-                        {
-                            // todo 확률로 떠야 해
-                            //(Scene_BossRaid.instance as Scene_BossRaid).SetActiveResult(false, true);
-
-                            m_element.fxChangeBoss.transform.position = m_element.bossJIN.transform.position = m_element.boss.transform.position;
-                            m_element.fxChangeBoss.SetActive(true);
-
-                            // 오브젝트 바꾸기
-                            Utils.AfterSecond(() =>
-                            {
-                                m_element.boss.gameObject.SetActive(false);
-                                m_element.bossJIN.gameObject.SetActive(true);
-
-                                m_element.bossJIN.anim.Play("Boss_Die_End");
-
-                                (Scene_BossRaid.instance as Scene_BossRaid).SetActiveResult(false, true);
-
-                                // 근처 적들 뒤로 밀치기
-                                Utils.AfterSecond(KnockbackCharacter, 0.07f, token);
-                            }, m_durationChange);
-                        }, 1f, token);
-                    }
+                    ActionAsync_FinishPhase(_status).Forget();
                 }
                 break;
             case BossRaidStatusType.SecondPhase:
@@ -101,24 +69,63 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         }
     }
 
-    List<Vector3> m_prevPosition;
+    CancellationTokenSource m_ctsAction;
+    async UniTask ActionAsync_FinishPhase(BossRaidStatusType _status)
+    {
+        m_ctsAction = m_ctsAction.Release(true);
+        var token = m_ctsAction.Token;
+
+        StageManager.instance.SetState(CharacterStateType.None);
+        TeamManager.instance.SetState(CharacterStateType.None);
+
+        InfoStageComponent.instance.SetActive(false, true);
+
+        await UniTask.WaitForSeconds(1f, cancellationToken: token);
+
+        (Scene_BossRaid.instance as Scene_BossRaid).SetActiveResult(true, true);
+
+        await UniTask.WaitForSeconds(.5f, cancellationToken: token);
+
+        if (_status == BossRaidStatusType.Finish_FirstPhase)
+        {
+            m_element.fxChangeBoss.transform.position = m_element.bossJIN.transform.position = m_element.boss.transform.position;
+            m_element.fxChangeBoss.SetActive(true);
+
+            await UniTask.WaitForSeconds(m_durationChange, cancellationToken: token);
+
+            m_element.boss.gameObject.SetActive(false);
+            m_element.bossJIN.gameObject.SetActive(true);
+
+            m_element.bossJIN.anim.Play("Boss_Die_End");
+
+            (Scene_BossRaid.instance as Scene_BossRaid).SetActiveResult(false, true);
+
+            await UniTask.WaitForSeconds(0.07f, cancellationToken: token);
+
+            KnockbackCharacter();
+
+            await UniTask.WaitForSeconds(1f, cancellationToken: token);
+
+            BossRaidWorker.instance.Wait_SecondPhase();
+        }
+        else
+        {
+            PopupManager.instance.OpenPopup(PopupType.BossRaidResult);
+        }
+    }
 
     void KnockbackCharacter()
     {
         List<CharacterComponent> heroes = new();
         TeamManager.instance.GetHeroes(heroes, true);
 
-        if (m_prevPosition == null)
-            m_prevPosition = heroes.Select(x => x.transform.position).ToList();
-
         var posBoss = boss.transform.position;
+
+        CameraManager.instance.Shake();
 
         for (int i = 0; i < heroes.Count; i++)
         {
             var hero = heroes[i];
-
-            // TEST
-            hero.transform.position = m_prevPosition[i];
 
             var lookAt = hero.transform.position - posBoss;
             var distance = lookAt.magnitude;
@@ -132,8 +139,6 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
                 DOTween.To(() => hero.transform.position, _pos => hero.rig.MovePosition(_pos), targetKnocback, 0.2f);
             }
         }
-
-        Utils.AfterSecond(() => BossRaidWorker.instance.Wait_SecondPhase(), 1f);
     }
 
 #if UNITY_EDITOR

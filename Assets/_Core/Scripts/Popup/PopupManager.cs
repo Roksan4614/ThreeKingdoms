@@ -29,6 +29,8 @@ public enum PopupType
     LobbyBossRaid,
     UserInfo,
 
+    BossRaidResult,
+
     Modal_Start,
     Modal,
     Modal_TalkSelect,
@@ -72,12 +74,10 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         return m_dicPopup.ContainsKey(_popupType) ? m_dicPopup[_popupType].Result : null;
     }
 
-    public async UniTask<GameObject> OpenPopup(PopupType _popupType, params object[] _data)
-    {
-        return (await OpenPopup<BasePopupComponent>(_popupType, _data)).gameObject;
-    }
+    public void OpenPopup(PopupType _popupType, params object[] _data)
+        => OpenPopupAsync<BasePopupComponent>(_popupType, _data).Forget();
 
-    public async UniTask<T> OpenPopup<T>(PopupType _popupType, params object[] _data) where T : BasePopupComponent
+    public async UniTask<T> OpenPopupAsync<T>(PopupType _popupType, params object[] _data) where T : BasePopupComponent
     {
         GameObject popupObject = await LoadAsset(_popupType);
 
@@ -94,11 +94,6 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         return popup?.GetComponent<T>();
     }
 
-    public IEnumerator DoOpenPopup(PopupType _popupType, params object[] _data)
-    {
-        yield return OpenPopupAndWait(_popupType, _data).ToCoroutine();
-    }
-
     public async UniTask OpenPopupAndWait(PopupType _popupType, params object[] _data)
     {
         await OpenPopupAndWait<BasePopupComponent>(_popupType, _data);
@@ -106,7 +101,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     public async UniTask<T> OpenPopupAndWait<T>(PopupType _popupType, params object[] _data) where T : BasePopupComponent
     {
-        var popup = await OpenPopup<T>(_popupType, _data);
+        var popup = await OpenPopupAsync<T>(_popupType, _data);
 
         await UniTask.WaitUntil(() => popup == null || popup.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken)
             .SuppressCancellationThrow();
@@ -152,7 +147,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     public async UniTask ShowDimmAsync(bool _isShow, bool _isFade = true, bool _isOpercity = false, float _duration = .5f, float _durationWait = .5f)
     {
         m_tweenDimm?.Kill();
-        
+
         m_ctsDimm = m_ctsDimm.Release(true);
 
         if (_isFade)

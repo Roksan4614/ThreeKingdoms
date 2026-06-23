@@ -61,7 +61,7 @@ public class LobbyScreen_Hero_Collection_Item : MonoBehaviour, IValidatable
 
     async UniTask OnButtonAsync_Hero(HeroInfoData _heroInfoData)
     {
-        var popup = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo);
+        var popup = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
 
         _heroInfoData = DataManager.userInfo.GetHeroInfoData(_heroInfoData.key);
 

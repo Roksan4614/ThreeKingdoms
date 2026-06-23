@@ -181,7 +181,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
         if (m_popupHeroInfo == null)
         {
-            m_popupHeroInfo = await PopupManager.instance.OpenPopup<PopupHeroInfo>(PopupType.Hero_HeroInfo, _heroInfoData);
+            m_popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo, _heroInfoData);
             m_popupHeroInfo.isDontDestroy = true;
         }
         else

@@ -126,6 +126,9 @@ public class CharacterComponent : TargetComponent
 
     public void SetState(CharacterStateType _stateType)
     {
+        if (_stateType == CharacterStateType.None)
+            move.MoveStop();
+
         m_state?.Stop();
         m_state = m_dbState.ContainsKey(_stateType) ? m_dbState[_stateType] : null;
         m_state?.Start();
@@ -153,7 +156,7 @@ public class CharacterComponent : TargetComponent
         // 레이드 진행중이고
         // 공격자가 내 장수들ㅇ라면, 
         if (BossRaidWorker.instance.isRunning == true && _attacker?.factionType == FactionType.Alliance)
-            DataManager.bossRaid.TestDamageBoss((long)_damage);
+            DataManager.bossRaid.SendDamageBossAsync((long)_damage);//.Forget();
 
         if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE) == false)
         {
@@ -162,7 +165,9 @@ public class CharacterComponent : TargetComponent
             {
                 m_stat.health = 0;
                 m_state?.Stop();
+
                 move.MoveStop();
+                attack.Die();
 
                 anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
 

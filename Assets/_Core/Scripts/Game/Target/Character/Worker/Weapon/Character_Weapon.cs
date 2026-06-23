@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 public class Character_Weapon : MonoBehaviour, IValidatable
@@ -19,7 +20,9 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     public bool isUseSkill { get; protected set; }
     protected bool isControllSkillPosition { get; private set; }
 
-    private void Awake()
+    protected CancellationTokenSource m_cts;
+
+    protected virtual void Awake()
     {
         for (int i = 0; i < m_animSlash.Count; i++)
             m_animSlash[i].gameObject.SetActive(false);
@@ -32,7 +35,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         }
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         if (m_animSlash.Count > 0 && m_animSlash[0].transform.parent != m_owner.panel)
         {
@@ -41,26 +44,8 @@ public class Character_Weapon : MonoBehaviour, IValidatable
                 Destroy(m_animSlash[i].gameObject);
             }
         }
-    }
 
-    public void OnManualValidate()
-    {
-        m_owner = transform.parent?.GetComponent<CharacterComponent>();
-        m_skillRange = m_owner.transform.Find("SkillRange");
-
-        m_animSlash.Clear();
-        var fxAttack = transform.GetComponent<SpriteAnimaion>("Panel/FxAttack");
-        if (fxAttack != null && fxAttack.transform.childCount > 0)
-        {
-            m_animSlash.Add(fxAttack);
-
-            for (int i = 1; i < fxAttack.transform.childCount; i++)
-            {
-                var sub = fxAttack.transform.GetChild(i).GetComponent<SpriteAnimaion>();
-                if (sub != null)
-                    m_animSlash.Add(sub);
-            }
-        }
+        m_cts = m_cts.Release();
     }
 
     public bool isAttack { get; private set; } = false;
@@ -98,10 +83,6 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
         isUseSkill = false;
     }
-
-    //public virtual IEnumerator DoUseSkill()
-    //{
-    //}
 
     public virtual void EventAttackHit(CharacterComponent _owner)
     {
@@ -182,6 +163,10 @@ public class Character_Weapon : MonoBehaviour, IValidatable
             m_animSlash[i].Stop();
     }
 
+    public virtual void Die()
+    {
+    }
+
     public bool isRunningSlash
     {
         get
@@ -198,4 +183,25 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     public virtual void OnDrag_ControllSkill(Vector3 _targetPos) { }
     public virtual void OnUp_ControllSkill() { }
     public virtual void OnCancel_ControllSkill() { }
+
+    public virtual void OnManualValidate()
+    {
+        m_owner = transform.parent?.GetComponent<CharacterComponent>();
+        m_skillRange = m_owner.transform.Find("SkillRange");
+
+        m_animSlash.Clear();
+        var fxAttack = transform.GetComponent<SpriteAnimaion>("Panel/FxAttack");
+        if (fxAttack != null && fxAttack.transform.childCount > 0)
+        {
+            m_animSlash.Add(fxAttack);
+
+            for (int i = 1; i < fxAttack.transform.childCount; i++)
+            {
+                var sub = fxAttack.transform.GetChild(i).GetComponent<SpriteAnimaion>();
+                if (sub != null)
+                    m_animSlash.Add(sub);
+            }
+        }
+    }
+
 }

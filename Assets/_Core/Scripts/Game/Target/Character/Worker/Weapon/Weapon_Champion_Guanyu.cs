@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 public class Weapon_Champion_Guanyu : Weapon_Champion
@@ -20,6 +21,16 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
                 m_maxSqrMagnitue = Mathf.Pow(m_maxMagnitude, 2);
             return m_maxSqrMagnitue;
         }
+    }
+
+    CancellationTokenSource m_ctsMoveSkill;
+    CancellationTokenSource m_ctsUseSkill;
+
+    protected override void OnDestroy()
+    {
+        m_ctsMoveSkill = m_ctsMoveSkill.Release();
+        m_ctsUseSkill = m_ctsUseSkill.Release();
+        base.OnDestroy();
     }
 
     Color m_colorTargetting;
@@ -41,8 +52,17 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         return false;
     }
 
+    public override void Die()
+    {
+        m_ctsMoveSkill = m_ctsMoveSkill.Release();
+        m_ctsUseSkill = m_ctsUseSkill.Release();
+    }
+
     async UniTask MoveAndUseSkill()
     {
+        m_ctsMoveSkill = m_ctsMoveSkill.Release(true);
+        var token = m_ctsMoveSkill.Token;
+
         CharacterComponent target = null;
         while (ControllerManager.instance.isDoing == false)
         {
@@ -60,12 +80,15 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
                 break;
             }
 
-            await UniTask.Yield(cancellationToken: destroyCancellationToken);
+            await UniTask.Yield(cancellationToken: token);
         }
     }
 
     public override async UniTask UseSkillAsync()
     {
+        m_ctsUseSkill = m_ctsUseSkill.Release(true);
+        var token = m_ctsUseSkill.Token;
+
         Vector3 targetPos = m_skillRange.position;
 
         // 그냥 스킬을 쓴거라면, 가장 가까운 적에게 날라가자.
@@ -94,19 +117,22 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
         EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);
 
-        await DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), targetPos, 0.2f).OnUpdate(() =>
-        {
-            UpdateEnemyStatus();
-
-            if (DateTime.Now > dt)
+        var m_tweenSkillMove = DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), targetPos, 0.2f)
+            .OnUpdate(() =>
             {
-                EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);
-                dt = DateTime.Now.AddSeconds(10);
+                UpdateEnemyStatus();
 
-                m_owner.anim.AttackMotionEnd();
-                m_owner.attack.ShowSlashEffect(true);
-            }
-        }).AsyncWaitForCompletion();
+                if (DateTime.Now > dt)
+                {
+                    EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);
+                    dt = DateTime.Now.AddSeconds(10);
+
+                    m_owner.anim.AttackMotionEnd();
+                    m_owner.attack.ShowSlashEffect(true);
+                }
+            });
+
+        await m_tweenSkillMove.AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(token);
 
         bool isTargetting = false;
         var damage = m_owner.stat.attackPower * 2;
@@ -128,37 +154,24 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
                 });
                 target.OnDamage(m_owner, damage);
 
-                target.buff.Add(BuffType.DEBUFF_NO_MOVE, 0.1f);
+                target.buff.Add(BuffType.DEBUFF_NO_MOVE, _duration: 0.1f);
 
                 //적들을 관우쪽으로 끌어당기기
-                target.transform.DOMove(
-                    Vector3.Lerp(target.transform.position, m_owner.transform.position, 0.5f),
-                    0.1f);
+                if (enemyList.Count > 1)
+                    target.transform.DOMove(Vector3.Lerp(target.transform.position, m_owner.transform.position, 0.5f), 0.1f);
             }
 
             target.SetColorParts(Color.white);
         }
 
         await UniTask.WaitUntil(
-            () => m_owner.attack.isRunningAttack == false && m_owner.attack.isRunningSlash == false);
+            () => m_owner.attack.isRunningAttack == false && m_owner.attack.isRunningSlash == false, cancellationToken: destroyCancellationToken);
 
         if (isTargetting == true)
             m_owner.move.MoveTarget(StageManager.instance.GetNearestEnemy(targetPos), true);
 
         m_isUseSkillControll = false;
         ControllerManager.instance.SetSwitch(true);
-    }
-
-    public override void OnDrag_ControllSkill(Vector3 _targetPos)
-    {
-        m_skillRange.gameObject.SetActive(true);
-
-        var ownerPos = m_owner.transform.position;
-        var lookAt = Vector3.ClampMagnitude(_targetPos - ownerPos, m_maxMagnitude);
-
-        m_skillRange.position = ownerPos + lookAt;
-
-        UpdateEnemyStatus();
     }
 
     void UpdateEnemyStatus()
@@ -175,6 +188,18 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
             e.SetColorParts(isTargetting == true ? m_colorTargetting : Color.white);
         }
+    }
+
+    public override void OnDrag_ControllSkill(Vector3 _targetPos)
+    {
+        m_skillRange.gameObject.SetActive(true);
+
+        var ownerPos = m_owner.transform.position;
+        var lookAt = Vector3.ClampMagnitude(_targetPos - ownerPos, m_maxMagnitude);
+
+        m_skillRange.position = ownerPos + lookAt;
+
+        UpdateEnemyStatus();
     }
 
     bool m_isDrag = false;

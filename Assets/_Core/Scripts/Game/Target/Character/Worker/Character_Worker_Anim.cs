@@ -35,7 +35,7 @@ public class Character_Worker_Anim : Character_Worker
     }
 
     public bool IsType(CharacterAnimType _animType, int _layerIndex = 0)
-        => m_animator.GetCurrentAnimatorStateInfo(_layerIndex).IsName(_animType.ToString());
+        => GetStateInfo(_layerIndex).IsName(_animType.ToString());
 
     public void Play(string _anim, int _layerIndex = 0)
         => m_animator.CrossFade(_anim, 0, _layerIndex, 0);
@@ -74,6 +74,8 @@ public class Character_Worker_Anim : Character_Worker
 
     public void AttackMotionEnd() => m_animator.speed = 1;
 
+    public AnimatorStateInfo GetStateInfo(int _layerIndex = 0)
+        => m_animator.GetCurrentAnimatorStateInfo(_layerIndex);
 }
 
 [Serializable]
