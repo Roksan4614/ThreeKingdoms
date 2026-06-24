@@ -34,7 +34,8 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
     async UniTask OnButtonAsync_Start()
     {
         m_element.btnStart.interactable = false;
-        m_characterBoss.anim.Play(CharacterAnimType.Attack);
+        m_characterBoss.anim.Play(CharacterAnimType.Skill, 0, 0.4f);
+        m_characterBoss.anim.SetSpeed(1.2f);
 
         await UniTask.WaitForSeconds(1f);
 
@@ -70,12 +71,14 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
     {
         var raidData = DataManager.bossRaid.data;
 
+        var key = raidData.keyBoss + "_BossRaid";
+
         // 일단 테스트로 있는거기때문에 없애주자.
         m_characterBoss = null;
         for (int i = 0; i < m_element.pHero.childCount; i++)
         {
             var item = m_element.pHero.GetChild(i).gameObject;
-            if (raidData.keyBoss == item.name)
+            if (key == item.name)
             {
                 m_characterBoss = item.GetComponent<CharacterComponent>();
                 break;
@@ -85,7 +88,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         if (m_characterBoss == null)
         {
-            var asset = await AddressableManager.instance.GetHeroCharacterAsync(raidData.keyBoss);
+            var asset = await AddressableManager.instance.GetHeroCharacterAsync(key);
             m_characterBoss = Instantiate(asset, m_element.pHero).GetComponent<CharacterComponent>();
         }
 

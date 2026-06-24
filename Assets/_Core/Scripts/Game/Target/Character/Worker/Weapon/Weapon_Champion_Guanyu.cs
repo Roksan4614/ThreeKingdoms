@@ -144,15 +144,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             if (target.isLive == true && (target.transform.position - targetPos).sqrMagnitude < c_maxSqrMagnitudeRange)
             {
                 isTargetting = true;
-                EffectWorker.instance.SlotDamageTakenEffect(new()
-                {
-                    attacker = m_owner.transform,
-                    target = target,
-                    value = -damage,
-                    isCritical = true,
-                    isAlliance = target.factionType == FactionType.Alliance
-                });
-                target.OnDamage(m_owner, damage);
+                target.OnDamage(m_owner, damage, true);
 
                 target.buff.Add(BuffType.DEBUFF_NO_MOVE, _duration: 0.1f);
 

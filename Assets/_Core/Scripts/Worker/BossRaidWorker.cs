@@ -21,6 +21,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
     BossRaidType m_bossType = BossRaidType.NONE;
     public BossRaidType bossType => m_bossType;
     public bool isRunning => m_bossType > BossRaidType.NONE;
+    public bool isSuccessed { get; private set; }
 
     public async UniTask InitializeAsync(BossRaidType _bossType)
     {
@@ -78,13 +79,12 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
         ControllerManager.instance.SlotStartStage();
 
         InfoStageComponent.instance.SetBossRaid(true);
-
-        TeamManager.instance.SetLockSkill(false);
     }
 
     public void Finish_Phase(CharacterComponent _boss)
     {
-        TeamManager.instance.SetLockSkill(true);
+        isSuccessed = true;
+        TeamManager.instance.AddBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
 
         float fTimeScale = 0.05f; // 느려지는 타임스케일
         float fMoveX = 3f;        // 뒤로 밀쳐지는 거리
@@ -111,22 +111,28 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
                 if (DataManager.bossRaid.raidStatus == BossRaidStatusType.FirstPhase)
                     DataManager.bossRaid.Finish_FirstPhase();
                 else
-                
-                    DataManager.bossRaid.Finish_BossRaid();
-                
+                    Finish_BossRaid(true);
             });
     }
 
     public void Wait_SecondPhase()
     {
+        isSuccessed = false;
         Signal.instance.BossRaidStatus.Emit(BossRaidStatusType.Wait_SecondPhase);
     }
 
     public void Start_SecondPhase()
     {
-        TeamManager.instance.SetLockSkill(false);
+        TeamManager.instance.RemoveBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
         CameraManager.instance.SetCameraPosTarget(TeamManager.instance.mainHero.element.cameraPos, false);
         DataManager.bossRaid.Start_SecondPhase();
+    }
+
+    public void Finish_BossRaid(bool _isSuccessed)
+    {
+        isSuccessed = _isSuccessed;
+        TeamManager.instance.AddBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
+        DataManager.bossRaid.Finish_BossRaid();
     }
 
     public async UniTask ExitAsync()

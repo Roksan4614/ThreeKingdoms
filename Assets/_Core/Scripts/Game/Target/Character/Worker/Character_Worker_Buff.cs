@@ -37,10 +37,18 @@ public class Character_Worker_Buff : Character_Worker
         bool isContainsKey = m_dbBuff.ContainsKey(_buffType);
         if (_buffType > BuffType.NONE)
         {
-            if (isContainsKey)
+            if (_hash > 0)
             {
-                int idx = m_dbBuff[_buffType].FindIndex(x => x.hash == _hash);
-                m_dbBuff[_buffType].RemoveAt(idx);
+                if (isContainsKey)
+                {
+                    int idx = m_dbBuff[_buffType].FindIndex(x => x.hash == _hash);
+                    m_dbBuff[_buffType].RemoveAt(idx);
+                }
+            }
+            else
+            {
+                m_dbBuff.Remove(_buffType);
+                isContainsKey = false;
             }
         }
         else

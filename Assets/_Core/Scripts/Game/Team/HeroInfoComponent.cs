@@ -29,15 +29,8 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public bool isActive => m_hero != null;
 
-    bool m_isLock_Skill;
-
-    public void SetLockSkill(bool _isLock) => m_isLock_Skill = _isLock;
-
     public void OnButton_UseSkill()
     {
-        if (m_isLock_Skill == true)
-            return;
-
         if (m_statusSkill == StatusType.Valid &&
             m_hero.attack.IsValidUseSkill())
         {
@@ -148,7 +141,9 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
                 bar.DOAnchorPosX(targetX, 0.1f);
 
                 m_ctsRespawn = m_ctsRespawn.Release(true);
-                RespawnAsync(bar, 30).Forget();
+
+                var duration = BossRaidWorker.instance.isRunning ? 7 : 30;
+                RespawnAsync(bar, duration).Forget();
             }
         }
         else
@@ -310,6 +305,12 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
             await UniTask.Yield(cancellationToken: m_ctsCooldownSkill.Token);
         }
     }
+
+    public void AddBuff(BuffType _buffType)
+        => m_hero?.buff.Add(_buffType);
+
+    public void RemoveBuff(BuffType _buffType)
+        => m_hero?.buff.Remove(-1, _buffType);
 
     struct CooltimeData
     {

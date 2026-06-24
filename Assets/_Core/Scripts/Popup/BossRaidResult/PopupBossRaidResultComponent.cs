@@ -47,6 +47,9 @@ public class PopupBossRaidResultComponent : BasePopupComponent
                 break;
             }
         }
+
+        m_element.imgSuccess.SetActive(BossRaidWorker.instance.isSuccessed);
+        m_element.imgFail.SetActive(BossRaidWorker.instance.isSuccessed == false);
     }
 
     #region VALIDATE
@@ -65,6 +68,9 @@ public class PopupBossRaidResultComponent : BasePopupComponent
         public TextMeshProUGUI txtDamage;
         public TextMeshProUGUI txtPoint;
 
+        public GameObject imgSuccess;
+        public GameObject imgFail;
+
         public void Initialize(Transform _transform)
         {
             btnConfirm = _transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
@@ -73,6 +79,9 @@ public class PopupBossRaidResultComponent : BasePopupComponent
             txtRank = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_rank");
             txtDamage = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_damage");
             txtPoint = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_point");
+
+            imgSuccess = _transform.Find("Panel/img_success").gameObject;
+            imgFail = _transform.Find("Panel/img_fail").gameObject;
         }
     }
     #endregion VALIDATE

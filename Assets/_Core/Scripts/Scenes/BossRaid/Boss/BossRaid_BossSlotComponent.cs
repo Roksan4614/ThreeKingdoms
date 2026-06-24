@@ -16,7 +16,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
     CancellationTokenSource m_cts;
 
     public Character_Enemy_RaidBoss boss =>
-        DataManager.bossRaid.raidStatus >= BossRaidStatusType.Wait_SecondPhase ? m_element.bossJIN : m_element.boss;
+        DataManager.bossRaid.data.tickSecondPhase > 0 ? m_element.bossJIN : m_element.boss;
 
     protected virtual void Awake()
     {
@@ -52,11 +52,13 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
             case BossRaidStatusType.Finish_FirstPhase:
             case BossRaidStatusType.Finished:
                 {
+                    boss.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
                     ActionAsync_FinishPhase(_status).Forget();
                 }
                 break;
             case BossRaidStatusType.SecondPhase:
                 {
+                    boss.buff.Remove(-1, BuffType.BUFF_NO_TAKEN_DAMAGE);
                     StageManager.instance.ClearEnemyList();
                     StageManager.instance.AddEnemyList(boss);
 
@@ -75,8 +77,8 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         m_ctsAction = m_ctsAction.Release(true);
         var token = m_ctsAction.Token;
 
-        StageManager.instance.SetState(CharacterStateType.None);
-        TeamManager.instance.SetState(CharacterStateType.None);
+        //StageManager.instance.SetState(CharacterStateType.None);
+        //TeamManager.instance.SetState(CharacterStateType.None);
 
         InfoStageComponent.instance.SetActive(false, true);
 

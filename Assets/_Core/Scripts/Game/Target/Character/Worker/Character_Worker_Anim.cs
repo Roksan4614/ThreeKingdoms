@@ -37,6 +37,9 @@ public class Character_Worker_Anim : Character_Worker
     public bool IsType(CharacterAnimType _animType, int _layerIndex = 0)
         => GetStateInfo(_layerIndex).IsName(_animType.ToString());
 
+    public bool IsType(string _animName, int _layerIndex = 0)
+        => GetStateInfo(_layerIndex).IsName(_animName);
+
     public void Play(string _anim, int _layerIndex = 0)
         => m_animator.CrossFade(_anim, 0, _layerIndex, 0);
 
@@ -45,7 +48,7 @@ public class Character_Worker_Anim : Character_Worker
         Play(_animType, 0);
     }
 
-    public void Play(CharacterAnimType _animType, int _layerIndex)
+    public void Play(CharacterAnimType _animType, int _layerIndex, float _timeOffest = 0)
     {
         if (_animType == CharacterAnimType.Attack ||
             _animType == CharacterAnimType.Attack_Move ||
@@ -53,7 +56,7 @@ public class Character_Worker_Anim : Character_Worker
             m_owner.attack.isRunningAttack = true;
 
         //m_animator.Play(_animType.ToString(), _layerIndex, 0);
-        m_animator.CrossFade(_animType.ToString(), 0, _layerIndex, 0);
+        m_animator.CrossFade(_animType.ToString(), 0, _layerIndex, _timeOffest);
 
         //if (m_owner.isMain == true)
         //    IngameLog.Add($"[ANIM] PLAY: {_animType}{(_layerIndex == 0 ? "" : $"/{_layerIndex}")}");
@@ -76,6 +79,9 @@ public class Character_Worker_Anim : Character_Worker
 
     public AnimatorStateInfo GetStateInfo(int _layerIndex = 0)
         => m_animator.GetCurrentAnimatorStateInfo(_layerIndex);
+
+    public void SetSpeed(float _speed)
+        => m_animator.speed = _speed;
 }
 
 [Serializable]

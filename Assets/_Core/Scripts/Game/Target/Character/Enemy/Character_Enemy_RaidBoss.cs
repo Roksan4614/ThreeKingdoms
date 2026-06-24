@@ -23,12 +23,12 @@ public class Character_Enemy_RaidBoss : Character_Enemy
         SetFaction(FactionType.Enemy);
     }
 
-    public override bool OnDamage(CharacterComponent _attacker, float _damage)
+    public override bool OnDamage(CharacterComponent _attacker, float _damage, bool _isCritical = false)
     {
         if (isLive == false)
             return true;
 
-        var result = base.OnDamage(_attacker, _damage);
+        var result = base.OnDamage(_attacker, _damage, _isCritical);
         Signal.instance.UpdageBossHP.Emit(isLive ? m_stat.health / (float)m_stat.healthMax : 0);
 
         // todo

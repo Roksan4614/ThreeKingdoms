@@ -6,7 +6,7 @@ using UnityEngine;
 public class Data_BossRaid
 {
 #if UNITY_EDITOR
-    const int c_timerRunning = 1;
+    const int c_timerRunning = 11;
 #else
     const int c_timerRunning = 5;
 #endif
@@ -82,9 +82,8 @@ public class Data_BossRaid
 
         await UniTask.WaitUntil(() => tickEndRound < System.DateTime.UtcNow.Ticks, cancellationToken: token);
 
-        TeamManager.instance.SetLockSkill(true);
-        Finish_BossRaid();
-        TimerAsync().Forget();
+        BossRaidWorker.instance.Finish_BossRaid(false);
+
     }
 
     public void Start_BossRaid()
@@ -126,10 +125,12 @@ public class Data_BossRaid
         SaveData();
 
         m_ctsTestDamage = m_ctsTestDamage.Release();
+        m_cts = m_cts.Release();
     }
 
     public void ExitBossRaid()
     {
+        TimerAsync().Forget();
         m_rankNow.Clear();
     }
 
@@ -314,7 +315,7 @@ public class Data_BossRaid
             get
             {
                 string name = $"[<color=#{Palette.GetHexa_GradeText(nowGrade)}>{TableManager.stringTable.GetGradeType(nowGrade)}</color>] ";
-                if (DataManager.bossRaid.raidStatus > BossRaidStatusType.Wait_SecondPhase)
+                if (DataManager.bossRaid.data.tickSecondPhase > 0)
                     name += "Áø.";
                 name += TableManager.hero.Get(keyBoss).name;
                 return name;

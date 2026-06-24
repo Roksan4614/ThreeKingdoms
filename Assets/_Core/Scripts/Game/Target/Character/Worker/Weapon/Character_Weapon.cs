@@ -45,8 +45,11 @@ public class Character_Weapon : MonoBehaviour, IValidatable
             }
         }
 
-        m_cts = m_cts.Release();
+        ReleaseCTS();
     }
+
+    public void ReleaseCTS()
+        => m_cts = m_cts.Release();
 
     public bool isAttack { get; private set; } = false;
     public void Attack(bool _isCritical)
@@ -98,16 +101,6 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         var damage = _owner.stat.attackPower;
         if (m_isCritial == true)
             damage = (int)(damage * _owner.stat.criticalDamage);
-
-        EffectWorker.instance.SlotDamageTakenEffect(new()
-        {
-            attacker = _owner.transform,
-            target = target,
-            value = -damage,
-            isCritical = m_isCritial,
-            isAlliance = target.factionType == FactionType.Alliance
-        });
-        m_isCritial = false;
 
         if (target.OnDamage(_owner, damage))
             _owner.target.SetTarget(null);

@@ -129,9 +129,15 @@ public class Team_HeroInfo
     public int GetIndex(string _key)
         => m_lstHeroInfo.FindIndex(x => x.key == _key);
 
-    public void SetLockSkill(bool _isLock)
+    public void AddBuff(BuffType _buffType)
     {
         for (int i = 0; i < m_lstHeroInfo.Count; i++)
-            m_lstHeroInfo[i].SetLockSkill(_isLock);
+            m_lstHeroInfo[i].AddBuff(_buffType);
+    }
+
+    public void RemoveBuff(BuffType _buffType)
+    {
+        for (int i = 0; i < m_lstHeroInfo.Count; i++)
+            m_lstHeroInfo[i].RemoveBuff(_buffType);
     }
 }

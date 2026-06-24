@@ -8,9 +8,9 @@ public class Character_Enemy_Boss : Character_Enemy
         base.Awake();
     }
 
-    public override bool OnDamage(CharacterComponent _attacker, float _damage)
+    public override bool OnDamage(CharacterComponent _attacker, float _damage, bool _isCritical = false)
     {
-        var result = base.OnDamage(_attacker, _damage);
+        var result = base.OnDamage(_attacker, _damage, _isCritical);
         Signal.instance.UpdageBossHP.Emit(isLive ? m_stat.health / (float)m_stat.healthMax : 0);
 
         // 보스가 죽었기 때문에 다 죽이자!!

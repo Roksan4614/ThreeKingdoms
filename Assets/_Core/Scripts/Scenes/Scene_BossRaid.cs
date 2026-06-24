@@ -18,7 +18,7 @@ public class Scene_BossRaid : SceneBase
 
     async UniTask StartAsync()
     {
-        await UniTask.WaitForEndOfFrame();
+        await UniTask.NextFrame();
 
         List<UniTask> tasks = new();
         tasks.Add(TeamManager.instance.SpawnUpdateAsync());
@@ -35,6 +35,9 @@ public class Scene_BossRaid : SceneBase
     public void SetActiveResult(bool _isActive, bool _isWithTween)
     {
         m_element.panelResult.localScale = Vector3.one;
+
+        if (_isActive)
+            m_element.txtResult.text = BossRaidWorker.instance.isSuccessed ? "처치성공" : "처치실패";
 
         if (_isWithTween)
         {

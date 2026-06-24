@@ -136,7 +136,7 @@ public class CharacterComponent : TargetComponent
         m_stateType = _stateType;
     }
 
-    public virtual bool OnDamage(CharacterComponent _attacker, float _damage)
+    public virtual bool OnDamage(CharacterComponent _attacker, float _damage, bool _isCritical = false)
     {
         if (_attacker != null &&
             target.target == null &&
@@ -153,21 +153,34 @@ public class CharacterComponent : TargetComponent
             //move.MoveTarget(_attacker, true);
         }
 
-        // 레이드 진행중이고
-        // 공격자가 내 장수들ㅇ라면, 
-        if (BossRaidWorker.instance.isRunning == true && _attacker?.factionType == FactionType.Alliance)
-            DataManager.bossRaid.SendDamageBossAsync((long)_damage);//.Forget();
+        if (_attacker != null)
+        {
+            EffectWorker.instance.SlotDamageTakenEffect(new()
+            {
+                attacker = _attacker.transform,
+                target = this,
+                value = -_damage,
+                isCritical = _isCritical,
+                isAlliance = factionType == FactionType.Alliance
+            });
+        }
 
         if (buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE) == false)
         {
+            // 레이드 진행중이고
+            // 공격자가 내 장수들ㅇ라면, 
+            if (BossRaidWorker.instance.isRunning == true && _attacker?.factionType == FactionType.Alliance)
+                DataManager.bossRaid.SendDamageBossAsync((long)_damage);//.Forget();
+
             m_stat.health -= _damage;
             if (m_stat.health <= 0)
             {
                 m_stat.health = 0;
-                m_state?.Stop();
+                SetState(CharacterStateType.None);
 
                 move.MoveStop();
                 attack.Die();
+                buff.RemoveAll();
 
                 anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
 
@@ -190,7 +203,6 @@ public class CharacterComponent : TargetComponent
         //target.RemoveAll();
         move.MoveStop();
         attack.ResetFX();
-        buff.RemoveAll();
 
         m_stat.health = m_stat.healthMax;
         m_element.collider.enabled = true;

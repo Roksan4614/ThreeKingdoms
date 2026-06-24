@@ -336,6 +336,27 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         return result;
     }
 
+    public CharacterComponent GetFarthestHero(Vector3 _position)
+    {
+        CharacterComponent result = null;
+        float maxDist = -float.MaxValue;
+
+        foreach (var hero in m_member.Values)
+        {
+            if (hero.isLive == false)
+                continue;
+
+            float sqrDist = (hero.transform.position - _position).sqrMagnitude;
+            if (sqrDist > maxDist)
+            {
+                maxDist = sqrDist;
+                result = hero;
+            }
+        }
+
+        return result;
+    }
+
     public bool IsAllDie()
     {
         var members = m_member.Values.ToList();
@@ -368,10 +389,12 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         }
     }
 
-    public void SetLockSkill(bool _isLock)
-    {
-        heroInfo.SetLockSkill(_isLock);
-    }
+    public void AddBuff(BuffType _buffType)
+        => heroInfo.AddBuff(_buffType);
+
+    public void RemoveBuff(BuffType _buffType)
+        => heroInfo.RemoveBuff(_buffType);
+
 
     public void OnManualValidate() => m_element.Initialize(transform);
 
