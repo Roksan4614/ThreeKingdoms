@@ -138,7 +138,7 @@ public class Tutorial_START : TutorialBase
         var hi = heroInfo.GetComponentsInChildren<HeroInfoComponent>();
         for (int i = 0; i < hi.Length; i++)
             hi[i].StartStage();
-        mainHero.buff.RemoveAll(BuffType.DEBUFF_NO_SKILL);
+        mainHero.buff.Remove(BuffType.DEBUFF_NO_SKILL);
         // 영웅 스킬 사용
         await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
         await UniTask.WaitUntil(() => mainHero.attack.isUseSkill);

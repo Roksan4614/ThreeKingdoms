@@ -19,7 +19,11 @@ public class Character_Enemy_RaidBoss : Character_Enemy
                 m_stat = TableManager.statEnemy.GetStatData("Enemy");
         }
 
-        SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 100, _isAttackPower: false);
+        if (DataManager.bossRaid.raidStatus >= Data_BossRaid.BossRaidStatusType.Wait_SecondPhase)
+            SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 100, _isAttackPower: false);
+        else
+            SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 30, _isAttackPower: false);
+
         SetFaction(FactionType.Enemy);
     }
 

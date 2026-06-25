@@ -17,9 +17,12 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
     BossRaidSkillType_LuBu m_skillType;
 
+    [SerializeField] bool m_isJIN;
     [SerializeField] AnimationCurve m_curveJump;
-    [SerializeField] int m_waitJumpFrame = 10;
-    [SerializeField] float m_durationJump = .5f;
+    int m_waitJumpFrame = 30;
+    float m_durationJump = .5f;
+
+    List<Skilldata> m_dbSkills = new();
 
     protected override void Awake()
     {
@@ -28,11 +31,36 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         if (m_element.animSkillJump)
             m_element.animSkillJump.gameObject.SetActive(true);
 
-        if (BossRaidWorker.instance.isRunning)
+        if (BossRaidWorker.instance.isRunning == false)
+            return;
+
+        m_element.warning_Circle.transform.SetParent(m_owner.transform.parent);
+        m_element.animSkillJump.transform.SetParent(m_owner.transform.parent);
+
+        m_dbSkills = new()
         {
-            Signal.instance.BossRaidStatus.connect = SlotBossRaidStatus;
-            SkillAsync().Forget();
-        }
+            new Skilldata()
+            {
+                duration = 5,
+                async = SkillAsync_Swing
+            },
+
+            //new Skilldata()
+            //{
+            //    duration = 10,
+            //    async = SkillAsync_RedHare
+            //},
+        };
+
+        if (m_isJIN)
+            m_dbSkills.Insert(0, new()
+            {
+                duration = 20,
+                async = SkillAsync_Jump
+            });
+
+        Signal.instance.BossRaidStatus.connect = SlotBossRaidStatus;
+        SkillAsync().Forget();
     }
 
     void SlotBossRaidStatus(BossRaidStatusType _statusType)
@@ -51,28 +79,41 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         }
     }
 
+    struct Skilldata
+    {
+        public float timeAction;
+        public float duration;
+        public Func<UniTask> async;
+    }
+
     async UniTask SkillAsync()
     {
         m_cts = m_cts.Release(true);
         var token = m_cts.Token;
 
         await UniTask.NextFrame(cancellationToken: token);
-        //test
-        TeamManager.instance.mainHero.buff.Remove(-1, BuffType.BUFF_NO_TAKEN_DAMAGE);
-        TeamManager.instance.mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
-        m_owner.buff.Remove(-1, BuffType.BUFF_NO_TAKEN_DAMAGE);
-        m_owner.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
+
+        var dbSkill = new List<Skilldata>(m_dbSkills);
+
+        var timeStart = UnityEngine.Random.Range(3f, 6f);
+        for (int i = 0; i < dbSkill.Count; i++)
+        {
+            var skill = dbSkill[i];
+            skill.timeAction = i == 0 ? timeStart : Time.time + skill.duration + timeStart;
+        }
 
         while (true)
         {
             m_skillType = BossRaidSkillType_LuBu.NONE;
-            await UniTask.WaitForSeconds(3f, cancellationToken: token);
 
-            await SkillAsync_Jump();
+            var skill = dbSkill[0];
 
-            //await UniTask.WaitForSeconds(3f, cancellationToken: token);
+            await UniTask.WaitUntil(() => skill.timeAction <= Time.time);
+            await skill.async();
 
-            //await SkillAsync_Swing();
+            skill.timeAction = Time.time + skill.duration;
+            dbSkill[0] = skill;
+            dbSkill = dbSkill.SortBy(x => x.timeAction);
         }
     }
 
@@ -90,9 +131,10 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         m_owner.anim.Play("Boss_Skill_Jin");
 
         // 루프중이야?
+        var targetJump = TeamManager.instance.GetRandomHero();
         await UniTask.WaitUntil(() =>
         {
-            m_owner.move.SetFlip(TeamManager.instance.GetFarthestHero(m_owner.transform.position).transform.position.x > m_owner.transform.position.x);
+            m_owner.move.SetFlip(targetJump.transform.position.x > m_owner.transform.position.x);
             return m_owner.anim.IsType("Boss_Skill_Jin_Charge");
         }, cancellationToken: token);
 
@@ -105,13 +147,12 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             var endTime = Time.time + 1;
 
             // 뒤에 장수가 있어?
-            var target = TeamManager.instance.GetFarthestHero(m_owner.transform.position);
             m_element.warning_Circle.transform.position = m_owner.transform.position;
 
             while (Time.time < endTime)
             {
                 Vector3 currentPos = m_element.warning_Circle.transform.position;
-                Vector3 targetPos = target.transform.position;
+                Vector3 targetPos = targetJump.transform.position;
 
                 m_element.warning_Circle.transform.position = Vector3.MoveTowards(currentPos, targetPos, m_speedCircleMove * Time.deltaTime);
 
@@ -129,8 +170,6 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         scale.x = m_owner.move.isFlip ? -1 : 1;
         m_element.animSkillJump.transform.localScale = scale;
 
-        m_element.warning_Circle.transform.SetParent(m_owner.transform.parent);
-        m_element.animSkillJump.transform.SetParent(m_owner.transform.parent);
         m_element.animSkillJump.transform.position = m_element.warning_Circle.transform.position;
         m_element.animSkillJump.CrossFade("On", 0);
 
@@ -148,14 +187,14 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         }
 
         await UniTask.WaitUntil(() => Time.time >= startJump);
-        //await UniTask.WaitUntil(() => m_element.animSkillJump.GetCurrentAnimatorStateInfo(0).IsName("Wait"), cancellationToken: token);
 
         // 점프
         {
             m_owner.anim.Play("Boss_Skill_Jin_Jump");
 
+            await UniTask.WaitForSeconds(10 / 60f);
+
             var startTime = Time.time;
-            //var sqrDistance = (m_owner.transform.position - m_element.animSkillJump.transform.position).sqrMagnitude;
             await DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), m_element.animSkillJump.transform.position, m_durationJump)
                  .SetEase(Ease.InQuint).OnUpdate(() =>
                  {
@@ -165,13 +204,10 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
                      pos.y = m_curveJump.Evaluate(progress) * 3f;
                      m_owner.element.parts.localPosition = pos;
 
-                     //float percent = (m_owner.transform.position - m_element.animSkillJump.transform.position).sqrMagnitude / sqrDistance;
                  }).AsyncWaitForCompletion();
 
             m_owner.element.parts.localPosition = Vector3.zero;
         }
-
-        //await UniTask.WaitUntil(() => Input.GetKey(KeyCode.P), cancellationToken: token);
 
         m_element.animSkillJump.CrossFade("Off", 0);
         m_owner.transform.position = m_element.animSkillJump.transform.position;
@@ -188,12 +224,14 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         m_element.warning_Circle.SetDisable();
 
-        m_element.warning_Circle.transform.SetParent(m_owner.transform);
-        m_element.animSkillJump.transform.SetParent(m_owner.transform);
-
         m_owner.buff.Remove(hashDebuff);
 
         m_skillType = BossRaidSkillType_LuBu.NONE;
+    }
+
+    async UniTask SkillAsync_RedHare()
+    {
+        await UniTask.Yield();
     }
 
     async UniTask SkillAsync_Swing()

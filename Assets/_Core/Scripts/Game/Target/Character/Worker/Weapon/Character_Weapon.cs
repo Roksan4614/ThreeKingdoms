@@ -9,7 +9,6 @@ using UnityEngine;
 
 public class Character_Weapon : MonoBehaviour, IValidatable
 {
-    [SerializeField]
     protected CharacterComponent m_owner;
     [SerializeField]
     protected List<SpriteAnimaion> m_animSlash = new();
@@ -24,6 +23,8 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
     protected virtual void Awake()
     {
+        m_owner = transform.parent.GetComponent<CharacterComponent>();
+
         for (int i = 0; i < m_animSlash.Count; i++)
             m_animSlash[i].gameObject.SetActive(false);
 

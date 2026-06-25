@@ -310,7 +310,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         => m_hero?.buff.Add(_buffType);
 
     public void RemoveBuff(BuffType _buffType)
-        => m_hero?.buff.Remove(-1, _buffType);
+        => m_hero?.buff.Remove(_buffType);
 
     struct CooltimeData
     {

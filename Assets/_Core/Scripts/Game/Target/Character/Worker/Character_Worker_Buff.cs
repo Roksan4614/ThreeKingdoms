@@ -12,7 +12,7 @@ public class Character_Worker_Buff : Character_Worker
     {
         await UniTask.WaitForSeconds(_duration);
         //Remove(_hash, _buffType);
-        Remove(_hash);
+        Remove(_buffType, _hash);
     }
 
     public long Add(BuffType _buffType, float _value = 0, float _duration = 0)
@@ -32,17 +32,48 @@ public class Character_Worker_Buff : Character_Worker
         return buffData.hash;
     }
 
+    public void RemoveAll()
+        => Remove(BuffType.NONE, -1);
+
     public void Remove(long _hash, BuffType _buffType = BuffType.NONE)
     {
-        bool isContainsKey = m_dbBuff.ContainsKey(_buffType);
+        if (_buffType > BuffType.NONE)
+            Remove(_buffType, _hash);
+        else
+        {
+            foreach (var b in m_dbBuff)
+            {
+                for (int i = 0; i < b.Value.Count; i++)
+                {
+                    if (b.Value[i].hash == _hash)
+                    {
+                        Remove(b.Key, _hash);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    public void Remove(BuffType _buffType, long _hash = -1)
+    {
         if (_buffType > BuffType.NONE)
         {
+            bool isContainsKey = m_dbBuff.ContainsKey(_buffType);
+
             if (_hash > 0)
             {
                 if (isContainsKey)
                 {
-                    int idx = m_dbBuff[_buffType].FindIndex(x => x.hash == _hash);
-                    m_dbBuff[_buffType].RemoveAt(idx);
+                    var buff = m_dbBuff[_buffType];
+                    for (int i = 0; i < buff.Count; i++)
+                    {
+                        if (buff[i].hash == _hash)
+                        {
+                            m_dbBuff[_buffType].RemoveAt(i);
+                            break;
+                        }
+                    }
                 }
             }
             else
@@ -50,32 +81,12 @@ public class Character_Worker_Buff : Character_Worker
                 m_dbBuff.Remove(_buffType);
                 isContainsKey = false;
             }
+
+            if (isContainsKey && m_dbBuff[_buffType].Count == 0)
+                m_dbBuff.Remove(_buffType);
         }
         else
-        {
-            foreach (var d in m_dbBuff)
-            {
-                int idx = d.Value.FindIndex(x => x.hash == _hash);
-                if (idx > -1)
-                {
-                    d.Value.RemoveAt(idx);
-                    _buffType = d.Key;
-                    isContainsKey = true;
-                    break;
-                }
-            }
-        }
-
-        if (isContainsKey && m_dbBuff[_buffType].Count == 0)
-            m_dbBuff.Remove(_buffType);
-    }
-
-    public void RemoveAll(BuffType _buffType = BuffType.NONE)
-    {
-        if (_buffType == BuffType.NONE)
             m_dbBuff.Clear();
-        else if (m_dbBuff.ContainsKey(_buffType))
-            m_dbBuff.Remove(_buffType);
     }
 
     public bool IsActive(BuffType _buffType)

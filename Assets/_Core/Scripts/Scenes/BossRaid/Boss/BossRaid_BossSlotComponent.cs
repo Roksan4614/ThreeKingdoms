@@ -36,6 +36,8 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
     private void OnDestroy()
         => m_cts = m_cts.Release();
 
+
+
     void SlotBossRaidStatus(BossRaidStatusType _status)
     {
         m_cts = m_cts.Release(true);
@@ -58,7 +60,9 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
                 break;
             case BossRaidStatusType.SecondPhase:
                 {
-                    boss.buff.Remove(-1, BuffType.BUFF_NO_TAKEN_DAMAGE);
+                    TeamManager.instance.mainHero.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
+                    boss.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
+
                     StageManager.instance.ClearEnemyList();
                     StageManager.instance.AddEnemyList(boss);
 
@@ -143,11 +147,32 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         }
     }
 
-#if UNITY_EDITOR
+#if SERVICE_DEV
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.P))
-            KnockbackCharacter();
+        {
+            boss.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
+            boss.OnDamage(null, boss.stat.healthMax * .25f);
+            boss.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
+        }
+        else if (Input.GetKeyDown(KeyCode.M))
+        {
+            if (DataManager.bossRaid.raidStatus == BossRaidStatusType.FirstPhase ||
+                DataManager.bossRaid.raidStatus == BossRaidStatusType.SecondPhase)
+            {
+                if (boss.buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE))
+                {
+                    TeamManager.instance.mainHero.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
+                    boss.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
+                }
+                else
+                {
+                    TeamManager.instance.mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
+                    boss.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
+                }
+            }
+        }
     }
 #endif
 

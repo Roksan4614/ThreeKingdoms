@@ -357,6 +357,12 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         return result;
     }
 
+    public CharacterComponent GetRandomHero()
+    {
+        List<CharacterComponent> db = new(m_member.Values);
+        return db.RandomFirst();
+    }
+
     public bool IsAllDie()
     {
         var members = m_member.Values.ToList();
