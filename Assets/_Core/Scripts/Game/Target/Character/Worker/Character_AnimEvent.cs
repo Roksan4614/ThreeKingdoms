@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Character_AnimEvent : MonoBehaviour, IValidatable
 {
+    [SerializeField, HideInInspector]
     CharacterComponent m_owner;
 
     public void OnManualValidate()

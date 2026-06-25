@@ -37,6 +37,9 @@ public class Data_BossRaid
 
         m_data = PPWorker.Get<BossRaidData>(c_key);
 
+        var key = m_data.keyBoss + "_BossRaid";
+        AddressableManager.instance.Load_HeroCharacterAsync(key).Forget();
+
         // TEST
         //if (m_data.isActive == false)
         {

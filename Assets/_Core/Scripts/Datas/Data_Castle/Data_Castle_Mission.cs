@@ -140,7 +140,7 @@ public class Data_Castle_Mission
     {
         // 모두 받기
         if (_missionDatas.Length == 0)
-            _missionDatas = m_data.Where(x => x.tickEnd > 0 && x.tickEnd < Utils.GetUTC().Ticks).ToArray();
+            _missionDatas = m_data.FindAll(x => x.tickEnd > 0 && x.tickEnd < Utils.GetUTC().Ticks).ToArray();
 
         int prevExp = m_levelInfo.nowExp;
 

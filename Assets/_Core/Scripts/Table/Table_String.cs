@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -61,6 +62,6 @@ public struct TableStringData
         };
 
     public string[] talkArray =>
-        Regex.Split(message, @"(?<=[.,?!]+\s+)").Where(x => string.IsNullOrWhiteSpace(x) == false).ToArray();
+        Array.FindAll(Regex.Split(message, @"(?<=[.,?!]+\s+)"), x => string.IsNullOrWhiteSpace(x) == false);
     //message.Split(new string[] { ". ", ", ", "? ", "! " }, System.StringSplitOptions.RemoveEmptyEntries);
 }

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -96,7 +97,7 @@ public class WarningAreaComponent : MonoBehaviour, IValidatable
         {
             animator = _transform.GetComponent<Animator>();
 
-            lengthLoop = animator.runtimeAnimatorController.animationClips.Where(x => x.name.Contains("_loop", System.StringComparison.OrdinalIgnoreCase)).First().length;
+            lengthLoop = Array.FindAll(animator.runtimeAnimatorController.animationClips, x => x.name.Contains("_loop", System.StringComparison.OrdinalIgnoreCase))[0].length;
         }
     }
     #endregion VALIDATE

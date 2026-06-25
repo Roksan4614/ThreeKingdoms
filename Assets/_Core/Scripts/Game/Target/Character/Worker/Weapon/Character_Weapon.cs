@@ -36,6 +36,8 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         }
     }
 
+    protected virtual void Start() { }
+
     protected virtual void OnDestroy()
     {
         if (m_animSlash.Count > 0 && m_animSlash[0].transform.parent != m_owner.panel)

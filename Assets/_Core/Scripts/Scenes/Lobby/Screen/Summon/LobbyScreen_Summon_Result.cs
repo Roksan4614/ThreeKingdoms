@@ -187,7 +187,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             .ThenByDescending(x => x.key == ItemType.Gold)
             .ToList();
 
-        var keyHero = result.Where(x => x.key == ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
+        var keyHero = result.FindAll(x => x.key == ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
 
         AddressableManager.instance.Load_HeroCharacterAsync(keyHero).Forget();
         await AddressableManager.instance.Load_HeroIconAsync(keyHero);
@@ -197,7 +197,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
     {
         long totalGold = 0, totalRice = 0;
 
-        var keyItem = _result.Where(x => x.key != ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
+        var keyItem = _result.FindAll(x => x.key != ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
         await AddressableManager.instance.Load_ItemIconAsync(keyItem);
 
         Dictionary<string, long> resultSoul = new();

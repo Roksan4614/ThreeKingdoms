@@ -20,9 +20,9 @@ public class Character_Enemy_RaidBoss : Character_Enemy
         }
 
         if (DataManager.bossRaid.raidStatus >= Data_BossRaid.BossRaidStatusType.Wait_SecondPhase)
-            SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 100, _isAttackPower: false);
+            SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 200, _isAttackPower: false);
         else
-            SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 30, _isAttackPower: false);
+            SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 50, _isAttackPower: false);
 
         SetFaction(FactionType.Enemy);
     }

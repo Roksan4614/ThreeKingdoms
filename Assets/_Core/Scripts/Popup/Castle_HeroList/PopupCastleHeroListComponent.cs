@@ -133,7 +133,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
     void SetCoreStatStatus(bool _isInit = false)
     {
         var dbRise = m_castleData.dbRise;
-        var coreStat = TableManager.castle.GetCastleData(m_castleData.type).coreStat.Where(x => x != CoreStatType.NONE).ToArray();
+        var coreStat = Array.FindAll( TableManager.castle.GetCastleData(m_castleData.type).coreStat, x => x != CoreStatType.NONE);
 
         int i = 0;
         for (; i < coreStat.Length; i++)

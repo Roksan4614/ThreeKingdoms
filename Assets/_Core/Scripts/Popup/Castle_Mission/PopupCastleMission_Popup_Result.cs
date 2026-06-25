@@ -127,8 +127,8 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
 
         //var rewards = dbRewards.Values.Select(x => new RewardWorker.RewardItemData(x.key, x.count)).ToList();
 
-        var totalGold = rewards.Where(x => x.itemType == ItemType.Gold).Sum(x => x.count);
-        var totalRice = rewards.Where(x => x.itemType == ItemType.Rice).Sum(x => x.count);
+        var totalGold = rewards.FindAll(x => x.itemType == ItemType.Gold).Sum(x => x.count);
+        var totalRice = rewards.FindAll(x => x.itemType == ItemType.Rice).Sum(x => x.count);
         DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
 
         foreach (var r in rewards)

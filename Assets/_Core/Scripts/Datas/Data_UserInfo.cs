@@ -25,7 +25,7 @@ public class Data_UserInfo
             m_element = PPWorker.Get<ElementData>(PlayerPrefsType.USER_DATA);
 
             await AddressableManager.instance.Load_HeroIconAsync(m_element.myHero.Select(x => x.skin).ToArray());
-            await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+            await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
 
             if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
             {
@@ -151,7 +151,7 @@ public class Data_UserInfo
 
         lstBatch = null;
         lstNotBatch = null;
-        return result.Where(x =>
+        return result.FindAll(x =>
         {
             if (m_sortData.isAll_Region == false &&
                 m_sortData.filter_region.Contains(x.regionType) == false)
@@ -172,7 +172,7 @@ public class Data_UserInfo
             }
 
             return true;
-        }).ToList();
+        });
     }
 
     public HeroInfoData GetHeroInfoData(string _key)
@@ -257,7 +257,7 @@ public class Data_UserInfo
         DataManager.stat.friendShip.Reload();
 
         await AddressableManager.instance.Load_HeroIconAsync(_key);
-        await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.Where(x => x.isBatch).Select(x => x.skin).ToArray());
+        await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
 
         SaveData();
 

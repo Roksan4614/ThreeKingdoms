@@ -204,7 +204,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
     public async UniTask SaveDataAsync()
     {
-        List<string> resultSkins = m_itemBatch.Where(x => x.data.isActive).Select(x => x.data.skin).ToList();
+        List<string> resultSkins = m_itemBatch.FindAll(x => x.data.isActive).Select(x => x.data.skin).ToList();
         m_isNeedUpdateLayout = m_openHeroSkins.Count != resultSkins.Count;
 
         if (m_isNeedUpdateLayout == false)
@@ -226,7 +226,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             m_isNeedUpdateLayout = false;
             MapManager.instance.FadeDimm(true, 0f);
 
-            var heroList = m_itemList.Where(x => x.data.isMine == true).Select(x => x.data).ToList();
+            var heroList = m_itemList.FindAll(x => x.data.isMine == true).Select(x => x.data).ToList();
             for (int i = 0; i < heroList.Count; i++)
             {
                 var data = heroList[i];
@@ -325,7 +325,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     #region BATCH
     void SetLayout_Batch()
     {
-        var db = m_myHero.Where(x => x.isBatch).ToList();
+        var db = m_myHero.FindAll(x => x.isBatch).ToList();
 
         int i = 0;
         for (; i < db.Count; i++)

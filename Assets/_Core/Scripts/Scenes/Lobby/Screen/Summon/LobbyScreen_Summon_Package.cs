@@ -89,7 +89,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
             m_element.scroll.enabled = true;
         });
 
-        SetRegionType( _isLeft ? nextRegion : prevRegion);
+        SetRegionType(_isLeft ? nextRegion : prevRegion);
 
         SetButtonSort();
     }
@@ -135,7 +135,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
         {
             m_lastRemainTimeValue = lastValue;
 
-            m_element.txtRemainTime.text = $"_주최자 변경까지 남은시간: " + _ts.ToRemainTime(23, _isStringMode:true);
+            m_element.txtRemainTime.text = $"_주최자 변경까지 남은시간: " + _ts.ToRemainTime(23, _isStringMode: true);
         }
     }
 
@@ -191,7 +191,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
 
             // 전체 위촉오 순으로 넣어주기 위함
             buttons = m_scroll.content.GetComponentsInChildren<Button>(true);
-            posButton = buttons.Where(x => x.gameObject.activeSelf == true).Select(x => ((RectTransform)x.transform).anchoredPosition).ToArray();
+            posButton = Array.FindAll(buttons, x => x.gameObject.activeSelf == true).Select(x => ((RectTransform)x.transform).anchoredPosition).ToArray();
 
             buttons = buttons.ToDictionary(x =>
             {

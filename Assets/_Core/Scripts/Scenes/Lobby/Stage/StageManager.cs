@@ -329,7 +329,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
     }
 
     public IReadOnlyList<CharacterComponent> enemyList => m_enemyList.ToList();
-    public IReadOnlyList<CharacterComponent> liveEnemyList => m_enemyList.Where(_x => _x.isLive).ToList();
+    public IReadOnlyList<CharacterComponent> liveEnemyList => m_enemyList.FindAll(_x => _x.isLive).ToList();
 
     public Vector3 centerPosition
     {

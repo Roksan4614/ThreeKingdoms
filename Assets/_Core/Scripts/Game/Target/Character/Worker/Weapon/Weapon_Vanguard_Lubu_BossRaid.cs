@@ -24,10 +24,8 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
     List<Skilldata> m_dbSkills = new();
 
-    protected override void Awake()
+    protected override void Start()
     {
-        base.Awake();
-
         if (m_element.animSkillJump)
             m_element.animSkillJump.gameObject.SetActive(true);
 
@@ -67,13 +65,8 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
     {
         switch (_statusType)
         {
-            case BossRaidStatusType.FirstPhase:
-            case BossRaidStatusType.SecondPhase:
-                SkillAsync().Forget();
-                break;
+            case BossRaidStatusType.Finish_FirstPhase:
             case BossRaidStatusType.Finished:
-                break;
-            default:
                 m_cts = m_cts.Release();
                 break;
         }
@@ -91,15 +84,17 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         m_cts = m_cts.Release(true);
         var token = m_cts.Token;
 
-        await UniTask.NextFrame(cancellationToken: token);
+        await UniTask.WaitUntil(() => DataManager.bossRaid.raidStatus == BossRaidStatusType.FirstPhase || DataManager.bossRaid.raidStatus == BossRaidStatusType.SecondPhase,
+            cancellationToken: token);
 
         var dbSkill = new List<Skilldata>(m_dbSkills);
 
-        var timeStart = UnityEngine.Random.Range(3f, 6f);
+        var timeStart = Time.time + UnityEngine.Random.Range(3f, 6f);
         for (int i = 0; i < dbSkill.Count; i++)
         {
             var skill = dbSkill[i];
-            skill.timeAction = i == 0 ? timeStart : Time.time + skill.duration + timeStart;
+            skill.timeAction = i == 0 ? timeStart : skill.duration + timeStart;
+            dbSkill[i] = skill;
         }
 
         while (true)
@@ -108,10 +103,15 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
             var skill = dbSkill[0];
 
-            await UniTask.WaitUntil(() => skill.timeAction <= Time.time);
+            while (skill.timeAction > Time.time)
+                await UniTask.Yield(cancellationToken: token);
+
             await skill.async();
 
+            //스킬을 쓰면 일단 조금은 기다리자.
             skill.timeAction = Time.time + skill.duration;
+            await UniTask.WaitForSeconds(UnityEngine.Random.Range(3f, 6f));
+
             dbSkill[0] = skill;
             dbSkill = dbSkill.SortBy(x => x.timeAction);
         }
@@ -131,7 +131,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         m_owner.anim.Play("Boss_Skill_Jin");
 
         // 루프중이야?
-        var targetJump = TeamManager.instance.GetRandomHero();
+        var targetJump = TeamManager.instance.GetRandomHero(true);
         await UniTask.WaitUntil(() =>
         {
             m_owner.move.SetFlip(targetJump.transform.position.x > m_owner.transform.position.x);

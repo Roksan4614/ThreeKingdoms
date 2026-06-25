@@ -13,8 +13,8 @@ public class Table_StringTalk : Table_String
     {
         var key = _key + "_";
 
-        Queue<TableStringData> result = new(m_list.Where(x => x.key.StartsWith(key))
-            .Where(x =>
+        Queue<TableStringData> result = new(m_list.FindAll(x => x.key.StartsWith(key))
+            .FindAll(x =>
             {
                 var split = x.key.Replace(key, "").Split("_");
                 if (split.Length == 1)
@@ -22,7 +22,7 @@ public class Table_StringTalk : Table_String
                 else if (_isWithLast == false || split[1] == (_isPC ? "MOBILE" : "PC"))
                     return false;
                 return true;
-            }).ToList());
+            }));
 
         return result;
     }
@@ -31,13 +31,13 @@ public class Table_StringTalk : Table_String
     {
         var key = _key + "_";
 
-        return m_list.Where(x => x.key.StartsWith(key))
-            .Where(x =>
+        return m_list.FindAll(x => x.key.StartsWith(key))
+            .FindAll(x =>
             {
                 var split = x.key.Replace(key, "").Split("_");
                 if (split.Length > 1 && split[1] == _index.ToString())
                     return true;
                 return false;
-            }).ToList();
+            });
     }
 }

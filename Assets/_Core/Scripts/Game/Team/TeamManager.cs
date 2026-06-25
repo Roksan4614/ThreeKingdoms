@@ -101,10 +101,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             // 주장이 전방일 경우 궁장,책사 중 공격력이 가장 강한 영웅이 뒤로 간다
             if (DataManager.option.mainTeamPosition == TeamPositionType.Front)
             {
-                var backs = _members.Where(x => x.info.classType == HeroClassType.Strategist).ToList();
+                var backs = _members.FindAll(x => x.info.classType == HeroClassType.Strategist);
 
                 if (backs.Count == 0)
-                    backs = _members.Where(x => x.info.classType == HeroClassType.Archer).ToList();
+                    backs = _members.FindAll(x => x.info.classType == HeroClassType.Archer);
 
                 character = backs.Count > 0
                     ? backs.SortByDescending(x => x.stat.attackPower)[0]
@@ -115,7 +115,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             // 주장이 후방일 경우 용장이거나 체력이 가장 높은 영웅을 앞으로 보낸다
             else
             {
-                var fronts = _members.Where(x => x.info.classType == HeroClassType.Champion).ToList();
+                var fronts = _members.FindAll(x => x.info.classType == HeroClassType.Champion);
 
                 if (fronts.Count == 0)
                     fronts = _members;
@@ -357,10 +357,11 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         return result;
     }
 
-    public CharacterComponent GetRandomHero()
+    public CharacterComponent GetRandomHero(bool _isLive)
     {
         List<CharacterComponent> db = new(m_member.Values);
-        return db.RandomFirst();
+
+        return (_isLive ? db.FindAll(x => x.isLive) : db).RandomFirst();
     }
 
     public bool IsAllDie()
