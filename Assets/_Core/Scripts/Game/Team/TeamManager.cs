@@ -290,24 +290,28 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         RepositionToMain(.2f);
 
+        List<CharacterComponent> result = new();
         var main = mainHero;
-        foreach (var hero in m_member.Values)
+        for (var key = TeamPositionType.NONE + 1; key < TeamPositionType.MAX; key++)
         {
-            if (hero.isMain == false)
+            if (m_member.ContainsKey(key))
             {
-                hero.target.SetTarget(null);
-                hero.move.SetFlip(main.move.isFlip);
-                hero.SetState(CharacterStateType.Wait);
+                var hero = m_member[key];
+
+                if (hero.isMain == false)
+                {
+                    result.Add(hero);
+                    hero.target.SetTarget(null);
+                    hero.move.SetFlip(main.move.isFlip);
+                    hero.SetState(CharacterStateType.Wait);
+                }
             }
         }
 
         await UniTask.WaitForSeconds(0.2f);
 
-        foreach (var hero in m_member.Values)
-        {
-            if (hero.isMain == false)
-                hero.SetState(teamState);
-        }
+        for (int i = 0; i < result.Count; i++)
+            result[i].SetState(teamState);
     }
 
     public void SetRespawn(TeamPositionType _position)
@@ -320,16 +324,21 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         CharacterComponent result = null;
         float minDist = float.MaxValue;
 
-        foreach (var hero in m_member.Values)
+        for (var key = TeamPositionType.NONE + 1; key < TeamPositionType.MAX; key++)
         {
-            if (hero.isLive == false)
-                continue;
-
-            float sqrDist = (hero.transform.position - _position).sqrMagnitude;
-            if (sqrDist < minDist)
+            if (m_member.ContainsKey(key))
             {
-                minDist = sqrDist;
-                result = hero;
+                var hero = m_member[key];
+
+                if (hero.isLive == false)
+                    continue;
+
+                float sqrDist = (hero.transform.position - _position).sqrMagnitude;
+                if (sqrDist < minDist)
+                {
+                    minDist = sqrDist;
+                    result = hero;
+                }
             }
         }
 
@@ -341,16 +350,21 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         CharacterComponent result = null;
         float maxDist = -float.MaxValue;
 
-        foreach (var hero in m_member.Values)
+        for (var key = TeamPositionType.NONE + 1; key < TeamPositionType.MAX; key++)
         {
-            if (hero.isLive == false)
-                continue;
-
-            float sqrDist = (hero.transform.position - _position).sqrMagnitude;
-            if (sqrDist > maxDist)
+            if (m_member.ContainsKey(key))
             {
-                maxDist = sqrDist;
-                result = hero;
+                var hero = m_member[key];
+
+                if (hero.isLive == false)
+                    continue;
+
+                float sqrDist = (hero.transform.position - _position).sqrMagnitude;
+                if (sqrDist > maxDist)
+                {
+                    maxDist = sqrDist;
+                    result = hero;
+                }
             }
         }
 
@@ -361,7 +375,10 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         List<CharacterComponent> db = new(m_member.Values);
 
-        return (_isLive ? db.FindAll(x => x.isLive) : db).RandomFirst();
+        if (_isLive)
+            db = db.FindAll(x => x.isLive);
+
+        return db.Count == 0 ? null : db.RandomFirst();
     }
 
     public bool IsAllDie()

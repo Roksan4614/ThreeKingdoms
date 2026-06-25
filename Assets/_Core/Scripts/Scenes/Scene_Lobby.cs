@@ -8,7 +8,7 @@ public class Scene_Lobby : SceneBase
 {
     async void Start()
     {
-        await UniTask.WaitForEndOfFrame();
+        await UniTask.NextFrame();
 
         // 캐릭터가 없다면 선택 화면부터
         if (DataManager.userInfo.myHero.Count == 0)

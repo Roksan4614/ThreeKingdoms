@@ -31,6 +31,8 @@ public class Character_Worker_Attack : Character_Worker
     {
         while (true)
         {
+            await UniTask.WaitUntil(() => m_owner.move.isDash == false);
+
             if (m_owner.target.isAttackTarget)
             {
                 if (m_ctsAttackPush == null &&
@@ -53,6 +55,9 @@ public class Character_Worker_Attack : Character_Worker
 
     public async UniTask ControlAttackAsync(UnityAction _onAttack, bool _isPushButton)
     {
+        if (m_owner.move.isDash)
+            return;
+
         m_ctsAttackPush = m_ctsAttackPush.Release(true);
         var token = m_ctsAttackPush.Token;
 

@@ -16,7 +16,6 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
     }
 
     bool m_isDoing = false;
-    AsyncOperationHandle<GameObject> m_handle;
 
     BossRaidType m_bossType = BossRaidType.NONE;
     public BossRaidType bossType => m_bossType;
@@ -58,14 +57,6 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
         await UniTask.Yield();
     }
 
-    protected override void OnDestroy()
-    {
-        if (m_handle.IsValid())
-            m_handle.Release();
-
-        base.OnDestroy();
-    }
-
     public void StartBossRaid()
     {
         DataManager.bossRaid.Start_BossRaid();
@@ -79,6 +70,8 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
         ControllerManager.instance.SlotStartStage();
 
         InfoStageComponent.instance.SetBossRaid(true);
+
+        ArrowNaviComponent.instance.SetTarget(TeamManager.instance.mainHero.transform);
     }
 
     public void Finish_Phase(CharacterComponent _boss)
@@ -97,7 +90,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
         // 카메라 흔들리면서 보스 따라가기
         CameraManager.instance.Shake();
-        CameraManager.instance.SetCameraPosTarget(_boss.element.cameraPos, false);
+        //CameraManager.instance.SetCameraPosTarget(_boss.element.cameraPos, false);
 
         // 시간 다시 원래대로
         Utils.AfterSecond(() => Time.timeScale = 1f, fSlowDuration);
@@ -106,6 +99,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
         var targetPos = _boss.transform.position;
         targetPos.x = _boss.transform.position.x + (fMoveX * (_boss.move.isFlip ? -1 : 1));
         DOTween.To(() => _boss.transform.position, _pos => _boss.rig.MovePosition(_pos), targetPos, 0.3f)
+            .SetUpdate(UpdateType.Fixed)
             .OnComplete(() =>
             {
                 if (DataManager.bossRaid.raidStatus == BossRaidStatusType.FirstPhase)
@@ -124,7 +118,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
     public void Start_SecondPhase()
     {
         TeamManager.instance.RemoveBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
-        CameraManager.instance.SetCameraPosTarget(TeamManager.instance.mainHero.element.cameraPos, false);
+        //CameraManager.instance.SetCameraPosTarget(TeamManager.instance.mainHero.element.cameraPos, false);
         DataManager.bossRaid.Start_SecondPhase();
     }
 

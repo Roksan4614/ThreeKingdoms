@@ -41,7 +41,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             return true;
 
         // 그냥 사용하기를 눌렀다면, 사거리 안에 적이 있어야 사용하도록 하자.
-        Vector3 ownerPos = m_owner.transform.position;
+        Vector3 ownerPos = m_owner.position;
         if (StageManager.instance.liveEnemyList
             .Where(x => (x.transform.position - ownerPos).sqrMagnitude < maxSqrMagnitue)
             .Count() > 0)
@@ -56,6 +56,9 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
     {
         m_ctsMoveSkill = m_ctsMoveSkill.Release();
         m_ctsUseSkill = m_ctsUseSkill.Release();
+
+        ControllerManager.instance.SetSwitch(true);
+        m_isUseSkillControll = false;
     }
 
     async UniTask MoveAndUseSkill()
@@ -66,14 +69,14 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         CharacterComponent target = null;
         while (ControllerManager.instance.isDoing == false)
         {
-            var t = StageManager.instance.GetNearestEnemy(m_owner.transform.position);
+            var t = StageManager.instance.GetNearestEnemy(m_owner.position);
             if (t != target)
             {
                 target = t;
                 m_owner.move.MoveTarget(target, true);
             }
 
-            if (target != null && (target.transform.position - m_owner.transform.position).sqrMagnitude < maxSqrMagnitue)
+            if (target != null && (target.transform.position - m_owner.position).sqrMagnitude < maxSqrMagnitue)
             {
                 var index = TeamManager.instance.heroInfo.GetIndex(m_owner.info.key);
                 TeamManager.instance.heroInfo.UseSkill(index);
@@ -94,13 +97,13 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         // 그냥 스킬을 쓴거라면, 가장 가까운 적에게 날라가자.
         if (m_isUseSkillControll == false)
         {
-            var enemy = StageManager.instance.GetNearestEnemy(m_owner.transform.position);
+            var enemy = StageManager.instance.GetNearestEnemy(m_owner.position);
 
             if (enemy == null)
                 return;
 
             Vector3 enemyPos = enemy.transform.position;
-            Vector3 ownerPos = m_owner.transform.position;
+            Vector3 ownerPos = m_owner.position;
 
             float keepDistance = 3f;
 
@@ -111,13 +114,13 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         ControllerManager.instance.SetSwitch(false);
 
         m_owner.move.MoveStop();
-        m_owner.move.SetFlip(targetPos.x > m_owner.transform.position.x);
+        m_owner.move.SetFlip(targetPos.x > m_owner.position.x);
         m_owner.anim.AttackMotionFirstFrame(CharacterAnimType.Attack_Move, 1);
 
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
         EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);
 
-        var m_tweenSkillMove = DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), targetPos, 0.2f)
+        var m_tweenSkillMove = DOTween.To(() => m_owner.position, _pos => m_owner.rig.MovePosition(_pos), targetPos, 0.2f).SetUpdate(UpdateType.Fixed)
             .OnUpdate(() =>
             {
                 UpdateEnemyStatus();
@@ -150,14 +153,14 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
                 //적들을 관우쪽으로 끌어당기기
                 if (enemyList.Count > 1)
-                    target.transform.DOMove(Vector3.Lerp(target.transform.position, m_owner.transform.position, 0.5f), 0.1f);
+                    target.transform.DOMove(Vector3.Lerp(target.transform.position, m_owner.position, 0.5f), 0.1f);
             }
 
             target.SetColorParts(Color.white);
         }
 
         await UniTask.WaitUntil(
-            () => m_owner.attack.isRunningAttack == false && m_owner.attack.isRunningSlash == false, cancellationToken: destroyCancellationToken);
+            () => m_owner.attack.isRunningAttack == false && m_owner.attack.isRunningSlash == false, cancellationToken: token);
 
         if (isTargetting == true)
             m_owner.move.MoveTarget(StageManager.instance.GetNearestEnemy(targetPos), true);
@@ -186,7 +189,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
     {
         m_skillRange.gameObject.SetActive(true);
 
-        var ownerPos = m_owner.transform.position;
+        var ownerPos = m_owner.position;
         var lookAt = Vector3.ClampMagnitude(_targetPos - ownerPos, m_maxMagnitude);
 
         m_skillRange.position = ownerPos + lookAt;

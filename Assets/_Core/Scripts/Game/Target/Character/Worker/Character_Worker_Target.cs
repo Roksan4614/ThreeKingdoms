@@ -76,7 +76,7 @@ public class Character_Worker_Target : Character_Worker
 
             CharacterComponent result = null;
             float minDist = float.MaxValue;
-            var posOwner = m_owner.transform.position;
+            var posOwner = m_owner.position;
 
             for (int i = 0; i < m_targetList.Count; i++)
             {

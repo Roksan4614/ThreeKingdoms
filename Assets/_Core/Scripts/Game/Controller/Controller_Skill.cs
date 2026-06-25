@@ -144,6 +144,12 @@ public class Controller_Skill : Controller_Attack
         }
     }
 
+    public void SetDie_SkillTimer()
+    {
+        m_elementSkill.imgTimer.gameObject.SetActive(false);        //m_elementSkill.imgTimer.fillAmount = 1f;
+        m_elementSkill.txtTimer.gameObject.SetActive(false);
+    }
+
     public void SetPunchScale()
     {
         button.transform.DOKill();

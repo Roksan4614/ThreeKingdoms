@@ -89,7 +89,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
 
         if (result == StatusType.Success)
         {
-            m_regionData.heroComponent.anim.Play(CharacterAnimType.Attack);
+            m_regionData.heroComponent.anim.PlayAttack();
             await UniTask.WaitForSeconds(0.5f);
 
             DataManager.userInfo.SetRegion(m_regionData.region);

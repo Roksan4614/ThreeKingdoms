@@ -42,9 +42,13 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 {
     private Dictionary<PopupType, AsyncOperationHandle<GameObject>> m_dicPopup = new();
 
+    CancellationTokenSource m_cts;
+
     protected override void OnAwake()
     {
         transform.SetSiblingIndex(0);
+
+        m_cts = m_cts.Release(true);
 
         Signal.instance.ChangeDisplayMode.connect = OnChangeDisplayMode;
     }
@@ -54,6 +58,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         foreach (var h in m_dicPopup)
             h.Value.Release();
 
+        m_cts = m_cts.Release();
         base.OnDestroy();
     }
 
@@ -103,7 +108,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     {
         var popup = await OpenPopupAsync<T>(_popupType, _data);
 
-        await UniTask.WaitUntil(() => popup == null || popup.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken)
+        await UniTask.WaitUntil(() => popup == null || popup.gameObject.activeSelf == false, cancellationToken: m_cts.Token)
             .SuppressCancellationThrow();
 
         return popup;
@@ -194,7 +199,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
         var popup = await OpenPopupAndWait<PopupModal_TalkSelectComponent>(PopupType.Modal_TalkSelect, talkData);
 
-        await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
+        await UniTask.WaitForEndOfFrame(cancellationToken: m_cts.Token);
 
         return popup.selelctOption + 1;
     }

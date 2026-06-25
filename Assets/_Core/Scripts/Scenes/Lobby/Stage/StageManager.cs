@@ -54,6 +54,8 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
     protected override void OnDestroy()
     {
         m_cts = m_cts.Release();
+        OnDestroy_BossRaid();
+
         base.OnDestroy();
     }
 

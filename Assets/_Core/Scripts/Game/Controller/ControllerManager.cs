@@ -426,6 +426,9 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public void UpdateColltime_Skill(float _duration, float _progress)
         => m_element.skill.UpdateColltime(_duration, _progress);
 
+    public void SetDie_SkillTimer()
+        => m_element.skill.SetDie_SkillTimer();
+
     public void SetPunchSkill()
     {
         m_element.skill.SetPunchScale();

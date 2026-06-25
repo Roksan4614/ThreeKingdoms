@@ -21,7 +21,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
     protected virtual void Awake()
     {
 #if UNITY_EDITOR
-        if (Configure.instance.isBooted == false)
+        if (Configure.instance.isBooted == false || StageManager.instance == null)
             return;
 #endif
 
@@ -31,6 +31,8 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         boss.SetBossData(DataManager.bossRaid.data.keyBoss);
 
         Signal.instance.BossRaidStatus.connect = SlotBossRaidStatus;
+
+        ArrowNaviComponent.instance.SetParent(boss.element.parentCanvas);
     }
 
     private void OnDestroy()
@@ -54,12 +56,17 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
             case BossRaidStatusType.Finish_FirstPhase:
             case BossRaidStatusType.Finished:
                 {
+                    ArrowNaviComponent.instance.SetTarget(null);
+                    ArrowNaviComponent.instance.SetParent(MapManager.instance.transform);
                     boss.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
                     ActionAsync_FinishPhase(_status).Forget();
                 }
                 break;
             case BossRaidStatusType.SecondPhase:
                 {
+                    ArrowNaviComponent.instance.SetTarget(TeamManager.instance.mainHero.transform);
+                    ArrowNaviComponent.instance.SetParent(boss.element.parentCanvas);
+
                     TeamManager.instance.mainHero.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
                     boss.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
 
@@ -96,6 +103,12 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         {
             m_element.fxChangeBoss.transform.position = m_element.bossJIN.transform.position = m_element.boss.transform.position;
             m_element.fxChangeBoss.SetActive(true);
+            if (boss.move.isFlip)
+            {
+                var scale = m_element.fxChangeBoss.transform.localScale;
+                scale.x = -1;
+                m_element.fxChangeBoss.transform.localScale = scale;
+            }
 
             await UniTask.WaitForSeconds(m_durationChange, cancellationToken: token);
 
@@ -142,7 +155,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
                 Vector3 targetKnocback = posBoss + lookAt.normalized * (m_distanceKnockback + bonusDistance);
                 targetKnocback.z = hero.transform.position.z;
 
-                DOTween.To(() => hero.transform.position, _pos => hero.rig.MovePosition(_pos), targetKnocback, 0.2f);
+                DOTween.To(() => hero.transform.position, _pos => hero.rig.MovePosition(_pos), targetKnocback, 0.2f).SetUpdate(UpdateType.Fixed);
             }
         }
     }

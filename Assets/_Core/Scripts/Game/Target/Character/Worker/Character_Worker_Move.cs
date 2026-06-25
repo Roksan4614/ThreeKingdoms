@@ -84,7 +84,7 @@ public class Character_Worker_Move : Character_Worker
                 continue;
             }
 
-            var lookAt = _target.transform.position - m_owner.transform.position;
+            var lookAt = _target.transform.position - m_owner.position;
             OnMoveUpdate(lookAt.normalized * m_owner.stat.moveSpeed);
 
             if (_isAttack && m_owner.target.Contains(_target))
@@ -138,15 +138,17 @@ public class Character_Worker_Move : Character_Worker
         }
         else
         {
-            lookAt = (_targetPos - m_owner.transform.position);
+            lookAt = (_targetPos - m_owner.position);
         }
-        target = m_owner.transform.position + lookAt.normalized * 5;
+        target = m_owner.position + lookAt.normalized * 5;
 
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
 
+        var hashBuff = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
+
         if (ControllerManager.instance.isKeyboardMode)
         {
-            if (lookAt.x != 0 && m_owner.transform.position.x < CameraManager.posPointer.x != lookAt.x > 0)
+            if (lookAt.x != 0 && m_owner.factionType == FactionType.Alliance && m_owner.position.x < CameraManager.posPointer.x != lookAt.x > 0)
                 m_owner.anim.Play(CharacterAnimType.Dash_Back);
             else
                 m_owner.anim.Play(CharacterAnimType.Dash);
@@ -160,7 +162,7 @@ public class Character_Worker_Move : Character_Worker
         bool isFlipDash = lookAt.x == 0 ? isFlip : lookAt.x > 0;
         EffectWorker.instance.Dash(m_owner, isFlipDash);
 
-        m_tweenDash = DOTween.To(() => m_owner.transform.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f);
+        m_tweenDash = DOTween.To(() => m_owner.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f).SetUpdate(UpdateType.Fixed);
         await m_tweenDash.OnUpdate(
             () =>
             {
@@ -171,6 +173,7 @@ public class Character_Worker_Move : Character_Worker
                 }
             }).AsyncWaitForCompletion();
 
+        m_owner.buff.Remove(BuffType.DEBUFF_NO_MOVE, hashBuff);
         m_owner.anim.Play(CharacterAnimType.Idle);
 
         m_tweenDash = null;

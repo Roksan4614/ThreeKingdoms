@@ -26,8 +26,9 @@ public partial class StageManager
         var slot = Instantiate(m_handleBoss.Result, m_element.chapter).GetComponent<BossRaid_BossSlotComponent>();
     }
 
-    void FinishedBossRaid()
+    void OnDestroy_BossRaid()
     {
-        m_handleBoss.Release();
+        if (m_handleBoss.IsValid())
+            m_handleBoss.Release();
     }
 }

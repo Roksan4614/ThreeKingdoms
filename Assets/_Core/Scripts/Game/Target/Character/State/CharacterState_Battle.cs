@@ -48,8 +48,8 @@ public class CharacterState_Battle : CharacterState
     CharacterComponent GetNearestHero()
     {
         if (m_owner.factionType == FactionType.Alliance)
-            return StageManager.instance.GetNearestEnemy(m_owner.transform.position);
+            return StageManager.instance.GetNearestEnemy(m_owner.position);
         else
-            return TeamManager.instance.GetNearestHero(m_owner.transform.position);
+            return TeamManager.instance.GetNearestHero(m_owner.position);
     }
 }

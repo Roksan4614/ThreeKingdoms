@@ -80,7 +80,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         m_isCritial = false;
         isUseSkill = true;
 
-        m_owner.anim.Play(CharacterAnimType.Attack);
+        m_owner.anim.PlayAttack();
         ShowSlashEffect(true);
 
         CameraManager.instance.Shake();

@@ -22,11 +22,11 @@ public class CharacterState_Wait : CharacterState
 
         while (true)
         {
-            var nearestHero = TeamManager.instance.GetNearestHero(m_owner.transform.position);
+            var nearestHero = TeamManager.instance.GetNearestHero(m_owner.position);
 
             if (nearestHero != null)
             {
-                var distance = (m_owner.transform.position - nearestHero.transform.position).sqrMagnitude;
+                var distance = (m_owner.position - nearestHero.transform.position).sqrMagnitude;
 
                 if (distance < 36f)
                 {

@@ -40,6 +40,7 @@ public class CharacterComponent : TargetComponent
     public bool isMain => m_info.isMain;
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; } = TeamPositionType.NONE;
+    public Vector3 position { get => transform.position; set => transform.position = value; }
 
     protected virtual void Awake()
     {
@@ -186,7 +187,8 @@ public class CharacterComponent : TargetComponent
 
                 m_element.collider.enabled = false;
 
-                //target.RemoveAll();
+                if (m_info.isMain == true)
+                    ControllerManager.instance.SetDie_SkillTimer();
             }
 
             Signal.instance.UpdateHP.Emit(this);
@@ -285,6 +287,7 @@ public class CharacterComponent : TargetComponent
         public Transform panel => m_panel;
         public Rigidbody2D rig => m_rig;
         public Animator animator => m_animator;
+        public Transform parentCanvas => m_effect_canvas_damage.parent;
         public Transform effect_canvas_damage => m_effect_canvas_damage;
         public Transform effect_renderer => m_effect_renderer;
         public Transform cameraPos => m_cameraPos;
