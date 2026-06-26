@@ -111,8 +111,12 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
 
             await UniTask.WaitForSeconds(m_durationChange, cancellationToken: token);
 
-            m_element.boss.gameObject.SetActive(false);
             m_element.bossJIN.gameObject.SetActive(true);
+            m_element.bossJIN.position = m_element.boss.position;
+            m_element.bossJIN.move.SetFlip(m_element.boss.move.isFlip);
+            Destroy(m_element.boss.gameObject);
+
+            //CameraManager.instance.SetCameraPosTarget(m_element.bossJIN.element.cameraPos);
 
             m_element.bossJIN.anim.Play("Boss_Die_End");
 
@@ -137,7 +141,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         List<CharacterComponent> heroes = new();
         TeamManager.instance.GetHeroes(heroes, true);
 
-        var posBoss = boss.transform.position;
+        var posBoss = m_element.bossJIN.transform.position;
 
         CameraManager.instance.Shake();
 
@@ -164,9 +168,14 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            boss.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
+            bool isBuffActive = boss.buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE);
+            if (isBuffActive)
+                boss.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
+
             boss.OnDamage(null, boss.stat.healthMax * .25f);
-            boss.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
+
+            if (isBuffActive)
+                boss.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
         }
         else if (Input.GetKeyDown(KeyCode.M))
         {

@@ -33,6 +33,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             return;
 
         m_element.warning_Circle.transform.SetParent(m_owner.transform.parent);
+        m_element.warning_RedHare.transform.parent.SetParent(m_owner.transform.parent);
         m_element.animSkillJump.transform.SetParent(m_owner.transform.parent);
 
         m_dbSkills = new()
@@ -41,13 +42,14 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             {
                 duration = 5,
                 async = SkillAsync_Swing
+                //async = SkillAsync_RedHare
             },
 
-            //new Skilldata()
-            //{
-            //    duration = 10,
-            //    async = SkillAsync_RedHare
-            //},
+            new Skilldata()
+            {
+                duration = 10,
+                async = SkillAsync_RedHare
+            },
         };
 
         if (m_isJIN)
@@ -61,6 +63,36 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         SkillAsync().Forget();
     }
 
+    private void Update()
+    {
+        if (BossRaidWorker.instance.isRunning)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha0))
+                SkillAsync_RedHare().Forget();
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha0))
+            {
+                m_element.mount.SetMount(m_owner, true);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                m_owner.anim.Play("Mount_Skill");
+                m_element.mount.Play("Skill");
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                m_owner.anim.Play("Mount_Skill_End");
+                m_element.mount.Play("Skill_End");
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                m_element.mount.SetMount(m_owner, false);
+            }
+        }
+    }
+
     void SlotBossRaidStatus(BossRaidStatusType _statusType)
     {
         switch (_statusType)
@@ -70,6 +102,8 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
                 m_cts = m_cts.Release();
                 m_element.warning_Circle.transform.SetParent(m_owner.transform.parent);
                 m_element.warning_Circle.SetDisable();
+                m_element.warning_RedHare.transform.parent.SetParent(m_owner.transform.parent);
+                m_element.warning_RedHare.SetDisable();
                 break;
         }
     }
@@ -139,7 +173,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         // 가운데로 대쉬함 하자
         {
             Vector3 targetPos = m_owner.position;
-            targetPos.x = m_owner.position.x < 0 ? 1 : -1;
+            targetPos.x += m_owner.move.isFlip ? -1 : 1;
 
             await m_owner.move.DashAsync(targetPos);
         }
@@ -255,8 +289,83 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
     async UniTask SkillAsync_RedHare()
     {
-        await UniTask.Yield();
+        var token = m_cts.Token;
+        await UniTask.Yield(cancellationToken: token);
+
+        {
+            Vector3 targetPos = m_owner.position;
+            targetPos.x += m_owner.move.isFlip ? -1 : 1;
+
+            await m_owner.move.DashAsync(targetPos);
+        }
+
+        m_owner.move.MoveStop();
+        var hashNoMove = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
+        var hashNoDie = m_owner.buff.Add(BuffType.BUFF_NO_DIE);
+
+        // 말 태우자
+        m_element.mount.SetMount(m_owner, true);
+        await UniTask.WaitForSeconds(.5f, cancellationToken: token);
+
+        //준비
+        m_owner.anim.Play("Mount_Skill");
+        m_element.mount.Play("Skill");
+
+        var target = TeamManager.instance.mainHero;
+
+        var waring = m_element.warning_RedHare.transform.parent;
+        waring.gameObject.SetActive(true);
+
+        int countMax = DataManager.bossRaid.data.tickSecondPhase > 0 ? 3 : 1;
+
+        for (int i = 0; i < countMax; i++)
+        {
+            // 영역 표시
+            m_element.warning_RedHare.transform.parent.position = m_owner.position;
+            m_element.warning_RedHare.ShowAsync(1, token, false).Forget();
+
+            var endTime = Time.time + 1;
+            while (endTime >= Time.time)
+            {
+                var lookAt = target.position - transform.position;
+                float angle = Mathf.Atan2(lookAt.y, lookAt.x) * Mathf.Rad2Deg;
+                waring.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+                await UniTask.Yield(cancellationToken: token);
+            }
+
+            await m_owner.transform.DOMove(m_element.targetRedHare.position, m_rushDuration)
+                .SetEase(Ease.OutQuad)
+                .AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(token);
+
+            m_owner.anim.Play("Mount_Skill_End");
+            m_element.mount.Play("Skill_End");
+
+            m_element.warning_RedHare.SetDisable();
+            m_owner.move.SetFlip(m_owner.position.x < target.position.x);
+
+            await UniTask.WaitForSeconds(.5f, cancellationToken: token);
+        }
+
+        await UniTask.WaitForSeconds(.5f, cancellationToken: token);
+
+        // 말 내리기
+        m_element.mount.SetMount(m_owner, false);
+
+        //m_owner.anim.Play("Mount_Skill_End");
+        //m_element.mount.Play("Skill_End");
+
+        //await UniTask.WaitForSeconds(1f);
+
+        //m_element.mount.SetMount(m_owner, false);
+
+        m_owner.buff.Remove(BuffType.DEBUFF_NO_MOVE, hashNoMove);
+        m_owner.buff.Remove(BuffType.BUFF_NO_DIE, hashNoDie);
+
+        waring.gameObject.SetActive(false);
     }
+
+    [SerializeField] float m_rushDuration = 1f;
 
     async UniTask SkillAsync_Swing()
     {
@@ -355,13 +464,22 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
     {
         public WarningAreaComponent warning_Circle;
         public WarningAreaComponent warning_RedHare;
+        public Transform targetRedHare;
+
         public Animator animSkillJump;
+
+        public MountComponent mount;
 
         public void Initialize(Transform _transform)
         {
             warning_Circle = _transform.parent.GetComponent<WarningAreaComponent>("Fx_Warning_Circle");
+
             warning_RedHare = _transform.parent.GetComponent<WarningAreaComponent>("Fx_Warning_RedHare/Fx_Warning");
+            targetRedHare = warning_RedHare.transform.parent.Find("Target");
+
             animSkillJump = _transform.parent.GetComponent<Animator>("Fx_Skill_Jump");
+
+            mount = _transform.GetComponent<MountComponent>("Mount/RedHare");
         }
     }
 }

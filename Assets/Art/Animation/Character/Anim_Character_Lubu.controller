@@ -1,5 +1,27 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1101 &-8901687906958787817
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions: []
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: -1399743662156435162}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0.25
+  m_TransitionOffset: 0
+  m_ExitTime: 0.75
+  m_HasExitTime: 1
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
 --- !u!1102 &-8606793117413575603
 AnimatorState:
   serializedVersion: 6
@@ -322,7 +344,7 @@ AnimatorStateMachine:
     m_Position: {x: 90, y: 230, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2801739043453450453}
-    m_Position: {x: -70, y: 290, z: 0}
+    m_Position: {x: -190, y: 290, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7831536682712383423}
     m_Position: {x: 510, y: 290, z: 0}
@@ -334,16 +356,16 @@ AnimatorStateMachine:
     m_Position: {x: 330, y: 230, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1830844618007380668}
-    m_Position: {x: -70, y: 440, z: 0}
+    m_Position: {x: -190, y: 440, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6008637211450261779}
     m_Position: {x: 330, y: 170, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8606793117413575603}
-    m_Position: {x: -70, y: 350, z: 0}
+    m_Position: {x: -190, y: 350, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -1909357281672160892}
-    m_Position: {x: -70, y: 490, z: 0}
+    m_Position: {x: -190, y: 490, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2623733739835257555}
     m_Position: {x: 510, y: 420, z: 0}
@@ -370,25 +392,25 @@ AnimatorStateMachine:
     m_Position: {x: 540, y: 700, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8220347876837927966}
-    m_Position: {x: 150, y: 480, z: 0}
+    m_Position: {x: 290, y: 390, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8386959846612851718}
-    m_Position: {x: -70, y: 630, z: 0}
+    m_Position: {x: -190, y: 630, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3272762729306712921}
-    m_Position: {x: -70, y: 570, z: 0}
+    m_Position: {x: -190, y: 570, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1325163747377441010}
-    m_Position: {x: 290, y: 420, z: 0}
+    m_Position: {x: 290, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5212163557952853247}
     m_Position: {x: 510, y: 100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 212499626921700879}
-    m_Position: {x: 150, y: 530, z: 0}
+    m_Position: {x: 290, y: 440, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6583717759903199373}
-    m_Position: {x: 150, y: 580, z: 0}
+    m_Position: {x: 270, y: 490, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -780,6 +802,28 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1101 &3849009087638623810
+AnimatorStateTransition:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_Conditions: []
+  m_DstStateMachine: {fileID: 0}
+  m_DstState: {fileID: 212499626921700879}
+  m_Solo: 0
+  m_Mute: 0
+  m_IsExit: 0
+  serializedVersion: 3
+  m_TransitionDuration: 0.1
+  m_TransitionOffset: 0
+  m_ExitTime: 0.9
+  m_HasExitTime: 1
+  m_HasFixedDuration: 1
+  m_InterruptionSource: 0
+  m_OrderedInterruption: 1
+  m_CanTransitionToSelf: 1
 --- !u!1102 &4437154510284080003
 AnimatorState:
   serializedVersion: 6
@@ -841,9 +885,10 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mount_Skill_End
-  m_Speed: 1
+  m_Speed: 1.7
   m_CycleOffset: 0
-  m_Transitions: []
+  m_Transitions:
+  - {fileID: -8901687906958787817}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
@@ -966,9 +1011,10 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mount_Skill
-  m_Speed: 1
+  m_Speed: 1.15
   m_CycleOffset: 0
-  m_Transitions: []
+  m_Transitions:
+  - {fileID: 3849009087638623810}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0

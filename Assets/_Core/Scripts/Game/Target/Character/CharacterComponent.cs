@@ -174,21 +174,27 @@ public class CharacterComponent : TargetComponent
                 DataManager.bossRaid.SendDamageBossAsync((long)_damage);//.Forget();
 
             m_stat.health -= _damage;
+
             if (m_stat.health <= 0)
             {
-                m_stat.health = 0;
-                SetState(CharacterStateType.None);
+                if (buff.IsActive(BuffType.BUFF_NO_DIE))
+                    m_stat.health = 1;
+                else
+                {
+                    m_stat.health = 0;
+                    SetState(CharacterStateType.None);
 
-                move.MoveStop();
-                attack.Die();
-                buff.RemoveAll();
+                    move.MoveStop();
+                    attack.Die();
+                    buff.RemoveAll();
 
-                anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
+                    anim.Play(CharacterAnimType.Die_1 + UnityEngine.Random.Range(0, 2));
 
-                m_element.collider.enabled = false;
+                    m_element.collider.enabled = false;
 
-                if (m_info.isMain == true)
-                    ControllerManager.instance.SetDie_SkillTimer();
+                    if (m_info.isMain == true)
+                        ControllerManager.instance.SetDie_SkillTimer();
+                }
             }
 
             Signal.instance.UpdateHP.Emit(this);
@@ -292,11 +298,12 @@ public class CharacterComponent : TargetComponent
         public Transform effect_renderer => m_effect_renderer;
         public Transform cameraPos => m_cameraPos;
         public Transform skillRange => m_skillRage;
+        public Transform parts => m_animator.transform;
         public Collider2D collider => m_collider;
         public CharacterAnimationClipData animationClipData => m_animationClipData;
         public TextMeshProUGUI txtTalk => m_txtTalk;
 
-        public Transform parts => m_animator.transform;
+        public Transform mount;
 
         public void Initialize(Transform _transform)
         {
@@ -312,6 +319,8 @@ public class CharacterComponent : TargetComponent
 
             partsRenders = m_animator.transform.GetComponentsInChildren<SpriteRenderer>(true);
             colorParts = partsRenders.Select(x => x.color).ToArray();
+
+            mount = _transform.Find("Character/Mount");
         }
     }
 }

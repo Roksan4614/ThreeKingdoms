@@ -58,6 +58,9 @@ public class Character_Worker_Move : Character_Worker
             m_owner.panel.localScale = scale;
 
             m_owner.talkbox.SetFlip(_isRight);
+
+            if (m_owner.element.mount != null)
+                m_owner.element.mount.localScale = scale;
         }
     }
 

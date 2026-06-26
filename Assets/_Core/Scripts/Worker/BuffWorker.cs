@@ -6,6 +6,7 @@ public enum BuffType
 {
     NONE = -1,
 
+    BUFF_NO_DIE,
     BUFF_NO_TAKEN_DAMAGE,
 
     DEBUFF_NO_SKILL,
