@@ -381,7 +381,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         return db.Count == 0 ? null : db.RandomFirst();
     }
 
-    public bool IsAllDie()
+    public bool IsAllDie(bool _isJustCheck)
     {
         var members = m_member.Values.ToList();
         for (int i = 0; i < members.Count; i++)
@@ -389,6 +389,9 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             if (members[i].isLive == true)
                 return false;
         }
+
+        if (_isJustCheck)
+            return true;
 
         heroInfo.StopRespawn();
 

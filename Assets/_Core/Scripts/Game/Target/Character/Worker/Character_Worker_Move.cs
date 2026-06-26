@@ -120,7 +120,7 @@ public class Character_Worker_Move : Character_Worker
     Tween m_tweenDash;
     public void Dash(Vector3 _targetPos)
         => DashAsync(_targetPos).Forget();
-    public async UniTask DashAsync(Vector3 _targetPos)
+    public async UniTask DashAsync(Vector3 _targetPos, float _power = 5)
     {
         //test
         if (m_tweenDash != null)
@@ -143,7 +143,7 @@ public class Character_Worker_Move : Character_Worker
         {
             lookAt = (_targetPos - m_owner.position);
         }
-        target = m_owner.position + lookAt.normalized * 5;
+        target = m_owner.position + lookAt.normalized * _power;
 
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
 

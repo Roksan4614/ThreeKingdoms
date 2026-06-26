@@ -184,12 +184,12 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
             {
                 if (boss.buff.IsActive(BuffType.BUFF_NO_TAKEN_DAMAGE))
                 {
-                    TeamManager.instance.mainHero.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
+                    TeamManager.instance.RemoveBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
                     boss.buff.Remove(BuffType.BUFF_NO_TAKEN_DAMAGE);
                 }
                 else
                 {
-                    TeamManager.instance.mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
+                    TeamManager.instance.AddBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
                     boss.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
                 }
             }

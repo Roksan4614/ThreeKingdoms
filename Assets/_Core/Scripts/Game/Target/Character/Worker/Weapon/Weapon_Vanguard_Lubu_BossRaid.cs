@@ -133,7 +133,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         for (int i = 0; i < dbSkill.Count; i++)
         {
             var skill = dbSkill[i];
-            skill.timeAction = i == 0 ? timeStart : skill.duration + timeStart;
+            skill.timeAction = timeStart + i;
             dbSkill[i] = skill;
         }
 
@@ -149,11 +149,18 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             while (TeamManager.instance.GetRandomHero(true) == null)
                 await UniTask.Yield(cancellationToken: token);
 
+            // 모두 죽어있으면 기다리자
+            if (TeamManager.instance.GetRandomHero(true) == null)
+            {
+                await UniTask.WaitUntil(() => TeamManager.instance.GetRandomHero(true) != null, cancellationToken: token);
+                await UniTask.WaitForSeconds(.5f);
+            }
+
             await skill.async();
 
             //스킬을 쓰면 일단 조금은 기다리자.
             skill.timeAction = Time.time + skill.duration;
-            await UniTask.WaitForSeconds(UnityEngine.Random.Range(3f, 6f));
+            await UniTask.WaitForSeconds(UnityEngine.Random.Range(3f, 6f), cancellationToken: token);
 
             dbSkill[0] = skill;
             dbSkill = dbSkill.SortBy(x => x.timeAction);
@@ -186,6 +193,10 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         //var targetJump = TeamManager.instance.GetRandomHero(true);
         // 주장이 타겟
         var targetJump = TeamManager.instance.mainHero;
+
+        if (targetJump.isLive == false)
+            targetJump = TeamManager.instance.GetFarthestHero(m_owner.position);
+
         await UniTask.WaitUntil(() =>
         {
             m_owner.move.SetFlip(targetJump.transform.position.x > m_owner.position.x);
@@ -307,12 +318,6 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         m_element.mount.SetMount(m_owner, true);
         await UniTask.WaitForSeconds(.5f, cancellationToken: token);
 
-        //준비
-        m_owner.anim.Play("Mount_Skill");
-        m_element.mount.Play("Skill");
-
-        var target = TeamManager.instance.mainHero;
-
         var waring = m_element.warning_RedHare.transform.parent;
         waring.gameObject.SetActive(true);
 
@@ -320,6 +325,17 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         for (int i = 0; i < countMax; i++)
         {
+            var target = TeamManager.instance.mainHero;
+            if (target.isLive == false)
+                target = TeamManager.instance.GetFarthestHero(m_owner.position);
+
+            if (target == null)
+                break;
+
+            //준비
+            m_owner.anim.Play("Mount_Skill");
+            m_element.mount.Play("Skill");
+
             // 영역 표시
             m_element.warning_RedHare.transform.parent.position = m_owner.position;
             m_element.warning_RedHare.ShowAsync(1, token, false).Forget();
@@ -333,6 +349,20 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
                 await UniTask.Yield(cancellationToken: token);
             }
+
+            var distance = (m_owner.position - m_element.targetRedHare.position).sqrMagnitude;
+
+            for (int idxTarget = 0; idxTarget < m_element.warning_RedHare.target.Count; idxTarget++)
+            {
+                var t = m_element.warning_RedHare.target[idxTarget];
+                var p = (t.position - m_owner.position).sqrMagnitude / distance;
+
+                Utils.AfterSecond(() =>
+                {
+                    t.OnDamage(m_owner, m_owner.stat.attackPower * 6, true);
+                }, m_rushDuration * p);
+            }
+
 
             await m_owner.transform.DOMove(m_element.targetRedHare.position, m_rushDuration)
                 .SetEase(Ease.OutQuad)
@@ -375,7 +405,8 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         var token = m_cts.Token;
         while (m_owner.target.nearestEnemy == null)
         {
-            Vector3 targetPos = TeamManager.instance.GetNearestHero(m_owner.position).position;
+            var target = TeamManager.instance.GetNearestHero(m_owner.position);
+            Vector3 targetPos = target.position;
             await m_owner.move.DashAsync(targetPos);
         }
 

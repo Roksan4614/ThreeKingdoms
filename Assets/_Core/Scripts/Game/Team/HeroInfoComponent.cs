@@ -136,7 +136,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
         if (stat.health <= 0)
         {
-            if (BossRaidWorker.instance.isRunning == true || TeamManager.instance.IsAllDie() == false)
+            if (BossRaidWorker.instance.isRunning == true || TeamManager.instance.IsAllDie(false) == false)
             {
                 bar.DOAnchorPosX(targetX, 0.1f);
 
