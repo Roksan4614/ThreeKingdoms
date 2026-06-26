@@ -83,7 +83,7 @@ public class Character_Worker_Move : Character_Worker
             // 컨트롤 중일 땐 그냥 넘어가자.
             if (ControllerManager.instance.IsControll(m_owner))
             {
-                await UniTask.Yield(cancellationToken: token);
+                await UniTask.NextFrame(cancellationToken: token);
                 continue;
             }
 
@@ -113,7 +113,7 @@ public class Character_Worker_Move : Character_Worker
                 //    m_owner.target.SetTarget(_target);
             }
 
-            await UniTask.Yield(cancellationToken: token);
+            await UniTask.NextFrame(cancellationToken: token);
         }
     }
 

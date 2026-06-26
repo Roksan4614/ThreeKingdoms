@@ -144,10 +144,10 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             var skill = dbSkill[0];
 
             while (skill.timeAction > Time.time)
-                await UniTask.Yield(cancellationToken: token);
+                await UniTask.NextFrame(cancellationToken: token);
 
             while (TeamManager.instance.GetRandomHero(true) == null)
-                await UniTask.Yield(cancellationToken: token);
+                await UniTask.NextFrame(cancellationToken: token);
 
             // 모두 죽어있으면 기다리자
             if (TeamManager.instance.GetRandomHero(true) == null)
@@ -224,7 +224,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
                 m_owner.move.SetFlip(m_element.warning_Circle.transform.position.x > m_owner.position.x);
 
-                await UniTask.Yield(cancellationToken: token);
+                await UniTask.NextFrame(cancellationToken: token);
             }
         }
 
@@ -301,7 +301,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
     async UniTask SkillAsync_RedHare()
     {
         var token = m_cts.Token;
-        await UniTask.Yield(cancellationToken: token);
+        await UniTask.NextFrame(cancellationToken: token);
 
         {
             Vector3 targetPos = m_owner.position;
@@ -343,11 +343,13 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             var endTime = Time.time + 1;
             while (endTime >= Time.time)
             {
+                m_owner.move.SetFlip(m_owner.position.x < target.position.x);
+
                 var lookAt = target.position - transform.position;
                 float angle = Mathf.Atan2(lookAt.y, lookAt.x) * Mathf.Rad2Deg;
                 waring.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-                await UniTask.Yield(cancellationToken: token);
+                await UniTask.NextFrame(cancellationToken: token);
             }
 
             var distance = (m_owner.position - m_element.targetRedHare.position).sqrMagnitude;

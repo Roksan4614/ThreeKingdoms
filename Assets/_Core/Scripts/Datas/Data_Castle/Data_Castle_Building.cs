@@ -10,7 +10,7 @@ public class Data_Castle_Building
 
     public async UniTask InitializeAsync()
     {
-        await UniTask.Yield();
+        await UniTask.NextFrame();
 
         UpdateBuildingUpgrade(CastleObjectType.NONE);
     }
@@ -136,7 +136,7 @@ public class Data_Castle_Building
         UpdateBuildingUpgrade(_objectType);
 
         // 서버 연동 작업 필요
-        await UniTask.Yield();
+        await UniTask.NextFrame();
 
         _callback?.Invoke(db);
     }

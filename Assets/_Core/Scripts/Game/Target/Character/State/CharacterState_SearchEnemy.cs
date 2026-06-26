@@ -18,7 +18,7 @@ public class CharacterState_SearchEnemy : CharacterState
         while (nearestEnemy == null)
         {
             nearestEnemy = StageManager.instance.GetNearestEnemy(mainHero.transform.position);
-            await UniTask.Yield(cancellationToken: m_cts.Token);
+            await UniTask.NextFrame(cancellationToken: m_cts.Token);
         }
 
         var posNearestEnemy = nearestEnemy.transform.position;
@@ -37,7 +37,7 @@ public class CharacterState_SearchEnemy : CharacterState
                 break;
             }
 
-            await UniTask.Yield(cancellationToken: m_cts.Token);
+            await UniTask.NextFrame(cancellationToken: m_cts.Token);
         }
     }
 }

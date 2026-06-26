@@ -83,7 +83,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
                 break;
             }
 
-            await UniTask.Yield(cancellationToken: token);
+            await UniTask.NextFrame(cancellationToken: token);
         }
     }
 

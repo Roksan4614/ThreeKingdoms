@@ -307,7 +307,7 @@ public partial class Data_Castle
 
     public async UniTask SetBatchHeroAsync(CastleData _castleData, UnityAction<StatusType> _onComplete)
     {
-        await UniTask.Yield();
+        await UniTask.NextFrame();
 
         // 기존 장수 삭제
         for (int i = 0; i < _castleData.heroes.Count; i++)
@@ -341,7 +341,7 @@ public partial class Data_Castle
 
     public async UniTask ClaimAsync(CastleObjectType _objectType, UnityAction<StatusType> _onComplete)
     {
-        await UniTask.Yield();
+        await UniTask.NextFrame();
 
         var castleData = m_db[_objectType];
 

@@ -21,7 +21,7 @@ public class CharacterState_Battle : CharacterState
             while (target == null)
             {
                 target = GetNearestHero();
-                await UniTask.Yield(cancellationToken: token);
+                await UniTask.NextFrame(cancellationToken: token);
             }
 
             // 적에게 움직이면서 공격한다.

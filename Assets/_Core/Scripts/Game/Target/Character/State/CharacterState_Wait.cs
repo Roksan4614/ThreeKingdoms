@@ -36,7 +36,7 @@ public class CharacterState_Wait : CharacterState
                 }
             }
 
-            await UniTask.Yield(cancellationToken: m_cts.Token);
+            await UniTask.NextFrame(cancellationToken: m_cts.Token);
         }
     }
 }

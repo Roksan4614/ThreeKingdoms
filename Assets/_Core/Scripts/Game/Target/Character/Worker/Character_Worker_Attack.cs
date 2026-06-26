@@ -46,7 +46,7 @@ public class Character_Worker_Attack : Character_Worker
             else if (m_timeAttack < Time.realtimeSinceStartup)
                 break;
 
-            await UniTask.Yield(cancellationToken: _token);
+            await UniTask.NextFrame(cancellationToken: _token);
         }
     }
 
@@ -64,7 +64,7 @@ public class Character_Worker_Attack : Character_Worker
         if (m_timeAttack - m_owner.stat.attackSpeed * 0.5f > Time.realtimeSinceStartup)
         {
             while (m_timeAttack > Time.realtimeSinceStartup)
-                await UniTask.Yield(token, true);
+                await UniTask.NextFrame(token, true);
             _isPushButton = false;
         }
 
@@ -89,7 +89,7 @@ public class Character_Worker_Attack : Character_Worker
                 m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
             }
             _isPushButton = false;
-            await UniTask.Yield(token, true);
+            await UniTask.NextFrame(token, true);
         }
 
         m_ctsAttackPush = null;

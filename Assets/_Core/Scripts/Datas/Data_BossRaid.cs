@@ -33,7 +33,7 @@ public class Data_BossRaid
 
     public async UniTask InitializeAsync()
     {
-        await UniTask.Yield();
+        await UniTask.NextFrame();
 
         m_data = PPWorker.Get<BossRaidData>(c_key);
 
@@ -145,7 +145,7 @@ public class Data_BossRaid
 
     public async UniTask DoLoadAsync_RankData()
     {
-        await UniTask.Yield();
+        await UniTask.NextFrame();
 
         m_rankPoint.ranker = new();
 

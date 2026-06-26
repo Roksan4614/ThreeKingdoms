@@ -164,7 +164,7 @@ public class Data_Castle_Mission
     public async UniTask<StatusType> TimerBonusAsync(int _idx, float _bonusSeconds)
     {
         var result = StatusType.Wait;
-        await UniTask.Yield();
+        await UniTask.NextFrame();
 
         result = StatusType.Success;
         var idx = m_data.FindIndex(x => x.idx == _idx);
