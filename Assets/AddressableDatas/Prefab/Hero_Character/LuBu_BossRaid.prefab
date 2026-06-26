@@ -74,6 +74,80 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8112659988965909572, guid: 634b9a60988a2084ab5ebfc83cc9393b, type: 3}
   m_PrefabInstance: {fileID: 4085084839650588442}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4814062563090550342
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 9018306281137734328}
+    m_Modifications:
+    - target: {fileID: 1697496813238201802, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_Name
+      value: eff_in_Boss_Die_Blood
+      objectReference: {fileID: 0}
+    - target: {fileID: 1697496813238201802, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.47
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.52
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+--- !u!4 &1578169549527488154 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6280327667349215452, guid: a47964932c7ad6d47a2ca06b71b941ad, type: 3}
+  m_PrefabInstance: {fileID: 4814062563090550342}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7337876192392329943
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -308,6 +382,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6609486081319362919}
     - targetCorrespondingSourceObject: {fileID: 562346126657969119, guid: ac4561b1337c3b04db9a739900a4c705, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 1578169549527488154}
+    - targetCorrespondingSourceObject: {fileID: 562346126657969119, guid: ac4561b1337c3b04db9a739900a4c705, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5198515450482430814}
     m_AddedComponents:
@@ -405,6 +482,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   m_element:
     warning_Circle: {fileID: 2217909498909918929}
+    warning_RedHare: {fileID: 0}
     animSkillJump: {fileID: 3444319050565262004}
 --- !u!114 &1679968688900092517 stripped
 MonoBehaviour:

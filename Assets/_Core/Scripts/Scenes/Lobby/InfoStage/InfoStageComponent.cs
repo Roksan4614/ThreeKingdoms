@@ -186,7 +186,7 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
 
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     ElementData m_element;
 
     [Serializable]

@@ -109,10 +109,10 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
             });
     }
 
-    public void Wait_SecondPhase()
+    public void Wait_SecondPhase()    
     {
+        DataManager.bossRaid.Wait_SecondPhase();
         isSuccessed = false;
-        Signal.instance.BossRaidStatus.Emit(BossRaidStatusType.Wait_SecondPhase);
     }
 
     public void Start_SecondPhase()

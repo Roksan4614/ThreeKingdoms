@@ -333,12 +333,12 @@ public static class Extenssions
 
         return _isNew ? new() : null;
     }
-    public static void SetAnchoredPositionX(this RectTransform _rt, int _posX)
+    public static void SetAnchoredPositionX(this RectTransform _rt, float _posX)
         => _rt.SetAnchoredPosition(_posX, null);
-    public static void SetAnchoredPositionY(this RectTransform _rt, int _posY)
+    public static void SetAnchoredPositionY(this RectTransform _rt, float _posY)
         => _rt.SetAnchoredPosition(null, _posY);
 
-    public static void SetAnchoredPosition(this RectTransform _rt, int? _posX, int? _posY)
+    public static void SetAnchoredPosition(this RectTransform _rt, float? _posX, float? _posY)
     {
         var pos = _rt.anchoredPosition;
         if (_posX != null)

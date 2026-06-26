@@ -48,15 +48,23 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
         var width = m_element.rtBar.rect.width;
         //m_element.txtPercent.text = _percent == 0 ? "" : $"{_percent * 100:0.#0}%";
         m_element.rtBar.DOKill();
-        m_element.rtBar.DOAnchorPosX(width * -(1 - _percent), 0.2f)
+        var target = width * -(1 - _percent);
+        m_element.rtBar.DOAnchorPosX(target, 0.2f)
             .OnUpdate(() =>
             {
                 var p = 1 + (m_element.rtBar.anchoredPosition.x / width);
                 m_element.txtPercent.text = $"{p * 100:0.#0}%";
             });
+
+        if (BossRaidWorker.instance.isRunning == true)
+            SlotUpdateBossHP_BossRaid(target);
     }
 
-    public void OnManualValidate() => m_element.Initialize(transform);
+    public void OnManualValidate()
+    {
+        m_element.Initialize(transform);
+        m_elementBossRiad.Initialize(transform);
+    }
 
     [SerializeField, HideInInspector]
     ElementData m_element;

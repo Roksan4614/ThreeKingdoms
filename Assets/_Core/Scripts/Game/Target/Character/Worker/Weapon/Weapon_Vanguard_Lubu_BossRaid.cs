@@ -136,11 +136,22 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         m_owner.move.MoveStop();
         var hashDebuff = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
 
+        // 가운데로 대쉬함 하자
+        {
+            Vector3 targetPos = m_owner.position;
+            targetPos.x = m_owner.position.x < 0 ? 1 : -1;
+
+            await m_owner.move.DashAsync(targetPos);
+        }
+
         // 차징시작
         m_owner.anim.Play("Boss_Skill_Jin");
 
         // 루프중이야?
-        var targetJump = TeamManager.instance.GetRandomHero(true);
+        // 랜덤 타겟
+        //var targetJump = TeamManager.instance.GetRandomHero(true);
+        // 주장이 타겟
+        var targetJump = TeamManager.instance.mainHero;
         await UniTask.WaitUntil(() =>
         {
             m_owner.move.SetFlip(targetJump.transform.position.x > m_owner.position.x);
@@ -235,14 +246,6 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         await UniTask.WaitForSeconds(1f, cancellationToken: token);
 
-        // 가운데로 대쉬함 하자
-        {
-            Vector3 targetPos = m_owner.position;
-            targetPos.x = m_owner.position.x < 0 ? 1 : -1;
-
-            await m_owner.move.DashAsync(targetPos);
-        }
-
         m_element.warning_Circle.SetDisable();
 
         m_owner.buff.Remove(hashDebuff);
@@ -286,10 +289,6 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         m_owner.buff.Remove(hashDebuff);
         m_skillType = BossRaidSkillType_LuBu.NONE;
-    }
-
-    async UniTask DashAsync(bool _isBack)
-    {
     }
 
     void KnockbackCharacter(float _distanceKnockback, float _damage)
@@ -355,11 +354,13 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
     struct ElementData_LuBuBossRaid
     {
         public WarningAreaComponent warning_Circle;
+        public WarningAreaComponent warning_RedHare;
         public Animator animSkillJump;
 
         public void Initialize(Transform _transform)
         {
             warning_Circle = _transform.parent.GetComponent<WarningAreaComponent>("Fx_Warning_Circle");
+            warning_RedHare = _transform.parent.GetComponent<WarningAreaComponent>("Fx_Warning_RedHare/Fx_Warning");
             animSkillJump = _transform.parent.GetComponent<Animator>("Fx_Skill_Jump");
         }
     }

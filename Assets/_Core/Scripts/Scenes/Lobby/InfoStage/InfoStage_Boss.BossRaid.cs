@@ -2,18 +2,43 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Threading;
+using TMPro;
 using UnityEngine;
 using static Data_BossRaid;
 
 public partial class InfoStage_Boss
 {
-    RectTransform m_rtTimer;
+    [SerializeField]
+    ElementData_BossRaid m_elementBossRiad;
     CancellationTokenSource m_ctsBossRaid;
+
+    RectTransform rtTimer => m_elementBossRiad.rtTimer;
+
+    [System.Serializable]
+    struct ElementData_BossRaid
+    {
+        public TextMeshProUGUI txtTimer;
+        public RectTransform rtTimer;
+
+        public RectTransform rtUsers;
+        public float posUserX_MAX;
+
+        public void Initialize(Transform _transform)
+        {
+            txtTimer = _transform.GetComponent<TextMeshProUGUI>("Timer/txt_timer");
+
+            if (txtTimer == null)
+                return;
+
+            rtTimer = (RectTransform)txtTimer.transform.parent;
+
+            rtUsers = (RectTransform)_transform.Find("FX_Users");
+            posUserX_MAX = rtUsers.anchoredPosition.x;
+        }
+    }
 
     void Awake_BossRaid()
     {
-        m_rtTimer = transform.GetComponent<RectTransform>("Timer");
-
         Signal.instance.BossRaidStatus.connect = SlotBossRaidStatus;
     }
 
@@ -22,20 +47,23 @@ public partial class InfoStage_Boss
         if (_status == BossRaidStatusType.Finish_FirstPhase)
         {
             m_ctsBossRaid = m_ctsBossRaid.Release();
-            m_rtTimer.gameObject.SetActive(false);
+            rtTimer.gameObject.SetActive(false);
         }
         else if (_status == BossRaidStatusType.Wait_SecondPhase)
         {
             InfoStageComponent.instance.SetActive(true, true);
             StartBossRaid(false);
 
+            m_elementBossRiad.rtUsers.SetAnchoredPositionX(m_elementBossRiad.posUserX_MAX);
+
             m_element.rtBar.DOAnchorPosX(0, 0.5f).SetEase(Ease.OutCubic).OnComplete(() =>
                 Utils.AfterSecond(() => BossRaidWorker.instance.Start_SecondPhase(), .3f));
         }
         else if (_status == BossRaidStatusType.SecondPhase)
         {
-            m_rtTimer.SetAnchoredPositionX(0);
-            m_rtTimer.gameObject.SetActive(true);
+            rtTimer.SetAnchoredPositionX(0);
+            rtTimer.gameObject.SetActive(true);
+            m_elementBossRiad.txtTimer.text = "";
 
             var dataRaid = DataManager.bossRaid.data;
             TimerAsync((dataRaid.dtEndRound - dataRaid.dtSecondPhase).TotalMinutes).Forget();
@@ -59,17 +87,20 @@ public partial class InfoStage_Boss
 
         var dataRaid = DataManager.bossRaid.data;
 
-        m_rtTimer.gameObject.SetActive(true);
+        rtTimer.gameObject.SetActive(true);
 
         var width = -((RectTransform)transform).rect.width;
         var dtEnd = dataRaid.dtEndRound.AddSeconds(-Configure.instance.timeGapFromServer);
         while (true)
         {
-            var process = 1 - (dtEnd - DateTime.UtcNow).TotalMinutes / _ramainTime;
+            var ts = (dtEnd - DateTime.UtcNow);
+            var process = 1 - ts.TotalMinutes / _ramainTime;
 
-            var pos = m_rtTimer.anchoredPosition;
+            var pos = rtTimer.anchoredPosition;
             pos.x = width * (float)process;
-            m_rtTimer.anchoredPosition = pos;
+            rtTimer.anchoredPosition = pos;
+
+            m_elementBossRiad.txtTimer.text = ts.ToRemainTime(15, _isStartMinute: true);
 
             if (process >= 1)
                 break;
@@ -78,6 +109,15 @@ public partial class InfoStage_Boss
         }
 
         m_ctsBossRaid = m_ctsBossRaid.Release();
-        m_rtTimer.gameObject.SetActive(false);
+        rtTimer.gameObject.SetActive(false);
+    }
+
+    Tween m_tweenMoveUsers;
+    void SlotUpdateBossHP_BossRaid(float _target)
+    {
+        m_tweenMoveUsers?.Kill();
+
+        if (_target < m_elementBossRiad.rtUsers.anchoredPosition.x)
+            m_tweenMoveUsers = m_elementBossRiad.rtUsers.DOAnchorPosX(_target, 0.5f);
     }
 }

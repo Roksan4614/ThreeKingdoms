@@ -104,6 +104,12 @@ public class Data_BossRaid
         remainSeconds = (m_data.dtEndRound - Utils.GetUTC()).TotalSeconds;
     }
 
+    public void Wait_SecondPhase()
+    {
+        m_raidStatus = BossRaidStatusType.Wait_SecondPhase;
+        Signal.instance.BossRaidStatus.Emit(m_raidStatus);
+    }
+
     public void Start_SecondPhase()
     {
         var dtNow = Utils.GetUTC();
@@ -318,7 +324,7 @@ public class Data_BossRaid
             get
             {
                 string name = $"[<color=#{Palette.GetHexa_GradeText(nowGrade)}>{TableManager.stringTable.GetGradeType(nowGrade)}</color>] ";
-                if (DataManager.bossRaid.data.tickSecondPhase > 0)
+                if (DataManager.bossRaid.raidStatus >= BossRaidStatusType.Wait_SecondPhase)
                     name += "Áø.";
                 name += TableManager.hero.Get(keyBoss).name;
                 return name;

@@ -31,14 +31,13 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         boss.SetBossData(DataManager.bossRaid.data.keyBoss);
 
         Signal.instance.BossRaidStatus.connect = SlotBossRaidStatus;
-
-        ArrowNaviComponent.instance.SetParent(boss.element.parentCanvas);
     }
+
+    private void Start()
+        => ArrowNaviComponent.instance.SetParent(boss.element.parentCanvas);
 
     private void OnDestroy()
         => m_cts = m_cts.Release();
-
-
 
     void SlotBossRaidStatus(BossRaidStatusType _status)
     {
