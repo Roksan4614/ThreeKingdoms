@@ -340,7 +340,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             m_element.warning_RedHare.transform.parent.position = m_owner.position;
             m_element.warning_RedHare.ShowAsync(1, token, false).Forget();
 
-            var endTime = Time.time + 1;
+            var endTime = Time.time + .8f;
             while (endTime >= Time.time)
             {
                 m_owner.move.SetFlip(m_owner.position.x < target.position.x);
@@ -365,13 +365,12 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
                 }, m_rushDuration * p);
             }
 
-
             await m_owner.transform.DOMove(m_element.targetRedHare.position, m_rushDuration)
                 .SetEase(Ease.OutQuad)
                 .AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(token);
 
-            m_owner.anim.Play("Mount_Skill_End");
             m_element.mount.Play("Skill_End");
+            m_owner.anim.Play("Mount_Skill_End");
 
             m_element.warning_RedHare.SetDisable();
             m_owner.move.SetFlip(m_owner.position.x < target.position.x);
@@ -383,13 +382,6 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         // 말 내리기
         m_element.mount.SetMount(m_owner, false);
-
-        //m_owner.anim.Play("Mount_Skill_End");
-        //m_element.mount.Play("Skill_End");
-
-        //await UniTask.WaitForSeconds(1f);
-
-        //m_element.mount.SetMount(m_owner, false);
 
         m_owner.buff.Remove(BuffType.DEBUFF_NO_MOVE, hashNoMove);
         m_owner.buff.Remove(BuffType.BUFF_NO_DIE, hashNoDie);
@@ -417,6 +409,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         m_skillType = BossRaidSkillType_LuBu.Swing;
 
         m_owner.move.MoveStop();
+        var hashNoDie = m_owner.buff.Add(BuffType.BUFF_NO_DIE);
         var hashDebuff = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
 
         //기모으기는 1초
@@ -429,7 +422,8 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         await UniTask.WaitForSeconds(m_owner.anim.GetStateInfo().length, cancellationToken: token);
 
-        m_owner.buff.Remove(hashDebuff);
+        m_owner.buff.Remove(BuffType.DEBUFF_NO_MOVE, hashDebuff);
+        m_owner.buff.Remove(BuffType.BUFF_NO_DIE, hashNoDie);
         m_skillType = BossRaidSkillType_LuBu.NONE;
     }
 
@@ -481,6 +475,11 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             base.EventAttackHit(_owner);
         else if (m_skillType == BossRaidSkillType_LuBu.Swing)
             KnockbackCharacter(7, m_owner.stat.attackPower * 5);
+    }
+    public override void Die()
+    {
+        m_element.warning_Circle.SetDisable();
+        m_element.warning_RedHare.SetDisable();
     }
 
     public override void OnManualValidate()

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BannerComponent : Singleton<BannerComponent>, IValidatable
 {
@@ -12,6 +13,20 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
         });
     }
 
+    public void AddListenerSkip(UnityAction _onClick)
+    {
+        SetActiveSkip(true);
+        m_element.btnTutorialSkip.onClick.RemoveAllListeners();
+        m_element.btnTutorialSkip.onClick.AddListener(() =>
+        {
+            SetActiveSkip(false);
+            _onClick();
+        });
+    }
+
+    public void SetActiveSkip(bool _isActive)
+        => m_element.btnTutorialSkip.gameObject.SetActive(_isActive);
+
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
@@ -21,8 +36,10 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     [Serializable]
     struct ElementData
     {
+        public ButtonHelper btnTutorialSkip;
         public void Initialize(Transform _transform)
         {
+            btnTutorialSkip = _transform.parent.GetComponent<ButtonHelper>("btn_skip");
         }
     }
     #endregion VALIDATA

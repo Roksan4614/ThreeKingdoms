@@ -14,7 +14,10 @@ public abstract class TutorialBase : MonoBehaviour, IValidatable
     }
 
     public virtual async UniTask StartAsync(TutorialType _type)
-        => await UniTask.WaitForEndOfFrame();
+        => await UniTask.Yield();
+
+    public virtual async UniTask FinishAsync(bool _isSkip)
+        => await UniTask.Yield();
 
     public virtual void OnManualValidate()
     {
@@ -32,6 +35,7 @@ public abstract class TutorialBase : MonoBehaviour, IValidatable
         public Character_Enemy[] enemy;
         public CharacterComponent[] hero;
         public TutorialArrowComponent[] arrows;
+
         public void Initialize(Transform _transform)
         {
             enemy = _transform.Find("Enemy").GetComponentsInChildren<Character_Enemy>();

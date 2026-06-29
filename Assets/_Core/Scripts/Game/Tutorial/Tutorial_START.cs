@@ -1,13 +1,21 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Tutorial_START : TutorialBase
 {
+    CancellationTokenSource m_cts;
+
     public override async UniTask StartAsync(TutorialType _type)
     {
+        m_cts = m_cts.Release(true);
+        var token = m_cts.Token;
+
+        BannerComponent.instance.AddListenerSkip(() => OnButtonAsync_Skip().Forget());
+
         Signal.instance.ActiveHUD.Emit(false);
 
         // 밑에 버튼 영역 켜주자
@@ -44,7 +52,7 @@ public class Tutorial_START : TutorialBase
         await PopupManager.instance.ShowDimmAsync(false);
 
         // 음??
-        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray).AttachExternalCancellation(token);
 
         enemy.gameObject.SetActive(true);
 
@@ -87,19 +95,19 @@ public class Tutorial_START : TutorialBase
         CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
 
         // 얼빠지게 생긴 넘이다!! 죽여라!!
-        await enemy.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await enemy.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray).AttachExternalCancellation(token);
 
         CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos, false);
 
         // "앞에 황건적이네. 어쩌지?"
-        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray).AttachExternalCancellation(token);
         enemy.talkbox.SetActive(false);
 
         mainHero.move.MoveTarget(m_elementBase.enemy.First(), true);
         enemy.move.MoveTarget(mainHero, true);
 
         // "응? 적이 있으면 스스로 공격하는구나!!"
-        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray).AttachExternalCancellation(token);
 
         ControllerManager.instance.gameObject.SetActive(true);
         ControllerManager.instance.SetMove_HeroInfoDown(true, false);
@@ -108,7 +116,7 @@ public class Tutorial_START : TutorialBase
         mainHero.talkbox.Start(talk.Dequeue().talkArray);
 
         var prevPos = mainHero.transform.position;
-        await UniTask.WaitUntil(() => (prevPos - mainHero.transform.position).sqrMagnitude > 2f);
+        await UniTask.WaitUntil(() => (prevPos - mainHero.transform.position).sqrMagnitude > 2f, cancellationToken: token);
 
         // "돌진과 공격을 사용해보자"
         ControllerManager.instance.SetActive_Action(true);
@@ -123,7 +131,7 @@ public class Tutorial_START : TutorialBase
             if (isDash == false)
                 isDash = mainHero.move.isDash;
 
-            await UniTask.WaitForEndOfFrame();
+            await UniTask.WaitForEndOfFrame(cancellationToken: token);
         }
 
         enemy.target.SetTarget(null);
@@ -140,14 +148,14 @@ public class Tutorial_START : TutorialBase
             hi[i].StartStage();
         mainHero.buff.Remove(BuffType.DEBUFF_NO_SKILL);
         // 영웅 스킬 사용
-        await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
-        await UniTask.WaitUntil(() => mainHero.attack.isUseSkill);
+        await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray).AttachExternalCancellation(token);
+        await UniTask.WaitUntil(() => mainHero.attack.isUseSkill, cancellationToken: token);
 
         mainHero.buff.RemoveAll();
         enemy.buff.RemoveAll();
 
         mainHero.talkbox.Start(talk.Dequeue().talkArray);
-        await UniTask.WaitUntil(() => enemy.isLive == false);
+        await UniTask.WaitUntil(() => enemy.isLive == false, cancellationToken: token);
 
         var rtArrow = (RectTransform)m_elementBase.arrows[0].transform;
 
@@ -162,9 +170,9 @@ public class Tutorial_START : TutorialBase
             await UniTask.WaitForSeconds(.5f);
 
             // "연회권? 동료를 얻을 수 있으려나? 주막에 가보자."
-            await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
+            await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray).AttachExternalCancellation(token);
 
-            await UniTask.WaitForSeconds(.5f);
+            await UniTask.WaitForSeconds(.5f, cancellationToken: token);
 
             rtArrow.gameObject.SetActive(true);
             // 영웅 뽑기
@@ -176,8 +184,8 @@ public class Tutorial_START : TutorialBase
 
         // "영웅을 출전시켜보자."
         {
-            await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
-            await UniTask.WaitForSeconds(.5f);
+            await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray).AttachExternalCancellation(token);
+            await UniTask.WaitForSeconds(.5f, cancellationToken: token);
 
             bottomButton[(int)LobbyScreenType.Summon].interactable = false;
             bottomButton[(int)LobbyScreenType.Hero].interactable = true;
@@ -215,26 +223,50 @@ public class Tutorial_START : TutorialBase
             enemy.gameObject.SetActive(false);
         }
 
-        TutorialManager.instance.Complete(TutorialType.START);
-
         ControllerManager.instance.SetSwitch(false);
 
         // 자아! 이제 출발이다!!
-        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray).AttachExternalCancellation(token);
 
         mainHero.anim.PlayAttack();
         await UniTask.WaitForSeconds(0.5f);
 
         for (int i = 0; i < bottomButton.Count; i++)
             bottomButton[i].interactable = true;
-        StageManager.instance.ClearEnemyList();
 
+        await FinishAsync(false);
+    }
+
+    public override async UniTask FinishAsync(bool _isSkip)
+    {
         // 딤 켜주자
         await PopupManager.instance.ShowDimmAsync(true);
+
+        if (_isSkip == true)
+            TeamManager.instance.mainHero.talkbox.Cancel(true);
+
+        StageManager.instance.ClearEnemyList();
+        TutorialManager.instance.Complete(TutorialType.START);
 
         ControllerManager.instance.SetSwitch(true);
         TeamManager.instance.SetState(CharacterStateType.Wait);
         Signal.instance.ActiveHUD.Emit(true);
+
+        BannerComponent.instance.SetActiveSkip(false);
+
+        for (int i = 0; i < DataManager.userInfo.myHero.Count; i++)
+        {
+            var hero = DataManager.userInfo.myHero[i];
+            hero.isBatch = true;
+            DataManager.userInfo.Update(hero);
+        }
+
+        await TeamManager.instance.SpawnUpdateAsync();
+        TeamManager.instance.RepositionToMain(0, true);
+
+        //await PopupManager.instance.ShowDimmAsync(false);
+
+        m_cts = m_cts.Release();
     }
 
     async UniTask SummonHeroAsync()
@@ -271,5 +303,116 @@ public class Tutorial_START : TutorialBase
         }
 
         screen.SetRegionType(RegionType.NONE);
+    }
+
+
+    public async UniTask OnButtonAsync_Skip()
+    {
+        var result = await PopupManager.instance.OpenModalAsync("스킵??");
+
+        if (result == StatusType.Success)
+        {
+            await Request_Summon(DataManager.userInfo.myHero[0].key);
+
+            var canvasBottom = Scene_Lobby.instance.canvas.transform.Find("Bottom");
+            canvasBottom.gameObject.SetActive(true);
+            var panelBottom = canvasBottom.Find("Panel");
+
+            for (int i = 0; i < panelBottom.childCount; i++)
+            {
+                panelBottom.GetChild(i).GetComponent<Button>().interactable = true;
+            }
+
+            await FinishAsync(true);
+        }
+        else
+            BannerComponent.instance.SetActiveSkip(true);
+    }
+
+    async UniTask Request_Summon(string _hostKey)
+    {
+        List<TableItemData> result = new();
+
+        #region 영웅 불러오기
+        {
+            await UniTask.WaitForEndOfFrame();
+            List<TableHeroData> dbHeroes = TableManager.hero.list.Where(x => x.key.Equals(_hostKey) == false && x.isLock == false).ToList();
+
+            int i = 0;
+
+            if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            {
+                i++;
+                result.Add(new()
+                {
+                    key = ItemType.Dedicated_Soul_Stone,
+                    value = _hostKey,
+                    count = TableManager.hero.GetNeedSoul(GradeType.Normal),
+                    category = ItemCategoryType.Soul_Stone,
+                });
+
+                var startHero = TableManager.region.Get(
+                    TableManager.hero.Get(_hostKey).regionType).startHeroKey;
+
+                for (; i < startHero.Length; i++)
+                {
+                    result.Add(new()
+                    {
+                        key = ItemType.Dedicated_Soul_Stone,
+                        value = startHero[i],
+                        count = 10,
+                        category = ItemCategoryType.Soul_Stone,
+                    });
+                }
+            }
+
+            for (; i < 10; i++)
+            {
+                TableItemData itemData = TableManager.item.Get(UnityEngine.Random.value > 0.5f ? ItemType.Gold : ItemType.Rice);
+                itemData.value = itemData.key.ToString();
+                itemData.count = UnityEngine.Random.Range(1, 10) * 10;
+                result.Add(itemData);
+            }
+        }
+        #endregion 영웅 불러오기
+
+        var keyHero = result.FindAll(x => x.key == ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
+
+        AddressableManager.instance.Load_HeroCharacterAsync(keyHero).Forget();
+        await AddressableManager.instance.Load_HeroIconAsync(keyHero);
+        SetItemDataAsync(result).Forget();
+    }
+    async UniTask SetItemDataAsync(List<TableItemData> _result)
+    {
+        long totalGold = 0, totalRice = 0;
+
+        var keyItem = _result.FindAll(x => x.key != ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
+        await AddressableManager.instance.Load_ItemIconAsync(keyItem);
+
+        Dictionary<string, long> resultSoul = new();
+        for (int i = 0; i < _result.Count; i++)
+        {
+            var data = _result[i];
+
+            if (data.key == ItemType.Gold)
+                totalGold += data.count;
+            else if (data.key == ItemType.Rice)
+                totalRice += data.count;
+            else if (data.key == ItemType.Dedicated_Soul_Stone)
+            {
+                if (resultSoul.ContainsKey(data.value))
+                    resultSoul[data.value] += data.count;
+                else
+                {
+                    data.isNew = DataManager.userInfo.GetHeroInfoData(data.value).isMine == false;
+                    resultSoul.Add(data.value, data.count);
+                }
+            }
+        }
+
+        // SAVEDATA 재화 데이타 저장
+        DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
+        foreach (var soul in resultSoul)
+            DataManager.userInfo.AddHeroSoul(soul.Key, (int)soul.Value);
     }
 }

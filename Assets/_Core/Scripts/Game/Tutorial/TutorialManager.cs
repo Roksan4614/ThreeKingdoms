@@ -10,6 +10,8 @@ public enum TutorialType
 {
     START,
 
+    CASTLE_START,
+    CASTLE_WALLY,
     CASTLE_FINISHED,
 }
 
@@ -21,6 +23,8 @@ public class TutorialManager
 
     public async UniTask InitializeAsync()
     {
+        await UniTask.Yield();
+
         m_loadData = PPWorker.Get<List<TutorialType>>(PlayerPrefsType.TUTORIAL_DATA);
         if (m_loadData == null)
             m_loadData = new();
@@ -63,7 +67,7 @@ public class TutorialManager
 
         var tutorial = GameObject.Instantiate(handle.Result, StageManager.instance.transform);
         tutorial.transform.position = Vector3.zero;
-        await tutorial.GetComponent<TutorialBase>().StartAsync(_tutorialType);
+        await tutorial.GetComponent<TutorialBase>().StartAsync(_tutorialType).SuppressCancellationThrow();
 
         GameObject.Destroy(tutorial.gameObject);
         handle.Release();

@@ -2354,11 +2354,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1816336573368340625, guid: 1fb93596d1ea9e647a0406e23666141f, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.35
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 1816336573368340625, guid: 1fb93596d1ea9e647a0406e23666141f, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 1816336573368340625, guid: 1fb93596d1ea9e647a0406e23666141f, type: 3}
       propertyPath: m_LocalScale.z
@@ -2398,7 +2398,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1816336573368340625, guid: 1fb93596d1ea9e647a0406e23666141f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 16.6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1816336573368340625, guid: 1fb93596d1ea9e647a0406e23666141f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2825,6 +2825,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1362824451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!198 &1765858166 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 9001789387132402125, guid: 1fb93596d1ea9e647a0406e23666141f, type: 3}
+  m_PrefabInstance: {fileID: 1011677600}
+  m_PrefabAsset: {fileID: 0}
 --- !u!50 &1836823439 stripped
 Rigidbody2D:
   m_CorrespondingSourceObject: {fileID: -6514951258677087083, guid: 7e0d77c8bd228fe49b1a78b6eafb0421, type: 3}
@@ -4455,6 +4460,10 @@ PrefabInstance:
       propertyPath: m_elementBossRiad.posUserX_MAX
       value: -99.9
       objectReference: {fileID: 0}
+    - target: {fileID: 5372707499038418962, guid: 491a2242ca65d63498751b9ba71c7d56, type: 3}
+      propertyPath: m_elementBossRiad.psDamageEffect
+      value: 
+      objectReference: {fileID: 1765858166}
     - target: {fileID: 6113773130044061658, guid: 491a2242ca65d63498751b9ba71c7d56, type: 3}
       propertyPath: m_Name
       value: txt_name_none

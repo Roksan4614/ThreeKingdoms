@@ -26,6 +26,9 @@ public class Scene_Lobby : SceneBase
         StageManager.instance.StartStageAsync().Forget();
 
         ControllerManager.instance.SetSwitch(true);
+
+        // TEST
+        //TutorialManager.instance.Complete(TutorialType.CASTLE_FINISHED);
     }
 
     public override void OnManualValidate() { m_element.Initialize(transform); }

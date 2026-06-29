@@ -160,11 +160,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3520756791449887302, guid: c17f4890e10f9f2409861cbbe4ff4fb7, type: 3}
   m_PrefabInstance: {fileID: 976315409302807531}
   m_PrefabAsset: {fileID: 0}
---- !u!198 &7180691778695880599 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 7938263471740140668, guid: c17f4890e10f9f2409861cbbe4ff4fb7, type: 3}
-  m_PrefabInstance: {fileID: 976315409302807531}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &991054285456680147
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -805,7 +800,7 @@ MonoBehaviour:
     warning_RedHare: {fileID: 8438177898655267907}
     targetRedHare: {fileID: 8573082218631066708}
     animSkillJump: {fileID: 6000232363188991488}
-    mount: {fileID: 4051612968775190701}
+    mount: {fileID: 7783073801622020394}
 --- !u!114 &3600366374452989178 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2143606544520753497, guid: 8416abcb33476d844828f918b626b368, type: 3}
@@ -1514,12 +1509,23 @@ MonoBehaviour:
   m_element:
     animator: {fileID: 7997622311848203383}
     slot: {fileID: 8257196748994462842}
-    fxRecall: {fileID: 7180691778695880599}
+    fxRecall: {fileID: 8599202308023733998}
 --- !u!4 &6657564117974314799 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3546170313433514079, guid: 8d5aad86d6312184e9675e490a03cd17, type: 3}
   m_PrefabInstance: {fileID: 7877618553745272688}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7783073801622020394 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 95107981327666778, guid: 8d5aad86d6312184e9675e490a03cd17, type: 3}
+  m_PrefabInstance: {fileID: 7877618553745272688}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1792697303625783396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ece948f2c9f2c44980ba251a1f19d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MountComponent
 --- !u!95 &7997622311848203383 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 265623630123121415, guid: 8d5aad86d6312184e9675e490a03cd17, type: 3}
@@ -1528,6 +1534,11 @@ Animator:
 --- !u!4 &8257196748994462842 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2289404105846696714, guid: 8d5aad86d6312184e9675e490a03cd17, type: 3}
+  m_PrefabInstance: {fileID: 7877618553745272688}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &8599202308023733998 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1874742805607883166, guid: 8d5aad86d6312184e9675e490a03cd17, type: 3}
   m_PrefabInstance: {fileID: 7877618553745272688}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9197880589379199862

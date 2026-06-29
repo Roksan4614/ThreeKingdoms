@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,9 @@ public partial class InfoStage_Boss
 
     RectTransform rtTimer => m_elementBossRiad.rtTimer;
 
+    [SerializeField]
+    List<ParticleSystem> m_fxDamage = new();
+
     [System.Serializable]
     struct ElementData_BossRaid
     {
@@ -21,6 +25,7 @@ public partial class InfoStage_Boss
         public RectTransform rtTimer;
 
         public RectTransform rtUsers;
+        public ParticleSystem psDamageEffect;
         public float posUserX_MAX;
 
         public void Initialize(Transform _transform)
@@ -34,11 +39,14 @@ public partial class InfoStage_Boss
 
             rtUsers = (RectTransform)_transform.Find("FX_Users");
             posUserX_MAX = rtUsers.anchoredPosition.x;
+
+            psDamageEffect = _transform.GetComponent<ParticleSystem>("Bar/FX_Hit");
         }
     }
 
     void Awake_BossRaid()
     {
+        m_fxDamage.Add(m_elementBossRiad.psDamageEffect);
         Signal.instance.BossRaidStatus.connect = SlotBossRaidStatus;
     }
 
@@ -112,6 +120,7 @@ public partial class InfoStage_Boss
         rtTimer.gameObject.SetActive(false);
     }
 
+    float m_timeFxDamage;
     Tween m_tweenMoveUsers;
     void SlotUpdateBossHP_BossRaid(float _target)
     {
@@ -119,5 +128,20 @@ public partial class InfoStage_Boss
 
         if (_target < m_elementBossRiad.rtUsers.anchoredPosition.x)
             m_tweenMoveUsers = m_elementBossRiad.rtUsers.DOAnchorPosX(_target, 0.5f);
+
+        if (Time.time - m_timeFxDamage < 0.1f)
+            return;
+
+        m_timeFxDamage = Time.time;
+
+        var fxs = m_fxDamage.FindAll(x => x.isStopped);
+        if (fxs.Count == 0)
+        {
+            var newFx = Instantiate(m_elementBossRiad.psDamageEffect, m_element.rtBar).GetComponent<ParticleSystem>();
+            ((RectTransform)newFx.transform).SetAnchoredPositionX(((RectTransform)m_elementBossRiad.psDamageEffect.transform).anchoredPosition.x);
+            m_fxDamage.Add(newFx);
+        }
+        else
+            fxs[0].Play();
     }
 }
