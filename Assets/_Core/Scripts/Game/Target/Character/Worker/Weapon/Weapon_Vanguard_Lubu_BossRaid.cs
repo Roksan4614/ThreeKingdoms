@@ -67,8 +67,6 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
     {
         if (BossRaidWorker.instance.isRunning)
         {
-            if (Input.GetKeyDown(KeyCode.Alpha0))
-                SkillAsync_RedHare().Forget();
         }
         else
         {
@@ -367,7 +365,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
             await m_owner.transform.DOMove(m_element.targetRedHare.position, m_rushDuration)
                 .SetEase(Ease.OutQuad)
-                .AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(token);
+                .ToUniTask(TweenCancelBehaviour.Kill, token);
 
             m_element.mount.Play("Skill_End");
             m_owner.anim.Play("Mount_Skill_End");

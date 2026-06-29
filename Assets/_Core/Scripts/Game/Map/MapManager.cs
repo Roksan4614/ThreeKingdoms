@@ -23,7 +23,8 @@ public class MapManager : Singleton<MapManager>, IValidatable
         if (_isActive == true && m_element.dimm.color.a == 1)
             return;
 
-        await m_element.dimm.DOFade(_isActive ? 1 : 0, _duration).AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(_token == null ? destroyCancellationToken : _token.Token);
+        await m_element.dimm.DOFade(_isActive ? 1 : 0, _duration)
+            .ToUniTask(TweenCancelBehaviour.Kill, _token == null ? destroyCancellationToken : _token.Token);
     }
 
     public Vector3 GetBounceHorizontalPos(Vector3 _targetPos)

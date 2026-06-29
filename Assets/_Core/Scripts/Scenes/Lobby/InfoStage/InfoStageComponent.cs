@@ -139,8 +139,7 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
 
         m_element.rtIconBoss.DORotate(new Vector3(0, 0, 10), 0.2f);
         m_element.rtIconBoss.DOAnchorPosX(m_element.startPosIconBoss.x + 10, 0.2f);
-        await m_element.rtIconBoss.DOPunchScale(Vector3.one * 0.2f, 0.2f).AsyncWaitForCompletion().AsUniTask()
-            .AttachExternalCancellation(m_ctsChangeBoss.Token);
+        await m_element.rtIconBoss.DOPunchScale(Vector3.one * 0.2f, 0.2f).ToUniTask(TweenCancelBehaviour.Kill, m_ctsChangeBoss.Token);
 
         // 스테이지 정보 서서히 사라지기
         m_element.infoStage.element.cg.DOFade(0, 0.3f).SetEase(Ease.OutCubic).OnComplete(() =>
@@ -160,8 +159,7 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
         // 왼쪽으로 이동하기
         var rtBoss = m_element.boss.rt;
         await m_element.rtIconBoss.DOAnchorPosX(m_element.targetPosIconBoss, 0.3f).SetEase(Ease.OutCubic)
-            .AsyncWaitForCompletion().AsUniTask()
-            .AttachExternalCancellation(m_ctsChangeBoss.Token);
+            .ToUniTask(TweenCancelBehaviour.Kill, m_ctsChangeBoss.Token);
 
         // 보스아이콘 오른쪽으로 바라보기
         //scale.x *= -1;

@@ -135,7 +135,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
                 }
             });
 
-        await m_tweenSkillMove.AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(token);
+        await m_tweenSkillMove.ToUniTask(TweenCancelBehaviour.Kill, token);
 
         bool isTargetting = false;
         var damage = m_owner.stat.attackPower * 2;

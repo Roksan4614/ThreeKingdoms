@@ -161,7 +161,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
                 m_element.cgMaxDimm.gameObject.SetActive(true);
 
             m_tweenDimm = m_element.cgMaxDimm.DOFade(_isShow ? _isOpercity ? 0.0001f : 1f : 0f, _duration);
-            await m_tweenDimm.AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(m_ctsDimm.Token);
+            await m_tweenDimm.ToUniTask(TweenCancelBehaviour.Kill, m_ctsDimm.Token);
         }
         else if (_isShow)
             m_element.cgMaxDimm.alpha = _isOpercity ? 0.0001f : 1f;

@@ -91,7 +91,7 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
             await transform.DOLocalMove(targetPos, duration).
                 OnUpdate(() => OnUpdate_NPCMove())
                 .SetEase(Ease.Linear)
-                .AsyncWaitForCompletion().AsUniTask().AttachExternalCancellation(token);
+                .ToUniTask(TweenCancelBehaviour.Kill, token);
 
             m_element.anim.Play("Castle_NPC_Idle");
 
