@@ -46,7 +46,7 @@ public class TooltipWorker : MonoBehaviour, IValidatable
     }
 
     void ReleaseCTS()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     async UniTask ShowAsync()
     {

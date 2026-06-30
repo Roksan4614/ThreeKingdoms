@@ -38,6 +38,8 @@ public class Scene_Login : SceneBase
         IngameLog.Add("LOAD ASSET: " + (System.DateTime.Now - dtStart).TotalSeconds);
 #endif
 
+        TimeManager.instance.InitializeAsync().Forget();
+
         AddressableManager.instance.LoadScene("02_Lobby");
     }
 }

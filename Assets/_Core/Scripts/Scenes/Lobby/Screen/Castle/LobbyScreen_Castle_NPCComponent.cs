@@ -143,7 +143,7 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
         m_element.canvas.sortingOrder = 10000 - (int)(transform.localPosition.y * 10);
     }
     void ReleaseCTS()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     public virtual void OnPointerDown(PointerEventData _eventData)
     {

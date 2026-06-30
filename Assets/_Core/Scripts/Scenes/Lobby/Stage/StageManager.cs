@@ -53,7 +53,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
     protected override void OnDestroy()
     {
-        m_cts = m_cts.Release();
+        m_cts = m_cts.ReleaseCTS();
         OnDestroy_BossRaid();
 
         base.OnDestroy();
@@ -108,7 +108,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
     public async UniTask StartStageAsync()
     {
-        m_cts = m_cts.Release(true);
+        m_cts = m_cts.ReleaseCTS(true);
         var ctsToken = m_cts.Token;
 
         if (m_stage == null || m_stage.IsNow(m_loadData) == false)
@@ -299,7 +299,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
     public void RestartStage(bool _isRestart = true)
     {
-        m_cts = m_cts.Release();
+        m_cts = m_cts.ReleaseCTS();
 
         MapManager.instance.FadeDimm(true, 0f);
 

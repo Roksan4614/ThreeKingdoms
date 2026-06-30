@@ -7,6 +7,8 @@ public enum RegionType
     Wu,     // ¿À
     Etc,     // Áß¸³
 
+    Historical,
+
     MAX
 }
 

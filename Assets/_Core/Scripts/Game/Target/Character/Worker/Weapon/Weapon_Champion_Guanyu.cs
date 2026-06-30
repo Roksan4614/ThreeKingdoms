@@ -28,8 +28,8 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
     protected override void OnDestroy()
     {
-        m_ctsMoveSkill = m_ctsMoveSkill.Release();
-        m_ctsUseSkill = m_ctsUseSkill.Release();
+        m_ctsMoveSkill = m_ctsMoveSkill.ReleaseCTS();
+        m_ctsUseSkill = m_ctsUseSkill.ReleaseCTS();
         base.OnDestroy();
     }
 
@@ -54,8 +54,8 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
     public override void Die()
     {
-        m_ctsMoveSkill = m_ctsMoveSkill.Release();
-        m_ctsUseSkill = m_ctsUseSkill.Release();
+        m_ctsMoveSkill = m_ctsMoveSkill.ReleaseCTS();
+        m_ctsUseSkill = m_ctsUseSkill.ReleaseCTS();
 
         ControllerManager.instance.SetSwitch(true);
         m_isUseSkillControll = false;
@@ -63,7 +63,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
     async UniTask MoveAndUseSkill()
     {
-        m_ctsMoveSkill = m_ctsMoveSkill.Release(true);
+        m_ctsMoveSkill = m_ctsMoveSkill.ReleaseCTS(true);
         var token = m_ctsMoveSkill.Token;
 
         CharacterComponent target = null;
@@ -89,7 +89,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
     public override async UniTask UseSkillAsync()
     {
-        m_ctsUseSkill = m_ctsUseSkill.Release(true);
+        m_ctsUseSkill = m_ctsUseSkill.ReleaseCTS(true);
         var token = m_ctsUseSkill.Token;
 
         Vector3 targetPos = m_skillRange.position;

@@ -37,11 +37,11 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         => ArrowNaviComponent.instance.SetParent(boss.element.parentCanvas);
 
     private void OnDestroy()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     void SlotBossRaidStatus(BossRaidStatusType _status)
     {
-        m_cts = m_cts.Release(true);
+        m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 
         switch (_status)
@@ -84,7 +84,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
     CancellationTokenSource m_ctsAction;
     async UniTask ActionAsync_FinishPhase(BossRaidStatusType _status)
     {
-        m_ctsAction = m_ctsAction.Release(true);
+        m_ctsAction = m_ctsAction.ReleaseCTS(true);
         var token = m_ctsAction.Token;
 
         //StageManager.instance.SetState(CharacterStateType.None);

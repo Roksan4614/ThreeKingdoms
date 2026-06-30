@@ -323,7 +323,7 @@ public static class Extenssions
 
     #endregion SORTBY
 
-    public static CancellationTokenSource Release(this CancellationTokenSource _cts, bool _isNew = false)
+    public static CancellationTokenSource ReleaseCTS(this CancellationTokenSource _cts, bool _isNew = false)
     {
         if (_cts != null)
         {

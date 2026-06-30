@@ -21,7 +21,7 @@ public class Character_Worker_Move : Character_Worker
         m_owner.anim.Play(CharacterAnimType.Idle);
 
         m_owner.target.SetTarget(null);
-        m_ctsMoveTarget = m_ctsMoveTarget.Release();
+        m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS();
     }
 
     public void OnMoveUpdate(Vector2 _velocity, bool _isAnim = true)
@@ -72,7 +72,7 @@ public class Character_Worker_Move : Character_Worker
     CancellationTokenSource m_ctsMoveTarget;
     public async UniTask MoveTargetAsync(CharacterComponent _target, bool _isAttack)
     {
-        m_ctsMoveTarget = m_ctsMoveTarget.Release(true);
+        m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS(true);
         var token = m_ctsMoveTarget.Token;
 
         if (m_owner.buff.IsActive(BuffType.DEBUFF_NO_MOVE))

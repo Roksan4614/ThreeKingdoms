@@ -14,7 +14,7 @@ public partial class Data_Castle
     public bool m_isUISpawn;
 
     void Release_CTSWally()
-        => m_ctsWally = m_ctsWally.Release();
+        => m_ctsWally = m_ctsWally.ReleaseCTS();
 
     public void SetWallyUISpawn(bool _isSpawn)
         => m_isUISpawn = _isSpawn;

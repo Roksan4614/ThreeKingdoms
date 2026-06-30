@@ -44,7 +44,7 @@ public partial class ControllerManager
 
     public async UniTask DashTimerStartAsync()
     {
-        m_ctsDash = m_ctsDash.Release(true);
+        m_ctsDash = m_ctsDash.ReleaseCTS(true);
         var token = m_ctsDash.Token;
 
         m_dashRemainCount = 0;

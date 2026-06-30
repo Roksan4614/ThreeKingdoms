@@ -89,8 +89,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     protected override void OnDestroy()
     {
-        m_ctsDash = m_ctsDash.Release();
-        m_ctsCall = m_ctsCall.Release();
+        m_ctsDash = m_ctsDash.ReleaseCTS();
+        m_ctsCall = m_ctsCall.ReleaseCTS();
     }
 
     void SlotUpdateTeamPosition()
@@ -270,7 +270,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         if (m_mainHero.isLive == false)
             return;
 
-        m_ctsCall = m_ctsCall.Release(true);
+        m_ctsCall = m_ctsCall.ReleaseCTS(true);
         var token = m_ctsCall.Token;
 
         // TODO: 어딘가에서 값을 가져와야 하지 않을까?

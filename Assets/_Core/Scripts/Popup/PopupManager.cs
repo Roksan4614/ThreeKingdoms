@@ -48,7 +48,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     {
         transform.SetSiblingIndex(0);
 
-        m_cts = m_cts.Release(true);
+        m_cts = m_cts.ReleaseCTS(true);
 
         Signal.instance.ChangeDisplayMode.connect = OnChangeDisplayMode;
     }
@@ -58,7 +58,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         foreach (var h in m_dicPopup)
             h.Value.Release();
 
-        m_cts = m_cts.Release();
+        m_cts = m_cts.ReleaseCTS();
         base.OnDestroy();
     }
 
@@ -153,7 +153,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     {
         m_tweenDimm?.Kill();
 
-        m_ctsDimm = m_ctsDimm.Release(true);
+        m_ctsDimm = m_ctsDimm.ReleaseCTS(true);
 
         if (_isFade)
         {
@@ -241,7 +241,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     public async UniTask AlertShowAsync(string _message, float _addPosY = 0, bool _isTyping = false, float _duration = 3f)
     {
-        m_ctsAlert = m_ctsAlert.Release(true);
+        m_ctsAlert = m_ctsAlert.ReleaseCTS(true);
 
         await m_element.alertData.ShowAsync(_message, m_ctsAlert.Token, _addPosY, _isTyping, _duration);
 
@@ -251,7 +251,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     public async UniTask AlertDisableAsync()
     {
-        m_ctsAlert = m_ctsAlert.Release();
+        m_ctsAlert = m_ctsAlert.ReleaseCTS();
         await m_element.alertData.DisableAsync();
     }
 

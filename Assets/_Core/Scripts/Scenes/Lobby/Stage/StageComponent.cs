@@ -25,7 +25,7 @@ public class StageComponent : MonoBehaviour, IValidatable
         }
         public StageData ResetCTS()
         {
-            ctsClose = ctsClose.Release();
+            ctsClose = ctsClose.ReleaseCTS();
             return this;
         }
     }

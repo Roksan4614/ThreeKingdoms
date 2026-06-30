@@ -51,11 +51,11 @@ public class Data_BossRaid
     }
 
     public void ReleaseCTS()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     async UniTask TimerAsync()
     {
-        m_cts = m_cts.Release(true);
+        m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 
         if (m_data.tickNextRound == 0)
@@ -100,7 +100,7 @@ public class Data_BossRaid
         m_raidStatus = BossRaidStatusType.Finish_FirstPhase;
         Signal.instance.BossRaidStatus.Emit(m_raidStatus);
 
-        m_cts = m_cts.Release();
+        m_cts = m_cts.ReleaseCTS();
         remainSeconds = (m_data.dtEndRound - Utils.GetUTC()).TotalSeconds;
     }
 
@@ -133,8 +133,8 @@ public class Data_BossRaid
 
         SaveData();
 
-        m_ctsTestDamage = m_ctsTestDamage.Release();
-        m_cts = m_cts.Release();
+        m_ctsTestDamage = m_ctsTestDamage.ReleaseCTS();
+        m_cts = m_cts.ReleaseCTS();
     }
 
     public void ExitBossRaid()
@@ -217,7 +217,7 @@ public class Data_BossRaid
     CancellationTokenSource m_ctsTestDamage;
     public void TestAddTestUser()
     {
-        m_ctsTestDamage = m_ctsTestDamage.Release(true);
+        m_ctsTestDamage = m_ctsTestDamage.ReleaseCTS(true);
         var token = m_ctsTestDamage.Token;
 
         var nickname = Utils.GetRandomNicknameArray(20);

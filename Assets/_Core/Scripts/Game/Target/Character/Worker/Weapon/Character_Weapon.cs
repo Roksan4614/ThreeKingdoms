@@ -52,7 +52,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     }
 
     public void ReleaseCTS()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     public bool isAttack { get; private set; } = false;
     public void Attack(bool _isCritical)

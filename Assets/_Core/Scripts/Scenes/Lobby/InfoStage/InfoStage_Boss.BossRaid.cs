@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using TMPro;
@@ -15,7 +14,6 @@ public partial class InfoStage_Boss
 
     RectTransform rtTimer => m_elementBossRiad.rtTimer;
 
-    [SerializeField]
     List<ParticleSystem> m_fxDamage = new();
 
     [System.Serializable]
@@ -54,7 +52,7 @@ public partial class InfoStage_Boss
     {
         if (_status == BossRaidStatusType.Finish_FirstPhase)
         {
-            m_ctsBossRaid = m_ctsBossRaid.Release();
+            m_ctsBossRaid = m_ctsBossRaid.ReleaseCTS();
             rtTimer.gameObject.SetActive(false);
         }
         else if (_status == BossRaidStatusType.Wait_SecondPhase)
@@ -90,7 +88,7 @@ public partial class InfoStage_Boss
 
     async UniTask TimerAsync(double _ramainTime)
     {
-        m_ctsBossRaid = m_ctsBossRaid.Release(true);
+        m_ctsBossRaid = m_ctsBossRaid.ReleaseCTS(true);
         var token = m_ctsBossRaid.Token;
 
         var dataRaid = DataManager.bossRaid.data;
@@ -101,7 +99,7 @@ public partial class InfoStage_Boss
         var dtEnd = dataRaid.dtEndRound.AddSeconds(-Configure.instance.timeGapFromServer);
         while (true)
         {
-            var ts = (dtEnd - DateTime.UtcNow);
+            var ts = (dtEnd - System.DateTime.UtcNow);
             var process = 1 - ts.TotalMinutes / _ramainTime;
 
             var pos = rtTimer.anchoredPosition;
@@ -113,10 +111,10 @@ public partial class InfoStage_Boss
             if (process >= 1)
                 break;
 
-            await UniTask.WaitForEndOfFrame(cancellationToken: token);
+            await UniTask.NextFrame(cancellationToken: token);
         }
 
-        m_ctsBossRaid = m_ctsBossRaid.Release();
+        m_ctsBossRaid = m_ctsBossRaid.ReleaseCTS();
         rtTimer.gameObject.SetActive(false);
     }
 

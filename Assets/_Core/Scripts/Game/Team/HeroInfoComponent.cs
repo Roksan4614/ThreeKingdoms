@@ -25,7 +25,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
     }
 
     private void OnDestroy()
-        => m_ctsCooldownSkill = m_ctsCooldownSkill.Release();
+        => m_ctsCooldownSkill = m_ctsCooldownSkill.ReleaseCTS();
 
     public bool isActive => m_hero != null;
 
@@ -65,8 +65,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         if (m_element.icon.childCount == countDestroy)
         {
             m_element.icon.gameObject.SetActive(false);
-            var prefab = await AddressableManager.instance.GetHeroIconAsync(key)
-                .AttachExternalCancellation(destroyCancellationToken);
+            var prefab = await AddressableManager.instance.GetHeroIconAsync(key);
 
             if (prefab != null)
             {
@@ -96,7 +95,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
         StopAllCoroutines();
 
-        m_ctsCooldownSkill = m_ctsCooldownSkill.Release();
+        m_ctsCooldownSkill = m_ctsCooldownSkill.ReleaseCTS();
         StopRespawn();
 
         m_hero = null;
@@ -118,7 +117,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public void StopRespawn()
     {
-        m_ctsRespawn = m_ctsRespawn.Release();
+        m_ctsRespawn = m_ctsRespawn.ReleaseCTS();
 
         m_element.txtRespawnTimer.text = "";
         m_element.imgRespawn.gameObject.SetActive(false);
@@ -140,7 +139,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
             {
                 bar.DOAnchorPosX(targetX, 0.1f);
 
-                m_ctsRespawn = m_ctsRespawn.Release(true);
+                m_ctsRespawn = m_ctsRespawn.ReleaseCTS(true);
 
                 var duration = BossRaidWorker.instance.isRunning ? 7 : 30;
                 RespawnAsync(bar, duration).Forget();
@@ -213,7 +212,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
     async UniTask CooldownSkillAsync()
     {
-        m_ctsCooldownSkill = m_ctsCooldownSkill.Release(true);
+        m_ctsCooldownSkill = m_ctsCooldownSkill.ReleaseCTS(true);
 
         m_element.objOnSkill.SetActive(false);
 

@@ -29,6 +29,8 @@ public enum OrderLayerType
     Screen,
 
     Lobby_Screen_Panel,
+    Lobby_Screen_Panel_Front,
+    Lobby_Screen_Panel_Front_Front,
     Lobby_Bottom,
 
     Popup,

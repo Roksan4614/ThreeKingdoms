@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-public abstract class BaseTable<T, V> : MonoBehaviour
+public abstract class BaseTable<T, V>
 {
     protected readonly List<V> m_list;
     protected Dictionary<T, V> m_dictionary;
@@ -13,7 +13,6 @@ public abstract class BaseTable<T, V> : MonoBehaviour
             return;
 
         m_list = _table;
-
         // Group
         //m_group = m_list.GroupBy(x => x.slotType).ToDictionary(x => x.Key, x => x.ToList());
         // Sort

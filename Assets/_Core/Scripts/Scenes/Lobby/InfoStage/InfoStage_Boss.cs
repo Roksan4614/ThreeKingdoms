@@ -26,7 +26,7 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
 
     private void OnDestroy()
     {
-        m_ctsBossRaid = m_ctsBossRaid.Release();
+        m_ctsBossRaid = m_ctsBossRaid.ReleaseCTS();
     }
 
     public void SetBossInfo()

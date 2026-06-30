@@ -68,7 +68,7 @@ public class Character_Worker_Talkbox : Character_Worker
     CancellationTokenSource m_cts;
     public void Cancel(bool _isDisable = false)
     {
-        m_cts = m_cts.Release();
+        m_cts = m_cts.ReleaseCTS();
         if (_isDisable)
             SetActive(false);
     }

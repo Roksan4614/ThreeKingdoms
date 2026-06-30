@@ -17,7 +17,7 @@ public class Banner_BossRaid : MonoBehaviour, IValidatable
 
     async UniTask TimerAsync()
     {
-        m_cts = m_cts.Release(true);
+        m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 
         var dataRaid = DataManager.bossRaid.data;
@@ -48,7 +48,7 @@ public class Banner_BossRaid : MonoBehaviour, IValidatable
     }
 
     private void OnDestroy()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

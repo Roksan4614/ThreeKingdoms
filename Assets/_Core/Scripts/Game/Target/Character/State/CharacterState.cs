@@ -31,12 +31,12 @@ public class CharacterState
 
     public virtual void Start(params object[] _data)
     {
-        m_cts = m_cts.Release(true);
+        m_cts = m_cts.ReleaseCTS(true);
         UpdateAsync().Forget();
     }
 
     public virtual void Stop()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     public virtual async UniTask UpdateAsync()
         => await UniTask.Yield();

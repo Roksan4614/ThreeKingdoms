@@ -17,11 +17,11 @@ public class TextPanelHelper : MonoBehaviour, IValidatable
     }
 
     private void OnDestroy()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     async UniTask MovePanelAsync()
     {
-        m_cts = m_cts.Release(true);
+        m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 
         m_element.panel.ForceRebuildLayout();

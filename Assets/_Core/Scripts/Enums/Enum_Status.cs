@@ -23,3 +23,16 @@ public enum HeroSortType
 {
     Grade, Level, Power,
 }
+
+public enum WeekdayType
+{
+    None = -1,
+
+    Sunday,
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+}

@@ -268,6 +268,7 @@ public class Signal
     public SignalObject RestartApp = new();
     public SignalObject ApplicationQuit = new();
     public SignalObject<bool> ChangeDisplayMode = new(); // isLandscape
+    public SignalObject DayChange = new();
 
     public SignalObject<LobbyScreenType> OpenLobbyScreen = new();
     public SignalObject<LobbyScreenType> CloseLobbyScreen = new();

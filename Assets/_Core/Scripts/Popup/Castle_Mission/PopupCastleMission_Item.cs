@@ -173,7 +173,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
     }
 
     void Release_CTS()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

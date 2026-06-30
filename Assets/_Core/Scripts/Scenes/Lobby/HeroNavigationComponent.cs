@@ -14,7 +14,7 @@ public class HeroNavigationComponent : MonoBehaviour, IValidatable
     }
 
     private void OnDestroy()
-        => m_ctsAutoSkill = m_ctsAutoSkill.Release();
+        => m_ctsAutoSkill = m_ctsAutoSkill.ReleaseCTS();
 
     void OnButton_Auto()
     {
@@ -25,7 +25,7 @@ public class HeroNavigationComponent : MonoBehaviour, IValidatable
     CancellationTokenSource m_ctsAutoSkill;
     async UniTask SetAutoUIAsync()
     {
-        m_ctsAutoSkill = m_ctsAutoSkill.Release();
+        m_ctsAutoSkill = m_ctsAutoSkill.ReleaseCTS();
 
         bool isAutoSkill = DataManager.option.isAutoSkill;
 

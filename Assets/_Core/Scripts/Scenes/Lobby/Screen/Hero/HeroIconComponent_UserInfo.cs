@@ -29,15 +29,14 @@ public class HeroIconComponent_UserInfo : HeroIconComponent
 
         if (isFinded == false)
         {
-            var prefab = await AddressableManager.instance.GetRelicIconAsync(_heroData.key)
-                .AttachExternalCancellation(destroyCancellationToken);
+            var prefab = await AddressableManager.instance.GetRelicIconAsync(_heroData.key);
 
             if (prefab != null)
             {
                 var icon = Instantiate(prefab, p);
 
                 var rtParent = icon.transform.parent as RectTransform;
-                await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0);
+                await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0, cancellationToken: destroyCancellationToken);
 
                 icon.AutoResizeParent().name = _heroData.key;
             }

@@ -31,8 +31,11 @@ public class TableManager
     public static Table_CastleMission castleMisson { get; private set; }
     public static Table_CastleMission_Grade castleMissonGrade { get; private set; }
     public static Table_CastleMission_Reward castleMissonReward { get; private set; }
-
     public static Table_Castle_Office_Level castleOfficeLevel { get; private set; }
+
+    public static Table_DailyDungeon_Grade dailyDungeonGrade { get; private set; }
+    public static Table_DailyDungeon_Boss dailyDungeonBoss { get; private set; }
+
 
     public static Dictionary<CastleObjectType, Table_Castle_Effect> castleEffect { get; private set; } = new();
 
@@ -62,11 +65,13 @@ public class TableManager
             castleMisson = new(LoadList<TableCastleMissionData>(_result, "CastleMission"));
             castleMissonGrade = new(LoadList<TableCastleMissionGradeData>(_result, "CastleMissionGrade"));
             castleMissonReward = new(LoadList<TableCastleMissionRewardData>(_result, "CastleMissionReward"));
-
             castleOfficeLevel = new(LoadList<TableCastleOfficeLevelData>(_result, "CastleOfficeLevel"));
-
             for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
                 castleEffect.Add(i, new(LoadList<TableCastleEffectData>(_result, "Castle" + i)));
+
+            dailyDungeonGrade = new(LoadList<TableDailyDungeonGradeData>(_result, "DailyDungeonGrade"));
+            dailyDungeonBoss = new(LoadList<TableDailyDungeonBossData>(_result, "DailyDungeonBoss"));
+
 
             foreach (var h in _result)
                 h.Value.Release();

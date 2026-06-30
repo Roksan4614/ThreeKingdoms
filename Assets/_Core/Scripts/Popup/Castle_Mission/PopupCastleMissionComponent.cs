@@ -242,7 +242,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
     }
 
     void ReleaseCTS()
-        => m_cts = m_cts.Release();
+        => m_cts = m_cts.ReleaseCTS();
 
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);

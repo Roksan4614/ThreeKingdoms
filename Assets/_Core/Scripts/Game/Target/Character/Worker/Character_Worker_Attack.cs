@@ -58,7 +58,7 @@ public class Character_Worker_Attack : Character_Worker
         if (m_owner.move.isDash)
             return;
 
-        m_ctsAttackPush = m_ctsAttackPush.Release(true);
+        m_ctsAttackPush = m_ctsAttackPush.ReleaseCTS(true);
         var token = m_ctsAttackPush.Token;
 
         if (m_timeAttack - m_owner.stat.attackSpeed * 0.5f > Time.realtimeSinceStartup)

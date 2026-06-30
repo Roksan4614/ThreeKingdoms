@@ -97,7 +97,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         {
             case BossRaidStatusType.Finish_FirstPhase:
             case BossRaidStatusType.Finished:
-                m_cts = m_cts.Release();
+                m_cts = m_cts.ReleaseCTS();
                 m_element.warning_Circle.transform.SetParent(m_owner.transform.parent);
                 m_element.warning_Circle.SetDisable();
                 m_element.warning_RedHare.transform.parent.SetParent(m_owner.transform.parent);
@@ -115,7 +115,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
     async UniTask SkillAsync()
     {
-        m_cts = m_cts.Release(true);
+        m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 
         await UniTask.NextFrame(cancellationToken: token);
