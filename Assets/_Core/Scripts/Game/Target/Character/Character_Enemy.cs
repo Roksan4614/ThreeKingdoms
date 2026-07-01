@@ -20,7 +20,6 @@ public class Character_Enemy : CharacterComponent
 
         var stageData = StageManager.instance.data;
 
-
         if (stageData.isBossWait)
         {
             SetBuffStat(0.1f);

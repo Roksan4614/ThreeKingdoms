@@ -302,5 +302,7 @@ public class Signal
     public SignalObject Event_ActivePunch_Start = new();
 
     public SignalObject<Data_BossRaid.BossRaidStatusType> BossRaidStatus = new();
+    public SignalObject<Data_DailyDungeon.DailyDungeonStatusType> DailyDungeonStatus = new();
+    public SignalObject<GradeType> DailyDungeonNextStep = new();
     #endregion
 }

@@ -9,6 +9,8 @@ public class Data_HeroPosition : MonoBehaviour
 
     public async UniTask InitializeAsync()
     {
+        await UniTask.Yield();
+
         // TODO TEST DATA
         List<TableHeroPositionData> db = new();
 

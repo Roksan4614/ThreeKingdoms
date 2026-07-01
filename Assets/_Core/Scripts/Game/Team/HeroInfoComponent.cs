@@ -118,6 +118,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
     public void StopRespawn()
     {
         m_ctsRespawn = m_ctsRespawn.ReleaseCTS();
+        m_ctsCooldownSkill = m_ctsCooldownSkill.ReleaseCTS();
 
         m_element.txtRespawnTimer.text = "";
         m_element.imgRespawn.gameObject.SetActive(false);
@@ -135,13 +136,15 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
         if (stat.health <= 0)
         {
-            if (BossRaidWorker.instance.isRunning == true || TeamManager.instance.IsAllDie(false) == false)
+            bool isRaidOrDungeon = BossRaidWorker.instance.isRunning == true || DataManager.dailyDungeon.isRunning == true;
+
+            if (isRaidOrDungeon || TeamManager.instance.IsAllDie(false) == false)
             {
                 bar.DOAnchorPosX(targetX, 0.1f);
 
                 m_ctsRespawn = m_ctsRespawn.ReleaseCTS(true);
 
-                var duration = BossRaidWorker.instance.isRunning ? 7 : 30;
+                var duration = isRaidOrDungeon ? 7 : 30;
                 RespawnAsync(bar, duration).Forget();
             }
         }
@@ -187,13 +190,13 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
         m_element.txtRespawnTimer.text = "";
         m_element.imgRespawn.fillAmount = 0;
-        m_element.imgRespawn.transform.DOScale(Vector3.one * 3, 0.1f);
+        m_element.imgRespawn.transform.DOScale(Vector3.one * 3, 0.1f).Forget();
         m_element.imgRespawn.DOFade(0f, 0.1f).SetEase(Ease.OutCubic).OnComplete(() =>
         {
             m_element.imgRespawn.transform.localScale = Vector3.one;
             Utils.SetObjectAlpha(m_element.imgRespawn.gameObject, prevAlpha, false);
             m_element.imgRespawn.gameObject.SetActive(false);
-        });
+        }).Forget();
 
         _bar.anchoredPosition = Vector2.zero;
         TeamManager.instance.SetRespawn(m_hero.teamPosition);
@@ -259,7 +262,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
             bar.anchoredPosition = pos;
 
             if (m_hero.isMain == true)
-                ControllerManager.instance.UpdateColltime_Skill(duration, progress);
+                ControllerManager.instance.UpdateCooltime_Skill(duration, progress);
 
             if (progress > 1f)
             {

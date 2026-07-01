@@ -10,7 +10,7 @@ public partial class InfoStage_Boss
 {
     [SerializeField]
     ElementData_BossRaid m_elementBossRiad;
-    CancellationTokenSource m_ctsBossRaid;
+    CancellationTokenSource m_ctsTimer;
 
     RectTransform rtTimer => m_elementBossRiad.rtTimer;
 
@@ -36,7 +36,8 @@ public partial class InfoStage_Boss
             rtTimer = (RectTransform)txtTimer.transform.parent;
 
             rtUsers = (RectTransform)_transform.Find("FX_Users");
-            posUserX_MAX = rtUsers.anchoredPosition.x;
+            if (rtUsers != null)
+                posUserX_MAX = rtUsers.anchoredPosition.x;
 
             psDamageEffect = _transform.GetComponent<ParticleSystem>("Bar/FX_Hit");
         }
@@ -52,13 +53,13 @@ public partial class InfoStage_Boss
     {
         if (_status == BossRaidStatusType.Finish_FirstPhase)
         {
-            m_ctsBossRaid = m_ctsBossRaid.ReleaseCTS();
+            m_ctsTimer = m_ctsTimer.ReleaseCTS();
             rtTimer.gameObject.SetActive(false);
         }
         else if (_status == BossRaidStatusType.Wait_SecondPhase)
         {
             InfoStageComponent.instance.SetActive(true, true);
-            StartBossRaid(false);
+            SetBossInfo_BossRaid(false);
 
             m_elementBossRiad.rtUsers.SetAnchoredPositionX(m_elementBossRiad.posUserX_MAX);
 
@@ -72,35 +73,35 @@ public partial class InfoStage_Boss
             m_elementBossRiad.txtTimer.text = "";
 
             var dataRaid = DataManager.bossRaid.data;
-            TimerAsync((dataRaid.dtEndRound - dataRaid.dtSecondPhase).TotalMinutes).Forget();
+            TimerAsync((dataRaid.dtEndRound - dataRaid.dtSecondPhase).TotalMinutes, dataRaid.dtEndRound).Forget();
         }
     }
 
-    void StartBossRaid(bool _isStartTimer)
+    void SetBossInfo_BossRaid(bool _isStartTimer)
     {
         var dataRaid = DataManager.bossRaid.data;
 
         m_element.txtName.text = dataRaid.bossName;
 
         if (_isStartTimer)
-            TimerAsync((dataRaid.dtEndRound - dataRaid.dtNextRound).TotalMinutes).Forget();
+            TimerAsync((dataRaid.dtEndRound - dataRaid.dtNextRound).TotalMinutes, dataRaid.dtEndRound).Forget();
     }
 
-    async UniTask TimerAsync(double _ramainTime)
+    async UniTask TimerAsync(double _ramainTotalMinute, System.DateTime _dtEnd)
     {
-        m_ctsBossRaid = m_ctsBossRaid.ReleaseCTS(true);
-        var token = m_ctsBossRaid.Token;
+        m_ctsTimer = m_ctsTimer.ReleaseCTS(true);
+        var token = m_ctsTimer.Token;
 
         var dataRaid = DataManager.bossRaid.data;
 
         rtTimer.gameObject.SetActive(true);
 
         var width = -((RectTransform)transform).rect.width;
-        var dtEnd = dataRaid.dtEndRound.AddSeconds(-Configure.instance.timeGapFromServer);
+        _dtEnd = _dtEnd.AddSeconds(-Configure.instance.timeGapFromServer);
         while (true)
         {
-            var ts = (dtEnd - System.DateTime.UtcNow);
-            var process = 1 - ts.TotalMinutes / _ramainTime;
+            var ts = (_dtEnd - System.DateTime.UtcNow);
+            var process = 1 - ts.TotalMinutes / _ramainTotalMinute;
 
             var pos = rtTimer.anchoredPosition;
             pos.x = width * (float)process;
@@ -114,7 +115,7 @@ public partial class InfoStage_Boss
             await UniTask.NextFrame(cancellationToken: token);
         }
 
-        m_ctsBossRaid = m_ctsBossRaid.ReleaseCTS();
+        m_ctsTimer = m_ctsTimer.ReleaseCTS();
         rtTimer.gameObject.SetActive(false);
     }
 

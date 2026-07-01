@@ -16,7 +16,10 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
             return;
 #endif
 
-        Awake_BossRaid();
+        if( BossRaidWorker.instance.isRunning == true)
+            Awake_BossRaid();
+        else if( DataManager.dailyDungeon.isRunning == true)
+            Awake_DailyDungeon();
     }
 
     private void Start()
@@ -26,7 +29,7 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
 
     private void OnDestroy()
     {
-        m_ctsBossRaid = m_ctsBossRaid.ReleaseCTS();
+        m_ctsTimer = m_ctsTimer.ReleaseCTS();
     }
 
     public void SetBossInfo()
@@ -36,7 +39,9 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
 
         // TODO
         if (BossRaidWorker.instance.isRunning)
-            StartBossRaid(true);
+            SetBossInfo_BossRaid(true);
+        else if (DataManager.dailyDungeon.isRunning)
+            SetBossInfo_DailyDungeon(GradeType.Normal);
         else
             m_element.txtName.text = "";
 

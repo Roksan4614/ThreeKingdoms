@@ -75,7 +75,7 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
     {
         selelctOption = _selectIndex;
 
-        m_elementTalk.panelBG.DOFade(0f, 0.05f);
+        m_elementTalk.panelBG.DOFade(0f, 0.05f).Forget();
 
         for (int i = 0; i < m_elementTalk.btnSelect.Count; i++)
         {
@@ -88,7 +88,7 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
                 Utils.SetActivePunch(btn.transform, false);
         }
 
-        m_elementTalk.dimm.DOFade(0, 0.15f);
+        m_elementTalk.dimm.DOFade(0, 0.15f).Forget();
         await Utils.SetActivePunchAsync(m_elementTalk.rtPanel, false);
 
         var btnSelect = m_elementTalk.btnSelect[selelctOption].transform;

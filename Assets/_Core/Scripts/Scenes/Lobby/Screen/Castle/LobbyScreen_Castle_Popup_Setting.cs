@@ -232,7 +232,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         var rtScroll = (RectTransform)m_element.scroll.transform;
         var prevPos = rtScroll.anchoredPosition.y;
-        rtScroll.DOAnchorPosY(0, 0.1f);
+        rtScroll.DOAnchorPosY(0, 0.1f).Forget();
 
         await UniTask.WaitUntil(() => m_popupTimeStone.statusType != StatusType.Wait);
 
@@ -450,7 +450,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         var rtScroll = (RectTransform)m_element.scroll.transform;
         var prevPos = rtScroll.anchoredPosition.y;
-        rtScroll.DOAnchorPosY(0, 0.1f);
+        rtScroll.DOAnchorPosY(0, 0.1f).Forget();
 
         if (m_popupHeroList == null)
             m_popupHeroList = await PopupManager.instance.OpenPopupAsync<PopupCastleHeroListComponent>(PopupType.Castle_HeroList, m_castleData);
@@ -466,7 +466,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         await UniTask.WaitUntil(() => m_popupHeroList.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
 
         m_element.btnAdd.interactable = true;
-        rtScroll.DOAnchorPosY(prevPos, 0.1f);
+        rtScroll.DOAnchorPosY(prevPos, 0.1f).Forget();
 
         if (m_popupHeroList.resultType == StatusType.Success)
         {
@@ -485,7 +485,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
     {
         var rtScroll = (RectTransform)m_element.scroll.transform;
         var prevPos = rtScroll.anchoredPosition.y;
-        rtScroll.DOAnchorPosY(0, 0.1f);
+        rtScroll.DOAnchorPosY(0, 0.1f).Forget();
 
         if (m_popupHeroInfo == null)
         {
@@ -497,7 +497,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         await UniTask.WaitUntil(() => m_popupHeroInfo.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
 
-        rtScroll.DOAnchorPosY(prevPos, 0.1f);
+        rtScroll.DOAnchorPosY(prevPos, 0.1f).Forget();
         if (m_popupHeroInfo.isNeedUpdate == true)
         {
             SetBatchHero(true);

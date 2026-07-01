@@ -179,7 +179,6 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 
     void UpdateTreasure_TotalStat()
     {
-        int i = 0;
         var scroll = m_element.scroll;
 
         var dbTreasure = TableManager.treasure.list.Where(x => x.isActive)

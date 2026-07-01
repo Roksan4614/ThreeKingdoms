@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,12 +8,48 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 {
     List<ItemComponent> m_rewards = new();
 
+    WeekdayType m_curWeekday = WeekdayType.None;
+
     private void Start()
     {
+        m_element.btnStart.onClick.AddListener(() => EnterAsync().Forget());
+        m_element.btnAD.onClick.AddListener(() => ShowAdsAsync().Forget());
+
+        SetCount();
         // Tab 생성하자
         SetTab();
 
         Signal.instance.DayChange.connect = SlotDayChange;
+    }
+
+    async UniTask EnterAsync()
+    {
+        if (DataManager.dailyDungeon.data.count <= 0)
+        {
+            if (await ShowAdsAsync() == false)
+                PopupManager.instance.AlertShow("더 이상 입장할 수 없습니다.");
+
+            return;
+        }
+
+        await DataManager.dailyDungeon.EnterAsync(m_curWeekday);
+    }
+
+    async UniTask<bool> ShowAdsAsync()
+    {
+        if (await DataManager.dailyDungeon.ShowAdsAsync() == true)
+        {
+            SetCount();
+            return true;
+        }
+
+        return false;
+    }
+
+    void SetCount()
+    {
+        m_element.txtCount.text = $"일일_입장_가능_횟수: {DataManager.dailyDungeon.data.count}";
+        m_element.btnAD.text = $"{DataManager.dailyDungeon.data.adCount}/3";
     }
 
     public override void Open(LobbyScreenType _prevScreen)
@@ -29,6 +66,10 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
     void OnButton_Tab(TableDailyDungeonBossData _bossData)
     {
+        if (m_curWeekday == _bossData.weekday)
+            return;
+
+        m_curWeekday = _bossData.weekday;
         SetDungeonInfo(_bossData);
     }
 
@@ -121,8 +162,12 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtClass;
         public TextMeshProUGUI txtRecord;
+        public TextMeshProUGUI txtCount;
 
         public Transform reward;
+
+        public ButtonHelper btnStart;
+        public ButtonHelper btnAD;
 
         public void Initialize(Transform _transform)
         {
@@ -135,6 +180,11 @@ public class LobbyScreen_Boss : LobbyScreen_Base
             txtRecord = info.GetComponent<TextMeshProUGUI>("txt_record");
 
             reward = _transform.Find("Panel/Front/Reward/Panel");
+
+            btnStart = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_start");
+            btnAD = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_ad");
+
+            txtCount = _transform.GetComponent<TextMeshProUGUI>("Panel/Front/Button/txt_count");
         }
     }
 }

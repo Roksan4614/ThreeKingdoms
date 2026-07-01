@@ -393,11 +393,14 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         if (_isJustCheck)
             return true;
 
-        heroInfo.StopRespawn();
+        StopAllRespawn();
 
         StageManager.instance.isStageFailed = true;
         return true;
     }
+
+    public void StopAllRespawn()
+        => heroInfo.StopAllRespawn();
 
     public void ShowHeroes(bool _isShow)
     {

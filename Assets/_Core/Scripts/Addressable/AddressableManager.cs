@@ -37,6 +37,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         DataManager.Release();
         ScenarioManager.Release();
         TimeManager.instance.Release();
+        AdsManager.instance.Release();
     }
 
     public async UniTask InitializeAsync()

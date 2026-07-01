@@ -13,7 +13,7 @@ public class Scene_BossRaid : SceneBase
 
         m_element.dimmResult.gameObject.SetActive(false);
 
-        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => { });
+        //Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => { });
     }
 
     async UniTask StartAsync()

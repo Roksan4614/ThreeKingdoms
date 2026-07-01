@@ -153,7 +153,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
                 //적들을 관우쪽으로 끌어당기기
                 if (enemyList.Count > 1)
-                    target.transform.DOMove(Vector3.Lerp(target.transform.position, m_owner.position, 0.5f), 0.1f);
+                    target.transform.DOMove(Vector3.Lerp(target.transform.position, m_owner.position, 0.5f), 0.1f).Forget();
             }
 
             target.SetColorParts(Color.white);
@@ -197,7 +197,6 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         UpdateEnemyStatus();
     }
 
-    bool m_isDrag = false;
     bool m_isUseSkillControll = false;
     public override void OnUp_ControllSkill()
     {

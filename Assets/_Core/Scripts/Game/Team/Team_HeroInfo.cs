@@ -50,7 +50,8 @@ public class Team_HeroInfo
         var duration = 0.05f;
         ControllerManager.instance.SetMove_HeroInfoDown(m_isHide, true, duration);
 
-        if (BossRaidWorker.instance.isRunning == true)
+        if (DataManager.dailyDungeon.isRunning == true) { }
+        else if (BossRaidWorker.instance.isRunning == true)
             RankBossRaidComponent.instance.SetMove_HeroInfoDown(m_isHide, true, duration);
         else
             MissionComponent.instance.SetMoveArea(m_isHide, true, duration);
@@ -113,7 +114,7 @@ public class Team_HeroInfo
             m_lstHeroInfo.Find(x => x.key == _hero.info.key).StopRespawn();
     }
 
-    public void StopRespawn()
+    public void StopAllRespawn()
     {
         for (int i = 0; i < m_lstHeroInfo.Count; i++)
             m_lstHeroInfo[i].StopRespawn();

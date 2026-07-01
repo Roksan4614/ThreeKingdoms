@@ -106,8 +106,8 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
             var rtObject = (RectTransform)m_element.panelMap.Find(_objectType.ToString());
 
-            m_element.panelMap.DOScale(Vector3.one * (_objectType == CastleObjectType.Gate ? 1.5f : 2), 0.1f);
-            m_element.panelMap.DOAnchorPos(m_element.objectPosition[idx], 0.1f);
+            m_element.panelMap.DOScale(Vector3.one * (_objectType == CastleObjectType.Gate ? 1.5f : 2), 0.1f).Forget();
+            m_element.panelMap.DOAnchorPos(m_element.objectPosition[idx], 0.1f).Forget();
             m_element.scroll.content.anchoredPosition = Vector2.zero;
 
             var objButton = m_element.btnObject[idx].gameObject;
@@ -116,7 +116,7 @@ public class LobbyScreen_Castle : LobbyScreen_Base
             bool isInfo = m_popupMenu.statusType == StatusType.Success;
             await m_popupSetting.OpenAsync(isInfo, _objectType, m_cts.Token);
 
-            m_element.panelMap.DOScale(Vector3.one, 0.1f);
+            m_element.panelMap.DOScale(Vector3.one, 0.1f).Forget();
             await m_element.panelMap.DOAnchorPos(Vector3.zero, 0.1f).AsyncWaitForCompletion();
 
             objButton.SetActive(true);

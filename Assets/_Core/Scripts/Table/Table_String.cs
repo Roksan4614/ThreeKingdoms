@@ -32,8 +32,10 @@ public class Table_String : BaseTable<string, TableStringData>
         return string.Format(GetString(_key), _args);
     }
 
-    public string GetGradeType(GradeType _gradeType, bool _isDifficult = false)
-        => GetString($"GRADE_{(_isDifficult ? "DIFFICULT_" : "")}{_gradeType.ToString().ToUpper()}");
+    public string GetGradeType(GradeType _gradeType, bool _isDifficult = false, bool _isColor = false)
+        => _isColor
+        ? $"<color=#{Palette.GetHexa_GradeText(_gradeType)}>{GetGradeType(_gradeType, _isDifficult)}</color>"
+        : $"{GetString($"GRADE_{(_isDifficult ? "DIFFICULT_" : "")}{_gradeType.ToString().ToUpper()}")}";
 
     public string GetRegionType(RegionType _regionType, bool _isFull)
         => GetString("REGION_NAME_" + (_isFull ? "FULL_" : "") + _regionType.ToString().ToUpper());

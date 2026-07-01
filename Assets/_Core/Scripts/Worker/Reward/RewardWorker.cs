@@ -116,7 +116,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
                         ? m_actionData.posTargetPunch
                         : GetPositionStartPunch(data.startPos);
 
-                    item.transform.DOMove(targetPos, m_actionData.durationInstantiate).SetEase(Ease.OutCubic);
+                    item.transform.DOMove(targetPos, m_actionData.durationInstantiate).SetEase(Ease.OutCubic).Forget();
                 }
             }
         }

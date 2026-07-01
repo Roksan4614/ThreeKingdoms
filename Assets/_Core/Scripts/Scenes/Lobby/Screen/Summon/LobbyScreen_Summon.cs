@@ -165,7 +165,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
             var prevPos = hero.transform.localPosition;
             hero.transform.DOLocalMoveX(prevPos.x - 4, .2f).SetEase(Ease.InBack)
-                .OnComplete(() => hero.gameObject.SetActive(false));
+                .OnComplete(() => hero.gameObject.SetActive(false)).Forget();
 
             await UniTask.WaitUntil(() => m_element.result.step == LobbyScreen_Summon_Result.ResultStepType.ReceiveEnd);
 
@@ -173,7 +173,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
             hero.move.SetFlip(true);
             hero.gameObject.SetActive(true);
-            hero.transform.DOLocalMoveX(prevPos.x, .2f).SetEase(Ease.InCubic);
+            hero.transform.DOLocalMoveX(prevPos.x, .2f).SetEase(Ease.InCubic).Forget();
         }
 
         hero.anim.PlayAttack();

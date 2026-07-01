@@ -21,10 +21,9 @@ public class WarningAreaComponent : MonoBehaviour, IValidatable
         End,
     }
 
-    bool m_isShow;
     public async UniTask ShowAsync(float _speed, CancellationToken _token, bool _isDisable = true)
     {
-        m_isShow = true;
+        //m_isShow = true;
         m_target.Clear();
         gameObject.SetActive(true);
 
@@ -50,7 +49,7 @@ public class WarningAreaComponent : MonoBehaviour, IValidatable
         if (_isDisable)
             SetDisable();
 
-        m_isShow = false;
+        //m_isShow = false;
     }
 
     public void SetDisable()

@@ -120,7 +120,7 @@ public class Controller_Skill : Controller_Attack
         m_isPointerDown = m_isDragging = false;
     }
 
-    public void UpdateColltime(float _duration, float _progress)
+    public void UpdateCooltime(float _duration, float _progress)
     {
         var imgTimer = m_elementSkill.imgTimer;
         button.interactable = _progress >= 1f;

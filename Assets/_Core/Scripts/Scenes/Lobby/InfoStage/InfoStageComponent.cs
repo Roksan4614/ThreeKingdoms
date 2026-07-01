@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
 {
+    public InfoStage_Boss boss => m_element.boss;
+
     protected override void OnAwake()
     {
         m_element.boss.gameObject.SetActive(false);
@@ -137,8 +139,8 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
         // 보스아이콘 커졌다 돌진 준비 하기. 회전
         var scale = m_element.rtIconBoss.localScale;
 
-        m_element.rtIconBoss.DORotate(new Vector3(0, 0, 10), 0.2f);
-        m_element.rtIconBoss.DOAnchorPosX(m_element.startPosIconBoss.x + 10, 0.2f);
+        m_element.rtIconBoss.DORotate(new Vector3(0, 0, 10), 0.2f).Forget();
+        m_element.rtIconBoss.DOAnchorPosX(m_element.startPosIconBoss.x + 10, 0.2f).Forget();
         await m_element.rtIconBoss.DOPunchScale(Vector3.one * 0.2f, 0.2f).ToUniTask(TweenCancelBehaviour.Kill, m_ctsChangeBoss.Token);
 
         // 스테이지 정보 서서히 사라지기
@@ -149,7 +151,7 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
             m_element.infoStage.element.cg.alpha = 1;
 
             m_element.boss.SetBossInfo();
-        });
+        }).Forget();
 
         // 보스아이콘 오른쪽으로 바라보기
         scale.x *= -1;

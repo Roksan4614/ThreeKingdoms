@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -349,4 +351,7 @@ public static class Extenssions
         _rt.anchoredPosition = pos;
 
     }
+    public static void Forget(this Tween _tween, CancellationToken _cancellationToken = default)
+        => _tween?.ToUniTask(TweenCancelBehaviour.Kill, _cancellationToken).Forget();
+
 }

@@ -74,7 +74,7 @@ public partial class ControllerManager
                 if (progress > 1f)
                 {
                     var iconCount = m_element.iconDashCount[m_dashRemainCount];
-                    iconCount.transform.DOPunchScale(Vector3.one * 0.1f, 0.2f);
+                    iconCount.transform.DOPunchScale(Vector3.one * 0.1f, 0.2f).Forget();
 
                     m_dashRemainCount++;
                     UpdateDashCount();

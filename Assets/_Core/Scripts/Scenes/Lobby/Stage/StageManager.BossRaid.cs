@@ -4,14 +4,14 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public partial class StageManager
 {
-    AsyncOperationHandle<GameObject> m_handleBoss;
+    AsyncOperationHandle<GameObject> m_handleBossRaid;
 
     public async UniTask InitializeAsync_BossRaid()
     {
-        await LoadBossRaid();
+        await LoadBossRaidAsync();
     }
 
-    async UniTask LoadBossRaid()
+    async UniTask LoadBossRaidAsync()
     {
         string key = $"BossRaid/BossRaid_{BossRaidWorker.instance.bossType}.prefab";
 
@@ -19,16 +19,16 @@ public partial class StageManager
         {
             foreach (var data in _result)
             {
-                m_handleBoss = data.Value;
+                m_handleBossRaid = data.Value;
             }
         }, null, key);
 
-        var slot = Instantiate(m_handleBoss.Result, m_element.chapter).GetComponent<BossRaid_BossSlotComponent>();
+        var slot = Instantiate(m_handleBossRaid.Result, m_element.chapter).GetComponent<BossRaid_BossSlotComponent>();
     }
 
     void OnDestroy_BossRaid()
     {
-        if (m_handleBoss.IsValid())
-            m_handleBoss.Release();
+        if (m_handleBossRaid.IsValid())
+            m_handleBossRaid.Release();
     }
 }

@@ -31,6 +31,8 @@ public enum PopupType
 
     BossRaidResult,
 
+    DailyDungeonResult,
+
     Modal_Start,
     Modal,
     Modal_TalkSelect,

@@ -35,8 +35,8 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         m_regionData.SetActiveName(false);
 
         m_prevPos = m_regionData.rt.position;
-        m_regionData.rt.DOMove(m_element.posCharacter.position, 0.2f);
-        m_regionData.rt.DOScale(Vector3.one, 0.2f);
+        m_regionData.rt.DOMove(m_element.posCharacter.position, 0.2f).Forget();
+        m_regionData.rt.DOScale(Vector3.one, 0.2f).Forget();
 
         Utils.SetActivePunch(transform, true);
 
@@ -59,8 +59,8 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         await Utils.SetActivePunchAsync(transform, false);
         transform.localScale = Vector3.one;
 
-        m_regionData.rt.DOMove(m_prevPos, 0.2f);
-        m_regionData.rt.DOScale(Vector3.one * 0.8f, 0.2f);
+        m_regionData.rt.DOMove(m_prevPos, 0.2f).Forget();
+        m_regionData.rt.DOScale(Vector3.one * 0.8f, 0.2f).Forget();
     }
 
     void SetRegionData()

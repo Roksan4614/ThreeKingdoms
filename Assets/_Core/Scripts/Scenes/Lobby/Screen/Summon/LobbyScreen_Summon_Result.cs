@@ -292,7 +292,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     .OnComplete(() =>
                     {
                         m_itemComps[idx].MoveFinished();
-                    });
+                    }).Forget();
 
                 duration = Math.Max(0.1f, duration * 0.7f);
                 await UniTask.WaitForSeconds(duration);
@@ -457,7 +457,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             await UniTask.WaitForSeconds(1f);
 
         hero.anim.Play(CharacterAnimType.Dash);
-        hero.transform.DOLocalMoveX(prevLocalPos.x * -1, 0.3f).SetEase(Ease.OutCubic);
+        hero.transform.DOLocalMoveX(prevLocalPos.x * -1, 0.3f).SetEase(Ease.OutCubic).Forget();
     }
 
     async UniTask SetResultDataAsync()

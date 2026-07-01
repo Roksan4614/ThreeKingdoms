@@ -14,7 +14,7 @@ public class CharacterComponent : TargetComponent
     [SerializeField]
     FactionType m_faction;
     [SerializeField]
-    HeroInfoData m_info;
+    protected HeroInfoData m_info;
 
     public List<CharacterComponent> targetTest = new();
 

@@ -423,8 +423,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             _isTween ? _duration : 0f);
     }
 
-    public void UpdateColltime_Skill(float _duration, float _progress)
-        => m_element.skill.UpdateColltime(_duration, _progress);
+    public void UpdateCooltime_Skill(float _duration, float _progress)
+        => m_element.skill.UpdateCooltime(_duration, _progress);
 
     public void SetDie_SkillTimer()
         => m_element.skill.SetDie_SkillTimer();

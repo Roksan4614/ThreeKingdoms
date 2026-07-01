@@ -16,6 +16,8 @@ public class PopupLobbyBossRaid_PopupRanking_Item : MonoBehaviour, IValidatable
         Data_BossRaid.BossRaidRankerUserData _rankerData,
         UnityAction<Data_BossRaid.BossRaidRankerUserData> _callback)
     {
+        await UniTask.Yield();
+
         if (m_element.button != null)
         {
             m_element.button.onClick.RemoveAllListeners();

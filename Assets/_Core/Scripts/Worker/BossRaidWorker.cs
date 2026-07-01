@@ -136,7 +136,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
         await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
         PopupManager.instance.CloseAll();
-        await UniTask.WaitForEndOfFrame();
+        await UniTask.NextFrame();
         AddressableManager.instance.LoadScene("02_Lobby");
     }
 }
