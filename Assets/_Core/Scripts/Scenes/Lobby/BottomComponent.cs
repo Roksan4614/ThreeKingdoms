@@ -41,7 +41,7 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
     }
 
     bool m_isDoing = false;
-    void OnButton(LobbyScreenType _screenType)
+    public void OnButton(LobbyScreenType _screenType)
     {
         if (LobbyScreenManager.instance.isLock == true || m_isDoing == true)
             return;

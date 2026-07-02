@@ -24,7 +24,7 @@ public class Banner_BossRaid : MonoBehaviour, IValidatable
 
         if (dataRaid.tickNextRound == 0)
         {
-            m_element.txtTimer.text = "_미출현_";
+            m_element.button.text = "_미출현_";
             await UniTask.WaitUntil(() => DataManager.bossRaid.data.tickNextRound > 0, cancellationToken: destroyCancellationToken);
         }
 
@@ -36,11 +36,11 @@ public class Banner_BossRaid : MonoBehaviour, IValidatable
             if (ts.TotalSeconds <= 0)
                 break;
 
-            m_element.txtTimer.text = $"({ts.ToRemainTime(20, _isStartMinute: true)})";
+            m_element.button.text = $"({ts.ToRemainTime(20, _isStartMinute: true)})";
             await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
         }
 
-        m_element.txtTimer.text = "진행중";
+        m_element.button.text = "진행중";
 
         await UniTask.WaitUntil(() => DataManager.bossRaid.data.tickNextRound == 0, cancellationToken: destroyCancellationToken);
 
@@ -60,11 +60,9 @@ public class Banner_BossRaid : MonoBehaviour, IValidatable
     struct ElementData
     {
         public ButtonHelper button;
-        public TextMeshProUGUI txtTimer;
         public void Initialize(Transform _transform)
         {
             button = _transform.GetComponent<ButtonHelper>();
-            txtTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_timer");
         }
     }
     #endregion VALIDATE

@@ -72,7 +72,7 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
     bool m_isSwitchEscape = true;
 
-    protected override bool IsCloseScreen()
+    protected override bool IsEscapeloseScreen()
     {
         if (m_isSwitchEscape == false)
             return false;

@@ -35,4 +35,6 @@ public enum WeekdayType
     Thursday,
     Friday,
     Saturday,
+
+    MAX
 }

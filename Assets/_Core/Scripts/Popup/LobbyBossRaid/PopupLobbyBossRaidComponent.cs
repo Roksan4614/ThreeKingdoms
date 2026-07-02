@@ -50,7 +50,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
                 return;
 
             Close();
-        });
+        }, _token: destroyCancellationToken);
     }
 
     public override void OpenPopup(params object[] _args)

@@ -53,7 +53,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         }
     }
 
-    protected override bool IsCloseScreen()
+    protected override bool IsEscapeloseScreen()
     {
         return m_element.result.gameObject.activeSelf == false;
     }

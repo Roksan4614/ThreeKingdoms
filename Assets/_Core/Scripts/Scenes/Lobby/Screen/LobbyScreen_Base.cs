@@ -36,7 +36,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
 
         Utils.WaitEscape(this, () =>
         {
-            if (IsCloseScreen())
+            if (IsEscapeloseScreen())
                 Signal.instance.CloseLobbyScreen.Emit(m_screenType);
         }, _token: m_cts.Token);
     }
@@ -44,7 +44,7 @@ public abstract class LobbyScreen_Base : MonoBehaviour, IValidatable
     protected virtual void OnDisable()
         => m_cts = m_cts.ReleaseCTS();
 
-    protected virtual bool IsCloseScreen() => true;
+    protected virtual bool IsEscapeloseScreen() => true;
 
     public virtual void OnManualValidate()
     {

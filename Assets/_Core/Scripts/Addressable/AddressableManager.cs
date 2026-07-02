@@ -8,6 +8,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.SceneManagement;
 using UnityEngine.U2D;
 
 public enum AddressableLabelType
@@ -321,8 +322,17 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         _onComplete?.Invoke(resultData);
     }
 
+    UnityEngine.ResourceManagement.ResourceProviders.SceneInstance m_prevSceneInstance;
+    public async UniTask LoadSceneAsync(string _sceneName)
+    {
+        if (m_prevSceneInstance.Scene.IsValid())
+            await Addressables.UnloadSceneAsync(m_prevSceneInstance).ToUniTask();
+
+        m_prevSceneInstance = await Addressables.LoadSceneAsync(_sceneName).ToUniTask();
+    }
+
     public void LoadScene(string _sceneName)
-        => Addressables.LoadSceneAsync(_sceneName);
+        => LoadSceneAsync(_sceneName).Forget();
 
     void Release(AsyncOperationHandle _h)
     {

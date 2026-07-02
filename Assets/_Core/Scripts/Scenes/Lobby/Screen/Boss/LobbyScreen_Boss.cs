@@ -6,47 +6,68 @@ using UnityEngine.UI;
 
 public class LobbyScreen_Boss : LobbyScreen_Base
 {
+    Dictionary<WeekdayType, LobbyScreen_Boss_Tab_Slot> m_dicTabSlot = new();
     List<ItemComponent> m_rewards = new();
 
     WeekdayType m_curWeekday = WeekdayType.None;
 
     private void Start()
     {
-        m_element.btnStart.onClick.AddListener(() => EnterAsync().Forget());
+        m_element.btnStart.onClick.AddListener(() => EnterAsync(false).Forget());
+        m_element.btnSweep.onClick.AddListener(() => EnterAsync(true).Forget());
         m_element.btnAD.onClick.AddListener(() => ShowAdsAsync().Forget());
 
-        SetCount();
+        SetCountText();
         // Tab 생성하자
         SetTab();
+
+        var data = TableManager.dailyDungeonBoss.Get(m_curWeekday);
+        m_curWeekday--;
+        OnButton_Tab(data);
 
         Signal.instance.DayChange.connect = SlotDayChange;
     }
 
-    async UniTask EnterAsync()
+    protected override bool IsEscapeloseScreen()
     {
+        return PopupManager.instance.IsOpenPopup(PopupType.DailyDungeonResult) == false;
+    }
+
+    bool m_isRunningEnter = false;
+    async UniTask EnterAsync(bool _isSweep)
+    {
+        if (m_isRunningEnter == true)
+            return;
+
+        m_isRunningEnter = true;
+
         if (DataManager.dailyDungeon.data.count <= 0)
         {
-            if (await ShowAdsAsync() == false)
+            var result = await PopupManager.instance.OpenModalAsync("광고보기??_");
+
+            if (result == StatusType.Success && await ShowAdsAsync() == false)
                 PopupManager.instance.AlertShow("더 이상 입장할 수 없습니다.");
-
-            return;
         }
+        else if (_isSweep)
+            await DataManager.dailyDungeon.SweepAsync(m_curWeekday, SetCountText);
+        else
+            await DataManager.dailyDungeon.EnterAsync(m_curWeekday);
 
-        await DataManager.dailyDungeon.EnterAsync(m_curWeekday);
+        m_isRunningEnter = false;
     }
 
     async UniTask<bool> ShowAdsAsync()
     {
         if (await DataManager.dailyDungeon.ShowAdsAsync() == true)
         {
-            SetCount();
+            SetCountText();
             return true;
         }
 
         return false;
     }
 
-    void SetCount()
+    void SetCountText()
     {
         m_element.txtCount.text = $"일일_입장_가능_횟수: {DataManager.dailyDungeon.data.count}";
         m_element.btnAD.text = $"{DataManager.dailyDungeon.data.adCount}/3";
@@ -56,7 +77,15 @@ public class LobbyScreen_Boss : LobbyScreen_Base
     {
         base.Open(_prevScreen);
 
-        OnButton_Tab(TableManager.dailyDungeonBoss.Get((WeekdayType)Utils.GetUTC().DayOfWeek));
+        if (m_curWeekday == WeekdayType.None)
+            m_curWeekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
+
+        // 탭 현재 위치로
+        int idxWeekday = (int)m_curWeekday;
+        var layout = m_element.scrollTab.content.GetComponent<HorizontalLayoutGroup>();
+        var widthSlot = ((RectTransform)m_element.scrollTab.content.GetChild(0)).rect.width;
+        var posX = m_element.scrollTab.viewport.rect.width * 0.5f - widthSlot * idxWeekday - layout.spacing * idxWeekday + widthSlot * .5f;
+        m_element.scrollTab.content.SetAnchoredPositionX(Mathf.Min(0, posX));
     }
 
     public override void Close(bool _isTween = true)
@@ -64,13 +93,22 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         base.Close(_isTween);
     }
 
-    void OnButton_Tab(TableDailyDungeonBossData _bossData)
+    void OnButton_Tab(TableDailyDungeonBossData _bossData, bool _isForce = false)
     {
-        if (m_curWeekday == _bossData.weekday)
+        if (m_curWeekday == _bossData.weekday && _isForce == false)
             return;
 
+        if (m_dicTabSlot.ContainsKey(m_curWeekday))
+            m_dicTabSlot[m_curWeekday].SetSelect(false);
+
         m_curWeekday = _bossData.weekday;
+        m_dicTabSlot[m_curWeekday].SetSelect(true);
+
         SetDungeonInfo(_bossData);
+
+        var gradeType = DataManager.dailyDungeon.GetRecordGradeType(m_curWeekday).gradeType;
+        if (gradeType > GradeType.Normal != m_element.btnSweep.gameObject.activeSelf)
+            m_element.btnSweep.gameObject.SetActive(gradeType > GradeType.Normal);
     }
 
     void SetDungeonInfo(TableDailyDungeonBossData _bossData)
@@ -79,6 +117,9 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         m_element.txtName.text = _bossData.name;
         m_element.txtClass.text = _bossData.className;
 
+        var recordData = DataManager.dailyDungeon.GetRecordGradeType(_bossData.weekday);
+        m_element.txtRecord.text = $"최고_기록: [{(recordData.gradeType == GradeType.NONE ? "없음_" : TableManager.stringTable.GetGradeType(recordData.gradeType))}]";
+        m_element.txtRecord.text += $"<size=90%><color=#555555> ({(recordData.percent * 100):0.#0}%)</color></size>";
         SetRewardData(_bossData);
     }
 
@@ -86,25 +127,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
     {
         var rewardData = TableManager.dailyDungeonGrade.list.SortByDescending(x => (int)x.dungeon_boss_grade)[0];
 
-        List<TableItemData> tableItem = new();
-        tableItem.Add(new()
-        {
-            key = ItemType.Rice,
-        });
-        tableItem.Add(new()
-        {
-            key = ItemType.Gold,
-        });
-        tableItem.Add(new()
-        {
-            category = ItemCategoryType.Soul_Stone,
-            key = ItemType.Class_Soul_Stone,
-            value = _bossData.dungeon_boss_class.ToString()
-        });
-        tableItem.Add(new()
-        {
-            key = ItemType.Time_Stone,
-        });
+        List<TableItemData> tableItem = rewardData.GetReward(_bossData.dungeon_boss_class, false);
 
         var parent = m_element.reward;
         int i = 0;
@@ -139,7 +162,9 @@ public class LobbyScreen_Boss : LobbyScreen_Base
             var slot = (i == content.childCount ? Instantiate(content.GetChild(0), content) : content.GetChild(i))
                 .GetComponent<LobbyScreen_Boss_Tab_Slot>();
 
-            slot.SetDungeonData(weekday, dbDungeon[i], OnButton_Tab);
+            slot.SetDungeonData(weekday, dbDungeon[i], _bossData => OnButton_Tab(_bossData));
+
+            m_dicTabSlot.Add(dbDungeon[i].weekday, slot);
         }
     }
 
@@ -167,6 +192,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         public Transform reward;
 
         public ButtonHelper btnStart;
+        public ButtonHelper btnSweep;
         public ButtonHelper btnAD;
 
         public void Initialize(Transform _transform)
@@ -182,6 +208,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
             reward = _transform.Find("Panel/Front/Reward/Panel");
 
             btnStart = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_start");
+            btnSweep = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_sweep");
             btnAD = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_ad");
 
             txtCount = _transform.GetComponent<TextMeshProUGUI>("Panel/Front/Button/txt_count");

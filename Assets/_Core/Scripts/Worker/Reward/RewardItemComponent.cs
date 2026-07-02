@@ -38,6 +38,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         });
     }
 
+    List<ItemType> m_ignoreLog = new();
     public bool Initialize(RewardWorker.RewardItemData _itemData, RewardSpawnType _spawnType, bool _isFXStart, Transform _target)
     {
         m_target = _target;
@@ -67,7 +68,11 @@ public class RewardItemComponent : TargetComponent, IValidatable
         var obj = m_element.GetObject(_itemData.itemType);
         if (obj == null)
         {
-            IngameLog.Add("RewardItemComponent: Initialize: FAILED: " + _itemData.itemType);
+            if (m_ignoreLog.Contains(_itemData.itemType) == false)
+            {
+                IngameLog.Add("RewardItemComponent: Initialize: FAILED: " + _itemData.itemType);
+                m_ignoreLog.Add(_itemData.itemType);
+            }
             return false;
         }
 

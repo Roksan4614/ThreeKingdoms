@@ -33,8 +33,15 @@ public class ItemComponent : MonoBehaviour, IValidatable
 
         //m_element.panel.gameObject.SetActive(false);
 
-        if (_itemData.category == ItemCategoryType.Soul_Stone && _itemData.key == ItemType.Dedicated_Soul_Stone)
-            SetIconAsync(_itemData.value, true).Forget();
+        if (_itemData.category == ItemCategoryType.Soul_Stone)
+        {
+            if (_itemData.key == ItemType.Dedicated_Soul_Stone)
+                SetIconAsync(_itemData.value, true).Forget();
+            else if(_itemData.key == ItemType.Class_Soul_Stone)
+                SetIconAsync($"{_itemData.key}_{_itemData.value}", false).Forget();
+            else
+                SetIconAsync(_itemData.key.ToString(), false).Forget();
+        }
         else
             SetIconAsync(_itemData.key.ToString(), false).Forget();
 

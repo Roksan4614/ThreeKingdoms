@@ -57,7 +57,7 @@ public partial class LobbyScreen_Hero : LobbyScreen_Base
         m_txtTitle.text = _tabType.ToString().ToUpper();
     }
 
-    protected override bool IsCloseScreen()
+    protected override bool IsEscapeloseScreen()
     {
         for (var i = HeroTabType.NONE + 1; i < HeroTabType.MAX; i++)
         {

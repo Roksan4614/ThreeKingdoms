@@ -36,6 +36,30 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         Run(posFrom, ItemType.Rice, _rice, _isPopup: true, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
     }
 
+    public async UniTask RunAsync(Vector3 _posFrom, TableItemData[] _itemData, bool _isPopup = true, bool _isStartPunch = false)
+    {
+        List<UniTask> tasks = new();
+
+        for (int i = 0; i < _itemData.Length; i++)
+        {
+            var data = _itemData[i];
+
+            if (data.category == ItemCategoryType.Currency)
+            {
+                if (data.key == ItemType.Gold)
+                    DataManager.userInfo.SetGold(data.count, false);
+                else if (data.key == ItemType.Rice)
+                    DataManager.userInfo.SetProvision(data.count, false);
+
+                // todo 아이템들 갯수 업데이트 해야 해.
+            }
+
+            tasks.Add(RunAsync(_posFrom, _itemData[i].key, _itemData[i].count, _isPopup: _isPopup, _isStartPunch: _isStartPunch));
+        }
+
+        await UniTask.WhenAll(tasks);
+    }
+
     public void Run(Vector3 _posFrom, ItemType _itemType, long _count = 1, bool _isStartPunch = true
         , bool _isFXStart = false, float _distMax = 0
         , bool _isField = false, bool _isScreen = false, bool _isPopup = false,

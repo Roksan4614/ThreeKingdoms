@@ -38,7 +38,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     {
         SetActiveDimm(false, false);
 
-        //시작과 동시에 그냥 생성해주자
+        // 시작과 동시에 그냥 생성해주자
         InstantiateAsync().Forget();
 
         Signal.instance.CloseLobbyScreen.connect = CloseScreen;
@@ -47,6 +47,17 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     // 스크린에서 닫기를 눌러서 닫을 때
     public void CloseScreen(LobbyScreenType _screenType)
     {
+        if (_screenType == LobbyScreenType.None)
+        {
+            for (var screen = LobbyScreenType.None + 1; screen < LobbyScreenType.MAX; screen++)
+            {
+                if (m_dicScreen.ContainsKey(screen) == false)
+                    continue;
+                if (m_dicScreen[screen].isOpenned)
+                    m_dicScreen[screen].Close();
+            }
+            SetActiveDimm(false);
+        }
         if (_screenType == m_curScreen)
         {
             m_dicScreen[_screenType].Close();
@@ -109,22 +120,8 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
             }
         }
 
-        if (m_curScreen == LobbyScreenType.None)
-        {
-            // BOSS 난 딤 안깔거야
-            if (_screenType != LobbyScreenType.Boss)
-                SetActiveDimm(true);
-        }
-        else if (m_dicScreen[m_curScreen].isOpenned)
+        if (m_curScreen > LobbyScreenType.None && m_dicScreen[m_curScreen].isOpenned)
             m_dicScreen[m_curScreen].Close(false);
-
-        // 보스일 땐 딤 처리가 좀 달라져
-        {
-            if (m_curScreen == LobbyScreenType.Boss)
-                SetActiveDimm(true);
-            else if (_screenType == LobbyScreenType.Boss)
-                SetActiveDimm(false, false);
-        }
 
         Signal.instance.OpenLobbyScreen.Emit(m_curScreen);
         m_dicScreen[_screenType].Open(m_curScreen);

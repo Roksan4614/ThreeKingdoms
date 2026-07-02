@@ -22,6 +22,9 @@ public class LobbyScreen_Boss_Tab_Slot : MonoBehaviour, IValidatable
         m_element.button.interactable = isActive;
     }
 
+    public void SetSelect(bool _isSelect)
+        => m_element.objSelect.SetActive(_isSelect);
+
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
@@ -35,12 +38,14 @@ public class LobbyScreen_Boss_Tab_Slot : MonoBehaviour, IValidatable
 
         public TextMeshProUGUI txtName;
         public GameObject dimm;
+        public GameObject objSelect;
 
         public void Initialize(Transform _transform)
         {
             button = _transform.GetComponent<Button>();
             txtName = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_name");
             dimm = _transform.Find("Panel/Dimm").gameObject;
+            objSelect = _transform.Find("Select").gameObject;
         }
     }
     #endregion VALIDATE

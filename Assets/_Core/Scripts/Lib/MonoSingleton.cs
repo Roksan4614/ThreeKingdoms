@@ -41,6 +41,9 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T
         else
             m_instance = this as T;
 
+        //if (transform.parent != null)
+        //    transform.SetParent(null);
+
         DontDestroyOnLoad(gameObject);
 
         transform.SetSiblingIndex(1);

@@ -29,6 +29,12 @@ public class Scene_Lobby : SceneBase
 
         ControllerManager.instance.SetSwitch(true);
 
+        if (DataManager.dailyDungeon.enterWeekday == WeekdayType.MAX)
+        {
+            DataManager.dailyDungeon.enterWeekday = WeekdayType.None;
+            BottomComponent.instance.OnButton(LobbyScreenType.Boss);
+        }
+
         // TEST
         //TutorialManager.instance.Complete(TutorialType.CASTLE_FINISHED);
     }
