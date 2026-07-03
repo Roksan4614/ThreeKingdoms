@@ -1,7 +1,6 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
 
 public class PopupCastleMission_Popup_Info_Reward : MonoBehaviour, IValidatable
 {

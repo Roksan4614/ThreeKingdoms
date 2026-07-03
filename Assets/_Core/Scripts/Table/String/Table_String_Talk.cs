@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Table_StringTalk : Table_String
+public class Table_String_Talk : Table_String_Base
 {
-    public Table_StringTalk(List<TableStringData> _table) : base(_table)
+    public Table_String_Talk(List<TableStringData> _table) : base(_table)
     {
         SetDictionary(x => x.key);
     }

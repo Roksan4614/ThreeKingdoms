@@ -10,9 +10,16 @@ public class Banner_BossRaid : MonoBehaviour, IValidatable
 
     void Start()
     {
-        m_element.button.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid));
+        m_element.button.onClick.AddListener(() => OnButtonAsync_OpenPopup().Forget());
 
         TimerAsync().Forget();
+    }
+
+    async UniTask OnButtonAsync_OpenPopup()
+    {
+        m_element.button.interactable = false;
+        await PopupManager.instance.OpenPopupAndWait(PopupType.LobbyBossRaid);
+        m_element.button.interactable = true;
     }
 
     async UniTask TimerAsync()

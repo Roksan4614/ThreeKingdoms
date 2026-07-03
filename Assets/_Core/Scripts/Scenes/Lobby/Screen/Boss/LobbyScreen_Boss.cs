@@ -118,8 +118,11 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         m_element.txtClass.text = _bossData.className;
 
         var recordData = DataManager.dailyDungeon.GetRecordGradeType(_bossData.weekday);
-        m_element.txtRecord.text = $"최고_기록: [{(recordData.gradeType == GradeType.NONE ? "없음_" : TableManager.stringTable.GetGradeType(recordData.gradeType))}]";
-        m_element.txtRecord.text += $"<size=90%><color=#555555> ({(recordData.percent * 100):0.#0}%)</color></size>";
+
+        bool isHasRecord = recordData.gradeType > GradeType.Normal || recordData.percent > 0;
+        m_element.txtRecord.text = $"최고_기록: [{(isHasRecord ? TableManager.stringTable.GetGradeType(recordData.gradeType) : "없음_")}]";
+        if (isHasRecord)
+            m_element.txtRecord.text += $"<size=90%><color=#555555> ({(recordData.percent * 100):0.#0}%)</color></size>";
         SetRewardData(_bossData);
     }
 

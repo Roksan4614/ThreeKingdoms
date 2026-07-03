@@ -86,6 +86,11 @@ echo ssh -p 6022 -i .ssh/webgl_key webgl-upload@%GS_URL% "rm -rf /app/static/Bun
 echo ssh -p 6022 -i .ssh/webgl_key webgl-upload@%GS_URL% "mkdir -p /app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%"
 echo scp -P 6022 -i .ssh/webgl_key -r %SET_PATH%/Bundle/_Last/%RESULT_PLATFORM%/* webgl-upload@%GS_URL%:/app/static/Bundle/%RESULT_PLATFORM%/%BUNDLE_VERION%
 
+if "%PLATFORM%"=="3" (
+	echo.
+	echo ssh -p 6022 -i .ssh/webgl_key webgl-upload@%GS_URL% "sudo -n /app/static-admin/set-webgl-root.sh %VERSION%_%BUNDLE_VERION%"
+)
+
 :GOTO_FINISH
 
 echo.

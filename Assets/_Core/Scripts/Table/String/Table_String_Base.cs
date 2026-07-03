@@ -1,12 +1,13 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class Table_String : BaseTable<string, TableStringData>
+public class Table_String_Base : BaseTable<string, TableStringData>
 {
-    public Table_String(List<TableStringData> _table) : base(_table)
+    public Table_String_Base(List<TableStringData> _table) : base(_table)
     {
         SetDictionary(x => x.key);
     }
@@ -31,20 +32,6 @@ public class Table_String : BaseTable<string, TableStringData>
 
         return string.Format(GetString(_key), _args);
     }
-
-    public string GetGradeType(GradeType _gradeType, bool _isDifficult = false, bool _isColor = false)
-        => _isColor
-        ? $"<color=#{Palette.GetHexa_GradeText(_gradeType)}>{GetGradeType(_gradeType, _isDifficult)}</color>"
-        : $"{GetString($"GRADE_{(_isDifficult ? "DIFFICULT_" : "")}{_gradeType.ToString().ToUpper()}")}";
-
-    public string GetRegionType(RegionType _regionType, bool _isFull)
-        => GetString("REGION_NAME_" + (_isFull ? "FULL_" : "") + _regionType.ToString().ToUpper());
-
-    public string GetBattleStat(BattleStatType _statType)
-        => GetString("BATTLESTAT_" + _statType.ToString().ToUpper());
-
-    public string GetHeroPositionType(HeroPositionType _positionType)
-        => _positionType.ToString().ToUpper().Split("_").Last(); //GetString("HERO_POSITION_" + _positionType.ToString().ToUpper());
 }
 
 public struct TableStringData

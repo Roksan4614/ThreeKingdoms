@@ -31,40 +31,24 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Start().Forget());
     }
 
-    async UniTask OnButtonAsync_Start()
-    {
-        m_element.btnStart.interactable = false;
-        m_characterBoss.anim.Play(CharacterAnimType.Skill, 0, 0.4f);
-        m_characterBoss.anim.SetSpeed(1.2f);
-
-        await UniTask.WaitForSeconds(1f);
-
-        BossRaidWorker.instance.InitializeAsync(BossRaidWorker.BossRaidType.LuBu).Forget();
-    }
-
     private void Start()
-    {
-        Utils.WaitEscape(this, () =>
+	{
+		Utils.SetActivePunch(m_element.panel, true);
+
+		var dataRaid = DataManager.bossRaid.data;
+		m_element.txtDifficult.text = $"[{TableManager.stringTable.GetGradeType(dataRaid.gradeMin)}~{TableManager.stringTable.GetGradeType(dataRaid.gradeMax)}]";
+
+		DoLoadBossCharacter().Forget();
+		TimerAsync_Round().Forget();
+		OnUpdateSeasonTimerAsync().Forget();
+
+		Utils.WaitEscape(this, () =>
         {
             if (m_element.popupRanking.CloseEscape() == false)
                 return;
 
             Close();
         }, _token: destroyCancellationToken);
-    }
-
-    public override void OpenPopup(params object[] _args)
-    {
-        Utils.SetActivePunch(m_element.panel, true);
-
-        var dataRaid = DataManager.bossRaid.data;
-
-        m_element.txtDifficult.text = $"[{TableManager.stringTable.GetGradeType(dataRaid.gradeMin)}~{TableManager.stringTable.GetGradeType(dataRaid.gradeMax)}]";
-
-        DoLoadBossCharacter().Forget();
-
-        TimerAsync_Round().Forget();
-        OnUpdateSeasonTimerAsync().Forget();
     }
 
     async UniTask DoLoadBossCharacter()
@@ -106,8 +90,20 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
             m_element.txtInfoPrevRound.text = "이전_라운드_정보_없음";
         else
             m_element.txtInfoPrevRound.text = $"이전_라운드_ :_[{TableManager.stringTable.GetGradeType(raidData.prevGrade)}]\n{raidData.dtPrevRound.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")}";
-    }
-    async UniTask OnUpdateSeasonTimerAsync()
+	}
+
+	async UniTask OnButtonAsync_Start()
+	{
+		m_element.btnStart.interactable = false;
+		m_characterBoss.anim.Play(CharacterAnimType.Skill, 0, 0.4f);
+		m_characterBoss.anim.SetSpeed(1.2f);
+
+		await UniTask.WaitForSeconds(1f);
+
+		BossRaidWorker.instance.InitializeAsync(BossRaidWorker.BossRaidType.LuBu).Forget();
+	}
+
+	async UniTask OnUpdateSeasonTimerAsync()
     {
         var dtEnd = DataManager.bossRaid.data.dtEndSeason;
 
@@ -195,13 +191,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
     }
 
     public override void Close()
-        => CloseAsync().Forget();
-
-    async UniTask CloseAsync()
-    {
-        await Utils.SetActivePunchAsync(m_element.panel, false);
-        base.Close();
-    }
+        => Utils.SetActivePunch(m_element.panel, false, _callback: base.Close);
 
     #region VALIDATE
     public override void OnManualValidate()

@@ -26,6 +26,7 @@ public enum PopupType
 
     UseTimeStone,
 
+    LobbyStoryMode,
     LobbyBossRaid,
     UserInfo,
 

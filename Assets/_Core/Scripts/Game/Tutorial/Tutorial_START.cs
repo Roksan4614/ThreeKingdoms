@@ -239,6 +239,8 @@ public class Tutorial_START : TutorialBase
 
     public override async UniTask FinishAsync(bool _isSkip)
     {
+        m_cts = m_cts.ReleaseCTS();
+
         // 딤 켜주자
         await PopupManager.instance.ShowDimmAsync(true);
 
@@ -265,8 +267,6 @@ public class Tutorial_START : TutorialBase
         TeamManager.instance.RepositionToMain(0, true);
 
         //await PopupManager.instance.ShowDimmAsync(false);
-
-        m_cts = m_cts.ReleaseCTS();
     }
 
     async UniTask SummonHeroAsync(CancellationToken _token)
