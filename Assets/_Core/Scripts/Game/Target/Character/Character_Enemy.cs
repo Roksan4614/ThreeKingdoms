@@ -4,7 +4,7 @@ public class Character_Enemy : CharacterComponent
 {
     public bool isBoss { get; protected set; }
 
-    public override void SetHeroData(string _key = null)
+    public override void SetHeroData(string _key)
     {
         if (_key.IsActive())
             m_stat = TableManager.statHero.GetStatData(_key);

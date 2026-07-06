@@ -81,6 +81,20 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         SetTeamPosition(m_member.Values.ToList());
     }
 
+    public async UniTask InitializeAsync_StoryMode(params CharacterComponent[] _heroes)
+    {
+        m_member.Clear();
+        for (int i = 0; i < _heroes.Length; i++)
+        {
+            m_member.Add(TeamPositionType.NONE + i, _heroes[i]);
+
+            if (i == 0)
+                heroInfo.Initialize_StoryMode(_heroes[i]);
+        }
+
+        await UniTask.Yield();
+    }
+
     public void SetTeamPosition(List<CharacterComponent> _members)
     {
         m_member.Clear();
@@ -425,6 +439,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     public void RemoveBuff(BuffType _buffType)
         => heroInfo.RemoveBuff(_buffType);
 
+    public void SetHeroInfoHide(bool _isHide, bool _isTween)
+        => heroInfo.SetHide(_isHide, _isTween);
 
     public void OnManualValidate() => m_element.Initialize(transform);
 

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PopupLobbyStoryMode_Slot : MonoBehaviour, IValidatable
 {
-    public void SetNodeData(List<Table_StoryMode_Node.TableStoryModeNodeData> _db)
+    public void SetNodeData(List<List<Table_StoryMode_Node.TableStoryModeNodeData>> _db)
     {
-        m_element.txtYear.text = _db[0].year + "³â";
+        m_element.txtYear.text = _db[0][0].year + "³â";
 
         var idx = transform.Find("Node").GetSiblingIndex();
 

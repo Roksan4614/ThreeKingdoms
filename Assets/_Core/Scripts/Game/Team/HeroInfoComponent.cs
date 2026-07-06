@@ -43,7 +43,15 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         m_element.Initialize(transform);
     }
 
-    public async void SetHeroInfo(CharacterComponent _hero)
+    public void Initialize_Storymode(CharacterComponent _hero)
+    {
+        m_dbHero = TableManager.hero.Get(_hero.info.key);
+        m_hero = _hero;
+
+        CooldownSkillAsync().Forget();
+    }
+
+    public async UniTask SetHeroInfoAsync(CharacterComponent _hero)
     {
         m_dbHero = TableManager.hero.Get(_hero.info.key);
         m_hero = _hero;
@@ -154,7 +162,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public async UniTask RespawnAsync(RectTransform _bar, float _duration)
     {
-        m_cooltime_Revive.startTime = Time.realtimeSinceStartup;
+        m_cooltime_Revive.startTime = Time.time;
         m_cooltime_Revive.endTime = m_cooltime_Revive.startTime + _duration;
 
         m_element.imgRespawn.gameObject.SetActive(true);
@@ -168,16 +176,16 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
         m_element.objOnSkill.SetActive(false);
 
-        while (Time.realtimeSinceStartup < m_cooltime_Revive.endTime)
+        while (Time.time < m_cooltime_Revive.endTime)
         {
-            float progress = (Time.realtimeSinceStartup - m_cooltime_Revive.startTime) / (m_cooltime_Revive.endTime - m_cooltime_Revive.startTime);
+            float progress = (Time.time - m_cooltime_Revive.startTime) / (m_cooltime_Revive.endTime - m_cooltime_Revive.startTime);
 
             pos.x = width * progress - width;
             _bar.anchoredPosition = pos;
 
             m_element.imgRespawn.fillAmount = 1 - progress;
 
-            var remainTime = m_cooltime_Revive.endTime - Time.realtimeSinceStartup;
+            var remainTime = m_cooltime_Revive.endTime - Time.time;
             m_element.txtRespawnTimer.text = Utils.MSpace(remainTime >= 10 ? Math.Truncate(remainTime).ToString() :
                     (Math.Truncate(remainTime * 10) / 10).ToString("0.0"), 55);
 
@@ -207,7 +215,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
     public void ApplyRespawnReduction(float _percent)
     {
-        m_cooltime_Revive.endTime -= (m_cooltime_Revive.endTime - Time.realtimeSinceStartup) * _percent;
+        m_cooltime_Revive.endTime -= (m_cooltime_Revive.endTime - Time.time) * _percent;
     }
 
     CancellationTokenSource m_ctsCooldownSkill;
@@ -220,7 +228,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         m_element.objOnSkill.SetActive(false);
 
         var stat = m_hero.stat;
-        m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
+        m_cooltime_Skill.startTime = Time.time;
         m_cooltime_Skill.endTime = m_dbHero.skillCooltime * (1 - stat.cooldownRate) + m_cooltime_Skill.startTime;
 
         var addTime = m_dbHero.percetnStartCooldown * m_dbHero.skillCooltime;
@@ -237,7 +245,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
                 if (dieTime < 0)
                 {
                     bar.gameObject.SetActive(false);
-                    dieTime = Time.realtimeSinceStartup;
+                    dieTime = Time.time;
                 }
 
                 await UniTask.NextFrame(cancellationToken: m_ctsCooldownSkill.Token);
@@ -246,7 +254,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
             else if (dieTime > 0)
             {
                 bar.gameObject.SetActive(true);
-                m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
+                m_cooltime_Skill.startTime = Time.time;
                 m_cooltime_Skill.endTime = m_dbHero.skillCooltime * (1 - stat.cooldownRate) + m_cooltime_Skill.startTime;
                 addTime = 0;
                 dieTime = -1;
@@ -254,7 +262,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
             // 퍼센트 구하기!!
             float duration = m_cooltime_Skill.endTime - m_cooltime_Skill.startTime;
-            float progress = (Time.realtimeSinceStartup - m_cooltime_Skill.startTime + addTime) / duration;
+            float progress = (Time.time - m_cooltime_Skill.startTime + addTime) / duration;
 
             // 바 이동하기!!
             var pos = bar.anchoredPosition;
@@ -296,7 +304,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
                     await m_hero.attack.UseSkillAsync();
 
                 m_statusSkill = StatusType.Wait;
-                m_cooltime_Skill.startTime = Time.realtimeSinceStartup;
+                m_cooltime_Skill.startTime = Time.time;
                 m_cooltime_Skill.endTime = m_dbHero.skillCooltime * (1 - stat.cooldownRate) + m_cooltime_Skill.startTime;
                 addTime = 0;
             }

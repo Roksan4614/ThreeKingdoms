@@ -3,7 +3,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HeroNavigationComponent : MonoBehaviour, IValidatable
+public class HeroNavigationComponent : Singleton<HeroNavigationComponent>, IValidatable
 {
     private void Start()
     {
@@ -13,8 +13,11 @@ public class HeroNavigationComponent : MonoBehaviour, IValidatable
         SetAutoUIAsync().Forget();
     }
 
-    private void OnDestroy()
-        => m_ctsAutoSkill = m_ctsAutoSkill.ReleaseCTS();
+    protected override void OnDestroy()
+    {
+        m_ctsAutoSkill = m_ctsAutoSkill.ReleaseCTS();
+        base.OnDestroy();
+    }
 
     void OnButton_Auto()
     {

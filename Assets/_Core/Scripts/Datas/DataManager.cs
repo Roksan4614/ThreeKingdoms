@@ -24,6 +24,7 @@ public class DataManager
     Data_Castle m_castle = new();
     Data_BossRaid m_bossRaid = new();
     Data_DailyDungeon m_dailyDungeon = new();
+    Data_StoryMode m_storyMode = new();
 
     public static Data_UserInfo userInfo => instance.m_userInfo;
     public static Data_Option option => instance.m_option;
@@ -32,6 +33,7 @@ public class DataManager
     public static Data_Castle castle => instance.m_castle;
     public static Data_BossRaid bossRaid => instance.m_bossRaid;
     public static Data_DailyDungeon dailyDungeon => instance.m_dailyDungeon;
+    public static Data_StoryMode storyMode => instance.m_storyMode;
 
     public async UniTask InitializeAsync()
     {
@@ -43,6 +45,7 @@ public class DataManager
         tasks.Add(m_castle.InitializeAsync());
         tasks.Add(m_bossRaid.InitializeAsync());
         tasks.Add(dailyDungeon.InitializeAsync());
+        tasks.Add(storyMode.InitializeAsync());
 
         await UniTask.WhenAll(tasks);
     }

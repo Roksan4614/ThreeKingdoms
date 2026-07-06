@@ -151,7 +151,8 @@ public class Character_Worker_Move : Character_Worker
 
         if (ControllerManager.instance.isKeyboardMode)
         {
-            if (lookAt.x != 0 && m_owner.factionType == FactionType.Alliance && m_owner.position.x < CameraManager.posPointer.x != lookAt.x > 0)
+            //if (lookAt.x != 0 && m_owner.factionType == FactionType.Alliance && m_owner.position.x < CameraManager.posPointer.x != lookAt.x > 0)
+            if (lookAt.x != 0 && m_owner.position.x < CameraManager.posPointer.x != lookAt.x > 0)
                 m_owner.anim.Play(CharacterAnimType.Dash_Back);
             else
                 m_owner.anim.Play(CharacterAnimType.Dash);

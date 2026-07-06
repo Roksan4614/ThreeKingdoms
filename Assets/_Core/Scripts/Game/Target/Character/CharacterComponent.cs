@@ -80,6 +80,12 @@ public class CharacterComponent : TargetComponent
         attack.ResetFX();
     }
 
+    public void SetHeroData_StoryModeMain(string _key)
+    {
+        m_info = new(_key, _isMain:true, _isMine: false);
+        m_stat = DataManager.stat.GetResultStat(m_info);
+    }
+
     public void SlotUpdateHeroStat(string _key)
     {
         if (_key.Equals(m_info.key) == false)

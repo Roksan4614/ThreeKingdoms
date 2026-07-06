@@ -1,15 +1,23 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.TableStoryModeNodeData>
 {
-    public List<List<TableStoryModeNodeData>> group { get; private set; }
+    public List<List<List<TableStoryModeNodeData>>> group { get; private set; }
 
     public Table_StoryMode_Node(List<TableStoryModeNodeData> _table) : base(_table)
     {
-        group = m_list.Where(x => x.chapter_key > 0 && x.isActive == true).GroupBy(x => x.year).Select(x => x.ToList()).ToList();
+        //group = m_list.Where(x => x.chapter_key > 0 && x.isActive == true)
+        group = m_list.Where(x => x.chapter_key > 0)
+            .GroupBy(x => x.year)
+            .Select(x =>
+                x.GroupBy(y => Regex.Replace(y.node_key, @"(?<=\d)[a-zA-Z]+$", ""))
+                .Select(y => y.ToList())
+                .ToList())
+            .ToList();
     }
 
     public struct TableStoryModeNodeData
@@ -17,6 +25,7 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
         public string node_key;
         public RegionType region_type;
         public int year;
+        public string character_key;
         public int chapter_key;
         public int stage_key;
         public int order_num;

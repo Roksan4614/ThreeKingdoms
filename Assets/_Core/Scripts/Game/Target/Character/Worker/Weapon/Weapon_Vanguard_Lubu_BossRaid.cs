@@ -298,6 +298,10 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
     async UniTask SkillAsync_RedHare()
     {
+        m_owner.move.MoveStop();
+        var hashNoMove = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
+        var hashNoDie = m_owner.buff.Add(BuffType.BUFF_NO_DIE);
+
         var token = m_cts.Token;
         await UniTask.NextFrame(cancellationToken: token);
 
@@ -307,10 +311,6 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
             await m_owner.move.DashAsync(targetPos);
         }
-
-        m_owner.move.MoveStop();
-        var hashNoMove = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
-        var hashNoDie = m_owner.buff.Add(BuffType.BUFF_NO_DIE);
 
         // 말 태우자
         m_element.mount.SetMount(m_owner, true);
@@ -478,6 +478,8 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
     {
         m_element.warning_Circle.SetDisable();
         m_element.warning_RedHare.SetDisable();
+
+        ReleaseCTS();
     }
 
     public override void OnManualValidate()

@@ -36,6 +36,12 @@ public class Team_HeroInfo
         OnButtonAsync_Hide(false).Forget();
     }
 
+    public void SetHide(bool _isHide, bool _isTween)
+    {
+        m_isHide = !_isHide;
+        OnButtonAsync_Hide(_isTween).Forget();
+    }
+
     async UniTask OnButtonAsync_Hide(bool _isTween)
     {
         m_isHide = !m_isHide;
@@ -50,7 +56,8 @@ public class Team_HeroInfo
         var duration = 0.05f;
         ControllerManager.instance.SetMove_HeroInfoDown(m_isHide, true, duration);
 
-        if (DataManager.dailyDungeon.isRunning == true) { }
+        if (DataManager.dailyDungeon.isRunning == true ||
+            DataManager.storyMode.isRunning == true) { }
         else if (BossRaidWorker.instance.isRunning == true)
             RankBossRaidComponent.instance.SetMove_HeroInfoDown(m_isHide, true, duration);
         else
@@ -88,12 +95,17 @@ public class Team_HeroInfo
         foreach (var hero in members)
         {
             var heroInfo = m_lstHeroInfo[i];
-            heroInfo.SetHeroInfo(hero);
+            heroInfo.SetHeroInfoAsync(hero).Forget();
             i++;
         }
 
         for (; i < m_lstHeroInfo.Count; i++)
             m_lstHeroInfo[i].Disable();
+    }
+
+    public void Initialize_StoryMode(CharacterComponent _hero)
+    {
+        m_lstHeroInfo[0].Initialize_Storymode(_hero);
     }
 
     public void StartStage()

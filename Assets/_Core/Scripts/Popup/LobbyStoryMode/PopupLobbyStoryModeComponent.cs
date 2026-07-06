@@ -61,7 +61,8 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
     void SetNodeData()
     {
         var group = TableManager.storyNode.group
-            .Select(x => x.Where(x => x.region_type == m_curRegion || m_curRegion == RegionType.NONE || x.region_type == RegionType.NONE).ToList())
+            .Select(x => 
+                x.Where(x => x[0].region_type == m_curRegion || m_curRegion == RegionType.NONE || x[0].region_type == RegionType.NONE).ToList())
             .Where(x => x.Count > 0).ToList();
 
         var content = m_element.scroll.content;

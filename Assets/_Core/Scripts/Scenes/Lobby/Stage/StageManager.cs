@@ -56,6 +56,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
         m_cts = m_cts.ReleaseCTS();
         OnDestroy_BossRaid();
         OnDestroy_DailyDungeon();
+        OnDestroy_StoryMode();
 
         base.OnDestroy();
     }

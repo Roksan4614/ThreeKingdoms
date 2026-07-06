@@ -16,17 +16,17 @@ public class Scene_Login : SceneBase
     async UniTask StartAsync()
     {
         DataManager.option.Initialize();
-        await UniTask.WaitForEndOfFrame();
+        await UniTask.NextFrame();
 
         //await PopupManager.instance.ShowDimmAsync(false);
         //await PopupManager.instance.ShowDimmAsync(true);
 
         await TutorialManager.instance.InitializeAsync();
-        await DataManager.instance.InitializeAsync();
 
         System.DateTime dtStart = System.DateTime.Now;
         List<UniTask> tasks = new();
 
+        tasks.Add(DataManager.instance.InitializeAsync());
         var keys = TableManager.hero.list.Select(x => x.key).ToArray();
         tasks.Add(AddressableManager.instance.Load_HeroIconAsync(keys));
         tasks.Add(AddressableManager.instance.Load_HeroCharacterAsync(keys));
