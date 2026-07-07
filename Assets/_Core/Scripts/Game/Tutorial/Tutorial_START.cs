@@ -197,7 +197,7 @@ public class Tutorial_START : TutorialBase
             while (true)
             {
                 // 영웅 창 기다리기
-                await UniTask.WaitUntil(() => LobbyScreenManager.instance.curScreen == LobbyScreenType.Hero, cancellationToken:token);
+                await UniTask.WaitUntil(() => LobbyScreenManager.instance.curScreen == LobbyScreenType.Hero, cancellationToken: token);
 
                 // 꺼질 때가지 기다리기
                 // 영웅 창 기다리기
@@ -240,6 +240,7 @@ public class Tutorial_START : TutorialBase
     public override async UniTask FinishAsync(bool _isSkip)
     {
         m_cts = m_cts.ReleaseCTS();
+        TeamManager.instance.mainHero.talkbox.Cancel();
 
         // 딤 켜주자
         await PopupManager.instance.ShowDimmAsync(true);
@@ -276,7 +277,7 @@ public class Tutorial_START : TutorialBase
         while (screen == null)
         {
             screen = LobbyScreenManager.instance.GetScreenSummon();
-            await UniTask.NextFrame(cancellationToken:_token);
+            await UniTask.NextFrame(cancellationToken: _token);
         }
 
         screen.SetRegionType(TeamManager.instance.mainHero.info.regionType);

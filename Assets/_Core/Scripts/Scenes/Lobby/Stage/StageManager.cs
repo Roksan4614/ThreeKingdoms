@@ -11,9 +11,6 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public partial class StageManager : Singleton<StageManager>, IValidatable
 {
-    const int c_maxChapter = 2;
-    const int c_maxStage = 2;
-
     [SerializeField]
     bool m_stopStageStart = true;
 
@@ -160,7 +157,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
                 {
                     var e = phase.GetChild(0).GetComponent<Character_Enemy>();
                     e.gameObject.layer = m_element.indexLayerEnemy;
-                    e.SetHeroData(e.name);
+                    e.SetHeroData_Stage(e.name);
                     e.transform.SetParent(MapManager.instance.element.pEnemy);
                     e.move.SetFlip(isFlip);
                     e.SetColorParts(Color.white);
@@ -225,15 +222,6 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
                 // 끝났을 때 연출해준다.
 
-                // 스토리가 있는지 여부 확인한다.
-                if (m_loadData.isBossWait == false && m_loadData.level == 1)
-                {
-                    // TODO
-                    // 시나리오 아이콘에 레드닷을 달아주자.
-                    // 분리하는 걸로 갈거야.
-                    //await ScenarioManager.instance.StartAsync(phaseIdx, false);
-                }
-
                 //보스 잡은거면 그냥 조금있다가 다음으로 넘어가면 됨
                 if (isLastPhase == true)
                     await UniTask.WaitForSeconds(1f, cancellationToken: ctsToken);
@@ -258,6 +246,8 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
             // 보스까지 다 깻으면
             if (m_loadData.isBossWait == false)
             {
+                DataManager.storyMode.CheckStoryMode(m_loadData);
+
                 MapManager.instance.FadeDimm(true, _token: m_cts);
                 await UniTask.WaitForSeconds(0.2f, cancellationToken: ctsToken);
 

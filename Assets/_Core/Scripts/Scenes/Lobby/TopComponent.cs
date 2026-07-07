@@ -1,9 +1,11 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TopComponent : Singleton<TopComponent>, IValidatable
 {
@@ -18,6 +20,9 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
             UpdateAsset(data.type, -1, false);
         }
 
+        m_element.btnMenu.onClick.AddListener(() => OnButtonAsync_PopupMenu().Forget());
+        m_element.popupMenu.SetActive(false);
+
         Signal.instance.UpdateAsset.connectLambda = new(this,
             _data =>
             {
@@ -29,6 +34,18 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
                 else
                     UpdateAsset(_data._itemType, -1, _data._isTween);
             });
+    }
+
+    async UniTask OnButtonAsync_PopupMenu()
+    {
+        m_element.btnMenu.interactable = false;
+        m_element.popupMenu.SetActive(true);
+
+        await UniTask.WaitUntil(() => m_element.popupMenu.activeSelf == false, cancellationToken: destroyCancellationToken);
+
+        await UniTask.WaitForSeconds(0.1f, cancellationToken: destroyCancellationToken);
+
+        m_element.btnMenu.interactable = true;
     }
 
     public bool isSwitchUpdateAsset { get; set; } = true;
@@ -80,6 +97,10 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
     public struct ElementData
     {
         public List<AssetData> assets;
+
+        public Button btnMenu;
+        public GameObject popupMenu;
+
         public void Initialize(Transform _transform)
         {
             List<ItemType> assetTypes = new() { ItemType.Gold, ItemType.Rice };
@@ -93,6 +114,9 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
                 asset.icon = _transform.Find($"{t}/Icon");
                 assets.Add(asset);
             }
+
+            btnMenu = _transform.GetComponent<Button>("Menu");
+            popupMenu = _transform.Find("Menu/Popup/Menu").gameObject;
         }
     }
 

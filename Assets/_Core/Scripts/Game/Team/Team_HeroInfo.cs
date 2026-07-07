@@ -132,6 +132,12 @@ public class Team_HeroInfo
             m_lstHeroInfo[i].StopRespawn();
     }
 
+    public void StopSkillCooltime()
+    {
+        for (int i = 0; i < m_lstHeroInfo.Count; i++)
+            m_lstHeroInfo[i].StopSkillCooltime();
+    }
+
     public void UseSkill(int _heroIdx)
     {
         var info = m_lstHeroInfo[_heroIdx];

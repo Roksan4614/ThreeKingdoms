@@ -25,7 +25,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
     }
 
     private void OnDestroy()
-        => m_ctsCooldownSkill = m_ctsCooldownSkill.ReleaseCTS();
+        => StopSkillCooltime();
 
     public bool isActive => m_hero != null;
 
@@ -103,7 +103,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
         StopAllCoroutines();
 
-        m_ctsCooldownSkill = m_ctsCooldownSkill.ReleaseCTS();
+        StopSkillCooltime();
         StopRespawn();
 
         m_hero = null;
@@ -126,11 +126,13 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
     public void StopRespawn()
     {
         m_ctsRespawn = m_ctsRespawn.ReleaseCTS();
-        m_ctsCooldownSkill = m_ctsCooldownSkill.ReleaseCTS();
 
         m_element.txtRespawnTimer.text = "";
         m_element.imgRespawn.gameObject.SetActive(false);
     }
+
+    public void StopSkillCooltime()
+        => m_ctsCooldownSkill = m_ctsCooldownSkill.ReleaseCTS();
 
     public void UpdateHP()
     {
@@ -209,8 +211,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         _bar.anchoredPosition = Vector2.zero;
         TeamManager.instance.SetRespawn(m_hero.teamPosition);
 
-        m_ctsRespawn.Dispose();
-        m_ctsRespawn = null;
+        m_ctsRespawn = m_ctsRespawn.ReleaseCTS();
     }
 
     public void ApplyRespawnReduction(float _percent)

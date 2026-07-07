@@ -27,6 +27,11 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     public void SetActiveSkip(bool _isActive)
         => m_element.btnTutorialSkip.gameObject.SetActive(_isActive);
 
+    public void RedDot_StoryMode()
+    {
+        m_element.story.Reddot();
+    }
+
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
@@ -37,9 +42,14 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     struct ElementData
     {
         public ButtonHelper btnTutorialSkip;
+
+        public Banner_Story story;
+
         public void Initialize(Transform _transform)
         {
             btnTutorialSkip = _transform.parent.GetComponent<ButtonHelper>("btn_skip");
+
+            story = _transform.GetComponent<Banner_Story>("Right/btn_story");
         }
     }
     #endregion VALIDATA

@@ -61,8 +61,12 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
     void SetNodeData()
     {
         var group = TableManager.storyNode.group
-            .Select(x => 
-                x.Where(x => x[0].region_type == m_curRegion || m_curRegion == RegionType.NONE || x[0].region_type == RegionType.NONE).ToList())
+            .Select(x =>
+                x.Where(y =>
+                    y[0].region_type == m_curRegion ||
+                    m_curRegion == RegionType.NONE ||
+                    y[0].region_type == RegionType.NONE)
+                .ToList())
             .Where(x => x.Count > 0).ToList();
 
         var content = m_element.scroll.content;
@@ -72,8 +76,12 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
             var slot = (i == content.childCount ? Instantiate(content.GetChild(0), content) : content.GetChild(i))
                 .GetComponent<PopupLobbyStoryMode_Slot>();
 
-            slot.SetNodeData(group[i]);
             slot.gameObject.SetActive(true);
+            if (slot.SetNodeData(group[i]) == false)
+            {
+                i++;
+                break;
+            }
         }
 
         m_element.txtEmpty.gameObject.SetActive(i == 0);

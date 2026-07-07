@@ -181,9 +181,17 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         }
     }
 
+    public void SetActiveButton_StoryMode()
+    {
+        m_element.btnAttack.gameObject.SetActive(true);
+        m_element.skill.gameObject.SetActive(true);
+        m_element.btnCall.gameObject.SetActive(false);
+        m_element.btnDash.gameObject.SetActive(true);
+    }
+
     void OnUpdateMove()
     {
-        if (m_mainHero.move.isDash == true)
+        if (m_mainHero == null || m_mainHero.move.isDash == true)
             return;
 
         var lookAt = Vector2.zero;
@@ -488,4 +496,12 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         }
     }
     #endregion
+
+    public enum ControllerButtonType
+    {
+        Attack,
+        Skill,
+        Call,
+        Dash
+    }
 }

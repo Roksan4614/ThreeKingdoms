@@ -109,6 +109,8 @@ public class Data_DailyDungeon
         StageManager.instance.SetState(CharacterStateType.None);
 
         TeamManager.instance.StopAllRespawn();
+        TeamManager.instance.StopSkillCooltime();
+
         ControllerManager.instance.SetSwitch(false);
 
         Signal.instance.DailyDungeonStatus.Emit(DailyDungeonStatusType.Timeout);

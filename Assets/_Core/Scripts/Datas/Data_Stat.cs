@@ -20,6 +20,7 @@ public class Data_Stat
     {
         var result = TableManager.statHero.GetStatData(_heroInfoData);
 
+        //todo
         //var statData = GetBonusStatData(_heroInfoData);
 
         return result;

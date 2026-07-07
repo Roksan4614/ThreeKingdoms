@@ -328,8 +328,10 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         if (m_prevSceneInstance.Scene.IsValid())
             await Addressables.UnloadSceneAsync(m_prevSceneInstance).ToUniTask();
 
+        curSceneName = _sceneName;
         m_prevSceneInstance = await Addressables.LoadSceneAsync(_sceneName).ToUniTask();
     }
+    public string curSceneName { get; private set; }
 
     public void LoadScene(string _sceneName)
         => LoadSceneAsync(_sceneName).Forget();

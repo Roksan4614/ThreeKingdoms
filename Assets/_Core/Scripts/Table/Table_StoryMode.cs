@@ -20,6 +20,11 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
             .ToList();
     }
 
+    public TableStoryModeNodeData GetNode(string _nodeKey)
+        => m_list.Find(x => x.node_key == _nodeKey);
+    public List<TableStoryModeNodeData> GetNode_OrderNum(int _orderNum)
+        => m_list.FindAll(x => x.order_num == _orderNum);
+
     public struct TableStoryModeNodeData
     {
         public string node_key;

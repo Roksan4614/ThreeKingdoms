@@ -33,7 +33,7 @@ public class Table_Stat : BaseTable<string, TableStatData>
         if (_grade > GradeType.Normal || _encahntLevel > 0)
         {
             float percent = Mathf.Pow(2, (int)_grade);
-            percent += (_encahntLevel) * 0.1f;
+            percent *= Mathf.Pow(2, _encahntLevel * 0.0926f);
 
             data.SetMulitipleStat(percent);
         }

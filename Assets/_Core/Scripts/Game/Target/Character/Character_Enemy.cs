@@ -6,36 +6,46 @@ public class Character_Enemy : CharacterComponent
 
     public override void SetHeroData(string _key)
     {
+        SetHeroData_Enemy(_key);
+        SetFaction(FactionType.Enemy);
+    }
+
+    void SetHeroData_Enemy(string _key, GradeType _gradeType = GradeType.Normal, int _enchantLevel = 0)
+    {
         if (_key.IsActive())
-            m_stat = TableManager.statHero.GetStatData(_key);
+            m_stat = TableManager.statHero.GetStatData(_key, _gradeType, _enchantLevel);
 
         if (m_stat.isActive == false)
         {
             if (_key.IsActive())
-                m_stat = TableManager.statEnemy.GetStatData(_key);
+                m_stat = TableManager.statEnemy.GetStatData(_key, _gradeType, _enchantLevel);
 
             if (m_stat.isActive == false)
-                m_stat = TableManager.statEnemy.GetStatData("Enemy");
+                m_stat = TableManager.statEnemy.GetStatData("Enemy", _gradeType, _enchantLevel);
         }
+    }
 
+    public void SetHeroData_Stage(string _key)
+    {
         var stageData = StageManager.instance.data;
 
+        SetHeroData_Enemy(_key);
         if (stageData.isBossWait)
         {
             SetBuffStat(0.1f);
         }
         else
         {
-            float percent = (float)(stageData.level + GradeType.NONE + 1);
-            percent += (stageData.chapterNumber - 1) * 0.1f;
-            percent += (stageData.stageNumber - 1) * 0.1f;
+            float percent = Mathf.Pow(2f, stageData.level - 1);
+
+            int progress = (stageData.chapterNumber - 1) * 10 + stageData.stageNumber - 1;
+            percent *= Mathf.Pow(2f, progress * 0.01f);
+
             if (isBoss == false)
                 percent *= 0.5f;
 
             SetBuffStat(percent);
         }
-
-        SetFaction(FactionType.Enemy);
     }
 
     public void SetBuffStat(float _percent, bool _isAttackPower = true, bool _isHealth = true, bool _isDefence = true)

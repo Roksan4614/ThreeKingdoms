@@ -61,4 +61,6 @@ public class DataManager
 
         bossRaid.ReleaseCTS();
     }
+
+    public bool isLobby => AddressableManager.instance.curSceneName.Contains("Lobby");
 }

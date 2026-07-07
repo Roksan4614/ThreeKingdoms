@@ -7,13 +7,14 @@ public class StoryMode_Node1 : StoryModeBaseComponent
     {
         base.Start();
 
-        var character = transform.GetComponent<CharacterComponent>("Hero/GuanYu");
-        character.SetHeroData_StoryModeMain(character.name);
+        CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos);
 
-        TeamManager.instance.InitializeAsync_StoryMode(character).Forget();
         ControllerManager.instance.DashTimerStartAsync().Forget();
+        ControllerManager.instance.SetActiveButton_StoryMode();
+    }
 
-        CameraManager.instance.SetCameraPosTarget(character.element.cameraPos);
-        Signal.instance.ConnectMainHero.Emit(character);
+    public async override UniTask StartAsync()
+    {
+        await UniTask.Yield();
     }
 }

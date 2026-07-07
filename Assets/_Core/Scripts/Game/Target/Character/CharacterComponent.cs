@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 
 public class CharacterComponent : TargetComponent
@@ -84,6 +85,9 @@ public class CharacterComponent : TargetComponent
     {
         m_info = new(_key, _isMain:true, _isMine: false);
         m_stat = DataManager.stat.GetResultStat(m_info);
+
+        if (m_stat.isActive == false)
+            m_stat.SetDefault();
     }
 
     public void SlotUpdateHeroStat(string _key)

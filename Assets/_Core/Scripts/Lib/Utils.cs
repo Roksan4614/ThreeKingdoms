@@ -286,6 +286,16 @@ public static class Utils
         }
 
         return result.Take(_count).ToArray();
+    }
 
+    public static bool IsOutClick(RectTransform _rt)
+    {
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+            return !RectTransformUtility.RectangleContainsScreenPoint(_rt, Input.mousePosition, CameraManager.instance.main);
+
+        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+            return !RectTransformUtility.RectangleContainsScreenPoint(_rt, Input.GetTouch(0).position, CameraManager.instance.main);
+
+        return false;
     }
 }

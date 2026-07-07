@@ -17,6 +17,44 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
     public void SetStoryNode(List<Table_StoryMode_Node.TableStoryModeNodeData> _data)
     {
+        //다음에 오픈할 차례라면
+        {
+            var nextOpenOrderNumber = DataManager.storyMode.nextOpenOrderNumber;
+            bool isNextOpen = _data[0].order_num == nextOpenOrderNumber;
+
+            if (isNextOpen == true)
+            {
+                m_element.txtChoice.gameObject.SetActive(false);
+                m_element.btnChange.gameObject.SetActive(false);
+                m_element.button.text = "";
+
+                m_element.objLock.SetActive(true);
+                ((RectTransform)m_element.objLock.transform.GetChild(0)).SetAnchoredPositionY(30);
+                m_element.objLock.transform.GetChild(0).gameObject.SetActive(true);
+
+                var nodeData = TableManager.storyNode.GetNode_OrderNum(nextOpenOrderNumber)[0];
+                m_element.txtCharacter.text = $"{nodeData.chapter_key}-{nodeData.stage_key} 클리어시 해제";
+
+                m_element.button.interactable = false;
+                return;
+            }
+        }
+
+        //마지막 플레이한 것보다 나중이라면
+        {
+            bool overLastPlay = _data[0].order_num > DataManager.storyMode.nextPlayOrderNumber;
+            if (overLastPlay)
+            {
+                ((RectTransform)m_element.objLock.transform).anchoredPosition = Vector2.zero;
+                m_element.objLock.SetActive(true);
+                m_element.objLock.transform.GetChild(0).gameObject.SetActive(false);
+                m_element.button.interactable = false;
+            }
+            else
+                m_element.objLock.SetActive(false);
+        }
+
+
         m_data = _data;
         m_element.txtChoice.gameObject.SetActive(false);
         m_element.btnChange.gameObject.SetActive(_data.Count > 1);
@@ -53,6 +91,8 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtCharacter;
         public TextMeshProUGUI txtChoice;
 
+        public GameObject objLock;
+
         public void Initialize(Transform _transform)
         {
             button = _transform.GetComponent<ButtonHelper>("Panel");
@@ -60,6 +100,8 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
             txtCharacter = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_character_name");
             txtChoice = _transform.GetComponent<TextMeshProUGUI>("txt_choice");
+
+            objLock = _transform.Find("Panel/Lock").gameObject;
         }
     }
     #endregion VALIDATE

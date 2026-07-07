@@ -28,8 +28,10 @@ public class PPWorker
         => PlayerPrefs.HasKey(_key);
 
     public static void DeleteKey(PlayerPrefsType _type)
+        => DeleteKey(_type.ToString());
+    public static void DeleteKey(string _type)
     {
-        PlayerPrefs.DeleteKey(_type.ToString());
+        PlayerPrefs.DeleteKey(_type);
         PlayerPrefs.Save();
     }
 
