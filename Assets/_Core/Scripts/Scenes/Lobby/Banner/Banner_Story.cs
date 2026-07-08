@@ -24,6 +24,24 @@ public class Banner_Story : MonoBehaviour, IValidatable
         m_element.reddot.SetActive(PPWorker.HasKey(c_keyReddot));
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            var stageData = StageManager.instance.data;
+            DataManager.storyMode.ClearStage_AddStoryMode(stageData);
+            IngameLog.Add($"스토리 해금: {stageData.chapterNumber}/{stageData.stageNumber}");
+
+            stageData.stageNumber++;
+            if (stageData.stageNumber > 10)
+            {
+                stageData.chapterNumber++;
+                stageData.stageNumber = 1;
+            }
+            StageManager.instance.TestSaveLoadData(stageData);
+        }
+    }
+
     async UniTask OnButtonAsync_OpenPopup()
     {
         PPWorker.DeleteKey(c_keyReddot);

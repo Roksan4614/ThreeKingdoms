@@ -56,10 +56,49 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         m_curRegion = _region;
 
         SetNodeData();
+
+        var scroll = m_element.scroll;
+        var content = scroll.content;
+        scroll.velocity = Vector2.zero;
+
+        // POSITION
+        {
+            // 일단 slot 위치
+            var layout = content.GetComponent<VerticalLayoutGroup>();
+            float posY = layout.padding.top;
+
+            for (int i = 0; i < DataManager.storyMode.siblingIndexSlot; i++)
+            {
+                var rt = (RectTransform)content.GetChild(i);
+                posY += rt.rect.height;
+            }
+
+            // 거기에서 node위치만큼 내리자.
+            var slot = content.GetChild(DataManager.storyMode.siblingIndexSlot);
+            layout = slot.GetComponent<VerticalLayoutGroup>();
+
+            float heightNode = 0;
+            for (int i = 0; i <= DataManager.storyMode.siblingIndexNode; i++)
+            {
+                // + 2 한 이유는 위에 두개 node 외가 있어서
+                var rt = (RectTransform)slot.GetChild(i + 2);
+                posY += rt.rect.height + layout.spacing;
+
+                heightNode = rt.rect.height;
+            }
+
+            posY = Mathf.Min(
+                    content.rect.height - scroll.viewport.rect.height,
+                    Mathf.Max(0, posY - scroll.viewport.rect.height * .5f + heightNode * .5f));
+
+            content.SetAnchoredPositionY(posY);
+        }
     }
 
     void SetNodeData()
     {
+        DataManager.storyMode.SetPopupSiblingIndex(0, 0);
+
         var group = TableManager.storyNode.group
             .Select(x =>
                 x.Where(y =>
@@ -89,7 +128,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         for (; i < content.childCount; i++)
             content.GetChild(i).gameObject.SetActive(false);
 
-        content.ForceRebuildLayout();
+        m_element.scroll.content.ForceRebuildLayout();
     }
 
 

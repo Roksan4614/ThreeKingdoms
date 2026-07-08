@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -30,7 +31,6 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
         public string node_key;
         public RegionType region_type;
         public int year;
-        public string character_key;
         public int chapter_key;
         public int stage_key;
         public int order_num;
@@ -46,12 +46,23 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
         public bool isConditional => is_conditonal ?? false;
         public bool hasIfStory => has_if_story ?? false;
         public int requiredChoiceSeq => required_choice_seq ?? -1;
+
+        public string name => TableManager.storyString.GetString($"{node_key.ToUpper()}_TITLE");
+        public string desc => TableManager.storyString.GetString($"{node_key.ToUpper()}_DESC");
     }
 }
 
 public class Table_StoryMode_Unlock : BaseTable<string, Table_StoryMode_Unlock.TableStoryModeUnlockData>
 {
-    public Table_StoryMode_Unlock(List<TableStoryModeUnlockData> _table) : base(_table) { }
+    Dictionary<string, List<TableStoryModeUnlockData>> m_group;
+
+    public Table_StoryMode_Unlock(List<TableStoryModeUnlockData> _table) : base(_table)
+    {
+        m_group = _table.GroupBy(x => x.node_key).ToDictionary(x => x.Key, x => x.ToList());
+    }
+
+    public TableStoryModeUnlockData[] GetSourceNodeKey(string _nodeKey)
+        => m_group.ContainsKey(_nodeKey) ? m_group[_nodeKey].ToArray() : Array.Empty<TableStoryModeUnlockData>();
 
     public struct TableStoryModeUnlockData
     {

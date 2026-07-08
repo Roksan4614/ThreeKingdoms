@@ -69,6 +69,10 @@ public class TutorialManager
         tutorial.transform.position = Vector3.zero;
         await tutorial.GetComponent<TutorialBase>().StartAsync(_tutorialType).SuppressCancellationThrow();
 
+        await UniTask.WaitUntil(() => PopupManager.instance.isTweenDimm == false);
+
+        TeamManager.instance.RemoveBuff(BuffType.NONE);
+
         GameObject.Destroy(tutorial.gameObject);
         handle.Release();
     }

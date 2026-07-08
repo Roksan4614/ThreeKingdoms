@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,18 +8,20 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
     int m_curIdx;
     List<Table_StoryMode_Node.TableStoryModeNodeData> m_data;
 
+    public bool isOpenNode => m_element.objLock.activeSelf == false;
+
     private void Start()
     {
-        m_element.button.onClick.AddListener(() => DataManager.storyMode.EnterAsync("node_1").Forget());
+        m_element.button.onClick.AddListener(OnButton_Enter);
         m_element.btnChange.onClick.AddListener(OnButton_Change);
     }
 
     public void SetStoryNode(List<Table_StoryMode_Node.TableStoryModeNodeData> _data)
     {
-        //다음에 오픈할 차례라면
+        // 다음에 오픈할 차례라면
         {
             var nextOpenOrderNumber = DataManager.storyMode.nextOpenOrderNumber;
-            bool isNextOpen = _data[0].order_num == nextOpenOrderNumber;
+            bool isNextOpen = _data[0].order_num >= nextOpenOrderNumber;
 
             if (isNextOpen == true)
             {
@@ -30,44 +31,84 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
                 m_element.objLock.SetActive(true);
                 ((RectTransform)m_element.objLock.transform.GetChild(0)).SetAnchoredPositionY(30);
-                m_element.objLock.transform.GetChild(0).gameObject.SetActive(true);
 
                 var nodeData = TableManager.storyNode.GetNode_OrderNum(nextOpenOrderNumber)[0];
-                m_element.txtCharacter.text = $"{nodeData.chapter_key}-{nodeData.stage_key} 클리어시 해제";
+                m_element.txtDesc.text = $"{nodeData.chapter_key}-{nodeData.stage_key} 클리어시 해제";
 
                 m_element.button.interactable = false;
+
+                transform.ForceRebuildLayout();
                 return;
             }
         }
-
-        //마지막 플레이한 것보다 나중이라면
-        {
-            bool overLastPlay = _data[0].order_num > DataManager.storyMode.nextPlayOrderNumber;
-            if (overLastPlay)
-            {
-                ((RectTransform)m_element.objLock.transform).anchoredPosition = Vector2.zero;
-                m_element.objLock.SetActive(true);
-                m_element.objLock.transform.GetChild(0).gameObject.SetActive(false);
-                m_element.button.interactable = false;
-            }
-            else
-                m_element.objLock.SetActive(false);
-        }
-
 
         m_data = _data;
         m_element.txtChoice.gameObject.SetActive(false);
         m_element.btnChange.gameObject.SetActive(_data.Count > 1);
         SetNodeData();
+
+        // 마지막 플레이한 것보다 나중이라면
+        {
+            bool overLastPlay = _data[0].order_num > DataManager.storyMode.nextPlayOrderNumber;
+            if (overLastPlay)
+            {
+                ((RectTransform)m_element.objLock.transform.GetChild(0)).anchoredPosition = Vector2.zero;
+                m_element.objLock.SetActive(true);
+                m_element.button.interactable = false;
+            }
+            else
+            {
+                m_element.button.interactable = true;
+                m_element.objLock.SetActive(false);
+            }
+        }
+
+        transform.ForceRebuildLayout();
     }
 
     void SetNodeData()
     {
         var data = m_data[m_curIdx];
-        m_element.button.text = TableManager.storyString.GetString($"{data.node_key.ToUpper()}_TITLE");
-        m_element.txtCharacter.text =
-            data.character_key.IsActive() ?
-            $"-{data.character_key}-" : "";
+
+        int idxChangeSibling = m_element.objLock.transform.GetSiblingIndex();
+        // 조건이 안된다면 ??? 로 표기해주자
+        if (DataManager.storyMode.IsUnlock(data.node_key))
+        {
+            m_element.button.text = data.name;
+            m_element.txtDesc.text = data.desc;
+            idxChangeSibling--;
+
+            m_element.objLock.SetActive(false);
+            m_element.button.interactable = true;
+        }
+        else
+        {
+            m_element.button.text = "???";
+            m_element.txtDesc.text = "";
+
+            m_element.objLock.SetActive(true);
+            m_element.button.interactable = false;
+
+            idxChangeSibling++;
+        }
+
+        m_element.btnChange.transform.SetSiblingIndex(idxChangeSibling);
+
+        var reqSeq = DataManager.storyMode.GetChoiceSeq(data.node_key, true);
+        if (reqSeq.IsActive() == true)
+        {
+            m_element.txtChoice.gameObject.SetActive(true);
+            m_element.txtChoice.text = reqSeq;
+        }
+        else
+            m_element.txtChoice.gameObject.SetActive(false);
+    }
+
+    void OnButton_Enter()
+    {
+        DataManager.storyMode.TestSave(m_data[m_curIdx]);
+
+        //DataManager.storyMode.EnterAsync("node_1").Forget();
     }
 
     void OnButton_Change()
@@ -88,7 +129,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         public ButtonHelper button;
         public Button btnChange;
 
-        public TextMeshProUGUI txtCharacter;
+        public TextMeshProUGUI txtDesc;
         public TextMeshProUGUI txtChoice;
 
         public GameObject objLock;
@@ -98,7 +139,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             button = _transform.GetComponent<ButtonHelper>("Panel");
             btnChange = _transform.GetComponent<Button>("Panel/btn_change");
 
-            txtCharacter = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_character_name");
+            txtDesc = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_desc");
             txtChoice = _transform.GetComponent<TextMeshProUGUI>("txt_choice");
 
             objLock = _transform.Find("Panel/Lock").gameObject;

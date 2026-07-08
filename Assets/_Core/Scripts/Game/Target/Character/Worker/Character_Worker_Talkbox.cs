@@ -21,7 +21,7 @@ public class Character_Worker_Talkbox : Character_Worker
     ContentSizeFitter m_fitter;
 
     public bool isTyping { get; private set; } = false;
-    public async UniTask WaitTyping() => await UniTask.WaitUntil(() => isTyping == false);
+    //public async UniTask WaitTyping() => await UniTask.WaitUntil(() => isTyping == false, cancellationToken:m_cts.Token);
 
     void Init(params string[] _talks)
     {
@@ -65,20 +65,18 @@ public class Character_Worker_Talkbox : Character_Worker
         }
     }
 
-    CancellationTokenSource m_cts;
     public void Cancel(bool _isDisable = false)
     {
-        m_cts = m_cts.ReleaseCTS();
         if (_isDisable)
             SetActive(false);
     }
 
-    public async UniTask StartAsyncClickDisable(params string[] _talks)
+    public async UniTask StartAsyncClickDisable(CancellationToken _token, params string[] _talks)
     {
-        await StartAsync(_talks);
+        await StartAsync(_token, _talks);
         await UniTask.WaitUntil(() => ControllerManager.isClickDown
         || Input.GetKeyDown(KeyCode.Return)
-        || Input.GetKeyDown(KeyCode.Space));
+        || Input.GetKeyDown(KeyCode.Space), cancellationToken: _token);
         SetActive(false);
     }
 
@@ -89,16 +87,12 @@ public class Character_Worker_Talkbox : Character_Worker
     //    SetActive(false);
     //}
 
-    public void Start(params string[] _talks)
-        => StartAsync(_talks).Forget();
+    public void Start(CancellationToken _token, params string[] _talks)
+        => StartAsync(_token,_talks).Forget();
 
-    public async UniTask StartAsync(params string[] _talks)
+    public async UniTask StartAsync(CancellationToken _token, params string[] _talks)
     {
-        Cancel();
-        m_cts = new();
-        var token = m_cts.Token;
-
-        await UniTask.WaitUntil(() => ControllerManager.isClick == false, cancellationToken: token);
+        await UniTask.WaitUntil(() => ControllerManager.isClick == false, cancellationToken: _token);
 
         isTyping = true;
 
@@ -129,23 +123,23 @@ public class Character_Worker_Talkbox : Character_Worker
                     continue;
                 }
 
-                await UniTask.WaitForSeconds(0.03f, cancellationToken: token);
+                await UniTask.WaitForSeconds(0.03f, cancellationToken: _token);
 
                 if (Input.GetKey(KeyCode.Return) || ControllerManager.isClick)
                 {
                     m_txtTalk.text = totalMsg;
 
-                    await UniTask.WaitForEndOfFrame(cancellationToken: token);
+                    await UniTask.WaitForEndOfFrame(cancellationToken: _token);
                     ControllerManager.instance.SetSwitch(true);
                     isTyping = false;
                     return;
                 }
             }
 
-            await UniTask.WaitForSeconds(0.2f, cancellationToken: token);
+            await UniTask.WaitForSeconds(0.2f, cancellationToken: _token);
         }
 
-        await UniTask.WaitForEndOfFrame( cancellationToken: token);
+        await UniTask.WaitForEndOfFrame( cancellationToken: _token);
         ControllerManager.instance.SetSwitch(true);
         isTyping = false;
     }

@@ -11,6 +11,9 @@ public class Data_StoryMode
     public string curNodeKey { get; private set; }
     public bool isRunning => curNodeKey.IsActive();
 
+    public int siblingIndexSlot { get; private set; }
+    public int siblingIndexNode { get; private set; }
+
     public async UniTask InitializeAsync()
     {
         await UniTask.Yield();
@@ -40,6 +43,7 @@ public class Data_StoryMode
         return true;
     }
 
+    public bool isExit { get; set; }
     public async UniTask ExitAsync(int _choiceIdx = -1)
     {
         if (curNodeKey.IsActive() == false)
@@ -62,18 +66,41 @@ public class Data_StoryMode
             var data = m_historyData[idx];
             data.choiceIdx = _choiceIdx;
             m_historyData[idx] = data;
-
-
-            PPWorker.Set(c_key, m_historyData);
-            curNodeKey = null;
-
-            await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
-
-            PopupManager.instance.CloseAll();
-            await UniTask.NextFrame();
-
-            AddressableManager.instance.LoadScene("02_Lobby");
         }
+
+        PPWorker.Set(c_key, m_historyData);
+        curNodeKey = null;
+
+        await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
+
+        PopupManager.instance.CloseAll();
+        await UniTask.NextFrame();
+
+        isExit = true;
+        AddressableManager.instance.LoadScene("02_Lobby");
+    }
+
+    public void TestSave(Table_StoryMode_Node.TableStoryModeNodeData _storyNode)
+    {
+        int idx = m_historyData.FindIndex(x => x.key == _storyNode.node_key);
+        if (idx == -1)
+        {
+            m_historyData.Add(new()
+            {
+                key = _storyNode.node_key,
+                choiceIdx = 1,
+            });
+
+            m_historyData = m_historyData.SortBy(x => TableManager.storyNode.GetNode(x.key).order_num);
+        }
+        else
+        {
+            var data = m_historyData[idx];
+            data.choiceIdx = 1;
+            m_historyData[idx] = data;
+        }
+
+        m_nextPlayOrderNumber = 0;
     }
 
     int m_nextPlayOrderNumber;
@@ -89,7 +116,8 @@ public class Data_StoryMode
                 }
                 else
                 {
-                    var next = TableManager.storyNode.GetNode_OrderNum(m_historyData[m_historyData.Count - 1].orderNum + 1);
+                    var prev = TableManager.storyNode.GetNode(m_historyData[m_historyData.Count - 1].key);
+                    var next = TableManager.storyNode.GetNode_OrderNum(prev.order_num + 1);
 
                     //조건없는 노드가 있을때까지 찾기
                     while (next.Count > 0 && next.FindAll(x => x.isConditional == false).Count == 0)
@@ -122,7 +150,7 @@ public class Data_StoryMode
             return m_nextOpenOrderNumber;
         }
     }
-    public void CheckStoryMode(StageManager.LoadData_Stage _stageInfo)
+    public void ClearStage_AddStoryMode(StageManager.LoadData_Stage _stageInfo)
     {
         var dbStory = TableManager.storyNode.list.SortBy(x => x.order_num)
             .FindAll(x =>
@@ -143,14 +171,59 @@ public class Data_StoryMode
             BannerComponent.instance.RedDot_StoryMode();
         }
 
-        if (dbStory.Count > 1)
-            m_nextOpenOrderNumber = dbStory[1].order_num;
+        for (int i = 0; i < dbStory.Count; i++)
+        {
+            bool isNextSame = i + 1 < dbStory.Count && dbStory[i + 1].order_num == dbStory[i].order_num;
+
+            if (isNextSame == false)
+            {
+                m_nextOpenOrderNumber = dbStory[i + 1].order_num;
+                break;
+            }
+        }
+    }
+
+    public bool IsUnlock(string _nodeKey)
+    {
+        var unlockData = TableManager.storyUnlock.GetSourceNodeKey(_nodeKey);
+
+        for (int i = 0; i < unlockData.Length; i++)
+        {
+            if (m_historyData.FindIndex(x => x.key == unlockData[i].source_node_key && x.choiceIdx == unlockData[i].required_choice_seq) == -1)
+                return false;
+        }
+
+        return true;
+    }
+
+    public string GetChoiceSeq(string _nodeKey, bool _isDesc)
+    {
+        var historyData = m_historyData.Find(x => x.key == _nodeKey);
+
+        if (historyData.choiceIdx == 0)
+            return null;
+
+        var nodeData = TableManager.storyNode.GetNode(_nodeKey);
+
+        string key = $"{nodeData.node_key.ToUpper()}_CHOICE_{historyData.choiceIdx}";
+        if (_isDesc)
+            key += "_DESC";
+
+        if (TableManager.storyString.Exists(key) == false)
+            return null;
+
+        return $"선택_{historyData.choiceIdx}: {TableManager.storyString.GetString(key)}";
+    }
+
+    public void SetPopupSiblingIndex(int _siblingSlot, int _siblingNode)
+    {
+        siblingIndexSlot = _siblingSlot;
+        siblingIndexNode = _siblingNode;
     }
 
     public struct StoryModeHistoryData
     {
         public string key;
         public int choiceIdx;
-        public int orderNum;
     }
 }

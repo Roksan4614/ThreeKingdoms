@@ -19,7 +19,11 @@ public class PopupLobbyStoryMode_Slot : MonoBehaviour, IValidatable
             node.SetStoryNode(_db[i]);
             node.gameObject.SetActive(true);
 
-            if (_db[i][0].order_num == DataManager.storyMode.nextOpenOrderNumber)
+            if (node.isOpenNode == true)
+                // - 2 한 이유는 위에 두개 node 외가 있어서
+                DataManager.storyMode.SetPopupSiblingIndex(transform.GetSiblingIndex(), node.transform.GetSiblingIndex() - 2);
+
+            if (_db[i][0].order_num >= DataManager.storyMode.nextOpenOrderNumber)
             {
                 isCanceled = true;
                 idx++;

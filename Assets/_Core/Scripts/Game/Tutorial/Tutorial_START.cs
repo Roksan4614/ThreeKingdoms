@@ -52,7 +52,7 @@ public class Tutorial_START : TutorialBase
         await PopupManager.instance.ShowDimmAsync(false);
 
         // 음??
-        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await mainHero.talkbox.StartAsyncClickDisable(token, talk.Dequeue().talkArray);
 
         enemy.gameObject.SetActive(true);
 
@@ -63,7 +63,7 @@ public class Tutorial_START : TutorialBase
         var hashHero = mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
         var hashEnemy = enemy.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR1
         {
             var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
                 "튜토리얼 진행할거야.",
@@ -95,25 +95,26 @@ public class Tutorial_START : TutorialBase
         CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
 
         // 얼빠지게 생긴 넘이다!! 죽여라!!
-        await enemy.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await enemy.talkbox.StartAsyncClickDisable(token, talk.Dequeue().talkArray);
 
         CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos, false);
 
         // "앞에 황건적이네. 어쩌지?"
-        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await mainHero.talkbox.StartAsyncClickDisable(token, talk.Dequeue().talkArray);
+
         enemy.talkbox.SetActive(false);
 
         mainHero.move.MoveTarget(m_elementBase.enemy.First(), true);
         enemy.move.MoveTarget(mainHero, true);
 
         // "응? 적이 있으면 스스로 공격하는구나!!"
-        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await mainHero.talkbox.StartAsyncClickDisable(token, talk.Dequeue().talkArray);
 
         ControllerManager.instance.gameObject.SetActive(true);
         ControllerManager.instance.SetMove_HeroInfoDown(true, false);
         ControllerManager.instance.SetActive_Action(false);
         // "키보드 조작으로 내가 움직일 수 있을거 같은데?"
-        mainHero.talkbox.Start(talk.Dequeue().talkArray);
+        mainHero.talkbox.Start(token, talk.Dequeue().talkArray);
 
         var prevPos = mainHero.transform.position;
         await UniTask.WaitUntil(() => (prevPos - mainHero.transform.position).sqrMagnitude > 2f, cancellationToken: token);
@@ -121,7 +122,7 @@ public class Tutorial_START : TutorialBase
         // "돌진과 공격을 사용해보자"
         ControllerManager.instance.SetActive_Action(true);
         ControllerManager.instance.DashTimerStartAsync().Forget();
-        mainHero.talkbox.Start(talk.Dequeue().talkArray);
+        mainHero.talkbox.Start(token, talk.Dequeue().talkArray);
 
         bool isAttack = false, isDash = false;
         while (isAttack == false || isDash == false)
@@ -148,13 +149,13 @@ public class Tutorial_START : TutorialBase
             hi[i].StartStage();
         mainHero.buff.Remove(BuffType.DEBUFF_NO_SKILL);
         // 영웅 스킬 사용
-        await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
+        await mainHero.talkbox.StartAsync(token, talk.Dequeue().talkArray);
         await UniTask.WaitUntil(() => mainHero.attack.isUseSkill, cancellationToken: token);
 
         mainHero.buff.RemoveAll();
         enemy.buff.RemoveAll();
 
-        mainHero.talkbox.Start(talk.Dequeue().talkArray);
+        mainHero.talkbox.Start(token, talk.Dequeue().talkArray);
         await UniTask.WaitUntil(() => enemy.isLive == false, cancellationToken: token);
 
         var rtArrow = (RectTransform)m_elementBase.arrows[0].transform;
@@ -170,7 +171,7 @@ public class Tutorial_START : TutorialBase
             await UniTask.WaitForSeconds(.5f, cancellationToken: token);
 
             // "연회권? 동료를 얻을 수 있으려나? 주막에 가보자."
-            await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
+            await mainHero.talkbox.StartAsync(token, talk.Dequeue().talkArray);
 
             await UniTask.WaitForSeconds(.5f, cancellationToken: token);
 
@@ -184,7 +185,7 @@ public class Tutorial_START : TutorialBase
 
         // "영웅을 출전시켜보자."
         {
-            await mainHero.talkbox.StartAsync(talk.Dequeue().talkArray);
+            await mainHero.talkbox.StartAsync(token, talk.Dequeue().talkArray);
             await UniTask.WaitForSeconds(.5f, cancellationToken: token);
 
             bottomButton[(int)LobbyScreenType.Summon].interactable = false;
@@ -214,7 +215,7 @@ public class Tutorial_START : TutorialBase
                 if (isRetry == false)
                 {
                     // 영웅 얼굴을 누르면 합류시킬 수 있어.
-                    mainHero.talkbox.Start(talk.Dequeue().talkArray);
+                    mainHero.talkbox.Start(token, talk.Dequeue().talkArray);
                     isRetry = true;
                 }
             }
@@ -226,7 +227,7 @@ public class Tutorial_START : TutorialBase
         ControllerManager.instance.SetSwitch(false);
 
         // 자아! 이제 출발이다!!
-        await mainHero.talkbox.StartAsyncClickDisable(talk.Dequeue().talkArray);
+        await mainHero.talkbox.StartAsyncClickDisable(token, talk.Dequeue().talkArray);
 
         mainHero.anim.PlayAttack();
         await UniTask.WaitForSeconds(0.5f, cancellationToken: token);
@@ -239,9 +240,6 @@ public class Tutorial_START : TutorialBase
 
     public override async UniTask FinishAsync(bool _isSkip)
     {
-        m_cts = m_cts.ReleaseCTS();
-        TeamManager.instance.mainHero.talkbox.Cancel();
-
         // 딤 켜주자
         await PopupManager.instance.ShowDimmAsync(true);
 
@@ -266,6 +264,9 @@ public class Tutorial_START : TutorialBase
 
         await TeamManager.instance.SpawnUpdateAsync();
         TeamManager.instance.RepositionToMain(0, true);
+
+        TeamManager.instance.mainHero.talkbox.SetActive(false);
+        m_cts = m_cts.ReleaseCTS();
 
         //await PopupManager.instance.ShowDimmAsync(false);
     }

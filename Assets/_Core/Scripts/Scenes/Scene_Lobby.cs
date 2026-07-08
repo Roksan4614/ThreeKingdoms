@@ -29,10 +29,17 @@ public class Scene_Lobby : SceneBase
 
         ControllerManager.instance.SetSwitch(true);
 
+        // 요일던전에서 나온거면
         if (DataManager.dailyDungeon.enterWeekday == WeekdayType.MAX)
         {
             DataManager.dailyDungeon.enterWeekday = WeekdayType.None;
             BottomComponent.instance.OnButton(LobbyScreenType.Boss);
+        }
+        // 스토리에서 나온거면
+        else if (DataManager.storyMode.isExit == true)
+        {
+            DataManager.storyMode.isExit = false;
+            PopupManager.instance.OpenPopup(PopupType.LobbyStoryMode);
         }
 
         // TEST

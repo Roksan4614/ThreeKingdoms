@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Scenario_1_1_1_SHU_START : ScenarioBase
 {
+    /*
     protected override async UniTask StartAsync(string _stageKey)
     {
         ControllerManager.instance.gameObject.SetActive(false);
@@ -91,4 +92,5 @@ public class Scenario_1_1_1_SHU_START : ScenarioBase
         gameObject.SetActive(false);
         ControllerManager.instance.gameObject.SetActive(true);
     }
+    */
 }

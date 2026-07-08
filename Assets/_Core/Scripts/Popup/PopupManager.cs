@@ -150,6 +150,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         ShowDimmAsync(_isShow, _isFade, _isOpercity, _duration, _durationWait).Forget();
     }
 
+    public bool isTweenDimm => m_tweenDimm != null && m_tweenDimm.IsPlaying();
     Tween m_tweenDimm;
     CancellationTokenSource m_ctsDimm;
     public async UniTask ShowDimmAsync(bool _isShow, bool _isFade = true, bool _isOpercity = false, float _duration = .5f, float _durationWait = .5f)

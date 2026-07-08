@@ -32,7 +32,10 @@ public class Palette
         => ColorUtility.ToHtmlStringRGB(GetGradeText(_grade));
 
     public static Color Get(PaletteColorType _colorType)
-        => instance.m_data.Get(_colorType.ToString());
+        => Get(_colorType.ToString());
+
+    public static Color Get(string _colorString)
+        => instance.m_data.Get(_colorString);
 
     public static string GetHexadecimal(PaletteColorType _colorType)
         => instance.m_data.GetHexadecimal(_colorType);

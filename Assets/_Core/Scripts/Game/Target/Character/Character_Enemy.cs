@@ -7,7 +7,6 @@ public class Character_Enemy : CharacterComponent
     public override void SetHeroData(string _key)
     {
         SetHeroData_Enemy(_key);
-        SetFaction(FactionType.Enemy);
     }
 
     void SetHeroData_Enemy(string _key, GradeType _gradeType = GradeType.Normal, int _enchantLevel = 0)
@@ -23,6 +22,10 @@ public class Character_Enemy : CharacterComponent
             if (m_stat.isActive == false)
                 m_stat = TableManager.statEnemy.GetStatData("Enemy", _gradeType, _enchantLevel);
         }
+        SetFaction(FactionType.Enemy);
+
+        if (isBoss)
+            m_element.objHP.SetActive(false);
     }
 
     public void SetHeroData_Stage(string _key)

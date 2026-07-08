@@ -246,7 +246,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
             // 보스까지 다 깻으면
             if (m_loadData.isBossWait == false)
             {
-                DataManager.storyMode.CheckStoryMode(m_loadData);
+                DataManager.storyMode.ClearStage_AddStoryMode(m_loadData);
 
                 MapManager.instance.FadeDimm(true, _token: m_cts);
                 await UniTask.WaitForSeconds(0.2f, cancellationToken: ctsToken);
@@ -287,6 +287,11 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
             // CLEAR STAGE
 
         }
+    }
+
+    public void TestSaveLoadData(LoadData_Stage _loadData)
+    {
+        m_loadData = _loadData;
     }
 
     public void RestartStage(bool _isRestart = true)

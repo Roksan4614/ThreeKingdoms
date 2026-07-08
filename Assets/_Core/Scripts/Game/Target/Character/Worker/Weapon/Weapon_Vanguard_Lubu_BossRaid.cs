@@ -63,34 +63,6 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         SkillAsync().Forget();
     }
 
-    private void Update()
-    {
-        if (BossRaidWorker.instance.isRunning)
-        {
-        }
-        else
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha0))
-            {
-                m_element.mount.SetMount(m_owner, true);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha8))
-            {
-                m_owner.anim.Play("Mount_Skill");
-                m_element.mount.Play("Skill");
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha7))
-            {
-                m_owner.anim.Play("Mount_Skill_End");
-                m_element.mount.Play("Skill_End");
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha9))
-            {
-                m_element.mount.SetMount(m_owner, false);
-            }
-        }
-    }
-
     void SlotBossRaidStatus(BossRaidStatusType _statusType)
     {
         switch (_statusType)

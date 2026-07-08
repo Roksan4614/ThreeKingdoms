@@ -81,7 +81,7 @@ public class CharacterComponent : TargetComponent
 
     public void SetHeroData_StoryModeMain(string _key)
     {
-        m_info = new(_key, _isMain:true, _isMine: false);
+        m_info = new(_key, _isMain: true, _isMine: false);
         m_stat = DataManager.stat.GetResultStat(m_info);
 
         if (m_stat.isActive == false)
@@ -96,7 +96,15 @@ public class CharacterComponent : TargetComponent
         SetHeroData(_key);
     }
 
-    public void SetFaction(FactionType _factionType) => m_faction = _factionType;
+    public void SetFaction(FactionType _factionType)
+    {
+        m_faction = _factionType;
+
+        var image = m_element.rtHP.GetComponent<UnityEngine.UI.Image>("BG");
+        image.color = Palette.Get($"hp_bg_{_factionType.ToString().ToLower()}");
+
+        m_element.rtHP.transform.parent.gameObject.SetActive(true);
+    }
 
     public void SetTeamPosition(TeamPositionType _teamPosition, Vector3 _position)
     {
@@ -183,12 +191,17 @@ public class CharacterComponent : TargetComponent
 
             m_stat.health -= _damage;
 
+            float percent = m_stat.health / m_stat.healthMax;
+            m_element.rtHP.SetAnchoredPositionX(m_element.rtHP.rect.width * percent - m_element.rtHP.rect.width);
+
             if (m_stat.health <= 0)
             {
                 if (buff.IsActive(BuffType.BUFF_NO_DIE))
                     m_stat.health = 1;
                 else
                 {
+                    m_element.objHP.SetActive(false);
+
                     m_stat.health = 0;
                     SetState(CharacterStateType.None);
 
@@ -224,6 +237,9 @@ public class CharacterComponent : TargetComponent
         m_element.collider.enabled = true;
 
         SetColorParts(Color.white);
+
+        m_element.rtHP.SetAnchoredPositionX(0);
+        m_element.objHP.SetActive(true);
     }
 
     public void DeleteElement()
@@ -277,9 +293,9 @@ public class CharacterComponent : TargetComponent
         base.OnManualValidate();
     }
 
-    //[SerializeField, HideInInspector]
-    [SerializeField]
-    ElementData m_element;
+    [SerializeField, HideInInspector]
+    //[SerializeField]
+    protected ElementData m_element;
     public ElementData element => m_element;
     [Serializable]
     public struct ElementData
@@ -294,6 +310,7 @@ public class CharacterComponent : TargetComponent
         [SerializeField] Collider2D m_collider;
         [SerializeField] TextMeshProUGUI m_txtTalk;
         [SerializeField] CharacterAnimationClipData m_animationClipData;
+        [SerializeField] RectTransform m_rtHP;
 
         public SpriteRenderer[] partsRenders;
         public Color[] colorParts;
@@ -310,6 +327,8 @@ public class CharacterComponent : TargetComponent
         public Collider2D collider => m_collider;
         public CharacterAnimationClipData animationClipData => m_animationClipData;
         public TextMeshProUGUI txtTalk => m_txtTalk;
+        public RectTransform rtHP => m_rtHP;
+        public GameObject objHP => rtHP.parent.gameObject;
 
         public Transform mount;
 
@@ -324,6 +343,7 @@ public class CharacterComponent : TargetComponent
             m_skillRage = _transform.Find("SkillRange");
             m_txtTalk = _transform.GetComponent<TextMeshProUGUI>("Character/Canvas/Talkbox/txt_talk");
             m_collider = panel.parent.GetComponent<Collider2D>();
+            m_rtHP = _transform.GetComponent<RectTransform>("Character/Canvas/HP/Bar");
 
             partsRenders = m_animator.transform.GetComponentsInChildren<SpriteRenderer>(true);
             colorParts = partsRenders.Select(x => x.color).ToArray();

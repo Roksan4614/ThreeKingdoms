@@ -36,7 +36,8 @@ public class ScenarioBase : MonoBehaviour, IValidatable
     }
 
     public void Playable_TalkStart(CharacterComponent _hero, string _message)
-        => _hero.talkbox.Start(_message);
+    { }
+      //  => _hero.talkbox.Start(_message);
 
     public async UniTask Playable_TalkEndAsync(CharacterComponent _hero)
     {
@@ -64,7 +65,7 @@ public class ScenarioBase : MonoBehaviour, IValidatable
     {
         var hero = _tableData.target.IsActive() ? TeamManager.instance.GetHero(_tableData.target) : TeamManager.instance.mainHero;
 
-        await hero.talkbox.StartAsyncClickDisable(_tableData.talkArray);
+        await hero.talkbox.StartAsyncClickDisable(destroyCancellationToken, _tableData.talkArray);
     }
 
     public virtual void OnManualValidate()
