@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -12,7 +13,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
     private void Start()
     {
-        m_element.button.onClick.AddListener(OnButton_Enter);
+        m_element.button.onClick.AddListener(() => OnButtonAsync_Enter().Forget());
         m_element.btnChange.onClick.AddListener(OnButton_Change);
     }
 
@@ -36,6 +37,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                 m_element.txtDesc.text = $"{nodeData.chapter_key}-{nodeData.stage_key} 클리어시 해제";
 
                 m_element.button.interactable = false;
+                m_element.objBadge.SetActive(false);
 
                 transform.ForceRebuildLayout();
                 return;
@@ -102,13 +104,34 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         }
         else
             m_element.txtChoice.gameObject.SetActive(false);
+
+        m_element.objBadge.SetActive(DataManager.storyMode.IsComplete(data.node_key));
     }
 
-    void OnButton_Enter()
+    async UniTask OnButtonAsync_Enter()
     {
-        DataManager.storyMode.TestSave(m_data[m_curIdx]);
+        m_element.button.interactable = false;
 
-        //DataManager.storyMode.EnterAsync("node_1").Forget();
+        var result = await PopupManager.instance.OpenModalAsync("_입장하시겠습니까?");
+
+        if (result != StatusType.Success)
+        {
+            m_element.button.interactable = true;
+            return;
+        }
+
+#if UNITY_EDITOR
+        result = await PopupManager.instance.OpenModalAsync("EDITOR: 입장할꺼야??\n취소하면 저장만 할거야");
+
+        if (result != StatusType.Success)
+        {
+            m_element.button.interactable = true;
+            DataManager.storyMode.TestSave(m_data[m_curIdx]);
+            return;
+        }
+#endif
+
+        DataManager.storyMode.EnterAsync(m_data[m_curIdx].node_key).Forget();
     }
 
     void OnButton_Change()
@@ -133,6 +156,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtChoice;
 
         public GameObject objLock;
+        public GameObject objBadge;
 
         public void Initialize(Transform _transform)
         {
@@ -143,6 +167,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             txtChoice = _transform.GetComponent<TextMeshProUGUI>("txt_choice");
 
             objLock = _transform.Find("Panel/Lock").gameObject;
+            objBadge = _transform.Find("Panel/Badge").gameObject;
         }
     }
     #endregion VALIDATE

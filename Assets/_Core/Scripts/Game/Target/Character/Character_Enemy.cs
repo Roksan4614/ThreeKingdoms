@@ -25,7 +25,7 @@ public class Character_Enemy : CharacterComponent
         SetFaction(FactionType.Enemy);
 
         if (isBoss)
-            m_element.objHP.SetActive(false);
+            SetActive_HP(false);
     }
 
     public void SetHeroData_Stage(string _key)
@@ -45,7 +45,7 @@ public class Character_Enemy : CharacterComponent
             percent *= Mathf.Pow(2f, progress * 0.01f);
 
             if (isBoss == false)
-                percent *= 0.5f;
+                percent *= 0.4f;
 
             SetBuffStat(percent);
         }
@@ -81,5 +81,8 @@ public class Character_Enemy : CharacterComponent
         buff.RemoveAll();
 
         SetColorParts(Color.white);
+
+        m_element.rtHP.SetAnchoredPositionX(0);
+        m_element.objHP.SetActive(true);
     }
 }

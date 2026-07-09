@@ -22,6 +22,15 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
 
         InitializeTab();
         OnButton_Tab(RegionType.NONE);
+
+        m_element.gauge.textTitle = "´Þ¼ºµµ_";
+
+        var historyCount = DataManager.storyMode.historyCount;
+        var totalNode = TableManager.storyNode.list.Count;
+        m_element.gauge.fillAmount = historyCount / (float)totalNode;
+        m_element.gauge.textAmount = $"{(m_element.gauge.fillAmount * 100):0.00}%<size=90%> ({historyCount}/{totalNode})</size>";
+
+        Signal.instance.UnlockStoryMode.connectLambda = new(this, () => SetNodeData());
     }
 
     void InitializeTab()
@@ -104,7 +113,8 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
                 x.Where(y =>
                     y[0].region_type == m_curRegion ||
                     m_curRegion == RegionType.NONE ||
-                    y[0].region_type == RegionType.NONE)
+                    y[0].region_type == RegionType.NONE ||
+                    y[0].order_num == DataManager.storyMode.nextOpenOrderNumber)
                 .ToList())
             .Where(x => x.Count > 0).ToList();
 

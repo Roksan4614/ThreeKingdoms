@@ -269,6 +269,7 @@ public class Signal
     public SignalObject ApplicationQuit = new();
     public SignalObject<bool> ChangeDisplayMode = new(); // isLandscape
     public SignalObject DayChange = new();
+    public SignalObject<OptionType> OptionUpdate = new();
 
     public SignalObject<LobbyScreenType> OpenLobbyScreen = new();
     public SignalObject<LobbyScreenType> CloseLobbyScreen = new();
@@ -282,6 +283,7 @@ public class Signal
 
     public SignalObject<StageManager.LoadData_Stage> StartStage = new();
     public SignalObject<int> StartPhase = new(); // Phase index
+    public SignalObject UnlockStoryMode = new();
 
     public SignalObject Dash = new();
     public SignalObject Attack = new();

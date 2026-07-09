@@ -12,6 +12,7 @@ public enum OptionType
     SCENARIO_SKIP,
 
     AUTO_SKILL,
+    HIDE_HP_BAR,
 
     MAX
 }
@@ -25,6 +26,10 @@ public enum LanguageType
 public class Data_Option
 {
     OptionData m_data;
+
+    bool m_isSkipSave;
+    public void SetSkipSave() => m_isSkipSave = true;
+
     public void Initialize()
     {
         m_data = PPWorker.Get<OptionData>(PlayerPrefsType.OPTION, false);
@@ -38,6 +43,11 @@ public class Data_Option
 
     public void SaveData_Option()
     {
+        if (m_isSkipSave == true)
+        {
+            m_isSkipSave = false;
+            return;
+        }
         PPWorker.Set(PlayerPrefsType.OPTION, m_data, false);
     }
 
@@ -73,14 +83,23 @@ public class Data_Option
 
     public bool isAutoSkill
     {
-        get => m_data.db.ContainsKey(OptionType.AUTO_SKILL) && m_data.db[OptionType.AUTO_SKILL] == 1;
+        get => m_data.db[OptionType.AUTO_SKILL] == 1;
         set
         {
-            if (m_data.db.ContainsKey(OptionType.AUTO_SKILL) == false)
-                m_data.db.Add(OptionType.AUTO_SKILL, value ? 1 : 0);
-            else
-                m_data.db[OptionType.AUTO_SKILL] = value ? 1 : 0;
+            m_data.db[OptionType.AUTO_SKILL] = value ? 1 : 0;
             SaveData_Option();
+        }
+    }
+
+    public bool isHideHpBar
+    {
+        get => m_data.db[OptionType.HIDE_HP_BAR] == 1;
+        set
+        {
+            m_data.db[OptionType.HIDE_HP_BAR] = value ? 1 : 0;
+            SaveData_Option();
+
+            Signal.instance.OptionUpdate.Emit(OptionType.HIDE_HP_BAR);
         }
     }
 

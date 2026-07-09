@@ -27,7 +27,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     bool m_isSwitch;
     public bool isSwitch => m_isSwitch;
-    public void SetSwitch(bool _isSwitch) => m_isSwitch = _isSwitch;
+    public void SetSwitch(bool _isSwitch)
+        => m_isSwitch = _isSwitch;
 
     public bool isDoing => m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
     public bool isKeyboardMode => m_isKeyboardMode;

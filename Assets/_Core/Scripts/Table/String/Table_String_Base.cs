@@ -1,9 +1,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 public class Table_String_Base : BaseTable<string, TableStringData>
 {
@@ -51,6 +49,7 @@ public struct TableStringData
         };
 
     public string[] talkArray =>
-        Array.FindAll(Regex.Split(message, @"(?<=[.,?!]+\s+)"), x => string.IsNullOrWhiteSpace(x) == false);
+        message.IsActive() ? Array.FindAll(Regex.Split(message, @"(?<=[.,?!]+\s+)"), x => string.IsNullOrWhiteSpace(x) == false)
+        :Array.Empty<string>();
     //message.Split(new string[] { ". ", ", ", "? ", "! " }, System.StringSplitOptions.RemoveEmptyEntries);
 }

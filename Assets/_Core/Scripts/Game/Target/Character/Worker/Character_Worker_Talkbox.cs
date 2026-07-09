@@ -65,12 +65,6 @@ public class Character_Worker_Talkbox : Character_Worker
         }
     }
 
-    public void Cancel(bool _isDisable = false)
-    {
-        if (_isDisable)
-            SetActive(false);
-    }
-
     public async UniTask StartAsyncClickDisable(CancellationToken _token, params string[] _talks)
     {
         await StartAsync(_token, _talks);
@@ -130,7 +124,6 @@ public class Character_Worker_Talkbox : Character_Worker
                     m_txtTalk.text = totalMsg;
 
                     await UniTask.WaitForEndOfFrame(cancellationToken: _token);
-                    ControllerManager.instance.SetSwitch(true);
                     isTyping = false;
                     return;
                 }
@@ -140,7 +133,6 @@ public class Character_Worker_Talkbox : Character_Worker
         }
 
         await UniTask.WaitForEndOfFrame( cancellationToken: _token);
-        ControllerManager.instance.SetSwitch(true);
         isTyping = false;
     }
 

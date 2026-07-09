@@ -101,6 +101,12 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         if (m_dicScreen.ContainsKey(_screenType) == false)
         {
             var screen = await AddressableManager.instance.GetLobbyScreen(_screenType);
+            if (screen == null)
+            {
+                _callback(null);
+                return;
+            }
+
             var item = Instantiate(screen, transform).GetComponent<LobbyScreen_Base>();
             item.name = _screenType.ToString();
 
@@ -142,6 +148,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
 
         var c = imgDimm.color;
 
+        imgDimm.DOKill();
         if (_isTween)
         {
             m_doing_ActiveDimm = true;

@@ -23,6 +23,9 @@ public partial class StageManager
             }
         }, null, key);
 
+        if (m_handleBossRaid.IsValid() == false)
+            return;
+
         var slot = Instantiate(m_handleBossRaid.Result, m_element.chapter).GetComponent<BossRaid_BossSlotComponent>();
     }
 

@@ -8,6 +8,8 @@ public class Character_Enemy_RaidBoss : Character_Enemy
 
     public override void SetBossData(string _key = null)
     {
+        isBoss = true;
+
         if (_key.IsActive())
             m_stat = TableManager.statHero.GetStatData(_key);
 

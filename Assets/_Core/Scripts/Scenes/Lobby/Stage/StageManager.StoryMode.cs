@@ -8,12 +8,12 @@ public partial class StageManager
 
     public async UniTask InitializeAsync_StoryMode()
     {
-        await LoadStoryModeAsync();
+        await LoadStoryModeAsync(DataManager.storyMode.curNodeKey);
     }
 
-    async UniTask LoadStoryModeAsync()
+    async UniTask LoadStoryModeAsync(string _nodeKey)
     {
-        string key = $"Story/Story_{DataManager.storyMode.curNodeKey}.prefab";
+        string key = $"Story/Story_{_nodeKey}.prefab";
 
         await AddressableManager.instance.LoadAssetAsync<GameObject>(_result =>
         {
@@ -23,7 +23,12 @@ public partial class StageManager
             }
         }, null, key);
 
-        var slot = Instantiate(m_handleDailyDungeon.Result, m_element.chapter);//.GetComponent<BossRaid_BossSlotComponent>();
+        if (m_handleDailyDungeon.IsValid() == false)
+        {
+            await LoadStoryModeAsync("none");
+            return;
+        }
+        var slot = Instantiate(m_handleDailyDungeon.Result, m_element.chapter);
     }
 
     void OnDestroy_StoryMode()

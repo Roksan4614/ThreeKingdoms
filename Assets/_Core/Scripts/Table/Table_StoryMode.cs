@@ -11,8 +11,10 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
 
     public Table_StoryMode_Node(List<TableStoryModeNodeData> _table) : base(_table)
     {
-        //group = m_list.Where(x => x.chapter_key > 0 && x.isActive == true)
+        m_list = m_list.SortBy(x => x.order_num).Where(x => x.isActive == true).ToList();
+
         group = m_list.Where(x => x.chapter_key > 0)
+        //group = m_list.Where(x => x.chapter_key > 0)
             .GroupBy(x => x.year)
             .Select(x =>
                 x.GroupBy(y => Regex.Replace(y.node_key, @"(?<=\d)[a-zA-Z]+$", ""))
@@ -25,6 +27,19 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
         => m_list.Find(x => x.node_key == _nodeKey);
     public List<TableStoryModeNodeData> GetNode_OrderNum(int _orderNum)
         => m_list.FindAll(x => x.order_num == _orderNum);
+
+    public List<TableStoryModeNodeData> GetNode_Next(TableStoryModeNodeData _prevData)
+    {
+        var idx = m_list.FindIndex(x => x.order_num == _prevData.order_num) + 1;
+
+        for(; idx < m_list.Count; idx++)
+        {
+            if (m_list[idx].order_num > _prevData.order_num)
+                return GetNode_OrderNum(m_list[idx].order_num);
+        }
+
+        return default;
+    }
 
     public struct TableStoryModeNodeData
     {

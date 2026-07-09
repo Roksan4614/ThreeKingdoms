@@ -10,7 +10,7 @@ public class Data_StoryMode
 
     public string curNodeKey { get; private set; }
     public bool isRunning => curNodeKey.IsActive();
-
+    public int historyCount => m_historyData.Count;
     public int siblingIndexSlot { get; private set; }
     public int siblingIndexNode { get; private set; }
 
@@ -23,10 +23,10 @@ public class Data_StoryMode
             m_historyData = new();
     }
 
-    public async UniTask<bool> EnterAsync(string _nodeKey)
+    public async UniTask EnterAsync(string _nodeKey)
     {
         if (curNodeKey.IsActive())
-            return false;
+            return;
 
         curNodeKey = _nodeKey;
 
@@ -40,7 +40,6 @@ public class Data_StoryMode
         await UniTask.NextFrame();
 
         AddressableManager.instance.LoadScene("04_StoryMode");
-        return true;
     }
 
     public bool isExit { get; set; }
@@ -58,7 +57,6 @@ public class Data_StoryMode
                 choiceIdx = _choiceIdx,
             });
 
-            m_nextPlayOrderNumber = 0;
             m_historyData = m_historyData.SortBy(x => TableManager.storyNode.GetNode(x.key).order_num);
         }
         else
@@ -67,6 +65,8 @@ public class Data_StoryMode
             data.choiceIdx = _choiceIdx;
             m_historyData[idx] = data;
         }
+
+        m_nextPlayOrderNumber = 0;
 
         PPWorker.Set(c_key, m_historyData);
         curNodeKey = null;
@@ -88,7 +88,7 @@ public class Data_StoryMode
             m_historyData.Add(new()
             {
                 key = _storyNode.node_key,
-                choiceIdx = 1,
+                choiceIdx = _storyNode.hasIfStory ? 2 : 1,
             });
 
             m_historyData = m_historyData.SortBy(x => TableManager.storyNode.GetNode(x.key).order_num);
@@ -101,6 +101,8 @@ public class Data_StoryMode
         }
 
         m_nextPlayOrderNumber = 0;
+
+        Signal.instance.UnlockStoryMode.Emit();
     }
 
     int m_nextPlayOrderNumber;
@@ -112,18 +114,22 @@ public class Data_StoryMode
             {
                 if (m_historyData.Count == 0)
                 {
-                    m_nextPlayOrderNumber = 1;
+                    var dbStory = TableManager.storyNode.list.ToList().FindAll(x => x.chapter_key > 0);
+
+                    m_nextPlayOrderNumber = dbStory[0].order_num;
                 }
                 else
                 {
                     var prev = TableManager.storyNode.GetNode(m_historyData[m_historyData.Count - 1].key);
-                    var next = TableManager.storyNode.GetNode_OrderNum(prev.order_num + 1);
+                    var next = TableManager.storyNode.GetNode_Next(prev);
 
                     //조건없는 노드가 있을때까지 찾기
-                    while (next.Count > 0 && next.FindAll(x => x.isConditional == false).Count == 0)
-                        next = TableManager.storyNode.GetNode_OrderNum(next[0].order_num + 1);
+                    while (next != null && next.FindAll(x => x.isConditional == false).Count == 0)
+                    {
+                        next = TableManager.storyNode.GetNode_Next(next[0]);
+                    }
 
-                    if (next.Count > 0)
+                    if (next != null && next.Count > 0)
                         m_nextPlayOrderNumber = next[0].order_num;
                 }
             }
@@ -139,23 +145,31 @@ public class Data_StoryMode
             if (m_nextOpenOrderNumber == 0)
             {
                 var stageData = StageManager.instance.data;
+                if (stageData.level > 1)
+                {
+                    m_nextOpenOrderNumber = int.MaxValue;
+                    return m_nextOpenOrderNumber;
+                }
 
-                var dbStory = TableManager.storyNode.list.SortBy(x => x.order_num)
+                var dbStory = TableManager.storyNode.list.ToList()
                     .FindAll(x =>
-                        x.chapter_key > stageData.chapterNumber ||
-                        (x.stage_key >= stageData.stageNumber && x.chapter_key == stageData.chapterNumber));
+                        (x.chapter_key > stageData.chapterNumber ||
+                        (x.stage_key >= stageData.stageNumber && x.chapter_key == stageData.chapterNumber))
+                        && x.chapter_key > 0);
 
-                m_nextOpenOrderNumber = dbStory[0].order_num;
+                if (dbStory.Count > 0)
+                    m_nextOpenOrderNumber = dbStory[0].order_num;
             }
             return m_nextOpenOrderNumber;
         }
     }
     public void ClearStage_AddStoryMode(StageManager.LoadData_Stage _stageInfo)
     {
-        var dbStory = TableManager.storyNode.list.SortBy(x => x.order_num)
+        var dbStory = TableManager.storyNode.list.ToList()
             .FindAll(x =>
-                x.chapter_key > _stageInfo.chapterNumber ||
-                (x.stage_key >= _stageInfo.stageNumber && x.chapter_key == _stageInfo.chapterNumber));
+                (x.chapter_key > _stageInfo.chapterNumber ||
+                (x.stage_key >= _stageInfo.stageNumber && x.chapter_key == _stageInfo.chapterNumber))
+                && x.chapter_key > 0);
 
         if (dbStory.Count == 0)
         {
@@ -167,19 +181,19 @@ public class Data_StoryMode
 
         if (nextStory.chapter_key == _stageInfo.chapterNumber && nextStory.stage_key == _stageInfo.stageNumber)
         {
-            PopupManager.instance.AlertShow("해금된_스토리가_있습니다.");
-            BannerComponent.instance.RedDot_StoryMode();
-        }
-
-        for (int i = 0; i < dbStory.Count; i++)
-        {
-            bool isNextSame = i + 1 < dbStory.Count && dbStory[i + 1].order_num == dbStory[i].order_num;
-
-            if (isNextSame == false)
+            for (int i = 0; i < dbStory.Count; i++)
             {
-                m_nextOpenOrderNumber = dbStory[i + 1].order_num;
-                break;
+                bool isNextSame = i + 1 < dbStory.Count && dbStory[i + 1].order_num == dbStory[i].order_num;
+
+                if (isNextSame == false)
+                {
+                    m_nextOpenOrderNumber = dbStory[i + 1].order_num;
+                    break;
+                }
             }
+
+            PopupManager.instance.AlertShow("해금된_스토리가_있습니다.");
+            Signal.instance.UnlockStoryMode.Emit();
         }
     }
 
@@ -220,6 +234,9 @@ public class Data_StoryMode
         siblingIndexSlot = _siblingSlot;
         siblingIndexNode = _siblingNode;
     }
+
+    public bool IsComplete(string _nodeKey)
+        => m_historyData.FindIndex(x => x.key == _nodeKey) > -1;
 
     public struct StoryModeHistoryData
     {

@@ -87,6 +87,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
         string key = $"Stage/{m_loadData.chapterNumber}_{m_loadData.stageNumber}.prefab";
 
         long tickStart = m_tickStart;
+
         await AddressableManager.instance.LoadAssetAsync<GameObject>(_result =>
         {
             if (tickStart != m_tickStart)

@@ -8,7 +8,7 @@ public class GaugeHelper : MonoBehaviour, IValidatable
 {
     public string textTitle { set => m_element.textTitle = value; }
     public string textAmount { set => m_element.textAmount = value; }
-    public float fillAmount { set => m_element.bar.fillAmount = value; }
+    public float fillAmount { get => m_element.bar.fillAmount; set => m_element.bar.fillAmount = value; }
     public float doFillAmount
     {
         set

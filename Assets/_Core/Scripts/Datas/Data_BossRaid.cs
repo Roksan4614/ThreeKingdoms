@@ -282,13 +282,16 @@ public class Data_BossRaid
             m_raidStatus != BossRaidStatusType.SecondPhase)
             return;
 
-        var damage = (long)(_damage * UnityEngine.Random.Range(0.5f, 1.5f));
+        if (_index < m_rankNow.Count)
+        {
+            var damage = (long)(_damage * UnityEngine.Random.Range(0.5f, 1.5f));
 
-        var ranker = m_rankNow[_index];
-        ranker.point += damage;
-        m_rankNow[_index] = ranker;
+            var ranker = m_rankNow[_index];
+            ranker.point += damage;
+            m_rankNow[_index] = ranker;
 
-        StageManager.instance.enemyList[0].OnDamage(null, damage);
+            StageManager.instance.enemyList[0].OnDamage(null, damage);
+        }
     }
 
     void SaveData()

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 public abstract class BaseTable<T, V>
 {
-    protected readonly List<V> m_list;
+    protected List<V> m_list;
     protected Dictionary<T, V> m_dictionary;
 
     public BaseTable(List<V> _table)

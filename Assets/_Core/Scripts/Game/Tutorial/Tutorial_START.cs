@@ -58,6 +58,7 @@ public class Tutorial_START : TutorialBase
 
         enemy.anim.Play(CharacterAnimType.Attack);
         enemy.SetHeroData("");
+        enemy.SetBuffStat(0.3f);
 
         // 데미지 안받게 
         var hashHero = mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
@@ -116,11 +117,11 @@ public class Tutorial_START : TutorialBase
         // "키보드 조작으로 내가 움직일 수 있을거 같은데?"
         mainHero.talkbox.Start(token, talk.Dequeue().talkArray);
 
+        ControllerManager.instance.SetSwitch(true);
         var prevPos = mainHero.transform.position;
         await UniTask.WaitUntil(() => (prevPos - mainHero.transform.position).sqrMagnitude > 2f, cancellationToken: token);
 
         // "돌진과 공격을 사용해보자"
-        ControllerManager.instance.SetActive_Action(true);
         ControllerManager.instance.DashTimerStartAsync().Forget();
         mainHero.talkbox.Start(token, talk.Dequeue().talkArray);
 
@@ -244,7 +245,7 @@ public class Tutorial_START : TutorialBase
         await PopupManager.instance.ShowDimmAsync(true);
 
         if (_isSkip == true)
-            TeamManager.instance.mainHero.talkbox.Cancel(true);
+            TeamManager.instance.mainHero.talkbox.SetActive(false);
 
         StageManager.instance.ClearEnemyList();
         TutorialManager.instance.Complete(TutorialType.START);

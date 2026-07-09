@@ -57,7 +57,8 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         m_ctsMoveSkill = m_ctsMoveSkill.ReleaseCTS();
         m_ctsUseSkill = m_ctsUseSkill.ReleaseCTS();
 
-        ControllerManager.instance.SetSwitch(true);
+        if (m_owner.isMain)
+            ControllerManager.instance.SetSwitch(true);
         m_isUseSkillControll = false;
     }
 
@@ -110,8 +111,11 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             targetPos = enemyPos - ((enemyPos - ownerPos).normalized * keepDistance);
         }
 
-        ControllerManager.instance.SetPunchSkill();
-        ControllerManager.instance.SetSwitch(false);
+        if (m_owner.isMain)
+        {
+            ControllerManager.instance.SetPunchSkill();
+            ControllerManager.instance.SetSwitch(false);
+        }
 
         m_owner.move.MoveStop();
         m_owner.move.SetFlip(targetPos.x > m_owner.position.x);
@@ -166,7 +170,8 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             m_owner.move.MoveTarget(StageManager.instance.GetNearestEnemy(targetPos), true);
 
         m_isUseSkillControll = false;
-        ControllerManager.instance.SetSwitch(true);
+        if (m_owner.isMain)
+            ControllerManager.instance.SetSwitch(true);
     }
 
     void UpdateEnemyStatus()

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Linq;
 using UnityEngine;
 
 public class Banner_Story : MonoBehaviour, IValidatable
@@ -13,12 +14,13 @@ public class Banner_Story : MonoBehaviour, IValidatable
     {
         var stageData = StageManager.instance.data;
 
-        var dbStory = TableManager.storyNode.list.SortBy(x => x.order_num)
+        var dbStory = TableManager.storyNode.list.ToList()
             .FindAll(x =>
                 (x.chapter_key < stageData.chapterNumber ||
-                (x.stage_key < stageData.stageNumber && x.chapter_key == stageData.chapterNumber)) && x.chapter_key > 0);
+                (x.stage_key < stageData.stageNumber && x.chapter_key == stageData.chapterNumber))
+                && x.chapter_key > 0);
 
-        if (dbStory.Count == 0)
+        if (dbStory.Count == 0 && stageData.level == 1)
             gameObject.SetActive(false);
 
         m_element.reddot.SetActive(PPWorker.HasKey(c_keyReddot));
@@ -52,7 +54,7 @@ public class Banner_Story : MonoBehaviour, IValidatable
         m_element.reddot.SetActive(false);
     }
 
-    public void Reddot()
+    public void UnlockStoryMode()
     {
         gameObject.SetActive(true);
 

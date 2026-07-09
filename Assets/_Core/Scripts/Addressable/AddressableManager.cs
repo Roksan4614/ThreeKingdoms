@@ -218,6 +218,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     }
 
     bool m_isLogSwitch;
+    public void OnLogSwitch() => m_isLogSwitch = true;
     Addressables.MergeMode m_mergeMode = Addressables.MergeMode.Union; // 포함한거 전체
     public async UniTask LoadAssetAsync<T>(
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
@@ -236,10 +237,10 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         if (isLogSwitch)
             IngameLog.Add("Addressable: totalFileSize: Start");
 
-        downloadData.totalFileSize = await GetDownloadSizeAsync(_keys);
+        //downloadData.totalFileSize = await GetDownloadSizeAsync(_keys);
 
-        if (isLogSwitch)
-            IngameLog.Add("Addressable: totalFileSize: " + downloadData.totalFileSize);
+        //if (isLogSwitch)
+        //    IngameLog.Add("Addressable: totalFileSize: " + downloadData.totalFileSize);
 
         var handle = Addressables.LoadResourceLocationsAsync(_keys.Select(x => x.ToString()).ToList(), m_mergeMode);
 
@@ -258,14 +259,29 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         }
         else if (locations.Count > 0)
         {
+            // 다운로드 총 파일용량 구하기
+            {
+                var tasks = new UniTask<long>[locations.Count];
+
+                for (var i = 0; i < tasks.Length; i++)
+                    tasks[i] = Addressables.GetDownloadSizeAsync(locations[i]).ToUniTask();
+
+                long[] sizes = await UniTask.WhenAll(tasks);
+
+                foreach (var size in sizes)
+                    downloadData.totalFileSize += size;
+            }
+
             if (isLogSwitch)
                 IngameLog.Add("Addressable: LoadAsset: Start: " + locations.Count);
 
-            var tasks = new List<UniTask>();
-            for (int i = 0; i < locations.Count; i++)
-                tasks.Add(LoadAssetParallel(locations[i]));
+            {
+                var tasks = new List<UniTask>();
+                for (int i = 0; i < locations.Count; i++)
+                    tasks.Add(LoadAssetParallel(locations[i]));
 
-            await UniTask.WhenAll(tasks);
+                await UniTask.WhenAll(tasks);
+            }
 
             async UniTask LoadAssetParallel(IResourceLocation _location)
             {

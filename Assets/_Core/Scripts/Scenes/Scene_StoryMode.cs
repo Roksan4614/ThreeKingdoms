@@ -21,7 +21,8 @@ public class Scene_StoryMode : SceneBase
         await UniTask.WhenAll(tasks);
 
         PopupManager.instance.ShowDimm(false);
-        ControllerManager.instance.SetSwitch(true);
+
+        isReady = true;
     }
 
     private void Update()

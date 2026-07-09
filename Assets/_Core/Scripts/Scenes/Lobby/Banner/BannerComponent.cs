@@ -11,6 +11,8 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
             for (int i = 0; i < transform.childCount; i++)
                 transform.GetChild(i).gameObject.SetActive(_isActive);
         });
+
+        Signal.instance.UnlockStoryMode.connect = SlotUnlockStoryMode;
     }
 
     public void AddListenerSkip(UnityAction _onClick)
@@ -27,10 +29,8 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     public void SetActiveSkip(bool _isActive)
         => m_element.btnTutorialSkip.gameObject.SetActive(_isActive);
 
-    public void RedDot_StoryMode()
-    {
-        m_element.story.Reddot();
-    }
+    void SlotUnlockStoryMode()
+        => m_element.story.UnlockStoryMode();
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

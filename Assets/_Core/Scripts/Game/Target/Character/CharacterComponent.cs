@@ -57,6 +57,7 @@ public class CharacterComponent : TargetComponent
         SetState(CharacterStateType.None);
 
         Signal.instance.UpdateHeroStat.connect = SlotUpdateHeroStat;
+        Signal.instance.OptionUpdate.connect = SlotOptionUpdate;
     }
 
     private void OnDestroy()
@@ -79,13 +80,15 @@ public class CharacterComponent : TargetComponent
         attack.ResetFX();
     }
 
-    public void SetHeroData_StoryModeMain(string _key)
+    public void SetHeroData_StoryModeMain(string _key, FactionType _faction)
     {
         m_info = new(_key, _isMain: true, _isMine: false);
         m_stat = DataManager.stat.GetResultStat(m_info);
 
         if (m_stat.isActive == false)
             m_stat.SetDefault();
+
+        SetFaction(_faction);
     }
 
     public void SlotUpdateHeroStat(string _key)
@@ -96,6 +99,12 @@ public class CharacterComponent : TargetComponent
         SetHeroData(_key);
     }
 
+    void SlotOptionUpdate(OptionType _optionType)
+    {
+        if (_optionType == OptionType.HIDE_HP_BAR)
+            SetActive_HP(m_element.objHP.activeSelf);
+    }
+
     public void SetFaction(FactionType _factionType)
     {
         m_faction = _factionType;
@@ -103,7 +112,12 @@ public class CharacterComponent : TargetComponent
         var image = m_element.rtHP.GetComponent<UnityEngine.UI.Image>("BG");
         image.color = Palette.Get($"hp_bg_{_factionType.ToString().ToLower()}");
 
-        m_element.rtHP.transform.parent.gameObject.SetActive(true);
+        SetActive_HP(true);
+    }
+
+    public void SetActive_HP(bool _isActive)
+    {
+        m_element.objHP.SetActive(DataManager.option.isHideHpBar == false && _isActive);
     }
 
     public void SetTeamPosition(TeamPositionType _teamPosition, Vector3 _position)

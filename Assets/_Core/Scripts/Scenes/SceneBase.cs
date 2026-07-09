@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 
 public abstract class SceneBase : Singleton<SceneBase>, IValidatable
 {
+    public bool isReady { get; protected set; }
+
     protected override void Awake()
     {
 #if UNITY_EDITOR

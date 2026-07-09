@@ -46,16 +46,16 @@ public class Table_Stat : BaseTable<string, TableStatData>
 public struct TableStatData
 {
     public string key;
-    [JsonProperty] float attack_power;
-    [JsonProperty] float defence;
-    [JsonProperty] float critical_damage;
-    [JsonProperty] float critical_rate;
-    [JsonProperty] float health_max;
-    [JsonProperty] float move_speed;
-    [JsonProperty] float attack_speed;
-    [JsonProperty] float cooldown_rate;
-    [JsonProperty] float life_steal;
-    [JsonProperty] float boss_damage;
+    [JsonProperty, SerializeField] float attack_power;
+    [JsonProperty, SerializeField] float defence;
+    [JsonProperty, SerializeField] float critical_damage;
+    [JsonProperty, SerializeField] float critical_rate;
+    [JsonProperty, SerializeField] float health_max;
+    [JsonProperty, SerializeField] float move_speed;
+    [JsonProperty, SerializeField] float attack_speed;
+    [JsonProperty, SerializeField] float cooldown_rate;
+    [JsonProperty, SerializeField] float life_steal;
+    [JsonProperty, SerializeField] float boss_damage;
 
     public bool isActive => key.IsActive();
     public float dashCooldown { get; set; }
