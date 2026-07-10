@@ -48,6 +48,13 @@ public class Character_Worker_Move : Character_Worker
             SetFlip(_velocity.x > 0);
     }
 
+    public void LookTarget(Transform _target)
+        => SetFlip(m_owner.transform.position.x < _target.position.x);
+    public void LookTarget(MonoBehaviour _target)
+        => SetFlip(m_owner.transform.position.x < _target.transform.position.x);
+    public void LookTarget(Vector3 _targetPos)
+        => SetFlip(m_owner.transform.position.x < _targetPos.x);
+
     // 기본이 왼쪽을 보는거라, 오른쪽을 보게 하려면 Flip 해줘야 한다.
     public void SetFlip(bool _isRight)
     {

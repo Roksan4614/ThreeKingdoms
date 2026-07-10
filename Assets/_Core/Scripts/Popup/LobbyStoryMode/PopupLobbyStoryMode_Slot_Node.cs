@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -47,6 +48,20 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         m_data = _data;
         m_element.txtChoice.gameObject.SetActive(false);
         m_element.btnChange.gameObject.SetActive(_data.Count > 1);
+
+        var clearKey = DataManager.storyMode.nodeKeyNewClear;
+        if (clearKey.IsActive())
+        {
+            for (int i = 0; i < m_data.Count; i++)
+            {
+                if (m_data[i].node_key == clearKey)
+                {
+                    m_curIdx = i;
+                    break;
+                }
+            }
+        }
+
         SetNodeData();
 
         // 마지막 플레이한 것보다 나중이라면
@@ -105,7 +120,10 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         else
             m_element.txtChoice.gameObject.SetActive(false);
 
-        m_element.objBadge.SetActive(DataManager.storyMode.IsComplete(data.node_key));
+        bool isComplete = DataManager.storyMode.IsComplete(data.node_key);
+        m_element.objBadge.SetActive(isComplete);
+        if (isComplete && DataManager.storyMode.nodeKeyNewClear == data.node_key)
+            RewardStartAsync().Forget();
     }
 
     async UniTask OnButtonAsync_Enter()
@@ -138,6 +156,42 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
     {
         m_curIdx = (m_curIdx + 1) % m_data.Count;
         SetNodeData();
+    }
+
+    async UniTask RewardStartAsync()
+    {
+        var reward = TableManager.storyNode.GetNode(DataManager.storyMode.nodeKeyNewClear);
+        DataManager.storyMode.nodeKeyNewClear = null;
+
+        var rt = (RectTransform)m_element.objBadge.transform;
+
+        var prevScale = rt.localScale;
+        rt.localScale *= 2;
+        await rt.DOScale(prevScale, 0.1f).SetEase(Ease.OutBack);
+
+        // 보상이 영웅이라면
+        if (reward.reward_character.IsActive())
+        {
+            var heroName = TableManager.stringHero.GetHeroName(reward.reward_character);
+            PopupManager.instance.AlertShow($"[{heroName}]을_얻었습니다.", 70);
+
+            var heroInfoData = DataManager.userInfo.GetHeroInfoData(reward.reward_character);
+
+            if (heroInfoData.isActive == false)
+            {
+
+                PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
+                popupHeroInfo.AutoCloseAsync(5f).Forget();
+                heroInfoData = new(reward.reward_character, GradeType.Normal);
+
+                await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true);
+            }
+            else
+            {
+                PopupManager.instance.AlertShow($"[{heroName}]의_영혼석을_획득했습니다.");
+                DataManager.userInfo.AddHeroSoul(reward.reward_character, 10);
+            }
+        }
     }
 
     #region VALIDATE

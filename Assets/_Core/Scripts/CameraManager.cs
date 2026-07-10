@@ -27,7 +27,10 @@ public class CameraManager : MonoSingleton<CameraManager>
         DontDestroyOnLoad(this);
 
         Signal.instance.ConnectMainHero.connectLambda =
-            new(this, _ => m_playerCameraPos = _.element.cameraPos);
+            new(this, _ =>
+            {
+                m_playerCameraPos = _.element.cameraPos;
+            });
 
         Signal.instance.ChangeDisplayMode.connectLambda =
             new(this, _isLandscape =>
@@ -80,12 +83,12 @@ public class CameraManager : MonoSingleton<CameraManager>
             CameraMove();
     }
 
-    public void SetCameraPosTarget(Transform _target = null, bool _isForce = true)
+    public void SetCameraPosTarget(Transform _target, bool _isForce = true)
     {
-        if (_target != null)
-            m_playerCameraPos = _target;
+        m_playerCameraPos = _target;
 
-        CameraMove(_isForce);
+        if (_target != null && _isForce == true)
+            CameraMove(_isForce);
     }
 
     public void CameraMove(bool _isForce = false)
@@ -198,9 +201,11 @@ public class CameraManager : MonoSingleton<CameraManager>
     //    return pos;
     //}
 
-    public void SetAddPosY(float _addPosY, float _addSmoothFactor)
+    public void SetAddPosY(float? _addPosY = null, float? _addSmoothFactor = null)
     {
-        m_addPosY = _addPosY;
-        m_addSmoothFactor = _addSmoothFactor;
+        if (_addPosY != null)
+            m_addPosY = _addPosY.Value;
+        if (_addSmoothFactor != null)
+            m_addSmoothFactor = _addSmoothFactor.Value;
     }
 }

@@ -129,8 +129,10 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
         DataManager.bossRaid.Finish_BossRaid();
     }
 
+    public bool isExit { get; set; }
     public async UniTask ExitAsync()
     {
+        isExit = true;
         m_bossType = BossRaidType.NONE;
         DataManager.bossRaid.ExitBossRaid();
 

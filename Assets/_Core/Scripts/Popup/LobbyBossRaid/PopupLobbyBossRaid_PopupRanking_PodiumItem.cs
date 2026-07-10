@@ -39,8 +39,13 @@ public class PopupLobbyBossRaid_PopupRanking_PodiumItem : MonoBehaviour, IValida
 
             if (isFinded == false)
             {
-                var objHero = Instantiate(await AddressableManager.instance.GetHeroCharacterAsync(_rankerData.skin), m_element.pHero);
-                objHero.transform.localPosition = Vector3.zero;
+                var result = await AddressableManager.instance.GetHeroCharacterAsync(_rankerData.skin);
+
+                if(result != null)
+                {
+                    var objHero = Instantiate(result, m_element.pHero);
+                    objHero.transform.localPosition = Vector3.zero;
+                }
             }
         }
     }

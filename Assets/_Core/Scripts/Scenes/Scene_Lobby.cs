@@ -21,14 +21,11 @@ public class Scene_Lobby : SceneBase
         if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
             await TutorialManager.instance.StartAsync(TutorialType.START);
 
-#if UNITY_EDITOR
-        StageManager.instance.TestDevSelectAsync().Forget();
-#endif
-
         StageManager.instance.StartStageAsync().Forget();
 
         ControllerManager.instance.SetSwitch(true);
 
+        StageManager.instance.TestDevSelectAsync(false).Forget();
         // 요일던전에서 나온거면
         if (DataManager.dailyDungeon.enterWeekday == WeekdayType.MAX)
         {
@@ -40,6 +37,18 @@ public class Scene_Lobby : SceneBase
         {
             DataManager.storyMode.isExit = false;
             PopupManager.instance.OpenPopup(PopupType.LobbyStoryMode);
+        }
+        // 보스레이드
+        else if (BossRaidWorker.instance.isExit)
+        {
+            BossRaidWorker.instance.isExit = false;
+            PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid);
+        }
+        else
+        {
+#if UNITY_EDITOR
+            StageManager.instance.TestDevSelectAsync(true).Forget();
+#endif
         }
 
         // TEST

@@ -8,6 +8,17 @@ public class StoryModePhaseComponent : MonoBehaviour
     public Dictionary<string, CharacterComponent> heroes = new();
     public Dictionary<string, Character_Enemy> enemies = new();
 
+    public CharacterComponent GetHero(CharacterName _name)
+    {
+        var key = _name.ToString();
+        if (heroes.ContainsKey(key))
+            return heroes[key];
+        if (enemies.ContainsKey(key))
+            return enemies[key];
+
+        return null;
+    }
+
     string m_keyMainHero;
     private void Start()
     {
@@ -23,7 +34,7 @@ public class StoryModePhaseComponent : MonoBehaviour
                 Signal.instance.ConnectMainHero.Emit(hero);
             }
 
-            heroes.Add(hero.name, hero);
+            heroes.Add(hero.name.Replace(" ",""), hero);
         }
         TeamManager.instance.InitializeAsync_StoryMode(heroes.Values.ToArray()).Forget();
 
@@ -33,7 +44,8 @@ public class StoryModePhaseComponent : MonoBehaviour
         {
             var enemy = pEnemy.GetChild(i).GetComponent<Character_Enemy>();
             enemy.SetHeroData_StoryModeMain(enemy.name, FactionType.Enemy);
-            enemies.Add(enemy.name, enemy);
+            enemy.SetBuffStat(0.5f);
+            enemies.Add(enemy.name.Replace(" ", ""), enemy);
 
             StageManager.instance.AddEnemyList(enemy);
         }

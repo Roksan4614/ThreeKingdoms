@@ -123,7 +123,7 @@ public struct TableDailyDungeonBossData
     public HeroClassType dungeon_boss_class;
     public string monster_key;
 
-    public string name => TableManager.stringHero.GetString($"NAME_HISTORICAL_{monster_key.ToUpper()}");
-    public string desc => TableManager.stringHero.GetString($"NAME_HISTORICAL_{monster_key.ToUpper()}_DESC");
+    public string name => TableManager.stringHero.GetString($"HISTORICAL_NAME_{monster_key.ToUpper()}");
+    public string desc => TableManager.stringHero.GetString($"HISTORICAL_NAME_{monster_key.ToUpper()}_DESC");
     public string className => TableManager.stringHero.GetString($"CLASSTYPE_{dungeon_boss_class.ToString().ToUpper()}");
 }

@@ -117,7 +117,7 @@ public class CharacterComponent : TargetComponent
 
     public void SetActive_HP(bool _isActive)
     {
-        m_element.objHP.SetActive(DataManager.option.isHideHpBar == false && _isActive);
+        m_element.objHP.SetActive(DataManager.option.isHideHpBar == false && _isActive || _isActive);
     }
 
     public void SetTeamPosition(TeamPositionType _teamPosition, Vector3 _position)
@@ -214,7 +214,7 @@ public class CharacterComponent : TargetComponent
                     m_stat.health = 1;
                 else
                 {
-                    m_element.objHP.SetActive(false);
+                    SetActive_HP(false);
 
                     m_stat.health = 0;
                     SetState(CharacterStateType.None);
@@ -253,7 +253,7 @@ public class CharacterComponent : TargetComponent
         SetColorParts(Color.white);
 
         m_element.rtHP.SetAnchoredPositionX(0);
-        m_element.objHP.SetActive(true);
+        SetActive_HP(true);
     }
 
     public void DeleteElement()
@@ -307,8 +307,8 @@ public class CharacterComponent : TargetComponent
         base.OnManualValidate();
     }
 
-    [SerializeField, HideInInspector]
-    //[SerializeField]
+    //[SerializeField, HideInInspector]
+    [SerializeField]
     protected ElementData m_element;
     public ElementData element => m_element;
     [Serializable]

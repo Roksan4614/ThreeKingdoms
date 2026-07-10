@@ -26,6 +26,8 @@ public class PopupModalComponent : BasePopupComponent
 
     public override void OpenPopup(params object[] _args)
     {
+        Utils.SetActivePunch(m_element.rt, true);
+
         m_element.fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
         ModalPopupData popupData = (ModalPopupData)_args[0];
@@ -62,6 +64,14 @@ public class PopupModalComponent : BasePopupComponent
             anchPos.y = Screen.safeArea.height * 0.5f - m_element.rt.rect.height;
 
         m_element.rt.anchoredPosition = anchPos;
+    }
+
+    public override void Close()
+    {
+        if (statusType == StatusType.Wait)
+            statusType = StatusType.Cancel;
+
+        Utils.SetActivePunch(m_element.rt, false, _callback: base.Close);
     }
 
     #region VALIDATE

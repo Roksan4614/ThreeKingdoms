@@ -42,6 +42,7 @@ public class Data_StoryMode
         AddressableManager.instance.LoadScene("04_StoryMode");
     }
 
+    public string nodeKeyNewClear { get; set; }
     public bool isExit { get; set; }
     public async UniTask ExitAsync(int _choiceIdx = -1)
     {
@@ -51,6 +52,7 @@ public class Data_StoryMode
         int idx = m_historyData.FindIndex(x => x.key == curNodeKey);
         if (idx == -1)
         {
+            nodeKeyNewClear = curNodeKey;
             m_historyData.Add(new()
             {
                 key = curNodeKey,
@@ -85,6 +87,7 @@ public class Data_StoryMode
         int idx = m_historyData.FindIndex(x => x.key == _storyNode.node_key);
         if (idx == -1)
         {
+            nodeKeyNewClear = _storyNode.node_key;
             m_historyData.Add(new()
             {
                 key = _storyNode.node_key,

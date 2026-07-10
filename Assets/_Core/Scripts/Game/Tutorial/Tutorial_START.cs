@@ -38,9 +38,11 @@ public class Tutorial_START : TutorialBase
         var talk = TableManager.scenarioTalk.GetTalk("TUTORIAL_START", true);
 #endif
         var mainHero = TeamManager.instance.mainHero;
+        mainHero.SetActive_HP(false);
         mainHero.move.SetFlip(true);
 
         var enemy = m_elementBase.enemy.First();
+
         // 이걸 넣어줘야 스킬쓰거나 할 때 정상작동함
         StageManager.instance.AddEnemyList(enemy);
         enemy.gameObject.SetActive(false);
@@ -59,6 +61,7 @@ public class Tutorial_START : TutorialBase
         enemy.anim.Play(CharacterAnimType.Attack);
         enemy.SetHeroData("");
         enemy.SetBuffStat(0.3f);
+        enemy.SetActive_HP(false);
 
         // 데미지 안받게 
         var hashHero = mainHero.buff.Add(BuffType.BUFF_NO_TAKEN_DAMAGE);
@@ -111,18 +114,20 @@ public class Tutorial_START : TutorialBase
         // "응? 적이 있으면 스스로 공격하는구나!!"
         await mainHero.talkbox.StartAsyncClickDisable(token, talk.Dequeue().talkArray);
 
-        ControllerManager.instance.gameObject.SetActive(true);
         ControllerManager.instance.SetMove_HeroInfoDown(true, false);
-        ControllerManager.instance.SetActive_Action(false);
+
         // "키보드 조작으로 내가 움직일 수 있을거 같은데?"
         mainHero.talkbox.Start(token, talk.Dequeue().talkArray);
 
         ControllerManager.instance.SetSwitch(true);
+        ControllerManager.instance.SetActive(true);
+        ControllerManager.instance.DashTimerStartAsync().Forget();
+
+        // 어느정도 이동할 때까지 기다리기
         var prevPos = mainHero.transform.position;
         await UniTask.WaitUntil(() => (prevPos - mainHero.transform.position).sqrMagnitude > 2f, cancellationToken: token);
 
         // "돌진과 공격을 사용해보자"
-        ControllerManager.instance.DashTimerStartAsync().Forget();
         mainHero.talkbox.Start(token, talk.Dequeue().talkArray);
 
         bool isAttack = false, isDash = false;
@@ -156,9 +161,13 @@ public class Tutorial_START : TutorialBase
         mainHero.buff.RemoveAll();
         enemy.buff.RemoveAll();
 
+        enemy.SetActive_HP(true);
+        mainHero.SetActive_HP(true);
+
         mainHero.talkbox.Start(token, talk.Dequeue().talkArray);
         await UniTask.WaitUntil(() => enemy.isLive == false, cancellationToken: token);
 
+        mainHero.SetActive_HP(false);
         var rtArrow = (RectTransform)m_elementBase.arrows[0].transform;
 
         // 연회 열기
@@ -227,6 +236,7 @@ public class Tutorial_START : TutorialBase
 
         ControllerManager.instance.SetSwitch(false);
 
+        mainHero = TeamManager.instance.mainHero;
         // 자아! 이제 출발이다!!
         await mainHero.talkbox.StartAsyncClickDisable(token, talk.Dequeue().talkArray);
 

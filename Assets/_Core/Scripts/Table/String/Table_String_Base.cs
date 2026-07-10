@@ -53,3 +53,4 @@ public struct TableStringData
         :Array.Empty<string>();
     //message.Split(new string[] { ". ", ", ", "? ", "! " }, System.StringSplitOptions.RemoveEmptyEntries);
 }
+

@@ -27,9 +27,9 @@ public abstract class TargetComponent : MonoBehaviour, IValidatable
     }
 
     float m_prevPosY;
-    public void UpdateSortingOreder()
+    public void UpdateSortingOreder(bool _isForce = false)
     {
-        if (m_prevPosY != transform.position.y && isSwitchSorting == true)
+        if ((m_prevPosY != transform.position.y && isSwitchSorting == true) || _isForce == true)
         {
             m_prevPosY = transform.position.y;
             m_sortingGroup.sortingOrder = (int)(transform.position.y * -10f);

@@ -19,7 +19,7 @@ public class TableManager
     public static Table_Scenario scenario { get; private set; }
 
     public static Table_String stringTable { get; private set; }
-    public static Table_String_Base stringHero { get; private set; }
+    public static Table_String_Hero stringHero { get; private set; }
     public static Table_String_Talk scenarioTalk { get; private set; }
     public static Table_String_Base stringMission { get; private set; }
 

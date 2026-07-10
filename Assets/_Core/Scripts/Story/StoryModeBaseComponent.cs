@@ -7,7 +7,7 @@ using UnityEngine;
 public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 {
     List<StoryModePhaseComponent> m_phases = new();
-    Queue<TableStringData> m_queTalk = new();
+    protected Queue<TableStringData> m_queTalk = new();
 
     int m_idxPhase;
 
@@ -56,29 +56,29 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
         await UniTask.WaitUntil(() => Scene_StoryMode.instance.isReady == true);
 
+        ControllerManager.instance.SetActiveButton_StoryMode(false);
         m_cts = m_cts.ReleaseCTS(true);
         await StartAsync();
+
+        DataManager.storyMode.ExitAsync().Forget();
     }
 
     protected abstract UniTask StartAsync();
 
-    protected async UniTask SetNextPhaseAsync()
+    protected void SetNextPhase()
     {
-        await PopupManager.instance.ShowDimmAsync(true);
-
         m_phases[m_idxPhase].gameObject.SetActive(false);
         m_idxPhase++;
         m_phases[m_idxPhase].gameObject.SetActive(true);
-
-        PopupManager.instance.ShowDimm(false);
     }
+
 
     protected StoryModePhaseComponent phase => m_idxPhase < m_phases.Count ? m_phases[m_idxPhase] : null;
 
     protected CharacterComponent mainHero => phase?.mainHero;
 
     //이어지는 대사 가져오기
-    protected Queue< TableStringData> NextTalkStringTableArray()
+    Queue<TableStringData> NextTalkStringTableArray()
     {
         Queue<TableStringData> result = new();
         if (m_queTalk.Count > 0)
@@ -106,7 +106,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
         return result;
     }
 
-    protected string[] NextTalkArray()
+    string[] NextTalkArray()
     {
         List<string> result = new();
         if (m_queTalk.Count > 0)
@@ -125,10 +125,17 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
             while (m_queTalk.Count > 0)
             {
-                if (m_queTalk.Peek().target == target)
+                var peekTarget = m_queTalk.Peek().target;
+
+                if (peekTarget == target)
+                {
                     result.Add(m_queTalk.Dequeue().message);
-                else
-                    break;
+                    continue;
+                }
+                else if (peekTarget == null)
+                    m_queTalk.Dequeue();
+
+                break;
             }
         }
 
@@ -139,65 +146,54 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
     protected async UniTask TalkStartAsync()
     {
-        if (m_queTalk.Count == 0)
+        TableStringData talk = default;
+        while (talk.target == null && m_queTalk.Count > 0)
+            talk = m_queTalk.Dequeue();
+
+        if (talk.target.IsActive() == false)
             return;
 
-        var talks = m_queTalk.Dequeue();
-
         var p = phase;
-        if (p.heroes.ContainsKey(talks.target))
+        if (p.heroes.ContainsKey(talk.target))
         {
-            CameraManager.instance.SetCameraPosTarget(p.heroes[talks.target].element.cameraPos);
-            await p.heroes[talks.target].talkbox.StartAsyncClickDisable(m_cts.Token, talks.talkArray);
+            CameraManager.instance.SetCameraPosTarget(p.heroes[talk.target].element.cameraPos, false);
+            await p.heroes[talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, talk.talkArray);
         }
-        else if (p.enemies.ContainsKey(talks.target))
+        else if (p.enemies.ContainsKey(talk.target))
         {
-            CameraManager.instance.SetCameraPosTarget(p.enemies[talks.target].element.cameraPos);
-            await p.enemies[talks.target].talkbox.StartAsyncClickDisable(m_cts.Token, talks.talkArray);
+            CameraManager.instance.SetCameraPosTarget(p.enemies[talk.target].element.cameraPos, false);
+            await p.enemies[talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, talk.talkArray);
         }
     }
 
     protected void TalkAutoClose(float _duration = 3f)
-        => TalkkAutoCloseAsync(_duration).Forget();
+        => TalkAutoCloseAsync(_duration).Forget();
 
-    protected async UniTask TalkkAutoCloseAsync(float _duration = 3f)
+    protected async UniTask TalkAutoCloseAsync(float _duration = 3f)
     {
-        var talks = m_queTalk.Dequeue();
+        TableStringData talk = default;
+        while (talk.target == null && m_queTalk.Count > 0)
+            talk = m_queTalk.Dequeue();
+
+        if (talk.target.IsActive() == false)
+            return;
 
         var p = phase;
 
-        var character = p.heroes.ContainsKey(talks.target) ? p.heroes[talks.target] :
-            p.enemies.ContainsKey(talks.target) ? p.enemies[talks.target] : null;
+        var character = p.heroes.ContainsKey(talk.target) ? p.heroes[talk.target] :
+            p.enemies.ContainsKey(talk.target) ? p.enemies[talk.target] : null;
 
         if (character == null)
             return;
 
-        CameraManager.instance.SetCameraPosTarget(character.element.cameraPos);
-        character.talkbox.Start(m_cts.Token, talks.talkArray);
+        CameraManager.instance.SetCameraPosTarget(character.element.cameraPos, false);
+        character.talkbox.Start(m_cts.Token, talk.talkArray);
 
-        await UniTask.WaitForSeconds(_duration, cancellationToken:m_cts.Token);
+        var prevText = talk.message;
+        await UniTask.WaitForSeconds(_duration, cancellationToken: m_cts.Token);
 
-        character.talkbox.SetActive(false);
-    }
-
-    protected async UniTask TalkStartGroupAsync()
-    {
-        var talks = NextTalkStringTableArray();
-
-        var p = phase;
-        foreach (var t in talks)
-        {
-            if (p.heroes.ContainsKey(t.target))
-            {
-                CameraManager.instance.SetCameraPosTarget(p.heroes[t.target].element.cameraPos);
-                await p.heroes[t.target].talkbox.StartAsyncClickDisable(m_cts.Token, t.talkArray);
-            }
-            else if (p.enemies.ContainsKey(t.target))
-            {
-                CameraManager.instance.SetCameraPosTarget(p.enemies[t.target].element.cameraPos);
-                await p.enemies[t.target].talkbox.StartAsyncClickDisable(m_cts.Token, t.talkArray);
-            }
-        }
+        if (prevText == character.talkbox.text)
+            character.talkbox.SetActive(false);
     }
 
     #region VALIDATE

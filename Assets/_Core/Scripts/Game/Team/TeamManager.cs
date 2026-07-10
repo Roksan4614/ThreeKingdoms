@@ -156,7 +156,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         }
 
         Signal.instance.ConnectMainHero.Emit(mainHero);
-        CameraManager.instance.SetCameraPosTarget();
+        CameraManager.instance.CameraMove(true);
         heroInfo.SetTeamPosition();
     }
 
@@ -188,7 +188,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         RepositionToMain(0, true);
 
-        CameraManager.instance.SetCameraPosTarget();
+        CameraManager.instance.CameraMove(true);
     }
 
     public void StartPhase(bool _isFlip)
@@ -219,7 +219,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
     {
         foreach (var member in m_member.Values)
         {
-            if (member.stateType != _stateType)
+            if (member.stateType != _stateType && member.gameObject.activeInHierarchy == true)
                 member.SetState(_stateType);
         }
 
@@ -395,7 +395,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         return db.Count == 0 ? null : db.RandomFirst();
     }
 
-    public bool IsAllDie(bool _isJustCheck)
+    public bool IsAllDead(bool _isJustCheck)
     {
         var members = m_member.Values.ToList();
         for (int i = 0; i < members.Count; i++)

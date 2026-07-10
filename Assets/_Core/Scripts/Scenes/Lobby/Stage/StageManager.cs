@@ -58,15 +58,20 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
         base.OnDestroy();
     }
 
-    public async UniTask TestDevSelectAsync()
+    public async UniTask TestDevSelectAsync(bool _isSelect)
     {
-        m_stopStageStart = true;
-        var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
-            "개발용으로 진행할거야.",
-            "멈춤 없이 정상적으로 진행하자."
-            );
+        if (_isSelect)
+        {
+            m_stopStageStart = true;
+            var resultIdx = await PopupManager.instance.OpenTalkSelectAsync(
+                "개발용으로 진행할거야.",
+                "멈춤 없이 정상적으로 진행하자."
+                );
 
-        m_stopStageStart = resultIdx == 1;
+            m_stopStageStart = resultIdx == 1;
+        }
+        else
+            m_stopStageStart = false;
     }
 
     void SaveData()
@@ -386,6 +391,16 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
             if (enemy.isBoss == false)
                 enemy.OnDamage(null, enemy.stat.healthMax);
         }
+    }
+
+    public bool IsAllDead()
+    {
+        foreach (var enemy in m_enemyList)
+        {
+            if (enemy.isLive)
+                return false;
+        }
+        return true;
     }
 
     public void AddEnemyList(Character_Enemy _enemy)

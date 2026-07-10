@@ -175,6 +175,11 @@ public class Data_UserInfo
         });
     }
 
+    public bool HasHero(CharacterName _name)
+        => HasHero(_name.ToString());
+    public bool HasHero(string _key)
+        => m_element.myHero.FindIndex(x => x.key == _key) > -1;
+
     public HeroInfoData GetHeroInfoData(string _key)
     {
         for (int i = 0; i < m_element.myHero.Count; i++)

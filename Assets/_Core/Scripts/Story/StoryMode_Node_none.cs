@@ -13,7 +13,7 @@ public class StoryMode_Node_none : StoryModeBaseComponent
         CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos);
 
         ControllerManager.instance.DashTimerStartAsync().Forget();
-        ControllerManager.instance.SetActiveButton_StoryMode();
+        ControllerManager.instance.SetActiveButton_StoryMode(true);
         ControllerManager.instance.SetSwitch(true);
 
         await UniTask.Yield();

@@ -24,10 +24,4 @@ public class Scene_StoryMode : SceneBase
 
         isReady = true;
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            DataManager.storyMode.ExitAsync().Forget();
-    }
 }

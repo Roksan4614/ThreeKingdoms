@@ -93,9 +93,12 @@ public class Data_Option
 
     public bool isHideHpBar
     {
-        get => m_data.db[OptionType.HIDE_HP_BAR] == 1;
+        get => m_data.db.ContainsKey(OptionType.HIDE_HP_BAR) && m_data.db[OptionType.HIDE_HP_BAR] == 1;
         set
         {
+            if (m_data.db.ContainsKey(OptionType.HIDE_HP_BAR) == false)
+                m_data.db.Add(OptionType.HIDE_HP_BAR, 0);
+
             m_data.db[OptionType.HIDE_HP_BAR] = value ? 1 : 0;
             SaveData_Option();
 

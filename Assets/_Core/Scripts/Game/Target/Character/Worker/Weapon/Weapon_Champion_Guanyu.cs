@@ -79,6 +79,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
             if (target != null && (target.transform.position - m_owner.position).sqrMagnitude < maxSqrMagnitue)
             {
+                //m_skillRange.position = target.transform.position;
                 var index = TeamManager.instance.heroInfo.GetIndex(m_owner.info.key);
                 TeamManager.instance.heroInfo.UseSkill(index);
                 break;
@@ -93,8 +94,6 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         m_ctsUseSkill = m_ctsUseSkill.ReleaseCTS(true);
         var token = m_ctsUseSkill.Token;
 
-        Vector3 targetPos = m_skillRange.position;
-
         // 그냥 스킬을 쓴거라면, 가장 가까운 적에게 날라가자.
         if (m_isUseSkillControll == false)
         {
@@ -106,10 +105,10 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             Vector3 enemyPos = enemy.transform.position;
             Vector3 ownerPos = m_owner.position;
 
-            float keepDistance = 3f;
-
-            targetPos = enemyPos - ((enemyPos - ownerPos).normalized * keepDistance);
+            m_skillRange.position = enemy.transform.position;
         }
+
+        Vector3 targetPos = m_skillRange.position;
 
         if (m_owner.isMain)
         {

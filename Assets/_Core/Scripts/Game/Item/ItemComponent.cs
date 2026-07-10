@@ -10,8 +10,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
 
     private void Awake()
     {
-        if (m_element.txtCount != null)
-            m_element.txtCount.text = "";
+        txtCount = "";
 
         SetIconAsync(null, true).Forget();
         SetActiveRewardEffect(false);
@@ -37,7 +36,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         {
             if (_itemData.key == ItemType.Dedicated_Soul_Stone)
                 SetIconAsync(_itemData.value, true).Forget();
-            else if(_itemData.key == ItemType.Class_Soul_Stone)
+            else if (_itemData.key == ItemType.Class_Soul_Stone)
                 SetIconAsync($"{_itemData.key}_{_itemData.value}", false).Forget();
             else
                 SetIconAsync(_itemData.key.ToString(), false).Forget();
@@ -92,7 +91,22 @@ public class ItemComponent : MonoBehaviour, IValidatable
         SetActiveBadge(false);
     }
 
-    public string txtCount { set { if (m_element.txtCount != null) m_element.txtCount.text = value; } }
+    public string txtCount
+    {
+        set
+        {
+            if (m_element.txtCount == null)
+                return;
+            if (value.IsActive())
+            {
+                m_element.count.SetActive(true);
+                m_element.txtCount.text = value;
+                m_element.count.transform.ForceRebuildLayout();
+            }
+            else
+                m_element.count.SetActive(false);
+        }
+    }
 
     public void SetCountText(long _count, bool _isRange = false)
         => txtCount = _count <= 1 ? "" : $"{(_isRange ? "~ " : "")}{_count.AmountKMBT()}";
@@ -139,7 +153,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
             empty = panel.Find("Empty").gameObject;
 
             iconPanel = panel.Find("Icon/Panel");
-            txtCount = panel.GetComponent<TextMeshProUGUI>("txt_count");
+            txtCount = panel.GetComponent<TextMeshProUGUI>("Count/Text");
 
             badge = panel.Find("Badge")?.gameObject;
             dimm = iconPanel.parent.Find("Dimm")?.gameObject;
@@ -148,6 +162,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         }
 
         public GameObject icon => iconPanel.parent.gameObject;
+        public GameObject count => txtCount.transform.parent.gameObject;
     }
     #endregion VALIDATA
 }

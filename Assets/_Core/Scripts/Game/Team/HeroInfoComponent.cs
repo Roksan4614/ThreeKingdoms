@@ -148,7 +148,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         {
             bool isRaidOrDungeon = BossRaidWorker.instance.isRunning == true || DataManager.dailyDungeon.isRunning == true;
 
-            if (isRaidOrDungeon || TeamManager.instance.IsAllDie(false) == false)
+            if (isRaidOrDungeon || TeamManager.instance.IsAllDead(false) == false)
             {
                 bar.DOAnchorPosX(targetX, 0.1f);
 

@@ -117,3 +117,22 @@ public enum BattleStatType
 
     MAX
 }
+
+public enum CharacterName
+{
+    LiuBei,                 // 유비
+    GuanYu,                 // 관우
+    ZhangFei,               // 장비
+    ZhaYun,                 // 조운
+    HuangZhong,             // 황충
+    ZhugeLiang,             // 제갈량
+    LuBu,                   // 여포
+    CaoCao,                 // 조조
+    CaoRen,                 // 조인
+    XiahouDun,              // 하후돈
+    ZhangLiao,              // 장료
+    XiahouYuan,             // 하후연
+    XunYu,                   // 순욱
+
+    Etc
+}

@@ -131,13 +131,16 @@ public class PopupHeroInfo : BasePopupComponent
 
             if (isFinded == false)
             {
-                var heroCharacter = (await AddressableManager.instance.GetHeroCharacterAsync(_data.skin)).GetComponent<CharacterComponent>();
+                var heroCharacter = (await AddressableManager.instance.GetHeroCharacterAsync(_data.skin))?.GetComponent<CharacterComponent>();
 
-                m_character = Instantiate(heroCharacter, parent);
-                m_character.name = _data.skin;
-                m_character.transform.localPosition = Vector3.zero;
+                if (heroCharacter != null)
+                {
+                    m_character = Instantiate(heroCharacter, parent);
+                    m_character.name = _data.skin;
+                    m_character.transform.localPosition = Vector3.zero;
 
-                m_character.DeleteElement();
+                    m_character.DeleteElement();
+                }
             }
         }
     }

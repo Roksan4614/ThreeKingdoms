@@ -101,6 +101,12 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
         Destroy(btnSelect.gameObject);
     }
 
+    public override void Close()
+    {
+        OnClosePopup();
+        Destroy(gameObject);
+    }
+
     #region VALIDATE
     public override void OnManualValidate() => m_elementTalk.Initialize(transform);
 

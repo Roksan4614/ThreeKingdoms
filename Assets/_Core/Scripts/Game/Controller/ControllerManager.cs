@@ -76,10 +76,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         Signal.instance.ConnectMainHero.connectLambda = new(this, _mainHero => m_mainHero = _mainHero);
         Signal.instance.StartStage.connectLambda = new(this, _ => SlotStartStage());
 
-        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive =>
-        {
-            gameObject.SetActive(_isActive);
-        });
+        Signal.instance.ActiveHUD.connect = SetActive;
 
         DashButtonInitalize();
 
@@ -182,12 +179,12 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         }
     }
 
-    public void SetActiveButton_StoryMode()
+    public void SetActiveButton_StoryMode(bool _isActive)
     {
-        m_element.btnAttack.gameObject.SetActive(true);
-        m_element.skill.gameObject.SetActive(true);
+        m_element.btnAttack.gameObject.SetActive(_isActive);
+        m_element.skill.gameObject.SetActive(_isActive);
         m_element.btnCall.gameObject.SetActive(false);
-        m_element.btnDash.gameObject.SetActive(true);
+        m_element.btnDash.gameObject.SetActive(_isActive);
     }
 
     void OnUpdateMove()
@@ -442,6 +439,9 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         m_element.skill.SetPunchScale();
     }
+
+    public void SetActive(bool _isActive)
+        => gameObject.SetActive(_isActive);
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

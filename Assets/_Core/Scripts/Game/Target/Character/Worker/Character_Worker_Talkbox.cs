@@ -20,6 +20,8 @@ public class Character_Worker_Talkbox : Character_Worker
     HorizontalLayoutGroup m_layout;
     ContentSizeFitter m_fitter;
 
+    public string text => m_txtTalk.text;
+
     public bool isTyping { get; private set; } = false;
     //public async UniTask WaitTyping() => await UniTask.WaitUntil(() => isTyping == false, cancellationToken:m_cts.Token);
 
