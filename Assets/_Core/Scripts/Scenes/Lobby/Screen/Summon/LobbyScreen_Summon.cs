@@ -116,10 +116,13 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         {
             var result = await AddressableManager.instance.GetHeroCharacterAsync(m_hostData.key);
 
-            m_hostData.comp = Instantiate(result, m_element.pHost).GetComponent<CharacterComponent>();
-            m_hostData.comp.move.SetFlip(true);
-            m_hostData.comp.name = m_hostData.key;
-            m_hostData.comp.transform.localPosition = Vector3.zero;
+            m_hostData.comp = Instantiate(result, m_element.pHost)?.GetComponent<CharacterComponent>();
+            if (m_hostData.comp != null)
+            {
+                m_hostData.comp.move.SetFlip(true);
+                m_hostData.comp.name = m_hostData.key;
+                m_hostData.comp.transform.localPosition = Vector3.zero;
+            }
         }
 
         m_element.txtHostInfo.text = $"_¡÷√÷¿⁄:{TableManager.hero.Get(m_hostData.key).name}\n<color=#636363><size=80%>øµ»•ºÆ 10∞≥ »πµÊ 100%";

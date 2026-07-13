@@ -26,14 +26,16 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         Signal.instance.ConnectMainHero.connectLambda = new(this, _mainhero => m_mainHero = _mainhero);
     }
 
-    public void AddAsset(long _gold, long _rice, Transform _fromTarget = null)
+    public void AddAsset(long _gold, long _rice, Transform _fromTarget = null, bool _isPunch = true)
     {
         DataManager.userInfo.AddAsset(_gold, _rice, false);
 
         Vector3 posFrom = _fromTarget == null ? CameraManager.posPointer : _fromTarget.position;
 
-        Run(posFrom, ItemType.Gold, _gold, _isPopup: true, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
-        Run(posFrom, ItemType.Rice, _rice, _isPopup: true, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
+        if (_gold > 0)
+            Run(posFrom, ItemType.Gold, _gold, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
+        if (_rice > 0)
+            Run(posFrom, ItemType.Rice, _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
     }
 
     public async UniTask RunAsync(Vector3 _posFrom, TableItemData[] _itemData, bool _isPopup = true, bool _isStartPunch = false)

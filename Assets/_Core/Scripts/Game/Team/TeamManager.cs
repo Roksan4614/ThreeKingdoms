@@ -89,7 +89,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             m_member.Add(TeamPositionType.NONE + i, _heroes[i]);
 
             if (i == 0)
-                heroInfo.Initialize_StoryMode(_heroes[i]);
+                heroInfo?.Initialize_StoryMode(_heroes[i]);
         }
 
         await UniTask.Yield();

@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -20,6 +21,8 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
     public void SetStoryNode(List<Table_StoryMode_Node.TableStoryModeNodeData> _data)
     {
+        gameObject.SetActive(true);
+
         // 다음에 오픈할 차례라면
         {
             var nextOpenOrderNumber = DataManager.storyMode.nextOpenOrderNumber;
@@ -27,7 +30,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
             if (isNextOpen == true)
             {
-                m_element.txtChoice.gameObject.SetActive(false);
+                SetActive_Choice(false);
                 m_element.btnChange.gameObject.SetActive(false);
                 m_element.button.text = "";
 
@@ -46,7 +49,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         }
 
         m_data = _data;
-        m_element.txtChoice.gameObject.SetActive(false);
+        SetActive_Choice(false);
         m_element.btnChange.gameObject.SetActive(_data.Count > 1);
 
         var clearKey = DataManager.storyMode.nodeKeyNewClear;
@@ -83,6 +86,11 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         transform.ForceRebuildLayout();
     }
 
+    public void SetInteractable(bool _interactable)
+    {
+        m_element.button.interactable = _interactable;
+    }
+
     void SetNodeData()
     {
         var data = m_data[m_curIdx];
@@ -114,17 +122,23 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         var reqSeq = DataManager.storyMode.GetChoiceSeq(data.node_key, true);
         if (reqSeq.IsActive() == true)
         {
-            m_element.txtChoice.gameObject.SetActive(true);
+            SetActive_Choice(true);
             m_element.txtChoice.text = reqSeq;
         }
         else
-            m_element.txtChoice.gameObject.SetActive(false);
+            SetActive_Choice(false);
 
         bool isComplete = DataManager.storyMode.IsComplete(data.node_key);
         m_element.objBadge.SetActive(isComplete);
-        if (isComplete && DataManager.storyMode.nodeKeyNewClear == data.node_key)
-            RewardStartAsync().Forget();
+        if (isComplete)
+        {
+            if (DataManager.storyMode.nodeKeyNewClear == data.node_key)
+                RewardStartAsync().Forget();
+        }
     }
+
+    public void SetActive_Choice(bool _isActive)
+        => m_element.txtChoice.gameObject.SetActive(_isActive);
 
     async UniTask OnButtonAsync_Enter()
     {
@@ -160,36 +174,47 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
     async UniTask RewardStartAsync()
     {
-        var reward = TableManager.storyNode.GetNode(DataManager.storyMode.nodeKeyNewClear);
+        var storyNode = TableManager.storyNode.GetNode(DataManager.storyMode.nodeKeyNewClear);
         DataManager.storyMode.nodeKeyNewClear = null;
 
         var rt = (RectTransform)m_element.objBadge.transform;
 
         var prevScale = rt.localScale;
         rt.localScale *= 2;
-        await rt.DOScale(prevScale, 0.1f).SetEase(Ease.OutBack);
+        await rt.DOScale(prevScale, 0.2f).SetEase(Ease.OutBack);
 
         // 보상이 영웅이라면
-        if (reward.reward_character.IsActive())
+        if (storyNode.reward_character.IsActive() == true)
         {
-            var heroName = TableManager.stringHero.GetHeroName(reward.reward_character);
+            await UniTask.WaitForSeconds(.5f);
+
+            var heroName = TableManager.stringHero.GetHeroName(storyNode.reward_character);
             PopupManager.instance.AlertShow($"[{heroName}]을_얻었습니다.", 70);
 
-            var heroInfoData = DataManager.userInfo.GetHeroInfoData(reward.reward_character);
+            var heroInfoData = DataManager.userInfo.GetHeroInfoData(storyNode.reward_character);
+
+            DataManager.userInfo.AddHeroSoul(storyNode.reward_character, 10);
 
             if (heroInfoData.isActive == false)
             {
-
                 PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
                 popupHeroInfo.AutoCloseAsync(5f).Forget();
-                heroInfoData = new(reward.reward_character, GradeType.Normal);
+                heroInfoData = new(storyNode.reward_character, GradeType.Normal);
 
-                await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true);
+                await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true, true);
             }
             else
             {
                 PopupManager.instance.AlertShow($"[{heroName}]의_영혼석을_획득했습니다.");
-                DataManager.userInfo.AddHeroSoul(reward.reward_character, 10);
+            }
+        }
+        else if (storyNode.reward_currency_type.IsActive())
+        {
+            if (Enum.TryParse(storyNode.reward_currency_type, out ItemType currency))
+            {
+                RewardWorker.instance.AddAsset(currency == ItemType.Gold ?
+                    storyNode.rewardCurrencyAmount : 0, currency == ItemType.Rice ? storyNode.rewardCurrencyAmount : 0,
+                    m_element.objBadge.transform, false);
             }
         }
     }

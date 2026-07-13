@@ -88,6 +88,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         }
     }
 
+    // bottomcomponent에서 와야 해 ㅜㅜ
     public async UniTask OpenScreenAsync(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback)
     {
         ControllerManager.instance.SetSwitch(true);

@@ -10,6 +10,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
     protected Queue<TableStringData> m_queTalk = new();
 
     int m_idxPhase;
+    protected int m_resultTalkIdx = -1;
 
     protected CancellationTokenSource m_cts;
 
@@ -60,7 +61,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
         m_cts = m_cts.ReleaseCTS(true);
         await StartAsync();
 
-        DataManager.storyMode.ExitAsync().Forget();
+        DataManager.storyMode.ExitAsync(m_resultTalkIdx).Forget();
     }
 
     protected abstract UniTask StartAsync();

@@ -113,7 +113,7 @@ public struct HeroInfoData
     public RegionType regionType => m_regionType;
 
     public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, HeroPositionType _heroPositionType = HeroPositionType.NONE, string _skin = null,
-        int _soulCount = 0, int _enchantLevel = 0, int _relicLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true)
+        int _soulCount = 0, int _enchantLevel = 0, int _relicLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true, int _sortIdx = 0)
     {
         key = _key;
         grade = _grade;
@@ -125,6 +125,7 @@ public struct HeroInfoData
         isBatch = _isBatch;
         isMain = _isMain;
         isMine = _isMine;
+        sortIdx = _sortIdx;
 
         var db = TableManager.hero.Get(_key);
 
@@ -139,6 +140,8 @@ public struct HeroInfoData
     public string className => TableManager.stringHero.GetString($"CLASSTYPE_" + m_classType.ToString().ToUpper());
     public string gradeClass => $"{gradeName} {className}";
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
+
+    public int sortIdx { get; set; }
 
     public Dictionary<CoreStatType, int> resultCoreStat
     {

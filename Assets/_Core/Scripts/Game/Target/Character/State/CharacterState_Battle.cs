@@ -29,7 +29,7 @@ public class CharacterState_Battle : CharacterState
                 await m_owner.move.MoveTargetAsync(target, true).SuppressCancellationThrow();
 
             // 움직임을 멈출수도 있다.
-            await UniTask.WaitUntil(() => m_owner.buff.IsActive(BuffType.DEBUFF_NO_MOVE) == false);
+            await UniTask.WaitUntil(() => m_owner.buff.IsActive(BuffType.DEBUFF_NO_MOVE) == false, cancellationToken: token);
 
             // 타겟이 달라졌는지, 타겟이 없는지, 타겟이 죽었는지를 체크한다.
             await UniTask.WaitUntil(() => m_owner.target.target != target || target == null || target.isLive == false, cancellationToken: token);

@@ -34,6 +34,8 @@ public class StageComponent : MonoBehaviour, IValidatable
 
     private void Awake()
     {
+        //m_element.Initialize(transform);
+
         for (int i = 0; i < m_element.phase.childCount; i++)
         {
             StageData stageData = new();

@@ -83,6 +83,6 @@ public class Character_Enemy : CharacterComponent
         SetColorParts(Color.white);
 
         m_element.rtHP.SetAnchoredPositionX(0);
-        SetActive_HP(true);
+        SetActive_HP(isBoss == false);
     }
 }

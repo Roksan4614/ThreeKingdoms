@@ -320,6 +320,11 @@ public class Data_UserInfo
     }
     #endregion ASSETS
 
+    public void TestResetHeroList()
+    {
+
+    }
+
     struct ElementData
     {
         public int uid;

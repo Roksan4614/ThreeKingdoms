@@ -24,6 +24,7 @@ public class Character_Enemy_DailyDungeonBoss : Character_Enemy_Boss
             SetBuffStat((float)(DataManager.dailyDungeon.curGradeType) * 2f);
 
         SetFaction(FactionType.Enemy);
+        SetActive_HP(false);
     }
 
     public override bool OnDamage(CharacterComponent _attacker, float _damage, bool _isCritical = false)

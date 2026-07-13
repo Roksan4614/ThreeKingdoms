@@ -53,7 +53,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         };
 
         if (m_isJIN)
-            m_dbSkills.Insert(0, new()
+            m_dbSkills.Add(new()
             {
                 duration = 20,
                 async = SkillAsync_Jump
@@ -270,13 +270,13 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
     async UniTask SkillAsync_RedHare()
     {
-        m_owner.move.MoveStop();
         var hashNoMove = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
         var hashNoDie = m_owner.buff.Add(BuffType.BUFF_NO_DIE);
 
         var token = m_cts.Token;
         await UniTask.NextFrame(cancellationToken: token);
 
+        m_owner.move.MoveStop();
         {
             Vector3 targetPos = m_owner.position;
             targetPos.x += m_owner.move.isFlip ? -1 : 1;

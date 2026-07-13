@@ -6,6 +6,7 @@ public class PopupLobbyStoryMode_Slot : MonoBehaviour, IValidatable
 {
     public bool SetNodeData(List<List<Table_StoryMode_Node.TableStoryModeNodeData>> _db)
     {
+        m_element.txtYear.gameObject.SetActive(true);
         m_element.txtYear.text = _db[0][0].year + "년";
 
         var idx = transform.Find("Node").GetSiblingIndex();
@@ -20,11 +21,15 @@ public class PopupLobbyStoryMode_Slot : MonoBehaviour, IValidatable
             node.gameObject.SetActive(true);
 
             if (node.isOpenNode == true)
-                // - 2 한 이유는 위에 두개 node 외가 있어서
-                DataManager.storyMode.SetPopupSiblingIndex(transform.GetSiblingIndex(), node.transform.GetSiblingIndex() - 2);
+                // -1 한 이유는 위에 연도가 있어서
+                DataManager.storyMode.SetPopupSiblingIndex(transform.GetSiblingIndex(), node.transform.GetSiblingIndex() - 1);
 
             if (_db[i][0].order_num >= DataManager.storyMode.nextOpenOrderNumber)
             {
+                // 연도 슬롯에 노드가 없다면 연도 꺼주자
+                if (i == 0)
+                    m_element.txtYear.gameObject.SetActive(false);
+
                 isCanceled = true;
                 idx++;
                 break;

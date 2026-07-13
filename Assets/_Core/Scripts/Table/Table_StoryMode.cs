@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.TableStoryModeNodeData>
 {
@@ -11,7 +10,7 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
 
     public Table_StoryMode_Node(List<TableStoryModeNodeData> _table) : base(_table)
     {
-        m_list = m_list.SortBy(x => x.order_num).Where(x => x.isActive == true).ToList();
+        m_list = m_list.OrderBy(x => x.order_num).Where(x => x.isActive == true).ToList();
 
         group = m_list.Where(x => x.chapter_key > 0)
         //group = m_list.Where(x => x.chapter_key > 0)
@@ -32,9 +31,9 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
     {
         var idx = m_list.FindIndex(x => x.order_num == _prevData.order_num) + 1;
 
-        for(; idx < m_list.Count; idx++)
+        for (; idx < m_list.Count; idx++)
         {
-            if (m_list[idx].order_num > _prevData.order_num)
+            if (m_list[idx].order_num > _prevData.order_num && m_list[idx].chapter_key > 0)
                 return GetNode_OrderNum(m_list[idx].order_num);
         }
 
@@ -51,16 +50,19 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
         public int order_num;
         public string reward_character;
         public string next_node_key;
+        public string reward_currency_type;
 
+        [JsonProperty] int? reward_currency_amount;
         [JsonProperty] bool? is_conditonal;
-        [JsonProperty] bool? has_if_story;
+        [JsonProperty] int? has_if_story;
         [JsonProperty] int? required_choice_seq;
         [JsonProperty] bool? is_active;
 
         public bool isActive => node_key.IsActive() && (is_active ?? false);
         public bool isConditional => is_conditonal ?? false;
-        public bool hasIfStory => has_if_story ?? false;
+        public int hasIfStory => has_if_story ?? -100;
         public int requiredChoiceSeq => required_choice_seq ?? -1;
+        public int rewardCurrencyAmount => reward_currency_amount ?? 0;
 
         public string name => TableManager.storyString.GetString($"{node_key.ToUpper()}_TITLE");
         public string desc => TableManager.storyString.GetString($"{node_key.ToUpper()}_DESC");

@@ -86,10 +86,16 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
             m_element.dimm.SetActive(_data.isMine == false);
 
         if (_data.isMine)
+        {
+            m_element.txtName.color = Color.gray1;
             m_element.outline.color =
                 Palette.instance.data.Get("icon_outline_grade_" + _data.grade.ToString().ToLower());
+        }
         else
+        {
             m_element.outline.color = Color.gray;
+            m_element.txtName.color = Color.gray;
+        }
 
 
         bool isFinded = false;

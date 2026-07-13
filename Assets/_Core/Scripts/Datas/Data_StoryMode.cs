@@ -1,13 +1,13 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class Data_StoryMode
 {
     List<StoryModeHistoryData> m_historyData;
     const string c_key = "PP_STORYMODE_HISTORY";
 
+    public StoryModeHistoryData lastHistory { get; set; }
     public string curNodeKey { get; private set; }
     public bool isRunning => curNodeKey.IsActive();
     public int historyCount => m_historyData.Count;
@@ -48,14 +48,40 @@ public class Data_StoryMode
     {
         if (curNodeKey.IsActive() == false)
             return;
+        SaveHistoryData(curNodeKey, _choiceIdx);
+        lastHistory = m_historyData.Find(x => x.key == curNodeKey);
 
-        int idx = m_historyData.FindIndex(x => x.key == curNodeKey);
+        m_nextPlayOrderNumber = 0;
+        curNodeKey = null;
+
+        List<UniTask> tasks = new();
+        tasks.Add(PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f));
+
+        var storyNode = TableManager.storyNode.GetNode(curNodeKey);
+        if (storyNode.reward_character.IsActive() == true)
+        {
+            tasks.Add(AddressableManager.instance.Load_HeroIconAsync(storyNode.reward_character));
+            tasks.Add(AddressableManager.instance.Load_HeroCharacterAsync(storyNode.reward_character));
+        }
+
+        await UniTask.WhenAll(tasks);
+
+        PopupManager.instance.CloseAll();
+        await UniTask.NextFrame();
+
+        isExit = true;
+        AddressableManager.instance.LoadScene("02_Lobby");
+    }
+
+    public void SaveHistoryData(string _nodeKey, int _choiceIdx)
+    {
+        int idx = m_historyData.FindIndex(x => x.key == _nodeKey);
         if (idx == -1)
         {
-            nodeKeyNewClear = curNodeKey;
+            nodeKeyNewClear = _nodeKey;
             m_historyData.Add(new()
             {
-                key = curNodeKey,
+                key = _nodeKey,
                 choiceIdx = _choiceIdx,
             });
 
@@ -67,41 +93,34 @@ public class Data_StoryMode
             data.choiceIdx = _choiceIdx;
             m_historyData[idx] = data;
         }
+        PPWorker.Set(c_key, m_historyData);
+    }
 
-        m_nextPlayOrderNumber = 0;
+    public void ResetIFMode(string _nodeKey)
+    {
+        var nodeData = TableManager.storyNode.GetNode(_nodeKey);
+
+        SaveHistoryData(_nodeKey, nodeData.hasIfStory == 2 ? 1 : 2);
+
+        while (nodeData.next_node_key.IsActive())
+        {
+            nodeData = TableManager.storyNode.GetNode(nodeData.next_node_key);
+
+            var idx = m_historyData.FindIndex(x => x.key == nodeData.node_key);
+            if (idx > -1)
+                m_historyData.RemoveAt(idx);
+        }
 
         PPWorker.Set(c_key, m_historyData);
-        curNodeKey = null;
 
-        await PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f);
-
-        PopupManager.instance.CloseAll();
-        await UniTask.NextFrame();
-
-        isExit = true;
-        AddressableManager.instance.LoadScene("02_Lobby");
+        m_nextPlayOrderNumber = 0;
+        Signal.instance.UnlockStoryMode.Emit();
     }
 
     public void TestSave(Table_StoryMode_Node.TableStoryModeNodeData _storyNode)
     {
-        int idx = m_historyData.FindIndex(x => x.key == _storyNode.node_key);
-        if (idx == -1)
-        {
-            nodeKeyNewClear = _storyNode.node_key;
-            m_historyData.Add(new()
-            {
-                key = _storyNode.node_key,
-                choiceIdx = _storyNode.hasIfStory ? 2 : 1,
-            });
-
-            m_historyData = m_historyData.SortBy(x => TableManager.storyNode.GetNode(x.key).order_num);
-        }
-        else
-        {
-            var data = m_historyData[idx];
-            data.choiceIdx = 1;
-            m_historyData[idx] = data;
-        }
+        SaveHistoryData(_storyNode.node_key, _storyNode.hasIfStory > 0 ? 2 : 1);
+        lastHistory = m_historyData.Find(x => x.key == curNodeKey);
 
         m_nextPlayOrderNumber = 0;
 
@@ -174,7 +193,7 @@ public class Data_StoryMode
                 (x.stage_key >= _stageInfo.stageNumber && x.chapter_key == _stageInfo.chapterNumber))
                 && x.chapter_key > 0);
 
-        if (dbStory.Count == 0)
+        if (dbStory.Count == 0 || _stageInfo.level > 1)
         {
             m_nextOpenOrderNumber = int.MaxValue;
             return;
@@ -241,9 +260,23 @@ public class Data_StoryMode
     public bool IsComplete(string _nodeKey)
         => m_historyData.FindIndex(x => x.key == _nodeKey) > -1;
 
+    public Table_StoryMode_Node.TableStoryModeNodeData GetOpenIFMode()
+    {
+        for (int i = 0; i < m_historyData.Count; i++)
+        {
+            var nodeData = TableManager.storyNode.GetNode(m_historyData[i].key);
+
+            if (nodeData.hasIfStory == m_historyData[i].choiceIdx)
+                return nodeData;
+        }
+        return default;
+    }
+
     public struct StoryModeHistoryData
     {
         public string key;
         public int choiceIdx;
+
+        public bool isActive => key.IsActive();
     }
 }

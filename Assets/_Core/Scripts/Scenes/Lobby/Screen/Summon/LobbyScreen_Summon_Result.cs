@@ -394,10 +394,10 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             if (heroInfoData.isActive == false)
                 heroInfoData = new(itemComp.data.value, grade);
 
-            await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true);
+            await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true, true);
             await UniTask.WaitUntil(() => popupHeroInfo == null, cancellationToken: destroyCancellationToken);
 
-            await UniTask.WaitForSeconds(.5f);
+            await UniTask.WaitForSeconds(.5f, cancellationToken: destroyCancellationToken);
 
             /*
             GradeType grade = GradeType.Normal;
@@ -454,7 +454,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             itemComp.SetSoulCount(itemComp.data.count);
 
         if (m_isSkip == false && itemComp.data.isNew == false)
-            await UniTask.WaitForSeconds(1f);
+            await UniTask.WaitForSeconds(1f, cancellationToken: destroyCancellationToken);
 
         hero.anim.Play(CharacterAnimType.Dash);
         hero.transform.DOLocalMoveX(prevLocalPos.x * -1, 0.3f).SetEase(Ease.OutCubic).Forget();

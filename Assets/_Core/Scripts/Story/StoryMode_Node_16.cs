@@ -1,14 +1,9 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class StoryMode_Node_none : StoryModeBaseComponent
+public class StoryMode_Node_16 : StoryModeBaseComponent
 {
-    protected override void Start()
-    {
-        base.Start();
-    }
-
-    protected async override UniTask StartAsync()
+    protected override async UniTask StartAsync()
     {
         CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos);
 
@@ -16,6 +11,8 @@ public class StoryMode_Node_none : StoryModeBaseComponent
         ControllerManager.instance.SetActiveButton_StoryMode(true);
         ControllerManager.instance.SetSwitch(true);
 
-        await UniTask.WaitUntil(()=>Input.GetKey(KeyCode.Escape));
+        m_resultTalkIdx = await PopupManager.instance.OpenTalkSelectAsync(
+            "이정도면 조조공에게 빚은 갚은거겠지.\n이제 돌아가자.",
+            "이 자가 원소진영에서 으뜸이라고?\n흥! 이 자의 목을 걸어두어라.");
     }
 }

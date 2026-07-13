@@ -21,16 +21,39 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         }, _token: destroyCancellationToken);
 
         InitializeTab();
-        OnButton_Tab(RegionType.NONE);
+        if (OpenIFMode() == false)
+        {
+            OnButton_Tab(RegionType.NONE);
 
-        m_element.gauge.textTitle = "달성도_";
+            m_element.gauge.textTitle = "달성도_";
 
-        var historyCount = DataManager.storyMode.historyCount;
-        var totalNode = TableManager.storyNode.list.Count;
-        m_element.gauge.fillAmount = historyCount / (float)totalNode;
-        m_element.gauge.textAmount = $"{(m_element.gauge.fillAmount * 100):0.00}%<size=90%> ({historyCount}/{totalNode})</size>";
+            var historyCount = DataManager.storyMode.historyCount;
+            var totalNode = TableManager.storyNode.list.Count(x => x.chapter_key > 0);
+            m_element.gauge.fillAmount = historyCount / (float)totalNode;
+            m_element.gauge.textAmount = $"{(m_element.gauge.fillAmount * 100):0.00}%<size=90%> ({historyCount}/{totalNode})</size>";
+        }
 
-        Signal.instance.UnlockStoryMode.connectLambda = new(this, () => SetNodeData());
+        Signal.instance.UnlockStoryMode.connectLambda = new(this, () =>
+        {
+            if (OpenIFMode() == false)
+            {
+                OnButton_Tab(RegionType.NONE, true);
+            }
+        });
+    }
+
+    bool OpenIFMode()
+    {
+        var ifNodeData = DataManager.storyMode.GetOpenIFMode();
+
+        bool notIfMode = ifNodeData.isActive == false;
+
+        m_element.bg.SetActive(notIfMode);
+        m_element.pTab.gameObject.SetActive(notIfMode);
+        m_element.scroll.gameObject.SetActive(notIfMode);
+        m_element.gauge.gameObject.SetActive(notIfMode);
+
+        return m_element.storyIF.Open(ifNodeData);
     }
 
     void InitializeTab()
@@ -53,9 +76,9 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         m_element.pTab.ForceRebuildLayout();
     }
 
-    void OnButton_Tab(RegionType _region)
+    void OnButton_Tab(RegionType _region, bool _isForce = false)
     {
-        if (m_curRegion == _region)
+        if (m_curRegion == _region && _isForce == false)
             return;
 
         if (m_dicButton.ContainsKey(m_curRegion))
@@ -89,8 +112,8 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
             float heightNode = 0;
             for (int i = 0; i <= DataManager.storyMode.siblingIndexNode; i++)
             {
-                // + 2 한 이유는 위에 두개 node 외가 있어서
-                var rt = (RectTransform)slot.GetChild(i + 2);
+                //+1한 이유는 연도가 있어서
+                var rt = (RectTransform)slot.GetChild(i + 1);
                 posY += rt.rect.height + layout.spacing;
 
                 heightNode = rt.rect.height;
@@ -126,6 +149,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
                 .GetComponent<PopupLobbyStoryMode_Slot>();
 
             slot.gameObject.SetActive(true);
+            slot.name = group[i][0][0].year.ToString();
             if (slot.SetNodeData(group[i]) == false)
             {
                 i++;
@@ -154,6 +178,8 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
     [System.Serializable]
     struct ElementData
     {
+        public GameObject bg;
+
         public TextMeshProUGUI txtTitle;
 
         public Transform pTab;
@@ -162,16 +188,19 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
 
         public TextMeshProUGUI txtEmpty;
 
+        public PopupLobbyStoryMode_IF storyIF;
 
         public void Initialize(Transform _transform)
         {
             txtTitle = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_title");
 
+            bg = _transform.Find("Panel/BG").gameObject;
             pTab = _transform.Find("Panel/Tab");
             scroll = _transform.GetComponent<ScrollRect>("Panel/Scroll");
             gauge = _transform.GetComponent<GaugeHelper>("Panel/GaugeHelper");
 
             txtEmpty = scroll.viewport.GetComponent<TextMeshProUGUI>("txt_empty");
+            storyIF = _transform.GetComponent<PopupLobbyStoryMode_IF>("Panel/IF");
         }
 
         public Transform panel => txtTitle.transform.parent;

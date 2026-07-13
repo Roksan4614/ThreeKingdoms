@@ -52,6 +52,7 @@ public class PopupModalComponent : BasePopupComponent
         }
 
         m_element.rt.position = CameraManager.posPointer;
+        IngameLog.Add("CAMERA:POINTER:POS: " + CameraManager.posPointer);
 
         var hw = m_element.rt.rect.width * 0.5f;
         var anchPos = m_element.rt.anchoredPosition;

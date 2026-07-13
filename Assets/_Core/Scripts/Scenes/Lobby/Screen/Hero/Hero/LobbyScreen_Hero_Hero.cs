@@ -143,8 +143,12 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         if (m_isNeedUpdateLayout && m_isStarted == true)
         {
+            List<HeroInfoData> myHero = new();
+            myHero.AddRange(m_myHero);
+
             m_myHero.Clear();
-            m_myHero.AddRange(DataManager.userInfo.myHero);
+            for (int i = 0; i < myHero.Count; i++)
+                m_myHero.Add(DataManager.userInfo.GetHeroInfoData(myHero[i].key));
 
             for (int i = 0; i < m_myHero.Count; i++)
             {

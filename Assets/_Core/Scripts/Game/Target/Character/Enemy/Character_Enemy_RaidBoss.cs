@@ -27,6 +27,7 @@ public class Character_Enemy_RaidBoss : Character_Enemy
             SetBuffStat(((int)DataManager.bossRaid.data.nowGrade + 1) * 50, _isAttackPower: false);
 
         SetFaction(FactionType.Enemy);
+        SetActive_HP(false);
     }
 
     public override bool OnDamage(CharacterComponent _attacker, float _damage, bool _isCritical = false)

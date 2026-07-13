@@ -5,13 +5,6 @@ using UnityEngine;
 
 public class StoryMode_Node_2 : StoryModeBaseComponent
 {
-    public float testSpeed = 5;
-
-    protected override void Start()
-    {
-        base.Start();
-    }
-
     protected async override UniTask StartAsync()
     {
         await Phase_First();
@@ -235,6 +228,8 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         await TalkStartAsync();
         // 일어나시게ㅋ 이제 곧 큰 싸움이 일어날텐데, 자효 그대의 활약을 기대하겠네.
         await TalkStartAsync();
+
+        PopupManager.instance.AlertShow("스토리를_완료했습니다.");
         // 주공!!
         await TalkStartAsync();
     }
