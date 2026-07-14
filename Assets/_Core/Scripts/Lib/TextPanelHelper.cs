@@ -24,6 +24,9 @@ public class TextPanelHelper : MonoBehaviour, IValidatable
         m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 
+        for (int i = 1; i < m_element.panel.childCount; i++)
+            m_element.panel.GetChild(i).gameObject.SetActive(false);
+
         m_element.panel.ForceRebuildLayout();
 
         // 사이즈가 안에 있다면,
@@ -39,7 +42,11 @@ public class TextPanelHelper : MonoBehaviour, IValidatable
             return;
         }
 
-        Instantiate(m_element.txt, m_element.panel);
+        if (m_element.panel.childCount == 1)
+            Instantiate(m_element.txt, m_element.panel);
+        else
+            m_element.panel.GetChild(1).gameObject.SetActive(true);
+
         m_element.panel.ForceRebuildLayout();
         m_element.panel.anchoredPosition = Vector2.zero;
 

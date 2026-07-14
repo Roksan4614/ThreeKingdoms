@@ -55,7 +55,9 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
             DataManager.storyMode.lastHistory = default;
         }
 
-        m_element.btnConfirm.text = nextData.next_node_key.IsActive() ? "포기하기_" : "돌아가기_";
+        bool isCompleteLastNode = nextData.next_node_key.IsActive() == false && DataManager.storyMode.IsComplete(nextData.node_key);
+
+        m_element.btnConfirm.text = isCompleteLastNode ? "포기하기_" : "돌아가기_";
         m_element.btnConfirm.onClick.RemoveAllListeners();
         m_element.btnConfirm.onClick.AddListener(() =>
         {

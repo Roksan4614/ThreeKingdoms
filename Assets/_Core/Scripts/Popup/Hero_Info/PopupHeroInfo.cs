@@ -43,15 +43,15 @@ public class PopupHeroInfo : BasePopupComponent
             m_element.btnTap[(int)i].onClick.AddListener(() => SetActiveTab(tab));
         }
 
-        m_element.btnConfirm.onClick.AddListener(() =>
+        m_element.btnConfirm.onClick.AddListener(Close);
+
+        m_element.btnBatch.onClick.AddListener(() =>
         {
-            if (m_isMoveHeroScreen)
-            {
-                PopupManager.instance.CloseAll();
-                BottomComponent.instance.OnButton(LobbyScreenType.Hero);
-            }
+            PopupManager.instance.CloseAll();
+            BottomComponent.instance.OnButton_OpenScreen(LobbyScreenType.Hero);
             Close();
         });
+
         m_element.btnEnchant.onClick.AddListener(() => OnButtonAsync_Upgrade(false).Forget());
         m_element.btnUpgrade.onClick.AddListener(() => OnButtonAsync_Upgrade(true).Forget());
 
@@ -86,24 +86,26 @@ public class PopupHeroInfo : BasePopupComponent
         m_element.statAttribute.SetActive(_tabType == TabType.attribute);
     }
 
-    bool m_isMoveHeroScreen;
     /// <summary>
     /// 
     /// </summary>
     /// <param name="_data"></param>
     /// <param name="_isJustWatch">오로지 확인용. 승급하기 강화하기 같은거 없음</param>
     /// <returns></returns>
-    public async UniTask SetHeroInfoDataAsync(HeroInfoData _data, bool _isJustWatch = false, bool _isMoveHeroScreen = false)
+    public async UniTask SetHeroInfoDataAsync(HeroInfoData _data, bool _isJustWatch = false, bool _isBatch = false)
     {
-        m_isMoveHeroScreen = _isMoveHeroScreen;
         // 하단 버튼 세팅
         {
             if (_data.isMine == false && _isJustWatch == false)
                 _isJustWatch = true;
 
-            m_element.btnEnchant.transform.parent.gameObject.SetActive(_isJustWatch == false);
-            m_element.btnConfirm.transform.gameObject.SetActive(_isJustWatch == true || _isMoveHeroScreen == true);
-            m_element.btnConfirm.text = _isMoveHeroScreen ? "_배치하기_" : "_확인_";
+            m_element.btnEnchant.gameObject.SetActive(_isJustWatch == false);
+            m_element.btnUpgrade.gameObject.SetActive(_isJustWatch == false);
+            m_element.btnConfirm.gameObject.SetActive(_isJustWatch == true);
+            m_element.btnBatch.gameObject.SetActive(_isBatch == true);
+
+            m_element.btnEnchant.transform.parent.ForceRebuildLayout();
+
             m_element.txtTimer_AutoClose.text = "";
         }
 
@@ -319,6 +321,7 @@ public class PopupHeroInfo : BasePopupComponent
         public ButtonHelper btnEnchant;
         public ButtonHelper btnUpgrade;
         public ButtonHelper btnConfirm;
+        public ButtonHelper btnBatch;
         public TextMeshProUGUI txtTimer_AutoClose;
 
         public ButtonHelper[] btnTap;
@@ -358,7 +361,8 @@ public class PopupHeroInfo : BasePopupComponent
             // BUTTON
             btnEnchant = panel.GetComponent<ButtonHelper>("Buttons/btn_enchant");
             btnUpgrade = panel.GetComponent<ButtonHelper>("Buttons/btn_upgrade");
-            btnConfirm = panel.GetComponent<ButtonHelper>("btn_confirm");
+            btnConfirm = panel.GetComponent<ButtonHelper>("Buttons/btn_confirm");
+            btnBatch = panel.GetComponent<ButtonHelper>("Buttons/btn_batch");
 
             txtTimer_AutoClose = btnConfirm.transform.GetComponent<TextMeshProUGUI>("txt_timer");
 

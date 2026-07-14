@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 
 public class Scene_Boot : MonoBehaviour, IValidatable
@@ -25,8 +26,20 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         StartAsync().Forget();
     }
 
+    const string c_keyVC = "pp_version_code";
+
     async UniTask StartAsync()
     {
+#if UNITY_WEBGL && SERVICE_DEV && !UNITY_EDITOR
+        var vc = PPWorker.Get<string>(c_keyVC);
+
+        if (vc.IsActive() == false || vc != Application.version)
+        {
+            PlayerPrefs.DeleteAll();
+            PPWorker.Set(c_keyVC, Application.version);
+        }
+#endif
+
         List<UniTask> tasks = new();
         tasks.Add(AddressableManager.instance.InitializeAsync());
         tasks.Add(TableManager.instance.InitializeAsync());

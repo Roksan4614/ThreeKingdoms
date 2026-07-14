@@ -365,14 +365,14 @@ public class Tutorial_START : TutorialBase
                 });
 
                 var startHero = TableManager.region.Get(
-                    TableManager.hero.Get(_hostKey).regionType).startHeroKey;
+                    TableManager.hero.Get(_hostKey).regionType).startHeroKey.Take(2).ToArray();
 
-                for (; i < startHero.Length; i++)
+                for (; i <= startHero.Length; i++)
                 {
                     result.Add(new()
                     {
                         key = ItemType.Dedicated_Soul_Stone,
-                        value = startHero[i],
+                        value = startHero[i - 1],
                         count = 10,
                         category = ItemCategoryType.Soul_Stone,
                     });

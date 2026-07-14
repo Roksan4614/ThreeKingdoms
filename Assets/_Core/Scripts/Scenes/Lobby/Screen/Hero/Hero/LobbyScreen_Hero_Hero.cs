@@ -145,10 +145,18 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         {
             List<HeroInfoData> myHero = new();
             myHero.AddRange(m_myHero);
-
+            
+            // 이 창에서 없는 영웅들을 추가해줘야.
+            // 열때마다 계산하면 편하지만, 연산을 줄이기 위함
             m_myHero.Clear();
             for (int i = 0; i < myHero.Count; i++)
                 m_myHero.Add(DataManager.userInfo.GetHeroInfoData(myHero[i].key));
+            for (int i = 0; i < DataManager.userInfo.myHero.Count; i++)
+            {
+                var hero = DataManager.userInfo.myHero[i];
+                if (m_myHero.FindIndex(x => x.key == hero.key) == -1)
+                    m_myHero.Add(hero);
+            }
 
             for (int i = 0; i < m_myHero.Count; i++)
             {

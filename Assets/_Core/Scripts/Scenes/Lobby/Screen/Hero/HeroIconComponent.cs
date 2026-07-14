@@ -123,10 +123,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
                     icon.AutoResizeParent().name = _data.skin;
             }
             else
-            {
                 m_element.SetActiveName(true);
-                IngameLog.Add("UpdateHeroInfoAsync: prefab is null");
-            }
         }
     }
 

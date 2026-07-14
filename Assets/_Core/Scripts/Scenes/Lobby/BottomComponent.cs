@@ -19,7 +19,7 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
         foreach (var screen in m_dbScreen.Values)
         {
             screen.button.onClick
-                .AddListener(() => OnButton(screen.type));
+                .AddListener(() => OnButton_OpenScreen(screen.type));
 
             screen.txtName.text = screen.button.name = screen.type.ToString().ToUpper();
         }
@@ -41,7 +41,7 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
     }
 
     bool m_isDoing = false;
-    public void OnButton(LobbyScreenType _screenType)
+    public void OnButton_OpenScreen(LobbyScreenType _screenType)
     {
         if (LobbyScreenManager.instance.isLock == true || m_isDoing == true)
             return;

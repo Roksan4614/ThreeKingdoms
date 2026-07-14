@@ -21,7 +21,7 @@ public enum DirectionType
 
 public enum HeroSortType
 {
-    Grade, Level, Power,
+    Region, Class, Grade, Level, Power,
 }
 
 public enum WeekdayType

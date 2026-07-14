@@ -95,6 +95,11 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
 
         await UniTask.WaitForEndOfFrame();
 
+        var alertMessage = KoreanHelper.AppendJosa(m_heroInfoData.name, KoreanHelper.JosaType.EulLeul, "[{0}]");
+        alertMessage += KoreanHelper.AppendJosa(m_heroInfoData.gradeName, KoreanHelper.JosaType.EuroroRo, " [{0}]");
+        alertMessage += "_승급합니다.";
+
+        PopupManager.instance.AlertShow(alertMessage);
         DataManager.userInfo.UpdateUpgrade(m_heroInfoData);
         DataManager.stat.friendShip.Reload();
         Signal.instance.UpdateHeroStat.Emit(m_heroInfoData.key);
@@ -104,7 +109,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
             DataManager.castle.OnUpdateClaim();
 
         // 영지에서 배치된 곳이 있다면 업데이트 쪽 다시 봐야 해
-            DataManager.castle.building.UpdateBuildingUpgrade(m_heroInfoData.key);
+        DataManager.castle.building.UpdateBuildingUpgrade(m_heroInfoData.key);
 
         Close();
         m_status = StatusType.Success;

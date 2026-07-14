@@ -30,6 +30,8 @@ public enum PopupType
     LobbyBossRaid,
     UserInfo,
 
+    UpgradeGuide,
+
     BossRaidResult,
 
     DailyDungeonResult,
@@ -227,9 +229,9 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         for (int i = 0; i < max; i++)
         {
             if (i < m_element.pPopup.childCount)
-                Destroy(m_element.pPopup.GetChild(i).gameObject);
+                m_element.pPopup.GetChild(i).GetComponent<BasePopupComponent>().Close();
             if (i < m_element.pModal.childCount)
-                Destroy(m_element.pModal.GetChild(i).gameObject);
+                m_element.pModal.GetChild(i).GetComponent<BasePopupComponent>().Close();
         }
     }
 

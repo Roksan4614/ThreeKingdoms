@@ -140,7 +140,7 @@ public class Data_StoryMode
 
                     m_nextPlayOrderNumber = dbStory[0].order_num;
                 }
-                else
+                else if (StageManager.instance.data.level == 1)
                 {
                     var prev = TableManager.storyNode.GetNode(m_historyData[m_historyData.Count - 1].key);
                     var next = TableManager.storyNode.GetNode_Next(prev);
@@ -154,6 +154,8 @@ public class Data_StoryMode
                     if (next != null && next.Count > 0)
                         m_nextPlayOrderNumber = next[0].order_num;
                 }
+                else
+                    m_nextPlayOrderNumber = int.MaxValue;
             }
             return m_nextPlayOrderNumber;
         }

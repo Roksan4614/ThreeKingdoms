@@ -52,17 +52,21 @@ public class PopupModalComponent : BasePopupComponent
         }
 
         m_element.rt.position = CameraManager.posPointer;
-        IngameLog.Add("CAMERA:POINTER:POS: " + CameraManager.posPointer);
+        //IngameLog.Add("CAMERA:POINTER:POS: " + CameraManager.posPointer + $"{Screen.width}/{Screen.height}");
+
+        var rateW = 1080f / Screen.width;
+        var rateH =  1920f / Screen.height;
 
         var hw = m_element.rt.rect.width * 0.5f;
         var anchPos = m_element.rt.anchoredPosition;
-        if (anchPos.x < Screen.width * -0.5f + hw)
-            anchPos.x = Screen.width * -0.5f + hw;
-        else if (anchPos.x > Screen.width * 0.5f - hw)
-            anchPos.x = Screen.width * 0.5f - hw;
 
-        if (anchPos.y > Screen.safeArea.height * 0.5f - m_element.rt.rect.height)
-            anchPos.y = Screen.safeArea.height * 0.5f - m_element.rt.rect.height;
+        if (anchPos.x < Screen.width * rateW * -0.5f + hw)
+            anchPos.x = Screen.width * rateW * -0.5f + hw;
+        else if (anchPos.x > Screen.width * rateW * 0.5f - hw)
+            anchPos.x = Screen.width * rateW * 0.5f - hw;
+
+        if (anchPos.y > Screen.safeArea.height * rateH * 0.5f - m_element.rt.rect.height)
+            anchPos.y = Screen.safeArea.height * rateH * 0.5f - m_element.rt.rect.height;
 
         m_element.rt.anchoredPosition = anchPos;
     }

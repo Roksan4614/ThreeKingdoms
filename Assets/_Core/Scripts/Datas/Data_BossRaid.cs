@@ -162,10 +162,13 @@ public class Data_BossRaid
             userData.skin = TableManager.hero.list.RandomFirst().key;
             userData.indexProfile = -1;
 
-            m_rankPoint.ranker.Add(userData);
-
             if (isMine)
+            {
+                userData.point = 10001;
                 m_rankPoint.my = userData;
+            }
+
+            m_rankPoint.ranker.Add(userData);
         }
 
         m_rankPoint.ranker = m_rankPoint.ranker.SortByDescending(x => x.point);

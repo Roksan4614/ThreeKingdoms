@@ -43,7 +43,7 @@ public class PopupSelectRegionComponent : BasePopupComponent
         foreach (var hero in m_element.dbHero)
         {
             if (hero.region != _region)
-                StartFade(hero, false);
+                StartFade(hero, false, false);
         }
 
         await m_popupHeroInfo.OpenAsync(regionData);
@@ -57,20 +57,23 @@ public class PopupSelectRegionComponent : BasePopupComponent
         foreach (var hero in m_element.dbHero)
         {
             if (hero.region != _region)
-                StartFade(hero, true);
+                StartFade(hero, true, false);
         }
     }
 
-    void StartFade(RegionData _region, bool _isIn)
-        => StartFadeAsync(_region, _isIn).Forget();
+    void StartFade(RegionData _region, bool _isIn, bool _isTween)
+        => StartFadeAsync(_region, _isIn, _isTween).Forget();
 
-    async UniTask StartFadeAsync(RegionData _region, bool _isIn)
+    async UniTask StartFadeAsync(RegionData _region, bool _isIn, bool _isTween)
     {
         _region.SetActiveName(_isIn);
 
         float alpha = _isIn ? 0 : 1;
-        await DOTween.To(() => alpha, _x => alpha = _x, 1 - alpha, 0.2f)
-            .OnUpdate(() => _region.SetAlpha(alpha)).AsyncWaitForCompletion();
+        if (_isTween)
+            await DOTween.To(() => alpha, _x => alpha = _x, 1 - alpha, 0.1f)
+                .OnUpdate(() => _region.SetAlpha(alpha)).ToUniTask();
+        else
+            _region.SetAlpha(1 - alpha);
     }
 
     public override void OnManualValidate()

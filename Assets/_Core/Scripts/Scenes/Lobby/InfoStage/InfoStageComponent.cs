@@ -120,6 +120,8 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
 
             m_element.infoStage.SetPhase(_phaseIdx);
         }
+        else
+            m_element.rtIconBoss.gameObject.SetActive(false);
     }
 
     void StopChageBossPhase()

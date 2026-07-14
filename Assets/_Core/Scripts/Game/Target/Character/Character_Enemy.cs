@@ -39,13 +39,13 @@ public class Character_Enemy : CharacterComponent
         }
         else
         {
-            float percent = Mathf.Pow(2f, stageData.level - 1);
+            float percent = Mathf.Pow(4f, stageData.level - 1);
 
             int progress = (stageData.chapterNumber - 1) * 10 + stageData.stageNumber - 1;
-            percent *= Mathf.Pow(2f, progress * 0.01f);
+            percent *= Mathf.Pow(4f, progress * 0.01f);
 
             if (isBoss == false)
-                percent *= 0.4f;
+                percent *= 0.2f;
 
             SetBuffStat(percent);
         }

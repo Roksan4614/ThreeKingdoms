@@ -1,11 +1,11 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static PopupSelectRegionComponent;
 
 public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
 {
@@ -14,6 +14,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
 
     private void Awake()
     {
+        m_element.btnDimm.onClick.AddListener(() => CloseAsync().Forget());
         m_element.btnClose.onClick.AddListener(() => CloseAsync().Forget());
         m_element.btnConfirm.onClick.AddListener(() => OnButton_ConfirmAsync().Forget());
     }
@@ -35,10 +36,14 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         m_regionData.SetActiveName(false);
 
         m_prevPos = m_regionData.rt.position;
+        //m_regionData.heroComponent.anim.Play(CharacterAnimType.Walk);
         m_regionData.rt.DOMove(m_element.posCharacter.position, 0.2f).Forget();
-        m_regionData.rt.DOScale(Vector3.one, 0.2f).Forget();
+        m_regionData.rt.DOScale(Vector3.one, 0.2f).Forget();//.OnComplete(() => m_regionData.heroComponent.anim.Play(CharacterAnimType.Idle)).Forget();
 
-        Utils.SetActivePunch(transform, true);
+        //await UniTask.WaitForSeconds(.1f);
+
+        gameObject.SetActive(true);
+        //Utils.SetActivePunch(m_element.panel, true);
 
         var isFlipPrev = _regionData.heroComponent.move.isFlip;
         _regionData.heroComponent.move.SetFlip(true);
@@ -51,16 +56,22 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         _regionData.heroComponent.move.SetFlip(isFlipPrev);
         _regionData.SetActiveName(true);
 
-        await UniTask.WaitForSeconds(0.1f);
+        //await UniTask.WaitForSeconds(0.1f);
     }
 
     async UniTask CloseAsync()
     {
-        await Utils.SetActivePunchAsync(transform, false);
-        transform.localScale = Vector3.one;
+        //await Utils.SetActivePunchAsync(m_element.panel, false);
 
+        gameObject.SetActive(false);
+        m_element.panel.localScale = Vector3.one;
+
+        //m_regionData.heroComponent.anim.Play(CharacterAnimType.Walk_Back);
         m_regionData.rt.DOMove(m_prevPos, 0.2f).Forget();
         m_regionData.rt.DOScale(Vector3.one * 0.8f, 0.2f).Forget();
+        //await m_regionData.rt.DOScale(Vector3.one * 0.8f, 0.2f);
+
+        //m_regionData.heroComponent.anim.Play(CharacterAnimType.Idle);
     }
 
     void SetRegionData()
@@ -73,14 +84,21 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         m_element.txtDesc.text = m_regionData.masterDesc;
         m_element.txtDescSub.text = m_regionData.masterDescSub;
 
+        var parent = m_element.pStartHero;
         var startHeroKey = TableManager.region.Get(m_regionData.region).startHeroKey;
-        for (int i = 0; i < m_element.startHero.Length; i++)
+        bool isForceRebuild = parent.childCount < startHeroKey.Length;
+        for (int i = 0; i < startHeroKey.Length; i++)
         {
             HeroInfoData data = new(startHeroKey[i]);
 
-            m_element.startHero[i].SetHeroData(data, null, null);
-            m_element.startHero[i].element.SetActiveName(true);
+            var slot = i == parent.childCount ? Instantiate(parent.GetChild(0), parent) : parent.GetChild(i);
+
+            var hero = slot.GetComponent<HeroIconComponent>();
+            hero.SetHeroData(data, null, null);
+            hero.element.SetActiveName(true);
         }
+        if (isForceRebuild)
+            parent.ForceRebuildLayout();
     }
 
     async UniTask OnButton_ConfirmAsync()
@@ -110,6 +128,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
     [Serializable]
     struct ElementData
     {
+        public Button btnDimm;
         public Transform posCharacter;
 
         public Button btnClose;
@@ -120,10 +139,11 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtDesc;
         public TextMeshProUGUI txtDescSub;
 
-        public HeroIconComponent[] startHero;
+        public Transform pStartHero;
 
         public void Initialize(Transform _transform)
         {
+            btnDimm = _transform.GetComponent<Button>("Dimm");
             posCharacter = _transform.Find("Panel/PosCharacter");
 
             btnClose = _transform.GetComponent<Button>("Panel/btn_close");
@@ -135,7 +155,9 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
             txtDesc = front.GetComponent<TextMeshProUGUI>("txt_desc");
             txtDescSub = front.GetComponent<TextMeshProUGUI>("txt_descSub");
 
-            startHero = _transform.Find("Panel/StartHero").GetComponentsInChildren<HeroIconComponent>();
+            pStartHero = _transform.Find("Panel/StartHero");
         }
+
+        public Transform panel => posCharacter.parent;
     }
 }

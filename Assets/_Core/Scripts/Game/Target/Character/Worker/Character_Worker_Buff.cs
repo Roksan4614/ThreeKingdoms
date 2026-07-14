@@ -29,6 +29,9 @@ public class Character_Worker_Buff : Character_Worker
         if (_duration > 0)
             Timer(buffData.hash, _buffType, _duration).Forget();
 
+        if (m_owner.isMain)
+            IngameLog.Add("BUFF ADD: " + _buffType + ": " + buffData.hash);
+
         return buffData.hash;
     }
 
@@ -70,6 +73,8 @@ public class Character_Worker_Buff : Character_Worker
                     {
                         if (buff[i].hash == _hash)
                         {
+                            if (m_owner.isMain)
+                                IngameLog.Add("BUFF REMOVE: " + _buffType + ": " + _hash);
                             m_dbBuff[_buffType].RemoveAt(i);
                             break;
                         }
@@ -78,6 +83,8 @@ public class Character_Worker_Buff : Character_Worker
             }
             else
             {
+                if (m_owner.isMain)
+                    IngameLog.Add("BUFF REMOVE: " + _buffType);
                 m_dbBuff.Remove(_buffType);
                 isContainsKey = false;
             }
@@ -86,7 +93,11 @@ public class Character_Worker_Buff : Character_Worker
                 m_dbBuff.Remove(_buffType);
         }
         else
+        {
+            if (m_owner.isMain)
+                IngameLog.Add("BUFF REMOVE ALL");
             m_dbBuff.Clear();
+        }
     }
 
     public bool IsActive(BuffType _buffType)

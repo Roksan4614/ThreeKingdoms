@@ -30,7 +30,7 @@ public class Scene_Lobby : SceneBase
         if (DataManager.dailyDungeon.enterWeekday == WeekdayType.MAX)
         {
             DataManager.dailyDungeon.enterWeekday = WeekdayType.None;
-            BottomComponent.instance.OnButton(LobbyScreenType.Boss);
+            BottomComponent.instance.OnButton_OpenScreen(LobbyScreenType.Boss);
         }
         // 스토리에서 나온거면
         else if (DataManager.storyMode.isExit == true)

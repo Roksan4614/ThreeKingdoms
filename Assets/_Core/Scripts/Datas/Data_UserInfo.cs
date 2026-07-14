@@ -143,6 +143,8 @@ public class Data_UserInfo
             result.AddRange(lstBatch);
         }
 
+        lstNotBatch.Sort((x, y) => { return Compare(x, y, _isWithNotMine); });
+
         // 보유한걸 위로 올려주자
         if (_isWithNotMine == true)
             lstNotBatch = lstNotBatch.SortByDescending(x => x.isMine);
@@ -320,10 +322,79 @@ public class Data_UserInfo
     }
     #endregion ASSETS
 
-    public void TestResetHeroList()
+    #region SORT
+    public int Compare(HeroInfoData x, HeroInfoData y, bool _isWithNotMine)
     {
+        if (ReferenceEquals(x, y)) return 0;
+        if (x.isActive == false) return -1;
+        if (y.isActive == false) return 1;
 
+        int result = 0;
+
+        switch (m_sortData.sortType)
+        {
+            case HeroSortType.Region:
+                result = CompareRegion(x, y);
+                if (result != 0) return result;
+                result = CompareClass(x, y);
+                if (result != 0) return result;
+                result = CompareGrade(x, y);
+                if (result != 0) return result;
+                result = CompareEnchantLevel(x, y);
+                break;
+
+            case HeroSortType.Class:
+                result = CompareClass(x, y);
+                if (result != 0) return result;
+                result = CompareRegion(x, y);
+                if (result != 0) return result;
+                result = CompareGrade(x, y);
+                if (result != 0) return result;
+                result = CompareEnchantLevel(x, y);
+                break;
+
+            case HeroSortType.Grade:
+                result = CompareGrade(x, y);
+                if (result != 0) return result;
+                result = CompareRegion(x, y);
+                if (result != 0) return result;
+                result = CompareClass(x, y);
+                if (result != 0) return result;
+                result = CompareEnchantLevel(x, y);
+                break;
+
+            case HeroSortType.Level:
+                result = CompareEnchantLevel(x, y);
+                if (result != 0) return result;
+                result = CompareRegion(x, y);
+                if (result != 0) return result;
+                result = CompareClass(x, y);
+                if (result != 0) return result;
+                result = CompareGrade(x, y);
+                break;
+        }
+
+        if (result != 0) return result;
+
+        result = string.Compare(x.name, y.name, System.StringComparison.Ordinal);
+        if (result != 0) return result;
+
+        return _isWithNotMine ? x.isMine.CompareTo(y.isMine) : 0;
     }
+    private int CompareRegion(HeroInfoData x, HeroInfoData y)
+    {
+        bool isX = x.regionType == DataManager.userInfo.region;
+        bool isY = y.regionType == DataManager.userInfo.region;
+
+        if (isX == isY)
+            return x.regionType.CompareTo(y.regionType);
+
+        return isX ? -1 : 1;
+    }
+    private int CompareClass(HeroInfoData x, HeroInfoData y) => x.classType.CompareTo(y.classType);
+    private int CompareGrade(HeroInfoData x, HeroInfoData y) => x.grade.CompareTo(y.grade);
+    private int CompareEnchantLevel(HeroInfoData x, HeroInfoData y) => x.enchantLevel.CompareTo(y.enchantLevel);
+    #endregion SORT
 
     struct ElementData
     {
@@ -354,7 +425,7 @@ public class Data_UserInfo
 
         public void Default()
         {
-            sortType = HeroSortType.Grade;
+            sortType = HeroSortType.Region;
             isDescending = true;
 
             filter_region = new();

@@ -86,6 +86,7 @@ public struct TableHeroData
         percent_start_cooldown = percent_start_cooldown == 0 ? .8f : percent_start_cooldown;
     }
 
+    public bool isActive => key.IsActive();
     public float percetnStartCooldown => percent_start_cooldown;
     public float skillCooltime => skill_cooltime;
 
@@ -128,6 +129,9 @@ public struct HeroInfoData
         sortIdx = _sortIdx;
 
         var db = TableManager.hero.Get(_key);
+
+        if (db.isActive == false)
+            IngameLog.Add("HERO INFO DATA FAILED: " + _key);
 
         m_classType = db.classType;
         m_regionType = db.regionType;

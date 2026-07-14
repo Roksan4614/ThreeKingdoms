@@ -152,7 +152,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             return;
         }
 
-#if UNITY_EDITOR
+#if SERVICE_DEV
         result = await PopupManager.instance.OpenModalAsync("EDITOR: 입장할꺼야??\n취소하면 저장만 할거야");
 
         if (result != StatusType.Success)
@@ -179,17 +179,16 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
         var rt = (RectTransform)m_element.objBadge.transform;
 
-        var prevScale = rt.localScale;
-        rt.localScale *= 2;
-        await rt.DOScale(prevScale, 0.2f).SetEase(Ease.OutBack);
+        rt.localScale = Vector3.one * 2;
+        await rt.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutBack);
 
         // 보상이 영웅이라면
         if (storyNode.reward_character.IsActive() == true)
         {
             await UniTask.WaitForSeconds(.5f);
 
-            var heroName = TableManager.stringHero.GetHeroName(storyNode.reward_character);
-            PopupManager.instance.AlertShow($"[{heroName}]을_얻었습니다.", 70);
+            var heroName =KoreanHelper.AppendJosa(TableManager.stringHero.GetHeroName(storyNode.reward_character), KoreanHelper.JosaType.EulLeul,"[{0}]");
+            PopupManager.instance.AlertShow($"{heroName}_얻었습니다.", 70);
 
             var heroInfoData = DataManager.userInfo.GetHeroInfoData(storyNode.reward_character);
 

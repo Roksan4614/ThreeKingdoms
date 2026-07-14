@@ -109,7 +109,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
             });
     }
 
-    public void Wait_SecondPhase()    
+    public void Wait_SecondPhase()
     {
         DataManager.bossRaid.Wait_SecondPhase();
         isSuccessed = false;
@@ -125,7 +125,10 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
     public void Finish_BossRaid(bool _isSuccessed)
     {
         isSuccessed = _isSuccessed;
-        TeamManager.instance.AddBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
+
+        if (isRunning == true)
+            TeamManager.instance.AddBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
+
         DataManager.bossRaid.Finish_BossRaid();
     }
 

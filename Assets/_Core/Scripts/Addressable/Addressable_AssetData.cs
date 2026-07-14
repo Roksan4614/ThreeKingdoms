@@ -71,7 +71,10 @@ public partial class AddressableManager
             for (int i = 0; i < keys.Count; i++)
             {
                 if (m_heroIcon.ContainsKey(keys[i]) == false)
+                {
                     m_heroIcon.Add(keys[i], default);
+                    IngameLog.Add("Load_HeroIconAsync: NULL: " + keys[i]);
+                }
             }
         }, null, paths.ToArray());
     }
@@ -121,7 +124,10 @@ public partial class AddressableManager
             for (int i = 0; i < keys.Count; i++)
             {
                 if (m_itemIcon.ContainsKey(keys[i]) == false)
+                {
                     m_itemIcon.Add(keys[i], default);
+                    IngameLog.Add("Load_ItemIconAsync: NULL: " + keys[i]);
+                }
             }
 
         }, null, paths.ToArray());
@@ -173,7 +179,10 @@ public partial class AddressableManager
             for (int i = 0; i < keys.Count; i++)
             {
                 if (m_heroCharacter.ContainsKey(keys[i]) == false)
+                {
                     m_heroCharacter.Add(keys[i], default);
+                    IngameLog.Add("Load_HeroCharacterAsync: NULL: " + keys[i]);
+                }
             }
         }, null, paths.ToArray());
     }

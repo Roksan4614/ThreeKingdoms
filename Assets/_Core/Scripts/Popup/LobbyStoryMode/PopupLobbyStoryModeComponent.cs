@@ -24,13 +24,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         if (OpenIFMode() == false)
         {
             OnButton_Tab(RegionType.NONE);
-
-            m_element.gauge.textTitle = "달성도_";
-
-            var historyCount = DataManager.storyMode.historyCount;
-            var totalNode = TableManager.storyNode.list.Count(x => x.chapter_key > 0);
-            m_element.gauge.fillAmount = historyCount / (float)totalNode;
-            m_element.gauge.textAmount = $"{(m_element.gauge.fillAmount * 100):0.00}%<size=90%> ({historyCount}/{totalNode})</size>";
+            RefreshGauge();
         }
 
         Signal.instance.UnlockStoryMode.connectLambda = new(this, () =>
@@ -38,8 +32,19 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
             if (OpenIFMode() == false)
             {
                 OnButton_Tab(RegionType.NONE, true);
+                RefreshGauge();
             }
         });
+    }
+
+    void RefreshGauge()
+    {
+        m_element.gauge.textTitle = "달성도_";
+
+        var historyCount = DataManager.storyMode.historyCount;
+        var totalNode = TableManager.storyNode.list.Count(x => x.chapter_key > 0);
+        m_element.gauge.fillAmount = historyCount / (float)totalNode;
+        m_element.gauge.textAmount = $"{(m_element.gauge.fillAmount * 100):0.00}%<size=90%> ({historyCount}/{totalNode})</size>";
     }
 
     bool OpenIFMode()
