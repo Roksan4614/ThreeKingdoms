@@ -1,10 +1,8 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEditor;
 using UnityEngine;
 
 public class Scene_Boot : MonoBehaviour, IValidatable

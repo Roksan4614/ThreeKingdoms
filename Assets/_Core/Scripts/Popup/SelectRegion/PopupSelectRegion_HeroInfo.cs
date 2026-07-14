@@ -5,7 +5,6 @@ using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static PopupSelectRegionComponent;
 
 public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
 {
