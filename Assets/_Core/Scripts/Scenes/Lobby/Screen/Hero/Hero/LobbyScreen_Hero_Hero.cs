@@ -237,11 +237,12 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             m_isNeedUpdateLayout = false;
             MapManager.instance.FadeDimm(true, 0f);
 
+            //var heroList = m_itemBatch.FindAll(x => x.data.isActive == true).Select(x => x.data).ToList();
             var heroList = m_itemList.FindAll(x => x.data.isMine == true).Select(x => x.data).ToList();
             for (int i = 0; i < heroList.Count; i++)
             {
                 var data = heroList[i];
-                data.isMain = i == 0;
+                data.isMain = data.key == m_itemBatch[0].data.key;
                 heroList[i] = data;
             }
 
@@ -605,67 +606,13 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                 if (_item.data.isMine == true)
                     OnButton_ListHeroRemove(_item);
             }
-            //int idxSbling = _item.transform.GetSiblingIndex();
-
-            //// 이미 출진 중이라면?
-            //if (_item.data.isBatch == true)
-            //{
-            //    if (m_curIndex_Batch > -1)
-            //    {
-            //        m_curIndex_List = m_curIndex_Batch;
-            //        m_curIndex_Batch = -1;
-            //    }
-
-            //    // 나 자신을 클릭한거라면
-            //    if (idxSbling == m_curIndex_List || m_curIndex_List == -1)
-            //    {
-            //        if (m_itemBatch.Count(x => x.data.isActive) == 1 && m_curIndex_List <= 0)
-            //        {
-            //            m_curIndex_List = -1;
-            //            return;
-            //        }
-
-            //        OnButton_ListHeroRemove(_item);
-            //    }
-            //    // 먼저 클릭한 영웅이 있다면,
-            //    else if (m_curIndex_List > -1)
-            //    {
-            //        m_curIndex_Batch = idxSbling;
-
-            //        if (m_itemList[m_curIndex_List].data.isBatch == false)
-            //            OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_Batch]);
-            //        else
-            //            OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_List]);
-            //    }
-            //}
-            //// 먼저 선택한 영웅이 배치중이라면,
-            //else if (m_curIndex_List > -1 && m_itemList[m_curIndex_List].data.isBatch == true)
-            //{
-            //    m_curIndex_Batch = m_curIndex_List;
-            //    m_curIndex_List = idxSbling;
-            //    OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_Batch]);
-            //}
-            //// 배치에서 선택한게 있다면
-            //else if (m_curIndex_Batch > -1)
-            //{
-            //    m_curIndex_List = idxSbling;
-            //    OnButton_BatchHeroRemove(m_itemBatch[m_curIndex_Batch]);
-            //}
-            //// 빈공간이 있으면?
-            //else if (m_itemBatch.Any(x => x.data.isActive == false))
-            //{
-            //    if (_item.data.isMine == true)
-            //        OnButton_ListHeroRemove(_item);
-
-            //    ResetActiveButton_Batch();
-            //    ResetActiveButton_List();
-            //}
             return;
         }
 
         ResetActiveButton_Batch();
 
-        var index = _item.transform.GetSiblingIndex();
+        //var index = _item.transform.GetSiblingIndex();
+        var index = m_itemList.FindIndex(x => x.data.key == _item.data.key);// _item.transform.GetSiblingIndex();
 
         if (m_curIndex_List != index && _item.data.isMine == true)
         {
