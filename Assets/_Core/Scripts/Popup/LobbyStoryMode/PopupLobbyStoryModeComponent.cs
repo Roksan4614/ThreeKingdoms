@@ -64,7 +64,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
     void InitializeTab()
     {
         int i = 0;
-        for (var region = RegionType.NONE; region <= RegionType.Etc; region++, i++)
+        for (var region = RegionType.NONE; region <= RegionType.ETC; region++, i++)
         {
             var slot = i == m_element.pTab.childCount ? Instantiate(m_element.pTab.GetChild(0), m_element.pTab) : m_element.pTab.GetChild(i);
 
@@ -139,9 +139,8 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         var group = TableManager.storyNode.group
             .Select(x =>
                 x.Where(y =>
-                    y[0].region_type == m_curRegion ||
                     m_curRegion == RegionType.NONE ||
-                    y[0].region_type == RegionType.NONE ||
+                    y.Count(x=>x.region_type == m_curRegion) > 0 ||
                     y[0].order_num == DataManager.storyMode.nextOpenOrderNumber)
                 .ToList())
             .Where(x => x.Count > 0).ToList();
@@ -155,7 +154,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
 
             slot.gameObject.SetActive(true);
             slot.name = group[i][0][0].year.ToString();
-            if (slot.SetNodeData(group[i]) == false)
+            if (slot.SetNodeData(m_curRegion, group[i]) == false)
             {
                 i++;
                 break;

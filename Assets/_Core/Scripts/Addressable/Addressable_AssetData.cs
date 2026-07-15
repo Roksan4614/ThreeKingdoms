@@ -88,7 +88,7 @@ public partial class AddressableManager
 
         await Load_HeroIconAsync(_key);
 
-        return m_heroIcon.ContainsKey(key) ? m_heroIcon[key].Result : null;
+        return await GetHeroIconAsync(_key);
     }
     #endregion HERO_ICON
 
@@ -194,7 +194,7 @@ public partial class AddressableManager
 
         await Load_HeroCharacterAsync(_key);
 
-        return m_heroCharacter.ContainsKey(_key) ? m_heroCharacter[_key].Result : null;
+        return await GetHeroCharacterAsync(_key);
     }
     #endregion HERO_CHARACTER
 

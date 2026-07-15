@@ -18,7 +18,6 @@ public enum PopupType
     SelectRegion,
 
     Hero_Filter,
-    Hero_Sort,
     Hero_HeroInfo,
 
     Castle_HeroList,

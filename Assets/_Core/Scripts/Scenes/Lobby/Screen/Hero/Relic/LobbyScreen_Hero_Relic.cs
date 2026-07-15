@@ -144,7 +144,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 
     void UpdateRelic_TotalClass()
     {
-        var myHero = DataManager.userInfo.GetHeroSortData().ToArray();
+        var myHero = DataManager.userInfo.GetHeroSortData(_isWithNotMine: false).ToArray();
 
         m_element.scroll.Initialize<LobbyScreen_Hero_Relic_Item>(myHero.Length,
             (_item, _idxData) =>

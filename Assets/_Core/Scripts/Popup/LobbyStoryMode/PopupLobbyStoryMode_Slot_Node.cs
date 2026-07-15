@@ -19,8 +19,9 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         m_element.btnChange.onClick.AddListener(OnButton_Change);
     }
 
-    public void SetStoryNode(List<Table_StoryMode_Node.TableStoryModeNodeData> _data)
+    public void SetStoryNode(List<Table_StoryMode_Node.TableStoryModeNodeData> _data, RegionType _region = RegionType.NONE)
     {
+        m_curIdx = 0;
         gameObject.SetActive(true);
 
         // 다음에 오픈할 차례라면
@@ -48,9 +49,18 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             }
         }
 
-        m_data = _data;
+        m_data = _data.SortBy(x => x.region_type == DataManager.userInfo.region ? -1 : 0);
+        if (_region > RegionType.NONE)
+        {
+            for (int i = 0; i < m_data.Count; i++)
+            {
+                if (m_data[i].region_type != _region)
+                    m_data.RemoveAt(i--);
+            }
+        }
+
         SetActive_Choice(false);
-        m_element.btnChange.gameObject.SetActive(_data.Count > 1);
+        m_element.btnChange.gameObject.SetActive(m_data.Count > 1);
 
         var clearKey = DataManager.storyMode.nodeKeyNewClear;
         if (clearKey.IsActive())
@@ -69,7 +79,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
         // 마지막 플레이한 것보다 나중이라면
         {
-            bool overLastPlay = _data[0].order_num > DataManager.storyMode.nextPlayOrderNumber;
+            bool overLastPlay = m_data[0].order_num > DataManager.storyMode.nextPlayOrderNumber;
             if (overLastPlay)
             {
                 ((RectTransform)m_element.objLock.transform.GetChild(0)).anchoredPosition = Vector2.zero;
@@ -152,16 +162,16 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             return;
         }
 
-#if SERVICE_DEV
-        result = await PopupManager.instance.OpenModalAsync("EDITOR: 입장할꺼야??\n취소하면 저장만 할거야");
+//#if SERVICE_DEV
+//        result = await PopupManager.instance.OpenModalAsync("EDITOR: 입장할꺼야??\n취소하면 저장만 할거야");
 
-        if (result != StatusType.Success)
-        {
-            m_element.button.interactable = true;
-            DataManager.storyMode.TestSave(m_data[m_curIdx]);
-            return;
-        }
-#endif
+//        if (result != StatusType.Success)
+//        {
+//            m_element.button.interactable = true;
+//            DataManager.storyMode.TestSave(m_data[m_curIdx]);
+//            return;
+//        }
+//#endif
 
         DataManager.storyMode.EnterAsync(m_data[m_curIdx].node_key).Forget();
     }
@@ -185,26 +195,34 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         // 보상이 영웅이라면
         if (storyNode.reward_character.IsActive() == true)
         {
-            await UniTask.WaitForSeconds(.5f);
+            var rewards = storyNode.reward_character.Replace(" ", "").Split(',');
 
-            var heroName =KoreanHelper.AppendJosa(TableManager.stringHero.GetHeroName(storyNode.reward_character), KoreanHelper.JosaType.EulLeul,"[{0}]");
-            PopupManager.instance.AlertShow($"{heroName}_얻었습니다.", 70);
-
-            var heroInfoData = DataManager.userInfo.GetHeroInfoData(storyNode.reward_character);
-
-            DataManager.userInfo.AddHeroSoul(storyNode.reward_character, 10);
-
-            if (heroInfoData.isActive == false)
+            for (int i = 0; i < rewards.Length; i++)
             {
-                PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
-                popupHeroInfo.AutoCloseAsync(5f).Forget();
-                heroInfoData = new(storyNode.reward_character, GradeType.Normal);
+                var heroKey = rewards[i];
+                await UniTask.WaitForSeconds(.5f);
 
-                await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true, true);
-            }
-            else
-            {
-                PopupManager.instance.AlertShow($"[{heroName}]의_영혼석을_획득했습니다.");
+                var heroName = KoreanHelper.AppendJosa(TableManager.stringHero.GetHeroName(heroKey), KoreanHelper.JosaType.EulLeul, "[{0}]");
+                PopupManager.instance.AlertShow($"{heroName}_얻었습니다.", 70);
+
+                var heroInfoData = DataManager.userInfo.GetHeroInfoData(heroKey);
+
+                DataManager.userInfo.AddHeroSoul(heroKey, 10);
+
+                if (heroInfoData.isActive == false)
+                {
+                    PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
+                    popupHeroInfo.AutoCloseAsync(5f).Forget();
+                    heroInfoData = new(heroKey, GradeType.Normal);
+
+                    await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true, true);
+
+                    await UniTask.WaitUntil(() => popupHeroInfo == null);
+                }
+                else
+                {
+                    await PopupManager.instance.AlertShowAsync($"[{heroName}]의_영혼석을_획득했습니다.");
+                }
             }
         }
         else if (storyNode.reward_currency_type.IsActive())

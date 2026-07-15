@@ -18,8 +18,8 @@ public class Scene_Lobby : SceneBase
 
         await TeamManager.instance.SpawnUpdateAsync();
 
-        if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
-            await TutorialManager.instance.StartAsync(TutorialType.START);
+        //if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+        //    await TutorialManager.instance.StartAsync(TutorialType.START);
 
         StageManager.instance.StartStageAsync().Forget();
 

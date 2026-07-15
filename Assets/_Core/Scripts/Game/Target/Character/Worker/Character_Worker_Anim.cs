@@ -55,6 +55,9 @@ public class Character_Worker_Anim : Character_Worker
             _animType == CharacterAnimType.Skill)
             m_owner.attack.isRunningAttack = true;
 
+        if (m_owner.gameObject.activeInHierarchy == false)
+            return;
+
         //m_animator.Play(_animType.ToString(), _layerIndex, 0);
         m_animator.CrossFade(_animType.ToString(), 0, _layerIndex, _timeOffest);
 

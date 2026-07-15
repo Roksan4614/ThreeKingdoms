@@ -97,7 +97,7 @@ public class PopupSelectRegionComponent : BasePopupComponent
             txtDesc = panel.GetComponent<TextMeshProUGUI>("txt_desc");
 
             m_dbHero = new();
-            for (var region = RegionType.NONE + 1; region < RegionType.Etc; region++)
+            for (var region = RegionType.NONE + 1; region < RegionType.ETC; region++)
             {
                 RegionData hero = new();
                 hero.Initialize(region, panel.Find("btn_" + region));

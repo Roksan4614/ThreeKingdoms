@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 {
     PopupHeroFilter m_popupFilter;
-    PopupHeroSort m_popupSort;
     PopupHeroInfo m_popupHeroInfo;
 
     List<HeroIconComponent> m_itemBatch = new();
@@ -30,7 +30,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     {
         tabType = LobbyScreen_Hero.HeroTabType.Hero;
 
-        m_element.btn_filter.onClick.AddListener(
+        m_element.btnFilter.onClick.AddListener(
             async () =>
             {
                 if (m_popupFilter == null)
@@ -38,27 +38,35 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                 else
                     m_popupFilter.OpenPopup();
 
-                await UniTask.WaitUntil(() => m_popupFilter.gameObject.activeSelf == false);
+                await UniTask.WaitUntil(() => m_popupFilter.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
 
                 if (m_popupFilter.isNeedUpdate)
+                {
                     SetLayout_List();
+                    m_element.scroll.content.anchoredPosition = Vector2.zero;
+                }
             });
 
-        m_element.btn_sort.onClick.AddListener(
-            async () =>
+
+        UnityAction action = () =>
+        {
+            var scale = m_element.imgSort.rectTransform.localScale;
+            scale.y = DataManager.userInfo.sortData.isDescending ? -1 : 1;
+            m_element.imgSort.rectTransform.localScale = scale;
+        };
+        action();
+
+        m_element.btnSort.onClick.AddListener(
+            () =>
             {
-                if (m_popupSort == null)
-                    m_popupSort = await PopupManager.instance.OpenPopupAsync<PopupHeroSort>(PopupType.Hero_Sort);
-                else
-                    m_popupSort.OpenPopup();
+                var sortData = DataManager.userInfo.sortData;
+                DataManager.userInfo.SetSortingData(sortData.sortType, sortData.isDescending == false);
+                SetLayout_List();
 
-                await UniTask.WaitUntil(() => m_popupSort.gameObject.activeSelf == false);
-
-                if (m_popupSort.isNeedUpdate)
-                    SetLayout_List();
+                action();
             });
 
-        m_element.btn_mainPosition.onClick.AddListener(OnButton_TeamPosition);
+        m_element.btnMainPosition.onClick.AddListener(OnButton_TeamPosition);
 
         // 출정 중 히어로 세팅
         {
@@ -87,7 +95,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         // 리스트 아이콘 미리 생성
         {
-            var scroll = m_element.list.layout.GetComponent<ScrollRect>();
+            var scroll = m_element.scroll;
             var baseItem = scroll.content.GetChild(0).GetComponent<HeroIconComponent>();
             baseItem.transform.SetParent(scroll.viewport);
             while (baseItem.element.icon.childCount > 0)
@@ -109,16 +117,10 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
             if (i < 20)
             {
-                scroll.enabled = false;
                 scroll.verticalScrollbar.gameObject.SetActive(false);
 
-                var e = baseItem.element;
-                Destroy(e.txtLevel.gameObject);
-                Destroy(e.txtName.gameObject);
-                Destroy(e.icon.parent.gameObject);
-                Destroy(e.btnAction.gameObject);
-                Destroy(e.badge);
-                e.btnHero.interactable = false;
+                baseItem.element.panel.gameObject.SetActive(false);
+                baseItem.element.btnHero.interactable = false;
 
                 // 20개 미리 생성은 해두자
                 for (; i < 20; i++)
@@ -131,8 +133,8 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             Destroy(baseItem.gameObject);
         }
 
-        SetLayout_List();
         m_isStarted = true;
+        SetLayout_List();
     }
 
     bool m_isStarted = false;
@@ -145,7 +147,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         {
             List<HeroInfoData> myHero = new();
             myHero.AddRange(m_myHero);
-            
+
             // 이 창에서 없는 영웅들을 추가해줘야.
             // 열때마다 계산하면 편하지만, 연산을 줄이기 위함
             m_myHero.Clear();
@@ -178,12 +180,10 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     {
         if (m_popupFilter != null)
             Destroy(m_popupFilter.gameObject);
-        if (m_popupSort != null)
-            Destroy(m_popupSort.gameObject);
         if (m_popupHeroInfo != null)
             Destroy(m_popupHeroInfo.gameObject);
 
-        m_popupSort = null; m_popupHeroInfo = null; m_popupFilter = null;
+        m_popupHeroInfo = null; m_popupFilter = null;
     }
 
     public override bool IsCloseScreen()
@@ -191,7 +191,6 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         if (gameObject.activeSelf == true)
         {
             if (m_popupFilter?.gameObject.activeSelf == true ||
-                m_popupSort?.gameObject.activeSelf == true ||
                 m_popupHeroInfo?.gameObject.activeSelf == true)
                 return false;
             else
@@ -251,17 +250,17 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
             EffectWorker.instance.ResetEffect();
 
-            if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
-            {
-                await TeamManager.instance.SpawnUpdateAsync();
+            //if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            //{
+            //    await TeamManager.instance.SpawnUpdateAsync();
 
-                DataManager.userInfo.SortTeamPosition(TeamManager.instance.members.Select(x => x.Value.info).ToList());
+            //    DataManager.userInfo.SortTeamPosition(TeamManager.instance.members.Select(x => x.Value.info).ToList());
 
-                TeamManager.instance.RepositionToMain(0, true);
+            //    TeamManager.instance.RepositionToMain(0, true);
 
-                MapManager.instance.FadeDimm(false);
-                return;
-            }
+            //    MapManager.instance.FadeDimm(false);
+            //    return;
+            //}
 
             TeamManager.instance.SetState(CharacterStateType.None);
             StageManager.instance.SetState(CharacterStateType.None);
@@ -280,7 +279,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     void OnButton_TeamPosition()
     {
         m_teamPosition = m_teamPosition == TeamPositionType.Front ? TeamPositionType.Back : TeamPositionType.Front;
-        m_element.txt_mainPosition.text = m_teamPosition == TeamPositionType.Front ? "전열" : "후열";
+        m_element.txtMainPosition.text = m_teamPosition == TeamPositionType.Front ? "전열" : "후열";
 
         var line = m_itemBatch[0].transform.parent.Find("Line");
         if (m_teamPosition == TeamPositionType.Front)
@@ -493,6 +492,9 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     #region LIST
     void SetLayout_List(HeroInfoData _updateInfoData = default)
     {
+        if (m_isStarted == false)
+            return;
+
         // 업데이트 정보가 필요하다면
         if (_updateInfoData.isActive)
         {
@@ -510,19 +512,29 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         if (mainTeamPos != m_teamPosition)
             DataManager.option.mainTeamPosition = mainTeamPos;
 
-        var orderMap = sortData
-            .Select((_data, _index) => new { _data, _index })
-            .ToDictionary(x => x._data.key, x => x._index);
+        for (int i = 0; i < m_itemList.Count; i++)
+        {
+            int idx = sortData.FindIndex(x => x.key == m_itemList[i].data.key);
 
-        m_itemList = m_itemList.SortBy(x =>
-            {
-                string key = x.data.key;
-                int result = orderMap.ContainsKey(key) ? orderMap[key] : int.MaxValue;
-                return result;
-            });
+            bool isActive = idx > -1;
+            m_itemList[i].element.panel.gameObject.SetActive(isActive);
+            if (isActive)
+                m_itemList[i].transform.SetSiblingIndex(idx);
+        }
 
-        for (int i = m_itemList.Count - 1; i > -1; i--)
-            m_itemList[i].transform.SetAsFirstSibling();
+        //var orderMap = sortData
+        //    .Select((_data, _index) => new { _data, _index })
+        //    .ToDictionary(x => x._data.key, x => x._index);
+
+        //m_itemList = m_itemList.SortBy(x =>
+        //    {
+        //        string key = x.data.key;
+        //        int result = orderMap.ContainsKey(key) ? orderMap[key] : int.MaxValue;
+        //        return result;
+        //    });
+
+        //for (int i = m_itemList.Count - 1; i > -1; i--)
+        //    m_itemList[i].transform.SetAsFirstSibling();
 
         ////보유 미보유 전체
         //bool isAll = true;
@@ -736,25 +748,31 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     [Serializable]
     struct ElementData
     {
-        public Button btn_filter;
-        public Button btn_sort;
-        public Button btn_mainPosition;
+        public Button btnFilter;
+        public Button btnSort;
+        public Image imgSort;
+        public Button btnMainPosition;
 
-        public TextMeshProUGUI txt_mainPosition;
+        public TextMeshProUGUI txtMainPosition;
 
         public LayoutData batch;
         public LayoutData list;
 
+        public ScrollRect scroll;
+
         public void Initialize(Transform _transform)
         {
-            btn_filter = _transform.GetComponent<Button>("List/btn_filter");
-            btn_sort = _transform.GetComponent<Button>("List/btn_sort");
-            btn_mainPosition = _transform.GetComponent<Button>("Batch/btn_position");
+            btnFilter = _transform.GetComponent<Button>("List/btn_filter");
+            btnSort = _transform.GetComponent<Button>("List/btn_sort");
+            imgSort = _transform.GetComponent<Image>("List/btn_sort/Image");
+            btnMainPosition = _transform.GetComponent<Button>("Batch/btn_position");
 
-            txt_mainPosition = btn_mainPosition.GetComponentInChildren<TextMeshProUGUI>();
+            txtMainPosition = btnMainPosition.GetComponentInChildren<TextMeshProUGUI>();
 
             batch.Initialize(_transform, "Batch");
             list.Initialize(_transform, "List");
+
+            scroll = list.layout.GetComponent<ScrollRect>();
         }
     }
 

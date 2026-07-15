@@ -17,7 +17,7 @@ public class Table_String : Table_String_Base
         : $"{GetString($"GRADE_{(_isDifficult ? "DIFFICULT_" : "")}{_gradeType.ToString().ToUpper()}")}";
 
     public string GetRegionType(RegionType _regionType, bool _isFull)
-        => GetString("REGION_NAME_" + (_isFull ? "FULL_" : "") + (_regionType == RegionType.NONE ? "ALL" : _regionType.ToString().ToUpper()));
+        => GetString(_regionType == RegionType.NONE ? "TAB_ALL" : $"REGION_NAME_{(_isFull ? "FULL_" : "")}{_regionType}");
 
     public string GetBattleStat(BattleStatType _statType)
         => GetString("BATTLESTAT_" + _statType.ToString().ToUpper());

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PopupHeroSort_Item : MonoBehaviour
+public class StoryMode_Node_30a : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

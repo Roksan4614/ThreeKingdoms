@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IPointerUpHandler
 {
+    protected virtual void Awake() { }
+
     public RectTransform rt => m_element.rt;
 
     public Button.ButtonClickedEvent onClick

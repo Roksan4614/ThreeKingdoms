@@ -1,7 +1,5 @@
-using DG.Tweening.Plugins;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class Table_Region : BaseTable<RegionType, TableRegionData>
 {

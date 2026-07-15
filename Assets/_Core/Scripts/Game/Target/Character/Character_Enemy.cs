@@ -12,12 +12,12 @@ public class Character_Enemy : CharacterComponent
     void SetHeroData_Enemy(string _key, GradeType _gradeType = GradeType.Normal, int _enchantLevel = 0)
     {
         if (_key.IsActive())
-            m_stat = TableManager.statHero.GetStatData(_key, _gradeType, _enchantLevel);
+            m_stat = TableManager.statEnemy.GetStatData(_key, _gradeType, _enchantLevel);
 
         if (m_stat.isActive == false)
         {
             if (_key.IsActive())
-                m_stat = TableManager.statEnemy.GetStatData(_key, _gradeType, _enchantLevel);
+                m_stat = TableManager.statHero.GetStatData(_key, _gradeType, _enchantLevel);
 
             if (m_stat.isActive == false)
                 m_stat = TableManager.statEnemy.GetStatData("Enemy", _gradeType, _enchantLevel);

@@ -31,7 +31,7 @@ public class Table_FriendShip : BaseTable<string, TableFriendShipOriginData>
         list.Add(new()
         {
             key = "√À¿« ±‚µ’",
-            heroes = "GuanYu, ZhangFei, ZhaYun",
+            heroes = "GuanYu, ZhangFei, ZhaoYun",
             statType = BattleStatType.move_speed,
             value = 5
         });

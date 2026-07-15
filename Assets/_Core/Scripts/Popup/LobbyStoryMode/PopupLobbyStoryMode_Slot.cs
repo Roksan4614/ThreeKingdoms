@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PopupLobbyStoryMode_Slot : MonoBehaviour, IValidatable
 {
-    public bool SetNodeData(List<List<Table_StoryMode_Node.TableStoryModeNodeData>> _db)
+    public bool SetNodeData(RegionType _region, List<List<Table_StoryMode_Node.TableStoryModeNodeData>> _db)
     {
         m_element.txtYear.gameObject.SetActive(true);
         m_element.txtYear.text = _db[0][0].year + "³â";
@@ -17,7 +17,7 @@ public class PopupLobbyStoryMode_Slot : MonoBehaviour, IValidatable
             var node = (idx == transform.childCount ? Instantiate(transform.GetChild(idx - 1), transform) : transform.GetChild(idx))
                 .GetComponent<PopupLobbyStoryMode_Slot_Node>();
 
-            node.SetStoryNode(_db[i]);
+            node.SetStoryNode(_db[i], _region);
             node.gameObject.SetActive(true);
 
             if (node.isOpenNode == true)

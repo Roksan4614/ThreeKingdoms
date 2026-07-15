@@ -39,11 +39,11 @@ public class TutorialManager
         }
     }
 
-    public static async UniTask WaitComplete(TutorialType _type, CancellationToken _token)
-        => await UniTask.WaitUntil(() => instance.IsComplete(_type), cancellationToken: _token);
+    //public static async UniTask WaitComplete(TutorialType _type, CancellationToken _token)
+    //    => await UniTask.WaitUntil(() => instance.IsComplete(_type), cancellationToken: _token);
 
-    public bool IsComplete(TutorialType _type)
-        => m_loadData.Contains(_type);
+    //public bool IsComplete(TutorialType _type)
+    //    => m_loadData.Contains(_type);
 
     void SaveData()
     {

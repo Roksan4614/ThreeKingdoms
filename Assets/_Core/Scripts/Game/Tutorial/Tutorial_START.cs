@@ -353,31 +353,31 @@ public class Tutorial_START : TutorialBase
 
             int i = 0;
 
-            if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
-            {
-                i++;
-                result.Add(new()
-                {
-                    key = ItemType.Dedicated_Soul_Stone,
-                    value = _hostKey,
-                    count = TableManager.hero.GetNeedSoul(GradeType.Normal),
-                    category = ItemCategoryType.Soul_Stone,
-                });
+            //if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            //{
+            //    i++;
+            //    result.Add(new()
+            //    {
+            //        key = ItemType.Dedicated_Soul_Stone,
+            //        value = _hostKey,
+            //        count = TableManager.hero.GetNeedSoul(GradeType.Normal),
+            //        category = ItemCategoryType.Soul_Stone,
+            //    });
 
-                var startHero = TableManager.region.Get(
-                    TableManager.hero.Get(_hostKey).regionType).startHeroKey.Take(2).ToArray();
+            //    var startHero = TableManager.region.Get(
+            //        TableManager.hero.Get(_hostKey).regionType).startHeroKey.Take(2).ToArray();
 
-                for (; i <= startHero.Length; i++)
-                {
-                    result.Add(new()
-                    {
-                        key = ItemType.Dedicated_Soul_Stone,
-                        value = startHero[i - 1],
-                        count = 10,
-                        category = ItemCategoryType.Soul_Stone,
-                    });
-                }
-            }
+            //    for (; i <= startHero.Length; i++)
+            //    {
+            //        result.Add(new()
+            //        {
+            //            key = ItemType.Dedicated_Soul_Stone,
+            //            value = startHero[i - 1],
+            //            count = 10,
+            //            category = ItemCategoryType.Soul_Stone,
+            //        });
+            //    }
+            //}
 
             for (; i < 10; i++)
             {

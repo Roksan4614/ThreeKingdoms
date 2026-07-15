@@ -114,9 +114,9 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
         }
     }
 
-    public RegionType prevRegion => m_curRegion == RegionType.NONE ? RegionType.Wu : m_curRegion - 1;
+    public RegionType prevRegion => m_curRegion == RegionType.NONE ? RegionType.WU : m_curRegion - 1;
     public RegionType curRegion => m_curRegion;
-    public RegionType nextRegion => m_curRegion == RegionType.Wu ? RegionType.NONE : m_curRegion + 1;
+    public RegionType nextRegion => m_curRegion == RegionType.WU ? RegionType.NONE : m_curRegion + 1;
 
     public void SetActive(bool _isActive)
     {

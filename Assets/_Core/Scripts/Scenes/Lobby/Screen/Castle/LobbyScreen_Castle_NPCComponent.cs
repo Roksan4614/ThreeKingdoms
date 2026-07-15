@@ -78,7 +78,8 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
                 m_emoticonType = NPCEmoticonType.NONE;
             }
 
-            m_element.anim.Play("Castle_NPC_Walk");
+            if( gameObject.activeInHierarchy == true)
+                m_element.anim.Play("Castle_NPC_Walk");
 
             var targetPos = LobbyScreen_Castle_NPCManager.instance.GetTargetPosition(_idxStreet, m_idxPos, out m_idxPos);
             SetFlip(targetPos, true);
@@ -93,7 +94,8 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
                 .SetEase(Ease.Linear)
                 .ToUniTask(TweenCancelBehaviour.Kill, token);
 
-            m_element.anim.Play("Castle_NPC_Idle");
+            if (gameObject.activeInHierarchy == true)
+                m_element.anim.Play("Castle_NPC_Idle");
 
             // 성문뒤에 완전히 숨었으면 좀 바꿔주자
             if ((_idxStreet == 0 && m_idxPos == 16) ||
@@ -150,7 +152,8 @@ public class LobbyScreen_Castle_NPCComponent : MonoBehaviour, IValidatable, IPoi
         transform.DOKill();
         ReleaseCTS();
 
-        m_element.anim.Play("Castle_NPC_Hit");
+        if (gameObject.activeInHierarchy == true)
+            m_element.anim.Play("Castle_NPC_Hit");
         StartAsync(m_idxStreet, m_idxPos).Forget();
 
         List<NPCEmoticonType> touchEmoticon = new() { NPCEmoticonType.Question, NPCEmoticonType.Angry, NPCEmoticonType.Love, NPCEmoticonType.Fluster };

@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IValidatable
 {
     public HeroInfoData data { get; private set; }
+
     public Button.ButtonClickedEvent onClick
         => m_element.btnHero?.onClick;
 
@@ -87,14 +88,18 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
         if (_data.isMine)
         {
-            m_element.txtName.color = Color.gray1;
             m_element.outline.color =
                 Palette.instance.data.Get("icon_outline_grade_" + _data.grade.ToString().ToLower());
+
+            if (m_element.txtName != null)
+                m_element.txtName.color = Color.gray1;
         }
         else
         {
             m_element.outline.color = Color.gray;
-            m_element.txtName.color = Color.gray;
+
+            if (m_element.txtName != null)
+                m_element.txtName.color = Color.gray;
         }
 
 
@@ -243,5 +248,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
         public void SetActiveName(bool _isActive)
             => txtName.gameObject.SetActive(_isActive);
+
+        public Transform panel => badge.transform.parent;
     }
 }

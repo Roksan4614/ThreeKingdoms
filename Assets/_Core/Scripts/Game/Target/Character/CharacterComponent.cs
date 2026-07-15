@@ -93,7 +93,7 @@ public class CharacterComponent : TargetComponent
 
     public void SlotUpdateHeroStat(string _key)
     {
-        if (_key.Equals(m_info.key) == false)
+        if (_key.IsActive() == false || _key.Equals(m_info.key) == false)
             return;
 
         SetHeroData(_key);

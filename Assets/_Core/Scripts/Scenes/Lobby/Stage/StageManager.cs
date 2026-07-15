@@ -216,10 +216,13 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
                     }
                     else
                     {
-                        PopupManager.instance.AlertShow("잠시 후퇴!!_전량상_후퇴일뿐입니다.");
-
-                        // 팝업 띄우자!!
-                        PopupManager.instance.OpenPopup(PopupType.UpgradeGuide);
+                        if (LobbyScreenManager.instance.curScreen == LobbyScreenType.None ||
+                            PopupManager.instance.IsOpenPopup() == false)
+                        {
+                            PopupManager.instance.OpenPopup(PopupType.UpgradeGuide);
+                        }
+                        else
+                            PopupManager.instance.AlertShow("잠시 후퇴!!_전량상_후퇴일뿐입니다.");
 
                         m_loadData.isBossWait = true;
                     }

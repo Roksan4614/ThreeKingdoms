@@ -27,19 +27,19 @@ public class Data_UserInfo
             await AddressableManager.instance.Load_HeroIconAsync(m_element.myHero.Select(x => x.skin).ToArray());
             await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
 
-            if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
-            {
-                var heroes = m_element.myHero.FindAll(x => x.isMain == false && x.isBatch == true).ToList();
-                if (heroes.Count > 0)
-                {
-                    for (int i = 0; i < heroes.Count; i++)
-                    {
-                        var h = heroes[i];
-                        h.isBatch = false;
-                        Update(h);
-                    }
-                }
-            }
+            //if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            //{
+            //    var heroes = m_element.myHero.FindAll(x => x.isMain == false && x.isBatch == true).ToList();
+            //    if (heroes.Count > 0)
+            //    {
+            //        for (int i = 0; i < heroes.Count; i++)
+            //        {
+            //            var h = heroes[i];
+            //            h.isBatch = false;
+            //            Update(h);
+            //        }
+            //    }
+            //}
         }
         else
         {
@@ -111,9 +111,7 @@ public class Data_UserInfo
             var data = _data[i];
 
             if (data.isBatch == true)
-            {
                 lstBatch.Add(data);
-            }
             else if (_isWithNotMine == true || data.isMine == true)
                 lstNotBatch.Add(data);
         }
@@ -122,7 +120,8 @@ public class Data_UserInfo
 
         if (_isWithNotMine == true && dbHero.Count > _data.Count)
         {
-            dbHero = dbHero.Where(x => _data.Any(_x => _x.key.Equals(x.key) == false) == false).ToList();
+            var keys = _data.Select(x => x.key).ToHashSet();
+            dbHero = dbHero.Where(x => keys.Contains(x.key) == false).ToList();
 
             for (int i = 0; i < dbHero.Count; i++)
             {
@@ -143,18 +142,18 @@ public class Data_UserInfo
             result.AddRange(lstBatch);
         }
 
-        lstNotBatch.Sort((x, y) => { return Compare(x, y, _isWithNotMine); });
-
-        // 보유한걸 위로 올려주자
-        if (_isWithNotMine == true)
-            lstNotBatch = lstNotBatch.SortByDescending(x => x.isMine);
+        lstNotBatch.Sort((x, y) => { return SortCompare(x, y, true); });
 
         result.AddRange(lstNotBatch);
 
         lstBatch = null;
         lstNotBatch = null;
-        return result.FindAll(x =>
+
+        result = result.FindAll(x =>
         {
+            if (x.isBatch == true)
+                return true;
+
             if (m_sortData.isAll_Region == false &&
                 m_sortData.filter_region.Contains(x.regionType) == false)
             {
@@ -175,6 +174,8 @@ public class Data_UserInfo
 
             return true;
         });
+
+        return result;
     }
 
     public bool HasHero(CharacterName _name)
@@ -323,7 +324,7 @@ public class Data_UserInfo
     #endregion ASSETS
 
     #region SORT
-    public int Compare(HeroInfoData x, HeroInfoData y, bool _isWithNotMine)
+    public int SortCompare(HeroInfoData x, HeroInfoData y, bool _isFirstMine)
     {
         if (ReferenceEquals(x, y)) return 0;
         if (x.isActive == false) return -1;
@@ -331,10 +332,16 @@ public class Data_UserInfo
 
         int result = 0;
 
+        if (_isFirstMine)
+        {
+            if (x.isMine != y.isMine)
+                return x.isMine ? -1 : 1;
+        }
+
         switch (m_sortData.sortType)
         {
-            case HeroSortType.Region:
-                result = CompareRegion(x, y);
+            case HeroSortType.REGION:
+                result = CompareRegion(x, y) * (m_sortData.isDescending ? -1 : 1);
                 if (result != 0) return result;
                 result = CompareClass(x, y);
                 if (result != 0) return result;
@@ -343,8 +350,8 @@ public class Data_UserInfo
                 result = CompareEnchantLevel(x, y);
                 break;
 
-            case HeroSortType.Class:
-                result = CompareClass(x, y);
+            case HeroSortType.CLASS:
+                result = CompareClass(x, y) * (m_sortData.isDescending ? -1 : 1);
                 if (result != 0) return result;
                 result = CompareRegion(x, y);
                 if (result != 0) return result;
@@ -353,8 +360,8 @@ public class Data_UserInfo
                 result = CompareEnchantLevel(x, y);
                 break;
 
-            case HeroSortType.Grade:
-                result = CompareGrade(x, y);
+            case HeroSortType.GRADE:
+                result = CompareGrade(x, y) * (m_sortData.isDescending ? -1 : 1);
                 if (result != 0) return result;
                 result = CompareRegion(x, y);
                 if (result != 0) return result;
@@ -363,8 +370,8 @@ public class Data_UserInfo
                 result = CompareEnchantLevel(x, y);
                 break;
 
-            case HeroSortType.Level:
-                result = CompareEnchantLevel(x, y);
+            case HeroSortType.LEVEL:
+                result = CompareEnchantLevel(x, y) * (m_sortData.isDescending ? -1 : 1);
                 if (result != 0) return result;
                 result = CompareRegion(x, y);
                 if (result != 0) return result;
@@ -379,8 +386,9 @@ public class Data_UserInfo
         result = string.Compare(x.name, y.name, System.StringComparison.Ordinal);
         if (result != 0) return result;
 
-        return _isWithNotMine ? x.isMine.CompareTo(y.isMine) : 0;
+        return 0;
     }
+
     private int CompareRegion(HeroInfoData x, HeroInfoData y)
     {
         bool isX = x.regionType == DataManager.userInfo.region;
@@ -392,8 +400,9 @@ public class Data_UserInfo
         return isX ? -1 : 1;
     }
     private int CompareClass(HeroInfoData x, HeroInfoData y) => x.classType.CompareTo(y.classType);
-    private int CompareGrade(HeroInfoData x, HeroInfoData y) => x.grade.CompareTo(y.grade);
-    private int CompareEnchantLevel(HeroInfoData x, HeroInfoData y) => x.enchantLevel.CompareTo(y.enchantLevel);
+    // -1은.. 오름차순이라도 등급이 높은애가 위로 가야 할것 같아
+    private int CompareGrade(HeroInfoData x, HeroInfoData y) => x.grade.CompareTo(y.grade) * -1;
+    private int CompareEnchantLevel(HeroInfoData x, HeroInfoData y) => x.enchantLevel.CompareTo(y.enchantLevel) * -1;
     #endregion SORT
 
     struct ElementData
@@ -408,7 +417,7 @@ public class Data_UserInfo
 
         public void Default()
         {
-            region = RegionType.Shu;
+            region = RegionType.SHU;
             nickname = "록산";
             myHero = new();
         }
@@ -425,14 +434,13 @@ public class Data_UserInfo
 
         public void Default()
         {
-            sortType = HeroSortType.Region;
-            isDescending = true;
+            sortType = HeroSortType.REGION;
 
             filter_region = new();
             filter_class = new();
             filter_grade = new();
 
-            int i = 0;
+            int i = -1;
             while (true)
             {
                 var rt = (RegionType)i;
@@ -456,8 +464,8 @@ public class Data_UserInfo
             }
         }
 
-        public bool isAll_Region => filter_region.Count == (int)RegionType.MAX;
-        public bool isAll_Class => filter_class.Count == (int)HeroClassType.MAX;
-        public bool isAll_Grade => filter_grade.Count == (int)GradeType.MAX;
+        public bool isAll_Region => filter_region.Contains(RegionType.MAX);
+        public bool isAll_Class => filter_class.Contains(HeroClassType.MAX);
+        public bool isAll_Grade => filter_grade.Contains(GradeType.MAX);
     }
 }
