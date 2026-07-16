@@ -37,7 +37,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
             node.SetStoryNode(new() { nextData });
             idx++;
 
-            if (DataManager.storyMode.IsComplete(nextData.node_key) == false)
+            if (DataManager.storyMode.IsComplete(nextData.node_key) == false || nextData.next_node_key.IsActive() == false)
                 break;
 
             node.SetInteractable(false);
@@ -49,7 +49,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
 
         slot.ForceRebuildLayout();
 
-        if (nextData.next_node_key.IsActive() && nextData.node_key == DataManager.storyMode.lastHistory.key)
+        if (nextData.next_node_key.IsActive() == false && nextData.node_key == DataManager.storyMode.lastHistory.key)
         {
             PopupManager.instance.AlertShow("어긋난_시간선의_끝에_도달했습니다.");
             DataManager.storyMode.lastHistory = default;
@@ -57,10 +57,13 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
 
         bool isCompleteLastNode = nextData.next_node_key.IsActive() == false && DataManager.storyMode.IsComplete(nextData.node_key);
 
-        m_element.btnConfirm.text = isCompleteLastNode ? "포기하기_" : "돌아가기_";
+        m_element.btnConfirm.text = isCompleteLastNode ? "돌아가기_" : "포기하기_";
         m_element.btnConfirm.onClick.RemoveAllListeners();
         m_element.btnConfirm.onClick.AddListener(() =>
         {
+            if (DataManager.storyMode.isLockUI == true)
+                return;
+
             m_element.btnConfirm.interactable = false;
             if (nextData.next_node_key.IsActive())
             {
@@ -81,6 +84,9 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
             }
             else
             {
+                Utils.SetActivePunch(m_element.panel, false);
+                Utils.SetActivePunch(transform.parent, true);
+
                 DataManager.storyMode.ResetIFMode(_nodeData.node_key);
             }
         });

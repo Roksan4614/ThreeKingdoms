@@ -36,12 +36,12 @@ public class Character_Worker_Talkbox : Character_Worker
         m_fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         m_rtTalkbox.ForceRebuildLayout();
 
-        if (m_rtTalkbox.rect.width > 1000)
+        if (m_rtTalkbox.rect.width > 1300)
         {
             m_fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             var size = m_rtTalkbox.sizeDelta;
-            size.x = 1000;
+            size.x = 1300;
             m_rtTalkbox.sizeDelta = size;
 
             m_rtTalkbox.ForceRebuildLayout();
@@ -84,12 +84,19 @@ public class Character_Worker_Talkbox : Character_Worker
     //}
 
     public void Start(CancellationToken _token, params string[] _talks)
-        => StartAsync(_token,_talks).Forget();
+        => StartAsync(_token, _talks).Forget();
 
+    bool m_isCancel;
     public async UniTask StartAsync(CancellationToken _token, params string[] _talks)
     {
         await UniTask.WaitUntil(() => ControllerManager.isClick == false, cancellationToken: _token);
 
+        if (isTyping == true)
+        {
+            m_isCancel = true;
+            await UniTask.WaitUntil(() => isTyping == false);
+            m_isCancel = false;
+        }
         isTyping = true;
 
         Init(_talks);
@@ -101,7 +108,7 @@ public class Character_Worker_Talkbox : Character_Worker
         {
             int idx = 0;
             var msg = _talks[i];
-            while (idx < msg.Length)
+            while (idx < msg.Length && m_isCancel == false)
             {
                 var m = msg[idx++];
                 m_txtTalk.text += m;
@@ -134,7 +141,7 @@ public class Character_Worker_Talkbox : Character_Worker
             await UniTask.WaitForSeconds(0.2f, cancellationToken: _token);
         }
 
-        await UniTask.WaitForEndOfFrame( cancellationToken: _token);
+        await UniTask.WaitForEndOfFrame(cancellationToken: _token);
         isTyping = false;
     }
 

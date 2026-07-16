@@ -247,7 +247,6 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         else if (m_isKeyboardMoving == true)
         {
             m_isKeyboardMoving = false;
-
             StopControll();
         }
     }
@@ -415,7 +414,10 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     void StopControll()
     {
         if (m_mainHero?.isLive == true)
+        {
+            m_mainHero.move.MoveStop();
             m_mainHero.SetState(TeamManager.instance.teamState);
+        }
     }
 
     public void SetMove_HeroInfoDown(bool _isBottom, bool _isTween = true, float _duration = .2f)

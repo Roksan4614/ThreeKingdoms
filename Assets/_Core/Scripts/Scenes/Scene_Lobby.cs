@@ -55,6 +55,12 @@ public class Scene_Lobby : SceneBase
         //TutorialManager.instance.Complete(TutorialType.CASTLE_FINISHED);
     }
 
+    //private void Update()
+    //{
+    //    ScreenLogWorker.Add("DISANCE_MOUSE", (TeamManager.instance.mainHero.position - CameraManager.posPointer).sqrMagnitude);
+
+    //}
+
     public override void OnManualValidate() { m_element.Initialize(transform); }
 
     [SerializeField, HideInInspector]

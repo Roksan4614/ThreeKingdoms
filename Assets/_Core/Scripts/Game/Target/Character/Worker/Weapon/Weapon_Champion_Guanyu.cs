@@ -8,7 +8,7 @@ using UnityEngine;
 public class Weapon_Champion_Guanyu : Weapon_Champion
 {
     // 원에서부터 거리
-    const float c_maxSqrMagnitudeRange = 10;
+    const float c_maxSqrMagnitudeRange = 14;
 
     float m_maxMagnitude = 8;
 
@@ -102,10 +102,9 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             if (enemy == null)
                 return;
 
-            Vector3 enemyPos = enemy.transform.position;
-            Vector3 ownerPos = m_owner.position;
+            //var lookAt = m_owner.position - enemy.position;
 
-            m_skillRange.position = enemy.transform.position;
+            m_skillRange.position = enemy.transform.position;// + lookAt.normalized * 1.5f;
         }
 
         Vector3 targetPos = m_skillRange.position;

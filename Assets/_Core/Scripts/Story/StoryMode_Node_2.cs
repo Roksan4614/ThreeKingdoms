@@ -28,11 +28,6 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         var heroes = phase.heroes.Values.ToList();
         var enemies = phase.enemies.Values.ToList();
 
-        foreach (var h in heroes)
-            h.SetActive_HP(false);
-        foreach (var e in enemies)
-            e.SetActive_HP(false);
-
         float time = Time.time;
         while (time + .5f > Time.time)
         {

@@ -145,25 +145,33 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
     protected bool IsTalkEnd() => m_queTalk.Peek().target.IsActive();
 
-    protected async UniTask TalkStartAsync()
+    protected async UniTask TalkStartAsync(int _count = 1)
     {
-        TableStringData talk = default;
-        while (talk.target == null && m_queTalk.Count > 0)
-            talk = m_queTalk.Dequeue();
+        for (int i = 0; i < _count; i++)
+        {
+            TableStringData talk = default;
+            while (talk.target == null && m_queTalk.Count > 0)
+                talk = m_queTalk.Dequeue();
 
-        if (talk.target.IsActive() == false)
+            await TalkStartAsync(talk);
+        }
+    }
+
+    protected async UniTask TalkStartAsync(TableStringData _talk)
+    {
+        if (_talk.target.IsActive() == false)
             return;
 
         var p = phase;
-        if (p.heroes.ContainsKey(talk.target))
+        if (p.heroes.ContainsKey(_talk.target))
         {
-            CameraManager.instance.SetCameraPosTarget(p.heroes[talk.target].element.cameraPos, false);
-            await p.heroes[talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, talk.talkArray);
+            CameraManager.instance.SetCameraPosTarget(p.heroes[_talk.target].element.cameraPos, false);
+            await p.heroes[_talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, _talk.talkArray);
         }
-        else if (p.enemies.ContainsKey(talk.target))
+        else if (p.enemies.ContainsKey(_talk.target))
         {
-            CameraManager.instance.SetCameraPosTarget(p.enemies[talk.target].element.cameraPos, false);
-            await p.enemies[talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, talk.talkArray);
+            CameraManager.instance.SetCameraPosTarget(p.enemies[_talk.target].element.cameraPos, false);
+            await p.enemies[_talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, _talk.talkArray);
         }
     }
 
@@ -190,12 +198,25 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
         CameraManager.instance.SetCameraPosTarget(character.element.cameraPos, false);
         character.talkbox.Start(m_cts.Token, talk.talkArray);
 
+        if (_duration == 0)
+            return;
+
         var prevText = talk.message;
         await UniTask.WaitForSeconds(_duration, cancellationToken: m_cts.Token);
 
         if (prevText == character.talkbox.text)
             character.talkbox.SetActive(false);
     }
+
+    protected async UniTask WaitForSeconds(float _second)
+    {
+        var time = Time.time + _second;
+        while (Time.time < time && ControllerManager.isClickDown)
+            await UniTask.NextFrame();
+    }
+
+    protected async UniTask WaitClick()
+        => await UniTask.WaitUntil(() => ControllerManager.isClickDown);
 
     #region VALIDATE
     public virtual void OnManualValidate() => m_elementBase.Initialize(transform);

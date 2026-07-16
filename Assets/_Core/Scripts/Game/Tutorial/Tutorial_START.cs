@@ -349,7 +349,7 @@ public class Tutorial_START : TutorialBase
         #region 영웅 불러오기
         {
             await UniTask.WaitForEndOfFrame();
-            List<TableHeroData> dbHeroes = TableManager.hero.list.Where(x => x.key.Equals(_hostKey) == false && x.isLock == false).ToList();
+            List<TableHeroData> dbHeroes = TableManager.hero.GetHeroList().Where(x => x.key.Equals(_hostKey) == false && x.isLock == false).ToList();
 
             int i = 0;
 

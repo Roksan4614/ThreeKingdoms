@@ -159,7 +159,7 @@ public class Data_BossRaid
             userData.nickname = isMine ? DataManager.userInfo.nickname.ToString() : $"Nickname_{userData.prevRank:00#}";
             userData.point = UnityEngine.Random.Range(100, 10000);
             userData.power = UnityEngine.Random.Range(1000, 3000);
-            userData.skin = TableManager.hero.list.RandomFirst().key;
+            userData.skin = TableManager.hero.GetHeroList().RandomFirst().key;
             userData.indexProfile = -1;
 
             if (isMine)
@@ -195,7 +195,7 @@ public class Data_BossRaid
             userData.nickname = isMine ? DataManager.userInfo.nickname.ToString() : $"Nickname_{userData.prevRank:00#}";
             userData.point = UnityEngine.Random.Range(1000, 1000000);
             userData.power = UnityEngine.Random.Range(1000, 3000);
-            userData.skin = TableManager.hero.list.RandomFirst().key;
+            userData.skin = TableManager.hero.GetHeroList().RandomFirst().key;
             userData.indexProfile = -1;
 
             m_rankPrevRaid.ranker.Add(userData);

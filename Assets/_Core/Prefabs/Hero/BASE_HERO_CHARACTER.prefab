@@ -517,6 +517,18 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4470262844645010057, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_animSlash.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4470262844645010057, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: 'm_animSlash.Array.data[0]'
+      value: 
+      objectReference: {fileID: 221742378074418689}
+    - target: {fileID: 4470262844645010057, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: 'm_animSlash.Array.data[1]'
+      value: 
+      objectReference: {fileID: 14587988723213347}
     - target: {fileID: 5612140386976727886, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.076
@@ -668,34 +680,10 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2857115584116255522}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8167462709559646249, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1142836337139099585}
     - targetCorrespondingSourceObject: {fileID: 9086437021538948337, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3396758736262837633}
   m_SourcePrefab: {fileID: 100100000, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
---- !u!1 &198618612309286397 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8167462709559646249, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
-  m_PrefabInstance: {fileID: 8329700655089616340}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1142836337139099585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 198618612309286397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fc61bad9249da54eaa06fc6ea9484b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_animSlash:
-  - {fileID: 221742378074418689}
-  - {fileID: 14587988723213347}
-  m_skillRange: {fileID: 0}
 --- !u!114 &221742378074418689 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8109508588679080917, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}

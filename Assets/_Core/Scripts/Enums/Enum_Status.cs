@@ -22,7 +22,8 @@ public enum DirectionType
 public enum HeroSortType
 {
     NONE = -1,
-    REGION, CLASS, GRADE, LEVEL, POWER,
+    //REGION, CLASS,
+    GRADE, LEVEL, POWER,
     MAX
 }
 

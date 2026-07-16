@@ -42,6 +42,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
                 m_dicSort.Add(type, btn);
             }
 
+            sort.ForceRebuildLayout();
             OnButton_Sort(DataManager.userInfo.sortData.sortType, true);
         }
         #endregion Á¤·Ä
@@ -62,6 +63,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
                 m_dicRegion.Add(type, btn);
             }
 
+            panel.ForceRebuildLayout();
             m_filterRegion.AddRange(DataManager.userInfo.sortData.filter_region);
             SetFilterUpdate_Region();
         }
@@ -83,6 +85,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
                 m_dicClass.Add(type, btn);
             }
 
+            panel.ForceRebuildLayout();
             m_filterClass.AddRange(DataManager.userInfo.sortData.filter_class);
             SetFilterUpdate_Class();
         }
@@ -104,6 +107,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
                 m_dicGrade.Add(type, btn);
             }
 
+            panel.ForceRebuildLayout();
             m_filterGrade.AddRange(DataManager.userInfo.sortData.filter_grade);
             SetFilterUpdate_Grade();
         }

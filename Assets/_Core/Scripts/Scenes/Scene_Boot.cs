@@ -51,7 +51,7 @@ public class Scene_Boot : MonoBehaviour, IValidatable
             {
                 string key = "pp_build_data";
 
-                var build = JObject.Parse(assetBuild.ToString());
+                var build = Newtonsoft.Json.Linq.JObject.Parse(assetBuild.ToString());
                 long tickData = (long)build["dt_build"];
 
                 if (PPWorker.HasKey(key))

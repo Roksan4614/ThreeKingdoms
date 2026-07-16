@@ -158,7 +158,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
                     dbPosition.Add(i);
                 dbPosition = dbPosition.SortBy(x => Random.value);
 
-                var dbHero = TableManager.hero.list.SortBy(x => Random.value).ToList();
+                var dbHero = TableManager.hero.GetHeroList().SortBy(x => Random.value).ToList();
                 for (int i = 0; i < 4; i++)
                 {
                     var key = dbHero[i].key;

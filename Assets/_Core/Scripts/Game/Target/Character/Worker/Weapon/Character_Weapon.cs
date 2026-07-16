@@ -105,7 +105,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
         if (m_isCritial == true)
             damage = (int)(damage * _owner.stat.criticalDamage);
 
-        if (target.OnDamage(_owner, damage))
+        if (target.OnDamage(_owner, damage, m_isCritial))
             _owner.target.SetTarget(null);
     }
 
@@ -183,7 +183,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     public virtual void OnManualValidate()
     {
         m_owner = transform.parent?.GetComponent<CharacterComponent>();
-        m_skillRange = m_owner.transform.Find("SkillRange");
+        m_skillRange = transform.parent?.Find("SkillRange");
 
         m_animSlash.Clear();
         var fxAttack = transform.GetComponent<SpriteAnimaion>("Panel/FxAttack");

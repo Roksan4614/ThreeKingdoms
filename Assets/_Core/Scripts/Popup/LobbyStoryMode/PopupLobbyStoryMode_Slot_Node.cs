@@ -58,6 +58,19 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                     m_data.RemoveAt(i--);
             }
         }
+        // 처음꺼는 좀 예외로 둘거야.
+        else if (m_data[0].order_num == 1)
+        {
+            // 안깬게 있으면 그걸 먼저 보여줄거고, 다 깻으면 그냥 내 국가꺼 보여줄거야.
+            for (int i = 0; i < m_data.Count; i++)
+            {
+                if (DataManager.storyMode.IsComplete(m_data[i].node_key) == false)
+                {
+                    m_curIdx = i;
+                    break;
+                }
+            }
+        }
 
         SetActive_Choice(false);
         m_element.btnChange.gameObject.SetActive(m_data.Count > 1);
@@ -152,6 +165,9 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
     async UniTask OnButtonAsync_Enter()
     {
+        if (DataManager.storyMode.isLockUI == true)
+            return;
+
         m_element.button.interactable = false;
 
         var result = await PopupManager.instance.OpenModalAsync("_입장하시겠습니까?");
@@ -162,16 +178,16 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             return;
         }
 
-//#if SERVICE_DEV
-//        result = await PopupManager.instance.OpenModalAsync("EDITOR: 입장할꺼야??\n취소하면 저장만 할거야");
+        //#if SERVICE_DEV
+        //        result = await PopupManager.instance.OpenModalAsync("EDITOR: 입장할꺼야??\n취소하면 저장만 할거야");
 
-//        if (result != StatusType.Success)
-//        {
-//            m_element.button.interactable = true;
-//            DataManager.storyMode.TestSave(m_data[m_curIdx]);
-//            return;
-//        }
-//#endif
+        //        if (result != StatusType.Success)
+        //        {
+        //            m_element.button.interactable = true;
+        //            DataManager.storyMode.TestSave(m_data[m_curIdx]);
+        //            return;
+        //        }
+        //#endif
 
         DataManager.storyMode.EnterAsync(m_data[m_curIdx].node_key).Forget();
     }
@@ -184,6 +200,8 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
     async UniTask RewardStartAsync()
     {
+        DataManager.storyMode.isLockUI = true;
+
         var storyNode = TableManager.storyNode.GetNode(DataManager.storyMode.nodeKeyNewClear);
         DataManager.storyMode.nodeKeyNewClear = null;
 
@@ -195,6 +213,13 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         // 보상이 영웅이라면
         if (storyNode.reward_character.IsActive() == true)
         {
+            // 첫번째인데 내 국가가 아니면 군주 추가해줘야해.
+            if (storyNode.order_num == 1 && storyNode.region_type != DataManager.userInfo.region)
+            {
+                var startHero = TableManager.region.Get(storyNode.region_type).master;
+                storyNode.reward_character = $"{startHero},{storyNode.reward_character}";
+            }
+
             var rewards = storyNode.reward_character.Replace(" ", "").Split(',');
 
             for (int i = 0; i < rewards.Length; i++)
@@ -234,6 +259,8 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                     m_element.objBadge.transform, false);
             }
         }
+
+        DataManager.storyMode.isLockUI = false;
     }
 
     #region VALIDATE

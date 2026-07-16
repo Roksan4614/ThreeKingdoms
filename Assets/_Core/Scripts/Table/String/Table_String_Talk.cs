@@ -9,7 +9,7 @@ public class Table_String_Talk : Table_String_Base
         SetDictionary(x => x.key);
     }
 
-    public Queue<TableStringData> GetTalk(string _key, bool _isPC, bool _isWithLast = true)
+    public Queue<TableStringData> GetTalk(string _key, bool _isPC, bool _isWithLast = false)
     {
         var key = _key + "_";
 
@@ -29,9 +29,9 @@ public class Table_String_Talk : Table_String_Base
 
     public List<TableStringData> GetTalkAfterQuestion(string _key, int _index)
     {
-        var key = _key + "_";
+        var key = _key.ToUpper() + "_";
 
-        return m_list.FindAll(x => x.key.StartsWith(key))
+        return m_list.FindAll(x => x.key.StartsWith(key.ToUpper()))
             .FindAll(x =>
             {
                 var split = x.key.Replace(key, "").Split("_");

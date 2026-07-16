@@ -14,6 +14,8 @@ public class Data_StoryMode
     public int siblingIndexSlot { get; private set; }
     public int siblingIndexNode { get; private set; }
 
+    public bool isLockUI { get; set; }
+
     public async UniTask InitializeAsync()
     {
         await UniTask.Yield();
@@ -140,9 +142,20 @@ public class Data_StoryMode
 
                     m_nextPlayOrderNumber = dbStory[0].order_num;
                 }
-                else if (StageManager.instance.data.level == 1)
+                else
                 {
                     var prev = TableManager.storyNode.GetNode(m_historyData[m_historyData.Count - 1].key);
+
+                    // 1은 완전초기인건데 이거 3개 다 한거 아니면 
+                    if (prev.order_num == 1)
+                    {
+                        if (m_historyData.Count(x => TableManager.storyNode.GetNode(x.key).order_num == 1) < 3)
+                        {
+                            m_nextPlayOrderNumber = 1;
+                            return m_nextPlayOrderNumber;
+                        }
+                    }
+
                     var next = TableManager.storyNode.GetNode_Next(prev);
 
                     //조건없는 노드가 있을때까지 찾기
@@ -153,9 +166,9 @@ public class Data_StoryMode
 
                     if (next != null && next.Count > 0)
                         m_nextPlayOrderNumber = next[0].order_num;
+                    else
+                        m_nextPlayOrderNumber = int.MaxValue;
                 }
-                else
-                    m_nextPlayOrderNumber = int.MaxValue;
             }
             return m_nextPlayOrderNumber;
         }

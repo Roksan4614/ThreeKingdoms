@@ -95,12 +95,13 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         #region 영웅 불러오기
         {
             await UniTask.WaitForEndOfFrame();
-            List<TableHeroData> dbHeroes = TableManager.hero.list.Where(x => x.key.Equals(_hostKey) == false && x.isLock == false).ToList();
+            List<TableHeroData> dbHeroes = TableManager.hero.list
+                .Where(x => x.key.Equals(_hostKey) == false && x.isLock == false && x.is_active_lock == false).ToList();
 
             // 특정 국가면 하나 더 넣자
             if (_regionType > RegionType.NONE)
                 dbHeroes.AddRange(TableManager.hero.list
-                    .Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false).ToList());
+                    .Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false && x.isLock == false && x.is_active_lock == false).ToList());
 
             int i = 0;
 

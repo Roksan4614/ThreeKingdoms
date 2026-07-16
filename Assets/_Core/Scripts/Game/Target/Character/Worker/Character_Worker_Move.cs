@@ -24,7 +24,7 @@ public class Character_Worker_Move : Character_Worker
         m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS();
     }
 
-    public void OnMoveUpdate(Vector2 _velocity, bool _isAnim = true)
+    public void OnMoveUpdate(Vector2 _velocity, bool _isAnim = true, bool _isFreezeRot = false)
     {
         if (_velocity == Vector2.zero)
             return;
@@ -44,7 +44,7 @@ public class Character_Worker_Move : Character_Worker
             m_owner.rig.linearVelocity = _velocity;
         }
 
-        if (_velocity.x != 0)
+        if (_velocity.x != 0 && _isFreezeRot == false)
             SetFlip(_velocity.x > 0);
     }
 
@@ -69,6 +69,34 @@ public class Character_Worker_Move : Character_Worker
             if (m_owner.element.mount != null)
                 m_owner.element.mount.localScale = scale;
         }
+    }
+
+    public void MoveToPoint(Vector3 _targetPos, bool _isFreezeRot = true)
+        => MoveToPointAsync(_targetPos, _isFreezeRot).Forget();
+
+    public async UniTask MoveToPointAsync(Vector3 _targetPos, bool _isFreezeRot = true)
+    {
+        m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS(true);
+        var token = m_ctsMoveTarget.Token;
+
+        var prevFlip = isFlip;
+
+        if (_isFreezeRot == true)
+            SetFlip(m_owner.position.x < _targetPos.x);
+
+        while (true)
+        {
+            var lookAt = _targetPos - m_owner.position;
+
+            if (lookAt.sqrMagnitude < 0.0001f)
+                break;
+
+            OnMoveUpdate(lookAt.normalized * m_owner.stat.moveSpeed, _isFreezeRot: _isFreezeRot);
+
+            await UniTask.NextFrame(cancellationToken: token);
+        }
+        MoveStop();
+        m_owner.position = _targetPos;
     }
 
     public void MoveTarget(CharacterComponent _target, bool _isAttack)

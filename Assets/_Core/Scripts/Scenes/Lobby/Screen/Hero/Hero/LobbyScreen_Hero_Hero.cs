@@ -101,7 +101,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             while (baseItem.element.icon.childCount > 0)
                 DestroyImmediate(baseItem.element.icon.GetChild(0).gameObject);
 
-            var dbHero = TableManager.hero.list;
+            var dbHero = TableManager.hero.GetHeroList();
             int i = 0;
             for (; i < dbHero.Count; i++)
             {
@@ -513,14 +513,20 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         if (mainTeamPos != m_teamPosition)
             DataManager.option.mainTeamPosition = mainTeamPos;
 
-        for (int i = 0; i < m_itemList.Count; i++)
+        int i = 0;
+        for (; i < sortData.Count; i++)
         {
-            int idx = sortData.FindIndex(x => x.key == m_itemList[i].data.key);
+            int idx = m_itemList.FindIndex(x => x.data.key == sortData[i].key);
+            m_itemList[idx].transform.SetSiblingIndex(i);
+            m_itemList[idx].element.panel.gameObject.SetActive(true);
+        }
 
-            bool isActive = idx > -1;
-            m_itemList[i].element.panel.gameObject.SetActive(isActive);
-            if (isActive)
-                m_itemList[i].transform.SetSiblingIndex(idx);
+        var parent = m_element.scroll.content;
+        for (; i < m_itemList.Count; i++)
+        {
+            var idx = sortData.FindIndex(x => x.key == m_itemList[i].data.key);
+            if (idx == -1)
+                m_itemList[i].element.panel.gameObject.SetActive(false);
         }
 
         //var orderMap = sortData

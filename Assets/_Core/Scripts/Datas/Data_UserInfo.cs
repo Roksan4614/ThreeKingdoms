@@ -116,7 +116,7 @@ public class Data_UserInfo
                 lstNotBatch.Add(data);
         }
 
-        var dbHero = TableManager.hero.list;
+        var dbHero = TableManager.hero.GetHeroList();
 
         if (_isWithNotMine == true && dbHero.Count > _data.Count)
         {
@@ -340,44 +340,24 @@ public class Data_UserInfo
 
         switch (m_sortData.sortType)
         {
-            case HeroSortType.REGION:
-                result = CompareRegion(x, y) * (m_sortData.isDescending ? -1 : 1);
-                if (result != 0) return result;
-                result = CompareClass(x, y);
-                if (result != 0) return result;
-                result = CompareGrade(x, y);
-                if (result != 0) return result;
-                result = CompareEnchantLevel(x, y);
-                break;
-
-            case HeroSortType.CLASS:
-                result = CompareClass(x, y) * (m_sortData.isDescending ? -1 : 1);
-                if (result != 0) return result;
-                result = CompareRegion(x, y);
-                if (result != 0) return result;
-                result = CompareGrade(x, y);
-                if (result != 0) return result;
-                result = CompareEnchantLevel(x, y);
-                break;
-
             case HeroSortType.GRADE:
                 result = CompareGrade(x, y) * (m_sortData.isDescending ? -1 : 1);
                 if (result != 0) return result;
-                result = CompareRegion(x, y);
-                if (result != 0) return result;
-                result = CompareClass(x, y);
-                if (result != 0) return result;
-                result = CompareEnchantLevel(x, y);
-                break;
-
-            case HeroSortType.LEVEL:
                 result = CompareEnchantLevel(x, y) * (m_sortData.isDescending ? -1 : 1);
                 if (result != 0) return result;
                 result = CompareRegion(x, y);
                 if (result != 0) return result;
                 result = CompareClass(x, y);
+                break;
+
+            case HeroSortType.LEVEL:
+                result = CompareEnchantLevel(x, y) * (m_sortData.isDescending ? -1 : 1);
                 if (result != 0) return result;
-                result = CompareGrade(x, y);
+                result = CompareGrade(x, y) * (m_sortData.isDescending ? -1 : 1);
+                if (result != 0) return result;
+                result = CompareRegion(x, y);
+                if (result != 0) return result;
+                result = CompareClass(x, y);
                 break;
         }
 
@@ -434,7 +414,7 @@ public class Data_UserInfo
 
         public void Default()
         {
-            sortType = HeroSortType.REGION;
+            sortType = HeroSortType.GRADE;
 
             filter_region = new();
             filter_class = new();

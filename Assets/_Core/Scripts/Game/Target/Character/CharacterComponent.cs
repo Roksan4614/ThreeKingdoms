@@ -355,6 +355,10 @@ public class CharacterComponent : TargetComponent
             m_effect_renderer = _transform.Find("Character/Effect_Renderer");
             m_cameraPos = panel.Find("CameraPos");
             m_skillRage = _transform.Find("SkillRange");
+            if (m_skillRage != null)
+            {
+
+            }
             m_txtTalk = _transform.GetComponent<TextMeshProUGUI>("Character/Canvas/Talkbox/txt_talk");
             m_collider = panel.parent.GetComponent<Collider2D>();
             m_rtHP = _transform.GetComponent<RectTransform>("Character/Canvas/HP/Bar");

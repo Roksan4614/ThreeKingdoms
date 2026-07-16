@@ -60,8 +60,55 @@ PrefabInstance:
       propertyPath: m_Name
       value: LiuBei
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5589137302497914717, guid: fd0ae90cc84900e42b84eab2b0dbfb86, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 198618612309286397, guid: fd0ae90cc84900e42b84eab2b0dbfb86, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6029282162981526584}
   m_SourcePrefab: {fileID: 100100000, guid: fd0ae90cc84900e42b84eab2b0dbfb86, type: 3}
+--- !u!1 &8972846278574772045 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 198618612309286397, guid: fd0ae90cc84900e42b84eab2b0dbfb86, type: 3}
+  m_PrefabInstance: {fileID: 9098492483303330480}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6029282162981526584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8972846278574772045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fc61bad9249da54eaa06fc6ea9484b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Weapon_Commander_Liubei
+  m_animSlash:
+  - {fileID: 9031862613572451505}
+  - {fileID: 9112898639995270803}
+  m_skillRange: {fileID: 0}
+--- !u!114 &9031862613572451505 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 221742378074418689, guid: fd0ae90cc84900e42b84eab2b0dbfb86, type: 3}
+  m_PrefabInstance: {fileID: 9098492483303330480}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2ef32c27c003640a3a3469bdf3b181, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9112898639995270803 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 14587988723213347, guid: fd0ae90cc84900e42b84eab2b0dbfb86, type: 3}
+  m_PrefabInstance: {fileID: 9098492483303330480}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2ef32c27c003640a3a3469bdf3b181, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

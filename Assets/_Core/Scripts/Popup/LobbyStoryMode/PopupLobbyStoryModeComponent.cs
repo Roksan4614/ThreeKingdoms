@@ -17,6 +17,9 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
 
         Utils.WaitEscape(this, () =>
         {
+            if (DataManager.storyMode.isLockUI == true || PopupManager.instance.IsOpenPopup(PopupType.Hero_HeroInfo))
+                return;
+
             Close();
         }, _token: destroyCancellationToken);
 
@@ -140,7 +143,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
             .Select(x =>
                 x.Where(y =>
                     m_curRegion == RegionType.NONE ||
-                    y.Count(x=>x.region_type == m_curRegion) > 0 ||
+                    y.Count(x => x.region_type == m_curRegion) > 0 ||
                     y[0].order_num == DataManager.storyMode.nextOpenOrderNumber)
                 .ToList())
             .Where(x => x.Count > 0).ToList();
@@ -169,9 +172,13 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         m_element.scroll.content.ForceRebuildLayout();
     }
 
-
     public override void Close()
-        => Utils.SetActivePunch(m_element.panel, false, _callback: base.Close);
+    {
+        if (DataManager.storyMode.isLockUI == true)
+            return;
+
+        Utils.SetActivePunch(m_element.panel, false, _callback: base.Close);
+    }
 
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);

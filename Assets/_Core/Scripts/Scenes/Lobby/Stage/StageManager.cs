@@ -217,12 +217,12 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
                     else
                     {
                         if (LobbyScreenManager.instance.curScreen > LobbyScreenType.None ||
-                            PopupManager.instance.IsOpenPopup() == false)
+                            PopupManager.instance.IsOpenPopup() == true)
                         {
-                            PopupManager.instance.OpenPopup(PopupType.UpgradeGuide);
+                            WaitLobby_OpenUpgradeGuideAsync().Forget();
                         }
                         else
-                            PopupManager.instance.AlertShow("잠시 후퇴!!_전량상_후퇴일뿐입니다.");
+                            PopupManager.instance.OpenPopup(PopupType.UpgradeGuide);
 
                         m_loadData.isBossWait = true;
                     }
@@ -300,6 +300,19 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
             // CLEAR STAGE
 
         }
+    }
+
+    async UniTask WaitLobby_OpenUpgradeGuideAsync()
+    {
+        PopupManager.instance.AlertShow("잠시 후퇴!!_전량상_후퇴일뿐입니다.");
+
+        await UniTask.WaitUntil(() =>
+            LobbyScreenManager.instance.curScreen == LobbyScreenType.None &&
+            PopupManager.instance.IsOpenPopup() == false);
+
+        await UniTask.WaitForSeconds(.5f);
+
+        PopupManager.instance.OpenPopup(PopupType.UpgradeGuide);
     }
 
     public void TestSaveLoadData(LoadData_Stage _loadData)

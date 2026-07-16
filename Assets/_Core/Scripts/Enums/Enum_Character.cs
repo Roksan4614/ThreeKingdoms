@@ -132,7 +132,14 @@ public enum CharacterName
     XiahouDun,              // 하후돈
     ZhangLiao,              // 장료
     XiahouYuan,             // 하후연
-    XunYu,                   // 순욱
+    XunYu,                  // 순욱
+    SunJian,                // 손견  
+    SunQuan,                // 손권  
+    HuangGai,               // 황개  
+    SunCe,                  // 손책  
+    TaishiCi,               // 태사자
+    HanDang,                // 한당  
+    ZhouYu,                 // 주유  
 
     Etc
 }

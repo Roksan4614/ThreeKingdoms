@@ -7,10 +7,13 @@ using UnityEngine;
 
 public class Table_Hero : BaseTable<string, TableHeroData>
 {
+    public List<TableHeroData> GetHeroList()
+    {
+        return m_list.Where(x => x.is_active_lock == false).ToList();
+    }
+
     public Table_Hero(List<TableHeroData> _table) : base(_table)
     {
-        m_list = m_list.Where(x => x.is_active_lock == false).ToList();
-
         for (int i = 0; i < m_list.Count; i++)
         {
             var data = m_list[i];

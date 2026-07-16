@@ -49,6 +49,11 @@ public class StoryModePhaseComponent : MonoBehaviour
 
             StageManager.instance.AddEnemyList(enemy);
         }
+
+        foreach (var h in heroes)
+            h.Value.SetActive_HP(false);
+        foreach (var e in enemies)
+            e.Value.SetActive_HP(false);
     }
 
     public CharacterComponent mainHero => heroes.Count > 0 ? heroes[m_keyMainHero] : null;
