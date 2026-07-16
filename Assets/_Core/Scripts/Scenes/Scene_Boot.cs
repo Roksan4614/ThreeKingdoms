@@ -24,19 +24,8 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         StartAsync().Forget();
     }
 
-    const string c_keyVC = "pp_version_code";
-
     async UniTask StartAsync()
     {
-#if UNITY_WEBGL && SERVICE_DEV && !UNITY_EDITOR
-        var vc = PPWorker.Get<string>(c_keyVC);
-
-        if (vc.IsActive() == false || vc != Application.version)
-        {
-            PlayerPrefs.DeleteAll();
-            PPWorker.Set(c_keyVC, Application.version);
-        }
-#endif
 
         List<UniTask> tasks = new();
         tasks.Add(AddressableManager.instance.InitializeAsync());
@@ -53,30 +42,44 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         float timeStart = Time.time;
 
         // 사이에 세팅할것들
-#if !UNITY_EDITOR
+#if SERVICE_DEV && !UNITY_EDITOR 
         {
             // 개발 도중 구조가 바뀌는것땜에 에러가 나는 경우가 있어서. 그거 대응
-            //var assetBuild = Resources.Load<TextAsset>("EditorData/BuildData");
+            var assetBuild = Resources.Load<TextAsset>("EditorData/BuildData");
 
-            //if (assetBuild != null)
-            //{
-            //    string key = "START_TIME";
+            if (assetBuild != null)
+            {
+                string key = "pp_build_data";
 
-            //    if (PPWorker.HasKey(key))
-            //    {
-            //        DateTime dtStart = new DateTime(long.Parse(PPWorker.Get<string>(key)));
+                var build = JObject.Parse(assetBuild.ToString());
+                long tickData = (long)build["dt_build"];
 
-            //        var build = JObject.Parse(assetBuild.ToString());
-            //        DateTime dtBuild = new DateTime((long)build["dt_build"]);
+                if (PPWorker.HasKey(key))
+                {
+                    long tickLocal = long.Parse(PPWorker.Get<string>(key));
 
-            //        if (dtBuild > dtStart)
-            //            PlayerPrefs.DeleteAll();
-            //    }
-            //    else
-            //        PlayerPrefs.DeleteAll();
+                    if (tickLocal != tickData)
+                    {
+                        //옵션은 남겨두자
+                        var optionData = PPWorker.Get<Data_Option.OptionData>(PlayerPrefsType.OPTION);
 
-            //    PPWorker.Set(key, DateTime.UtcNow.Ticks.ToString());
-            //}
+                        PlayerPrefs.DeleteAll();
+                        PPWorker.Set(key, tickData);
+
+                        PPWorker.Set(PlayerPrefsType.OPTION, optionData);
+                    }
+                }
+                else
+                {
+                    //옵션은 남겨두자
+                    var optionData = PPWorker.Get<Data_Option.OptionData>(PlayerPrefsType.OPTION);
+
+                    PlayerPrefs.DeleteAll();
+                    PPWorker.Set(key, tickData);
+
+                    PPWorker.Set(PlayerPrefsType.OPTION, optionData);
+                }
+            }
         }
 #endif
 

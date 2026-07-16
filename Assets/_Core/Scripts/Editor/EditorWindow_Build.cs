@@ -98,6 +98,11 @@ public partial class EditorWindow_Build : EditorWindow
 
         m_userData.version = AddTextArea("Version", m_userData.version);
 
+        AddHorizontalLayout(() =>
+        {
+            m_userData.isResetPP = GUILayout.Toggle(m_userData.isResetPP, "");
+        }, "isResetPP");
+
         GUILayout.Space(10);
     }
 
@@ -641,6 +646,9 @@ public partial class EditorWindow_Build : EditorWindow
 
     void WriteVersionData()
     {
+        if (m_userData.isResetPP == false)
+            return;
+
         string filePath = "Assets/Resources/EditorData";
 
         if (Directory.Exists(filePath) == false)
@@ -656,6 +664,8 @@ public partial class EditorWindow_Build : EditorWindow
 
         string jsonText = Newtonsoft.Json.JsonConvert.SerializeObject(buildData);
         File.WriteAllText(filePath, jsonText);
+
+        m_userData.isResetPP = false;
     }
 
     void SetWebGLIndexFile_BuildIndex()
@@ -709,6 +719,7 @@ public partial class EditorWindow_Build : EditorWindow
 
         public string version = "0.1.1";
         public int seasonIndex = 0;
+        public bool isResetPP = false;
 
         public bool isStore = true;
     }

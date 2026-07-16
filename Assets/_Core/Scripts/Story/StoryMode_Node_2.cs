@@ -219,13 +219,20 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         await TalkStartAsync();
         // 뭐야ㅋㅋ 자효잖아?ㅋ
         TalkAutoClose();
+
         // 오오, 자효!! 이렇게 와주니 정말 고맙구만!!
         await TalkStartAsync();
+
         // 형님, 사적인 정은 이제 접어두겠소.
         await TalkStartAsync();
+
         // 오늘부로 저와 제 군사는 오직 주공의 명만을 따를 것이니, 부디 천하를 바로잡아 주십시오!
         caoRen.anim.PlayAttack();
         await TalkStartAsync();
+
+        PopupManager.instance.AlertShow("조인이_진영에_합류했습니다.");
+        await UniTask.WaitForSeconds(.5f);
+
         // 일어나시게ㅋ 이제 곧 큰 싸움이 일어날텐데, 자효 그대의 활약을 기대하겠네.
         await TalkStartAsync();
 

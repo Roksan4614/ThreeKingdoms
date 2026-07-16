@@ -25,7 +25,7 @@ public partial class Data_Castle
         m_ctsWally = new();
         var token = m_ctsWally.Token;
 
-        //await TutorialManager.WaitComplete(TutorialType.CASTLE_FINISHED, token);
+        await TutorialManager.WaitComplete(TutorialType.CASTLE_FINISHED, token);
 
         m_wallyData = PPWorker.Get<CastleWallyData>(c_keyWally);
 

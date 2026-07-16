@@ -216,7 +216,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
                     }
                     else
                     {
-                        if (LobbyScreenManager.instance.curScreen == LobbyScreenType.None ||
+                        if (LobbyScreenManager.instance.curScreen > LobbyScreenType.None ||
                             PopupManager.instance.IsOpenPopup() == false)
                         {
                             PopupManager.instance.OpenPopup(PopupType.UpgradeGuide);

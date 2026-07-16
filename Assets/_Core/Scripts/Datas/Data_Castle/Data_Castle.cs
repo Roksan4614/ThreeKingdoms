@@ -80,7 +80,7 @@ public partial class Data_Castle
 
     async UniTask UpdateClaimAmountAsync(CastleObjectType _objectType)
     {
-        //await TutorialManager.WaitComplete(TutorialType.CASTLE_FINISHED, m_ctsToken);
+        await TutorialManager.WaitComplete(TutorialType.CASTLE_FINISHED, m_ctsToken);
 
         CastleData castleData = GetCaslteData(_objectType);
         var amount = GetAmountPerSecond(castleData);
