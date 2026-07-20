@@ -517,6 +517,9 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         for (; i < sortData.Count; i++)
         {
             int idx = m_itemList.FindIndex(x => x.data.key == sortData[i].key);
+            if (idx == -1)
+                continue;
+
             m_itemList[idx].transform.SetSiblingIndex(i);
             m_itemList[idx].element.panel.gameObject.SetActive(true);
         }
