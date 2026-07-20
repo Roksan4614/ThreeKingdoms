@@ -10,7 +10,7 @@ public class StoryMode_Node_none : StoryModeBaseComponent
 
     protected async override UniTask StartAsync()
     {
-        CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos);
+        CameraManager.instance.SetCameraPosTarget(mainHero.cameraPos);
 
         ControllerManager.instance.DashTimerStartAsync().Forget();
         ControllerManager.instance.SetActiveButton_StoryMode(true);

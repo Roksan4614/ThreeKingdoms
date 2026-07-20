@@ -40,6 +40,7 @@ public class CharacterComponent : TargetComponent
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; } = TeamPositionType.NONE;
     public Vector3 position { get => transform.position; set => transform.position = value; }
+    public Transform cameraPos => m_element.cameraPos;
 
     protected virtual void Awake()
     {
@@ -66,11 +67,10 @@ public class CharacterComponent : TargetComponent
         m_state?.Stop();
     }
 
-    //private void Update()
-    //{
-    //    if (isMain == false)
-    //        return;
-    //}
+    private void Update()
+    {
+        talkbox.OnUpdate();
+    }
 
     public virtual void SetHeroData(string _key)
     {
@@ -78,6 +78,8 @@ public class CharacterComponent : TargetComponent
         m_stat = DataManager.stat.GetResultStat(m_info);
 
         attack.ResetFX();
+
+        m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text").text = m_info.name;
     }
 
     public void SetHeroData_StoryModeMain(string _key, FactionType _faction)
@@ -89,6 +91,8 @@ public class CharacterComponent : TargetComponent
             m_stat.SetDefault();
 
         SetFaction(_faction);
+
+        m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text").text = m_info.name;
     }
 
     public void SlotUpdateHeroStat(string _key)
@@ -186,6 +190,9 @@ public class CharacterComponent : TargetComponent
 
         if (_attacker != null)
         {
+            if (m_faction == FactionType.Alliance)
+                _isCritical = false;
+
             EffectWorker.instance.SlotDamageTakenEffect(new()
             {
                 attacker = _attacker.transform,

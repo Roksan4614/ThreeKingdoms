@@ -9,12 +9,14 @@ public class StoryModePhaseComponent : MonoBehaviour
     public Dictionary<string, Character_Enemy> enemies = new();
 
     public CharacterComponent GetHero(CharacterName _name)
+        => GetHero(_name.ToString());
+
+    public CharacterComponent GetHero(string _key)
     {
-        var key = _name.ToString();
-        if (heroes.ContainsKey(key))
-            return heroes[key];
-        if (enemies.ContainsKey(key))
-            return enemies[key];
+        if (heroes.ContainsKey(_key))
+            return heroes[_key];
+        if (enemies.ContainsKey(_key))
+            return enemies[_key];
 
         return null;
     }

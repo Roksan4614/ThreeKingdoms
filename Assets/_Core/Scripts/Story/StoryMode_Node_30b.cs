@@ -21,14 +21,14 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
         var guanYu = phase.GetHero(CharacterName.GuanYu);
         var zhangFei = phase.GetHero(CharacterName.ZhangFei);
 
-        CameraManager.instance.SetCameraPosTarget(liuBei.element.cameraPos);
+        CameraManager.instance.SetCameraPosTarget(liuBei.cameraPos);
 
         await UniTask.WaitForSeconds(.5f);
 
-        // 유비	.. 의용군이라.. 에휴..
-        TalkAutoClose(0);
-
-        await UniTask.WaitForSeconds(.5f);
+        // .. 황건적을 토벌 할 의용군을 모집한다??
+        await TalkStartAsync();
+        // 에휴..
+        TalkAutoClose();
 
         // 장비가 다가온다.
         await zhangFei.move.MoveToPointAsync(zhangFei.position + Vector3.right * 4);
@@ -41,15 +41,21 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
 
         var targetGuanYu = guanYu.position + Vector3.right * 9;
         // 관우 등장
-        guanYu.move.MoveToPoint(guanYu.position + Vector3.right * 8);
+        guanYu.move.MoveToPoint(guanYu.position + Vector3.right * 6);
 
         // 유비	음.. 의용군에게는 뛰어난 지도자가 필요하오.
-        // 유비	지도자 없는 의용군은 오합지졸일 뿐..
         liuBei.talkbox.SetActive(false);
-        await TalkStartAsync(2);
+        await TalkStartAsync();
+
+        //관우 ??
+        TalkAutoClose();
+
+        // 유비	지도자 없는 의용군은 오합지졸일 뿐..
+        await TalkStartAsync();
 
         // 관우	그렇다면 그대가 지도자가 되면 될 거 아니오.
         guanYu.move.MoveToPoint(targetGuanYu);
+        //isLock_MoveCamera = true;
         await TalkStartAsync();
 
         // 유비 나에게는 그럴 힘이 없소.
@@ -77,17 +83,17 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
         var guanYu = phase.GetHero(CharacterName.GuanYu);
         var zhangFei = phase.GetHero(CharacterName.ZhangFei);
 
-        CameraManager.instance.SetCameraPosTarget(zhangFei.element.cameraPos);
+        CameraManager.instance.SetCameraPosTarget(zhangFei.cameraPos);
         await PopupManager.instance.ShowDimmAsync(false);
 
         // 장비 오오!복숭아 밭 파티장이라니ㅋ 근사하구만ㅋ
+        isLock_MoveCamera = true;
+        CameraManager.instance.SetCameraPosTarget(null);
         TalkAutoClose(0);
 
         // 장비 왔다갔다하자.
         await zhangFei.move.MoveToPointAsync(zhangFei.position + Vector3.right * 2);
-        await WaitForSeconds(.5f);
         await zhangFei.move.MoveToPointAsync(zhangFei.position + Vector3.left * 2);
-        await WaitForSeconds(.5f);
 
         await WaitClick();
         zhangFei.talkbox.SetActive(false);
@@ -127,20 +133,19 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
         // 유비  고맙소. 태어난 날은 다르나 한날 한시에 죽을 것을 맹세합시다.
         await TalkStartAsync();
 
-        IngameLog.Add("응?? 그건 좀..");
         // 장비 응?? 그건 좀..
         TalkAutoClose(0);
 
-        await WaitForSeconds(3);
-        await UniTask.NextFrame();
+        await WaitForSeconds(1);
 
         // 관우 뜨거운 맹세! 영원히 변치 않을 것입니다!
         IngameLog.Add("관우 뜨거운 맹세! 영원히 변치 않을 것입니다!");
         TalkAutoClose(0);
 
-        await WaitForSeconds(2);
+        await WaitForSeconds(1);
 
         // 장비  않을 것이오!!
+        isLock_MoveCamera = true;
         TalkAutoClose(0);
 
         PopupManager.instance.AlertShow("스토리를_완료했습니다.");

@@ -141,5 +141,12 @@ public enum CharacterName
     HanDang,                // 한당  
     ZhouYu,                 // 주유  
 
+    YuanShao,               // 원소
+    YanLiang,               // 안량
+    WenChou,                // 문추
+    SongXian,               // 송헌
+    WeiXU,                  // 위속
+    XuHuang,	            // 서황
+
     Etc
 }

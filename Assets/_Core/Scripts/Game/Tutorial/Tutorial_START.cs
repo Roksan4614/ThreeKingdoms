@@ -49,7 +49,7 @@ public class Tutorial_START : TutorialBase
 
         mainHero.buff.Add(BuffType.DEBUFF_NO_SKILL);
 
-        CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos);
+        CameraManager.instance.SetCameraPosTarget(mainHero.cameraPos);
         // 딤 꺼주자
         await PopupManager.instance.ShowDimmAsync(false);
 
@@ -96,12 +96,12 @@ public class Tutorial_START : TutorialBase
         }
 #endif
 
-        CameraManager.instance.SetCameraPosTarget(enemy.element.cameraPos, false);
+        CameraManager.instance.SetCameraPosTarget(enemy.cameraPos, false);
 
         // 얼빠지게 생긴 넘이다!! 죽여라!!
         await enemy.talkbox.StartAsyncClickDisable(token, talk.Dequeue().talkArray);
 
-        CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos, false);
+        CameraManager.instance.SetCameraPosTarget(mainHero.cameraPos, false);
 
         // "앞에 황건적이네. 어쩌지?"
         await mainHero.talkbox.StartAsyncClickDisable(token, talk.Dequeue().talkArray);

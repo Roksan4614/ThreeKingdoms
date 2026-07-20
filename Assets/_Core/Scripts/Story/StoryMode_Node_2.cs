@@ -22,7 +22,7 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
     {
         var token = m_cts.Token;
 
-        CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos);
+        CameraManager.instance.SetCameraPosTarget(mainHero.cameraPos);
 
         // 좌측에서 우측으로 조금 이동해주자
         var heroes = phase.heroes.Values.ToList();
@@ -40,11 +40,13 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         foreach (var hero in heroes)
             hero.move?.MoveStop();
 
+        var caoRen = mainHero;
+
         // 흥! 아직도 도적 떼가 설치다니!!
         await TalkStartAsync();
 
         // 죽여주마!
-        mainHero.anim.PlayAttack();
+        caoRen.anim.PlayAttack();
         TalkAutoClose();
 
         await UniTask.WaitForSeconds(1f);
@@ -71,17 +73,20 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
 
         ControllerManager.instance.SetActiveButton_StoryMode(false);
         // 흥 별것도 아닌것들이
-        TalkAutoClose();
+        TalkAutoClose(0);
 
         {
             //부하가 나타나는걸 표현하자
             var etc = phase.GetHero(CharacterName.Etc);
             Vector3 pos, target;
             target = pos = mainHero.transform.position;
-            pos.x += pos.x > 0 ? -10 : 10;
+            pos.x += pos.x > 0 ? -12 : 12;
             pos.y += 0.2f;
             etc.transform.position = pos;
             etc.gameObject.SetActive(true);
+
+            //조인은 앞으로 좀 이동하자.
+            caoRen.move.MoveToPoint(caoRen.position + Vector3.right * (caoRen.move.isFlip ? 2 : -2));
 
             var lookAt = target - etc.transform.position;
             while (lookAt.sqrMagnitude >= 25)
@@ -94,7 +99,11 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
             etc.move.MoveStop();
             etc.UpdateSortingOreder(true);
 
-            mainHero.move.LookTarget(etc);
+            await UniTask.WaitUntil(() => caoRen.talkbox.isTyping == false);
+            await WaitClick();
+
+            caoRen.talkbox.SetActive(false);
+            caoRen.move.LookTarget(etc);
             // 대장!! 조조님이 드디어 거병하셨답니다!
             await TalkStartAsync();
         }
@@ -131,9 +140,11 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         foreach (var h in heroes)
             h.SetActive_HP(false);
 
-        CameraManager.instance.SetCameraPosTarget(mainHero.element.cameraPos);
+        CameraManager.instance.SetCameraPosTarget(mainHero.cameraPos);
         await PopupManager.instance.ShowDimmAsync(false, _duration: 1f);
         var token = m_cts.Token;
+
+        var caoCao = mainHero;
 
         // 이 난세를 헤쳐 나가려면 힘을 키워야 한다.
         await TalkStartAsync();
@@ -146,13 +157,13 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         // 뒤에서 활이나 쏘는 주제에 말이 많구나ㅋㅋ
         await TalkStartAsync();
         // 야야 가만히 있지만 말고 니들도 나가서…
-        mainHero.move.LookTarget(cDun);
+        caoCao.move.LookTarget(cDun);
         await TalkStartAsync();
 
         // 주공! 성 밖에 1000여명 되는 무리들이 이 쪽을 향해 오고 있습니다!
         var etc = phase.GetHero(CharacterName.Etc);
         etc.move.LookTarget(mainHero);
-        mainHero.move.SetFlip(true);
+        caoCao.move.SetFlip(true);
         await TalkStartAsync();
         etc.move.SetFlip(true);
 
@@ -169,12 +180,12 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         {
             var camera = CameraManager.instance.main;
 
-            var target = caoRen.element.cameraPos.position;
+            var target = caoRen.cameraPos.position;
             target.z = camera.transform.position.z;
 
             await camera.transform.DOMove(target, 2f).ToUniTask();
 
-            CameraManager.instance.SetCameraPosTarget(caoRen.element.cameraPos, false);
+            CameraManager.instance.SetCameraPosTarget(caoRen.cameraPos, false);
 
             var caoRenTeam = phase.heroes.Skip(6).ToList();
             var caoCaoTeam = phase.heroes.Take(3).ToList();
@@ -190,7 +201,7 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
                 h.Value.position = pos;
             }
 
-            var distance = caoRen.position - mainHero.position;
+            var distance = caoRen.position - caoCao.position;
             while (distance.sqrMagnitude >= 25)
             {
                 await UniTask.NextFrame();
@@ -213,10 +224,11 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         // 하하하!!맹덕 형님! 나 자효가 왔습니다!!
         await TalkStartAsync();
         // 뭐야ㅋㅋ 자효잖아?ㅋ
-        TalkAutoClose();
+        TalkAutoClose(0);
 
         // 오오, 자효!! 이렇게 와주니 정말 고맙구만!!
         await TalkStartAsync();
+        cDun.talkbox.SetActive(false);
 
         // 형님, 사적인 정은 이제 접어두겠소.
         await TalkStartAsync();

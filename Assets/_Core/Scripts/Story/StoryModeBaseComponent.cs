@@ -68,11 +68,9 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
     protected void SetNextPhase()
     {
-        m_phases[m_idxPhase].gameObject.SetActive(false);
-        m_idxPhase++;
+        Destroy(m_phases[m_idxPhase++].gameObject);
         m_phases[m_idxPhase].gameObject.SetActive(true);
     }
-
 
     protected StoryModePhaseComponent phase => m_idxPhase < m_phases.Count ? m_phases[m_idxPhase] : null;
 
@@ -157,6 +155,8 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
         }
     }
 
+    // 대화할 때 대상으로 카메라를 이동하는데, 그걸 막는다. 이건 1회용임. 매번 true를 해줘야 해. 자동으로 false 해주기 때문
+    protected bool isLock_MoveCamera { get; set; }
     protected async UniTask TalkStartAsync(TableStringData _talk)
     {
         if (_talk.target.IsActive() == false)
@@ -165,12 +165,18 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
         var p = phase;
         if (p.heroes.ContainsKey(_talk.target))
         {
-            CameraManager.instance.SetCameraPosTarget(p.heroes[_talk.target].element.cameraPos, false);
+            if (isLock_MoveCamera == false)
+                CameraManager.instance.SetCameraPosTarget(p.heroes[_talk.target].cameraPos, false);
+
+            isLock_MoveCamera = false;
             await p.heroes[_talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, _talk.talkArray);
         }
         else if (p.enemies.ContainsKey(_talk.target))
         {
-            CameraManager.instance.SetCameraPosTarget(p.enemies[_talk.target].element.cameraPos, false);
+            if (isLock_MoveCamera == false)
+                CameraManager.instance.SetCameraPosTarget(p.enemies[_talk.target].cameraPos, false);
+
+            isLock_MoveCamera = false;
             await p.enemies[_talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, _talk.talkArray);
         }
     }
@@ -195,7 +201,10 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
         if (character == null)
             return;
 
-        CameraManager.instance.SetCameraPosTarget(character.element.cameraPos, false);
+        if (isLock_MoveCamera == false)
+            CameraManager.instance.SetCameraPosTarget(character.cameraPos, false);
+        isLock_MoveCamera = false;
+
         character.talkbox.Start(m_cts.Token, talk.talkArray);
 
         if (_duration == 0)
@@ -210,13 +219,18 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
     protected async UniTask WaitForSeconds(float _second)
     {
+        await UniTask.NextFrame();
+
         var time = Time.time + _second;
-        while (Time.time < time && ControllerManager.isClickDown)
+
+        while (Time.time < time && ControllerManager.isClickDown == false)
             await UniTask.NextFrame();
+
+        await UniTask.NextFrame();
     }
 
     protected async UniTask WaitClick()
-        => await UniTask.WaitUntil(() => ControllerManager.isClickDown);
+        => await UniTask.WaitUntil(() => ControllerManager.isClickDown, cancellationToken: m_cts.Token);
 
     #region VALIDATE
     public virtual void OnManualValidate() => m_elementBase.Initialize(transform);

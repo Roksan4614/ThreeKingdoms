@@ -6,12 +6,19 @@ using UnityEngine.UI;
 
 public class Character_Worker_Talkbox : Character_Worker
 {
+    Transform m_trnsLT;
+    Transform m_trnsRB;
+
     public Character_Worker_Talkbox(CharacterComponent _owner) : base(_owner)
     {
         m_txtTalk = m_owner.element.txtTalk;
         m_rtTalkbox = (RectTransform)m_txtTalk.transform.parent;
         m_layout = m_rtTalkbox.GetComponent<HorizontalLayoutGroup>();
         m_fitter = m_rtTalkbox.GetComponent<ContentSizeFitter>();
+
+        m_trnsLT = m_rtTalkbox.Find("lt");
+        m_trnsRB = m_rtTalkbox.Find("rb");
+
         SetActive(false);
     }
 
@@ -70,7 +77,7 @@ public class Character_Worker_Talkbox : Character_Worker
     public async UniTask StartAsyncClickDisable(CancellationToken _token, params string[] _talks)
     {
         await StartAsync(_token, _talks);
-        await UniTask.WaitUntil(() => ControllerManager.isClickDown
+        await UniTask.WaitUntil(() => ControllerManager.isScreenDown
         || Input.GetKeyDown(KeyCode.Return)
         || Input.GetKeyDown(KeyCode.Space), cancellationToken: _token);
         SetActive(false);
@@ -89,7 +96,7 @@ public class Character_Worker_Talkbox : Character_Worker
     bool m_isCancel;
     public async UniTask StartAsync(CancellationToken _token, params string[] _talks)
     {
-        await UniTask.WaitUntil(() => ControllerManager.isClick == false, cancellationToken: _token);
+        await UniTask.WaitUntil(() => ControllerManager.isScreenDown == false, cancellationToken: _token);
 
         if (isTyping == true)
         {
@@ -128,7 +135,7 @@ public class Character_Worker_Talkbox : Character_Worker
 
                 await UniTask.WaitForSeconds(0.03f, cancellationToken: _token);
 
-                if (Input.GetKey(KeyCode.Return) || ControllerManager.isClick)
+                if (Input.GetKey(KeyCode.Return) || ControllerManager.isScreenDown)
                 {
                     m_txtTalk.text = totalMsg;
 
@@ -143,6 +150,32 @@ public class Character_Worker_Talkbox : Character_Worker
 
         await UniTask.WaitForEndOfFrame(cancellationToken: _token);
         isTyping = false;
+    }
+
+    public override void OnUpdate()
+    {
+        if (isTyping == false)
+            return;
+
+        var pos = m_rtTalkbox.localPosition;
+        pos.x = 0;
+
+        if (m_trnsLT.position.x < PopupManager.instance.lt.x)
+        {
+            var value = PopupManager.instance.lt.x - m_trnsLT.position.x;
+
+            pos.x += value;
+            m_rtTalkbox.localPosition = pos;
+        }
+        else if (m_trnsRB.position.x > PopupManager.instance.rb.x)
+        {
+            var value = m_trnsLT.position.x - PopupManager.instance.rb.x;
+
+            pos.x += value;
+            m_rtTalkbox.localPosition = pos;
+        }
+        else
+            m_rtTalkbox.localPosition = pos;
     }
 
     public void SetActive(bool _isActive)

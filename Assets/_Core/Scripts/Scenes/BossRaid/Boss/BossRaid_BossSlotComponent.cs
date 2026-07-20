@@ -116,7 +116,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
             m_element.bossJIN.move.SetFlip(m_element.boss.move.isFlip);
             Destroy(m_element.boss.gameObject);
 
-            //CameraManager.instance.SetCameraPosTarget(m_element.bossJIN.element.cameraPos);
+            //CameraManager.instance.SetCameraPosTarget(m_element.bossJIN.cameraPos);
 
             m_element.bossJIN.anim.Play("Boss_Die_End");
 

@@ -92,7 +92,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         await UniTask.NextFrame(cancellationToken: token);
 
-        CameraManager.instance.SetCameraPosTarget(m_owner.element.cameraPos);
+        CameraManager.instance.SetCameraPosTarget(m_owner.cameraPos);
 
         await UniTask.WaitUntil(() => DataManager.bossRaid.raidStatus == BossRaidStatusType.FirstPhase || DataManager.bossRaid.raidStatus == BossRaidStatusType.SecondPhase,
             cancellationToken: token);
@@ -173,7 +173,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             return m_owner.anim.IsType("Boss_Skill_Jin_Charge");
         }, cancellationToken: token);
 
-        CameraManager.instance.SetCameraPosTarget(targetJump.element.cameraPos, false);
+        CameraManager.instance.SetCameraPosTarget(targetJump.cameraPos, false);
         // 그럼 영역생성
         m_element.warning_Circle.transform.localScale = new Vector3(2.68f, 2.68f, 1);
         m_element.warning_Circle.ShowAsync(1, token, false).Forget();
@@ -246,7 +246,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             m_owner.element.parts.localPosition = Vector3.zero;
         }
 
-        CameraManager.instance.SetCameraPosTarget(m_owner.element.cameraPos, false);
+        CameraManager.instance.SetCameraPosTarget(m_owner.cameraPos, false);
 
         m_element.animSkillJump.CrossFade("Off", 0);
         m_owner.position = m_element.animSkillJump.transform.position;

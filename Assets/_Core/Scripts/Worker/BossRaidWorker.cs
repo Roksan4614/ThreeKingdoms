@@ -90,7 +90,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
         // 카메라 흔들리면서 보스 따라가기
         CameraManager.instance.Shake();
-        //CameraManager.instance.SetCameraPosTarget(_boss.element.cameraPos, false);
+        //CameraManager.instance.SetCameraPosTarget(_boss.cameraPos, false);
 
         // 시간 다시 원래대로
         Utils.AfterSecond(() => Time.timeScale = 1f, fSlowDuration);
@@ -118,7 +118,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
     public void Start_SecondPhase()
     {
         TeamManager.instance.RemoveBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
-        //CameraManager.instance.SetCameraPosTarget(TeamManager.instance.mainHero.element.cameraPos, false);
+        //CameraManager.instance.SetCameraPosTarget(TeamManager.instance.mainHero.cameraPos, false);
         DataManager.bossRaid.Start_SecondPhase();
     }
 

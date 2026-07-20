@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -179,6 +180,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         }
     }
 
+    // 컨트롤 UI 끄고 켜기
     public void SetActiveButton_StoryMode(bool _isActive)
     {
         m_element.btnAttack.gameObject.SetActive(_isActive);
@@ -333,8 +335,12 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public static bool isClick => instance == null ? false : instance.isLeftClick || instance.isRightClick || instance.isTouch;
     public static bool isClickDown => instance == null ? false : instance.isLeftClick_Down || instance.isRightClick_Down || instance.isTouch;
 
+    public static bool isScreenDown { get; private set; }
+
     public void OnPointerDown(PointerEventData _eventData)
     {
+        isScreenDown = true;
+
         if (m_isPointerDown == true || isSwitch == false)
         {
             _eventData.pointerDrag = null;
@@ -376,6 +382,8 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     public void OnPointerUp(PointerEventData _eventData)
     {
+        isScreenDown = false;
+
         if (m_pointerId != _eventData.pointerId)
             return;
 

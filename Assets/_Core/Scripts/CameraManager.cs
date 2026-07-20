@@ -29,7 +29,7 @@ public class CameraManager : MonoSingleton<CameraManager>
         Signal.instance.ConnectMainHero.connectLambda =
             new(this, _ =>
             {
-                m_playerCameraPos = _.element.cameraPos;
+                m_playerCameraPos = _.cameraPos;
             });
 
         Signal.instance.ChangeDisplayMode.connectLambda =

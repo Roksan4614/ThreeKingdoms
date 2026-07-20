@@ -158,4 +158,7 @@ public class Character_Worker_Attack : Character_Worker
         => m_weapon.OnUp_ControllSkill();
     public void OnCancel_ControllSkill()
         => m_weapon.OnCancel_ControllSkill();
+
+    public void SetActive_Weapon(bool _isActive)
+        => m_weapon.SetActive_Weapon(_isActive);
 }

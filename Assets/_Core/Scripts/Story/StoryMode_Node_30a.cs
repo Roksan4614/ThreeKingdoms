@@ -6,6 +6,7 @@ public class StoryMode_Node_30a : StoryModeBaseComponent
 {
     protected async override UniTask StartAsync()
     {
+        await UniTask.Yield();
     }
 
 }

@@ -23,6 +23,10 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
     // ModalTalkData
     public override void OpenPopup(params object[] _args)
     {
+        var target = CameraManager.pointer.position;
+        target.x = target.y = int.MaxValue;
+        CameraManager.pointer.position = target;
+
         isSwitchEscape = false;
         ModalTalkData talkData = (ModalTalkData)_args[0];
 
@@ -94,11 +98,13 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
         var btnSelect = m_elementTalk.btnSelect[selelctOption].transform;
 
         btnSelect.SetParent(PopupManager.instance.transform);
+        gameObject.SetActive(false);
 
-        Close();
         await UniTask.WaitForSeconds(.5f);
         await Utils.SetActivePunchAsync(btnSelect, false);
         Destroy(btnSelect.gameObject);
+
+        Close();
     }
 
     public override void Close()

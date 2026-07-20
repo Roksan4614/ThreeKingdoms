@@ -79,16 +79,11 @@ public class Character_Worker_Move : Character_Worker
         m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS(true);
         var token = m_ctsMoveTarget.Token;
 
-        var prevFlip = isFlip;
-
-        if (_isFreezeRot == true)
-            SetFlip(m_owner.position.x < _targetPos.x);
-
         while (true)
         {
             var lookAt = _targetPos - m_owner.position;
 
-            if (lookAt.sqrMagnitude < 0.0001f)
+            if (lookAt.sqrMagnitude < 0.01f)
                 break;
 
             OnMoveUpdate(lookAt.normalized * m_owner.stat.moveSpeed, _isFreezeRot: _isFreezeRot);

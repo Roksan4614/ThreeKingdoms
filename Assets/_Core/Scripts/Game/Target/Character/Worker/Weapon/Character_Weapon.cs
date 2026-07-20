@@ -21,6 +21,10 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
     protected CancellationTokenSource m_cts;
 
+    public GameObject objWeapon;
+    public GameObject objSub;
+
+
     protected virtual void Awake()
     {
         m_owner = transform.parent.GetComponent<CharacterComponent>();
@@ -180,6 +184,12 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     public virtual void OnUp_ControllSkill() { }
     public virtual void OnCancel_ControllSkill() { }
 
+    public void SetActive_Weapon(bool _isActive)
+    {
+        objSub.SetActive(_isActive);
+        objWeapon.SetActive(_isActive);
+    }
+
     public virtual void OnManualValidate()
     {
         m_owner = transform.parent?.GetComponent<CharacterComponent>();
@@ -198,6 +208,9 @@ public class Character_Weapon : MonoBehaviour, IValidatable
                     m_animSlash.Add(sub);
             }
         }
+
+        objWeapon = transform.Find("Panel/Parts/Weapon").gameObject;
+        objSub = transform.Find("Panel/Parts/Sub").gameObject;
     }
 
 }
