@@ -119,15 +119,15 @@ public class Data_StoryMode
         Signal.instance.UnlockStoryMode.Emit();
     }
 
-    //public void TestSave(Table_StoryMode_Node.TableStoryModeNodeData _storyNode)
-    //{
-    //    SaveHistoryData(_storyNode.node_key, _storyNode.hasIfStory > 0 ? 2 : 1);
-    //    lastHistory = m_historyData.Find(x => x.key == curNodeKey);
+    public void TestSave(Table_StoryMode_Node.TableStoryModeNodeData _storyNode)
+    {
+        SaveHistoryData(_storyNode.node_key, _storyNode.hasIfStory > 0 ? 2 : 1);
+        lastHistory = m_historyData.Find(x => x.key == curNodeKey);
 
-    //    m_nextPlayOrderNumber = 0;
+        m_nextPlayOrderNumber = 0;
 
-    //    Signal.instance.UnlockStoryMode.Emit();
-    //}
+        Signal.instance.UnlockStoryMode.Emit();
+    }
 
     int m_nextPlayOrderNumber;
     public int nextPlayOrderNumber

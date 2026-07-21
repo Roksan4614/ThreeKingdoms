@@ -334,11 +334,21 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public static bool isClick => instance == null ? false : instance.isLeftClick || instance.isRightClick || instance.isTouch;
     public static bool isClickDown => instance == null ? false : instance.isLeftClick_Down || instance.isRightClick_Down || instance.isTouch;
 
-    public static bool isScreenDown { get; private set; }
+    public static bool isScreenPointerDown { get; private set; }
+    public static bool isScreenPointer { get; private set; }
+
+    async UniTask WaitClickDown()
+    {
+        isScreenPointer = isScreenPointerDown = true;
+
+        await UniTask.WaitUntil(() => isClickDown == false);
+
+        isScreenPointerDown = false;
+    }
 
     public void OnPointerDown(PointerEventData _eventData)
     {
-        isScreenDown = true;
+        WaitClickDown().Forget();
 
         if (m_isPointerDown == true || isSwitch == false)
         {
@@ -381,7 +391,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     public void OnPointerUp(PointerEventData _eventData)
     {
-        isScreenDown = false;
+        isScreenPointer = false;
 
         if (m_pointerId != _eventData.pointerId)
             return;

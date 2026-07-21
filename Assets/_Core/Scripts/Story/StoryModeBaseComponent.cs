@@ -145,12 +145,15 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
     protected async UniTask TalkStartAsync(int _count = 1)
     {
+        var prevLock = isLock_MoveCamera;
+
         for (int i = 0; i < _count; i++)
         {
             TableStringData talk = default;
             while (talk.target == null && m_queTalk.Count > 0)
                 talk = m_queTalk.Dequeue();
 
+            isLock_MoveCamera = prevLock;
             await TalkStartAsync(talk);
         }
     }
@@ -219,18 +222,20 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
     protected async UniTask WaitForSeconds(float _second)
     {
-        await UniTask.NextFrame();
-
         var time = Time.time + _second;
 
-        while (Time.time < time && ControllerManager.isClickDown == false)
-            await UniTask.NextFrame();
-
-        await UniTask.NextFrame();
+        while (Time.time < time)
+            await UniTask.NextFrame(cancellationToken: m_cts.Token);
     }
 
-    protected async UniTask WaitClick()
-        => await UniTask.WaitUntil(() => ControllerManager.isClickDown, cancellationToken: m_cts.Token);
+    protected async UniTask WaitPointerDown()
+        => await UniTask.WaitUntil(()
+            => ControllerManager.isScreenPointerDown, cancellationToken: m_cts.Token);
+
+    protected CharacterComponent GetHero(string _key)
+        => phase.GetHero(_key);
+    protected CharacterComponent GetHero(CharacterName _key)
+        => phase.GetHero(_key);
 
     #region VALIDATE
     public virtual void OnManualValidate() => m_elementBase.Initialize(transform);

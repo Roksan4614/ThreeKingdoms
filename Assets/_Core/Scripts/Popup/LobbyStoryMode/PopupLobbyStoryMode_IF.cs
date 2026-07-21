@@ -27,7 +27,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
         //첫번째꺼 넣어주자
         var node = slot.GetChild(idx++).GetComponent<PopupLobbyStoryMode_Slot_Node>();
         node.SetStoryNode(new() { _nodeData });
-        node.SetInteractable(false);
+        //node.SetInteractable(false);
         node.SetActive_Choice(false);
 
         var nextData = TableManager.storyNode.GetNode(_nodeData.next_node_key);
@@ -40,7 +40,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
             if (DataManager.storyMode.IsComplete(nextData.node_key) == false || nextData.next_node_key.IsActive() == false)
                 break;
 
-            node.SetInteractable(false);
+            //node.SetInteractable(false);
             nextData = TableManager.storyNode.GetNode(nextData.next_node_key);
         }
 

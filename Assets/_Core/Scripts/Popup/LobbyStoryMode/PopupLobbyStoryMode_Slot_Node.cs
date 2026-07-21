@@ -178,16 +178,16 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             return;
         }
 
-        //#if SERVICE_DEV
-        //        result = await PopupManager.instance.OpenModalAsync("EDITOR: 입장할꺼야??\n취소하면 저장만 할거야");
+#if SERVICE_DEV
+        result = await PopupManager.instance.OpenModalAsync("EDITOR: 입장할꺼야??\n취소하면 저장만 할거야");
 
-        //        if (result != StatusType.Success)
-        //        {
-        //            m_element.button.interactable = true;
-        //            DataManager.storyMode.TestSave(m_data[m_curIdx]);
-        //            return;
-        //        }
-        //#endif
+        if (result != StatusType.Success)
+        {
+            m_element.button.interactable = true;
+            DataManager.storyMode.TestSave(m_data[m_curIdx]);
+            return;
+        }
+#endif
 
         DataManager.storyMode.EnterAsync(m_data[m_curIdx].node_key).Forget();
     }

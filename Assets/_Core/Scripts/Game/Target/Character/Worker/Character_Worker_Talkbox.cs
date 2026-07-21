@@ -77,9 +77,10 @@ public class Character_Worker_Talkbox : Character_Worker
     public async UniTask StartAsyncClickDisable(CancellationToken _token, params string[] _talks)
     {
         await StartAsync(_token, _talks);
-        await UniTask.WaitUntil(() => ControllerManager.isScreenDown
-        || Input.GetKeyDown(KeyCode.Return)
-        || Input.GetKeyDown(KeyCode.Space), cancellationToken: _token);
+        await UniTask.WaitUntil(()
+            => ControllerManager.isScreenPointerDown
+            || Input.GetKeyDown(KeyCode.Return)
+            || Input.GetKeyDown(KeyCode.Space), cancellationToken: _token);
         SetActive(false);
     }
 
@@ -96,7 +97,9 @@ public class Character_Worker_Talkbox : Character_Worker
     bool m_isCancel;
     public async UniTask StartAsync(CancellationToken _token, params string[] _talks)
     {
-        await UniTask.WaitUntil(() => ControllerManager.isScreenDown == false, cancellationToken: _token);
+        await UniTask.WaitUntil(()
+            => ControllerManager.isScreenPointer == false && Input.GetKey(KeyCode.Return) == false && Input.GetKey(KeyCode.Space) == false
+            , cancellationToken: _token);
 
         if (isTyping == true)
         {
@@ -133,9 +136,7 @@ public class Character_Worker_Talkbox : Character_Worker
                     continue;
                 }
 
-                await UniTask.WaitForSeconds(0.03f, cancellationToken: _token);
-
-                if (Input.GetKey(KeyCode.Return) || ControllerManager.isScreenDown)
+                if (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.Space) || ControllerManager.isScreenPointer)
                 {
                     m_txtTalk.text = totalMsg;
 
@@ -143,6 +144,8 @@ public class Character_Worker_Talkbox : Character_Worker
                     isTyping = false;
                     return;
                 }
+
+                await UniTask.WaitForSeconds(0.03f, cancellationToken: _token);
             }
 
             await UniTask.WaitForSeconds(0.2f, cancellationToken: _token);
@@ -154,28 +157,35 @@ public class Character_Worker_Talkbox : Character_Worker
 
     public override void OnUpdate()
     {
-        if (isTyping == false)
+        if (m_rtTalkbox.gameObject.activeSelf == false)
             return;
 
+        // 일단 포지션 값은 0이 기본이야.
+
         var pos = m_rtTalkbox.localPosition;
-        pos.x = 0;
-
-        if (m_trnsLT.position.x < PopupManager.instance.lt.x)
+        if (pos.x != 0)
         {
-            var value = PopupManager.instance.lt.x - m_trnsLT.position.x;
-
-            pos.x += value;
+            pos.x = 0;
             m_rtTalkbox.localPosition = pos;
         }
-        else if (m_trnsRB.position.x > PopupManager.instance.rb.x)
+
+        pos = m_rtTalkbox.position;
+        // 왼쪽 넘어갔는지 여부 판단
+        if (m_trnsLT.position.x - .2f < PopupManager.instance.lt.x)
         {
-            var value = m_trnsLT.position.x - PopupManager.instance.rb.x;
+            var value = PopupManager.instance.lt.x - m_trnsLT.position.x + .2f;
 
             pos.x += value;
-            m_rtTalkbox.localPosition = pos;
+            m_rtTalkbox.position = pos;
         }
-        else
-            m_rtTalkbox.localPosition = pos;
+        //오른쪽 넘어갔는지 여부 판단
+        else if (m_trnsRB.position.x + .2f > PopupManager.instance.rb.x)
+        {
+            var value = m_trnsRB.position.x - PopupManager.instance.rb.x + .2f;
+
+            pos.x -= value;
+            m_rtTalkbox.position = pos;
+        }
     }
 
     public void SetActive(bool _isActive)

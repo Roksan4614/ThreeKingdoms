@@ -10,18 +10,18 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
     protected override async UniTask StartAsync()
     {
         var caoCao = mainHero;
-        var yanLiang = phase.GetHero(CharacterName.YanLiang);
-        var xiahoDun = phase.GetHero(CharacterName.XiahouDun);
-        var xiahoYuan = phase.GetHero(CharacterName.XiahouYuan);
-        var guanYu = phase.GetHero(CharacterName.GuanYu);
-        var zhangLiao = phase.GetHero(CharacterName.ZhangLiao);
-        var wenChou = phase.GetHero(CharacterName.WenChou);
-        var yuanShao = phase.GetHero(CharacterName.YuanShao);
-        var liuBei = phase.GetHero(CharacterName.LiuBei);
+        var yanLiang = GetHero(CharacterName.YanLiang);
+        var xiahoDun = GetHero(CharacterName.XiahouDun);
+        var xiahoYuan = GetHero(CharacterName.XiahouYuan);
+        var guanYu = GetHero(CharacterName.GuanYu);
+        var zhangLiao = GetHero(CharacterName.ZhangLiao);
+        var wenChou = GetHero(CharacterName.WenChou);
+        var yuanShao = GetHero(CharacterName.YuanShao);
+        var liuBei = GetHero(CharacterName.LiuBei);
 
         CameraManager.instance.SetCameraPosTarget(caoCao.cameraPos);
 
-        await WaitForSeconds(1f);
+        await PopupManager.instance.ShowDimmAsync(false);
 
         #region 관우등장
         //조조	"..?"
@@ -87,15 +87,17 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         //조조 그대가 보기에는 어떻소?
         await TalkStartAsync(2);
 
-        targetPos = caoCao.position + Vector3.right * 4;
-        targetPos.y -= 0.2f;
-        await guanYu.move.MoveToPointAsync(targetPos, false);
+        //targetPos = caoCao.position + Vector3.right * 4;
+        //targetPos.y -= 0.2f;
+        //await guanYu.move.MoveToPointAsync(targetPos, false);
 
         //관우	"그저 '나 죽여주시오'        하는 것 같습니다."
+        caoCao.move.SetFlip(false);
         await TalkStartAsync();
 
-        guanYu.move.SetFlip(false);
         //조조	"역시 그대답소ㅋ 좋다!        관공과 장료는 바로 출진하시오!"
+        caoCao.move.SetFlip(true);
+        caoCao.anim.PlayAttack();
         await TalkStartAsync();
 
         // 관우와 장료가 다가간다.
@@ -146,7 +148,9 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         await TalkStartAsync();
 
         //안량  "이보시오, 당신이 관운장이오?우리 진영에 지금.."
-        await TalkStartAsync();
+        TalkAutoClose(0);
+        await UniTask.WaitUntil(() => guanYu.move.isMoving == false );
+        await WaitPointerDown();
 
         // 관우 스킬 날려주자
         {
@@ -168,11 +172,11 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
                         guanYu.anim.AttackMotionEnd();
                         guanYu.attack.ShowSlashEffect(true);
                     }
-                });
+                }).ToUniTask(cancellationToken: m_cts.Token);
         }
 
         //안량.. ?
-        yanLiang.anim.Play("Knockdown");
+        yanLiang.anim.Play(CharacterAnimType.Knockdown);
         await TalkStartAsync();
 
         //장료	..?
@@ -181,7 +185,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         #endregion 안량 참수
 
         await PopupManager.instance.ShowDimmAsync(true);
-        await WaitForSeconds(1f);
+        await WaitForSeconds(.5f);
 
         CameraManager.instance.SetCameraPosTarget(caoCao.transform);
 
@@ -235,7 +239,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         //문추 흥!대체 안량이 어떻게..
         await TalkStartAsync();
 
-        await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
+        await UniTask.WaitUntil(() => guanYu.move.isMoving == false, cancellationToken: m_cts.Token);
 
         //문추  응 ?
         await TalkStartAsync();
@@ -262,7 +266,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
                         guanYu.anim.AttackMotionEnd();
                         guanYu.attack.ShowSlashEffect(true);
                     }
-                });
+                }).ToUniTask(cancellationToken: m_cts.Token);
         }
 
         //문추	아니!!
@@ -277,7 +281,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         guanYu.anim.PlayAttack(true, true);
 
         //문추 넉백
-        wenChou.anim.Play("Knockdown");
+        wenChou.anim.Play(CharacterAnimType.Knockdown);
         await wenChou.transform.DOMoveX(wenChou.position.x + -1, 0.2f);
 
         //문추	"헉헉.. 이건 내가 어찌 할 수        있는 자가 아니다.."
@@ -287,13 +291,37 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         //관우	ㅉㅉ
         guanYu.move.MoveToPoint(guanYu.position + Vector3.left, false);
         await TalkStartAsync();
-        guanYu.anim.PlayAttack(true, true);
+
+        // 관우 스킬 날려주자
+        {
+            DateTime dt = DateTime.Now.AddSeconds(0.1f);
+            EffectWorker.instance.Dash(guanYu, true);
+
+            // 카메라 흔들기
+            CameraManager.instance.Shake();
+
+            wenChou.anim.PlayAttack();
+
+            guanYu.anim.AttackMotionFirstFrame(CharacterAnimType.Attack_Move, 1);
+            await DOTween.To(() => guanYu.position, _pos => guanYu.rig.MovePosition(_pos), wenChou.position + Vector3.left * 3f, 0.2f).SetUpdate(UpdateType.Fixed)
+                .OnUpdate(() =>
+                {
+                    if (DateTime.Now > dt)
+                    {
+                        EffectWorker.instance.Dash(guanYu, true);
+                        dt = DateTime.Now.AddSeconds(10);
+
+                        guanYu.anim.AttackMotionEnd();
+                        guanYu.attack.ShowSlashEffect(true);
+                    }
+                }).ToUniTask(cancellationToken: m_cts.Token);
+        }
 
         //문추	으아!
         wenChou.anim.Play(CharacterAnimType.Die_1);
         await TalkStartAsync();
 
-        guanYu.move.MoveToPoint(guanYu.position + Vector3.left * 2, false);
+        guanYu.move.MoveToPoint(wenChou.position + Vector3.left * 2, false);
 
         #endregion 문추 베기
 
@@ -340,6 +368,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
             else
             {
                 guanYu.anim.PlayAttack(true, true);
+                await WaitForSeconds(.5f);
 
                 //원소	..
                 //유비    ..관우야 ??

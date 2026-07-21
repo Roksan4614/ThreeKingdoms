@@ -1,0 +1,175 @@
+using Cysharp.Threading.Tasks;
+using UnityEngine;
+
+public class StoryMode_Node_27 : StoryModeBaseComponent
+{
+    protected override async UniTask StartAsync()
+    {
+        var guanYu = GetHero(CharacterName.GuanYu);
+        var caoCao = GetHero(CharacterName.CaoCao);
+        var zhangLiao = GetHero(CharacterName.ZhangLiao);
+        var xunYu = GetHero(CharacterName.XunYu);
+
+        CameraManager.instance.SetCameraPosTarget(guanYu.cameraPos);
+
+        await PopupManager.instance.ShowDimmAsync(false);
+
+        //관우	뭐라고? 방금 뭐라고 하셨소!?
+        guanYu.move.MoveToPoint(guanYu.position + Vector3.left);
+        await TalkStartAsync();
+
+        //장료	"원소군에 의탁해 있던 현덕공이        원소의 의해 처형당했다 합니다."
+        await TalkStartAsync();
+
+        //관우	"서..설마.. 내가 안량과 문추를        베어서..인가 ?? "
+        await TalkStartAsync();
+
+        //관우	흑흑.. 형님.. ㅜㅜ
+        guanYu.anim.Play(CharacterAnimType.Frust);
+        await TalkStartAsync();
+
+        //관우	"한날 한시에 죽겠다는 맹세,        결코 헛되지 않을 것이오!"
+        guanYu.anim.Play(CharacterAnimType.Idle);
+        guanYu.attack.SetActive_Weapon(true);
+        guanYu.move.SetFlip(false);
+        await TalkStartAsync();
+
+        //조조 이동. 이속 증가
+        caoCao.MoveSpeedMultiple(2f);
+        caoCao.move.MoveToPoint(guanYu.position + Vector3.right * 4);
+
+        //조조	관공!!
+        isLock_MoveCamera = true;
+        TalkAutoClose(0);
+
+        await WaitForSeconds(1f);
+        zhangLiao.move.SetFlip(true);
+
+        {
+            var target = zhangLiao.position + new Vector3(2, 2);
+            zhangLiao.move.MoveToPoint(target, _onComplete: () => zhangLiao.move.SetFlip(false));
+        }
+
+        await UniTask.WaitUntil(() => caoCao.move.isMoving == false);
+        caoCao.MoveSpeedMultiple(.5f);
+
+        await WaitPointerDown();
+
+        //조조	어찌 이리 어리석은!
+        await TalkStartAsync();
+
+        isLock_MoveCamera = true;
+        //관우	"조공. 그대에겐 이미 공을 세워        빚을 다 갚았다 생각하오."
+        //관우  "그대는 그대의 일을 하시오."
+        //조조	어찌 그런 소리를 하시는거요?
+        //관우  "유비 형님이 안계신 이상    한왕실의 운명도 여기까지요."
+        await TalkStartAsync(4);
+
+        //조조	"나를 도와 한왕실을 부흥을 시키고,        천하를 안정토록 하면 될 것 아니오?"
+        caoCao.move.MoveToPointAdd(Vector3.left * .5f);
+        await TalkStartAsync();
+
+        //관우	"조공, 그대에게 한왕실은        그저 도구일 뿐이지 않소."
+        isLock_MoveCamera = true;
+        await TalkStartAsync();
+
+        //조조	그..그건..
+        TalkAutoClose(0);
+
+        await WaitForSeconds(1f);
+
+        {
+            var target = guanYu.position + Vector3.right * 4.5f;
+            target.y = xunYu.position.y;
+            xunYu.MoveSpeedMultiple(2f);
+            xunYu.move.MoveToPoint(target);
+        }
+        CameraManager.instance.SetCameraPosTarget(null);
+        caoCao.move.SetFlip(true);
+
+        //순욱	관장군! 말씀이 너무 지나치시오!
+        isLock_MoveCamera = true;
+        TalkAutoClose(0);
+        await UniTask.WaitUntil(() => xunYu.move.isMoving == false);
+        xunYu.MoveSpeedMultiple(.5f);
+
+        //순욱	"우리 주군께선 그런        파렴치한 자가 아니오!"
+        caoCao.talkbox.SetActive(false);
+        guanYu.attack.SetActive_Weapon(false);
+        guanYu.move.SetFlip(true);
+        await TalkStartAsync();
+
+        //조조	.. 저기..
+        await TalkStartAsync();
+
+        caoCao.move.SetFlip(false);
+        xunYu.move.MoveToPointAdd(Vector3.left * 2);
+        //순욱	"만약 한왕실의 녹을 받으면서        한치라도 그런 마음을 먹는다면    천벌을 받아 마땅할 것이오!!"
+        await TalkStartAsync();
+
+        //순욱	그렇지 않습니까, 주군.
+        xunYu.move.SetFlip(true);
+        await TalkStartAsync();
+
+        //조조	 - -+
+        TalkAutoClose(0);
+        await UniTask.WaitUntil(() => caoCao.talkbox.isTyping == true);
+        await UniTask.WaitUntil(() => caoCao.talkbox.isTyping == false);
+
+        //순욱	..??
+        TalkAutoClose();
+        await WaitForSeconds(.5f);
+
+        caoCao.move.MoveToPointAdd(Vector2.left);
+        xunYu.move.MoveToPointAdd(Vector3.right * 2);
+
+        //조조	"관공! 내가 유비의 장례는        최고의 예를 다해 모셔주겠소."
+        await TalkStartAsync();
+
+        //관우	..
+        TalkAutoClose();
+
+        //조조	"유비의 두 부인 또한 극진히        모실 것을 내 약속하겠소."
+        //관우	"조공.. 그대는 진심으로 한왕실을 위하고,        백성을 먼저 생각하는 길을 갈 수 있겠소 ? "
+        await TalkStartAsync(2);
+
+        //조조	그..그건..
+        caoCao.move.MoveToPointAdd(Vector2.right * .5f);
+        await TalkStartAsync();
+
+        //관우	"형님께서 바라시던 바는 그 것 뿐이었소.        그 것만 약조해준다면.."
+        guanYu.move.MoveToPointAdd(Vector3.right * .5f);
+        await TalkStartAsync();
+
+        //관우	"이 관운장! 지금 당장         그대의 칼이 되어 주겠소!"
+        guanYu.anim.PlayAttack(true, true);
+        await TalkStartAsync();
+
+        //조조	"관공과 하늘 앞에        맹세하겠소."
+        TalkAutoClose(0);
+
+        await WaitForSeconds(.5f);
+
+        //순욱	오오!!
+        TalkAutoClose(0);
+
+        await UniTask.WaitUntil(() => caoCao.talkbox.isTyping == false);
+        await WaitPointerDown();
+        caoCao.talkbox.SetActive(false);
+        xunYu.talkbox.SetActive(false);
+
+        //관우	"조공, 마지막으로 부탁이 있소.        내게 병력을 내어주시오."
+        //조조 병력을.. ?
+        //관우  "우선 원소의 모가지에서 흐르는 피로  형님의 넋을 달래주어야겠소."
+        //장료; ;
+        //조조 그..그렇게 하시오..
+        await TalkStartAsync(5);
+
+        PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+
+        guanYu.move.MoveToPointAdd(Vector2.right * 10);
+
+        await PopupManager.instance.ShowDimmAsync(true, _duration: 1f);
+        guanYu.move.MoveStop();
+    }
+}
