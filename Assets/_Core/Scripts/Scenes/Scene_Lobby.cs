@@ -46,6 +46,9 @@ public class Scene_Lobby : SceneBase
         }
         else
         {
+            //스토리 모드 처음 세개 순서 조정 해야 해.
+            TableManager.storyNode.SortInitialize();
+
 #if UNITY_EDITOR
             StageManager.instance.TestDevSelectAsync(true).Forget();
 #endif

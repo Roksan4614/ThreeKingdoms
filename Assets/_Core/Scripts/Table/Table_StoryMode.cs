@@ -10,13 +10,39 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
 
     public Table_StoryMode_Node(List<TableStoryModeNodeData> _table) : base(_table)
     {
-        m_list = m_list.OrderBy(x => x.order_num).Where(x => x.isActive == true).ToList();
+        m_list = m_list.Where(x => x.isActive == true).ToList();
+    }
+
+    public void SortInitialize()
+    {
+        var regionType = DataManager.userInfo.region;
+
+        for (int i = 0; i < m_list.Count; i++)
+        {
+            var data = m_list[i];
+
+            if (data.region_type == regionType)
+            {
+                if (i > 0)
+                {
+                    data.order_num = 1;
+                    m_list.RemoveAt(i);
+                    m_list.Insert(0, data);
+                }
+                break;
+            }
+            else
+            {
+                data.order_num++;
+                m_list[i] = data;
+            }
+        }
 
         group = m_list.Where(x => x.chapter_key > 0)
-        //group = m_list.Where(x => x.chapter_key > 0)
+            //group = m_list.Where(x => x.chapter_key > 0)
             .GroupBy(x => x.year)
             .Select(x =>
-                x.GroupBy(y => Regex.Replace(y.node_key, @"(?<=\d)[a-zA-Z]+$", ""))
+                x.GroupBy(y => y.order_num) //Regex.Replace(y.node_key, @"(?<=\d)[a-zA-Z]+$", ""))
                 .Select(y => y.ToList())
                 .ToList())
             .ToList();

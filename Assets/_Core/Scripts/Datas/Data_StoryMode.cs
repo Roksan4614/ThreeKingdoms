@@ -147,14 +147,14 @@ public class Data_StoryMode
                     var prev = TableManager.storyNode.GetNode(m_historyData[m_historyData.Count - 1].key);
 
                     // 1은 완전초기인건데 이거 3개 다 한거 아니면 
-                    if (prev.order_num == 1)
-                    {
-                        if (m_historyData.Count(x => TableManager.storyNode.GetNode(x.key).order_num == 1) < 3)
-                        {
-                            m_nextPlayOrderNumber = 1;
-                            return m_nextPlayOrderNumber;
-                        }
-                    }
+                    //if (prev.order_num == 1)
+                    //{
+                    //    if (m_historyData.Count(x => TableManager.storyNode.GetNode(x.key).order_num == 1) < 3)
+                    //    {
+                    //        m_nextPlayOrderNumber = 1;
+                    //        return m_nextPlayOrderNumber;
+                    //    }
+                    //}
 
                     var next = TableManager.storyNode.GetNode_Next(prev);
 
@@ -194,8 +194,18 @@ public class Data_StoryMode
                         (x.stage_key >= stageData.stageNumber && x.chapter_key == stageData.chapterNumber))
                         && x.chapter_key > 0);
 
-                if (dbStory.Count > 0)
-                    m_nextOpenOrderNumber = dbStory[0].order_num;
+                // 해금 챕터가 같을수도 있어.
+
+                for (int i = 0; i < dbStory.Count; i++)
+                {
+                    if (i + 1 == dbStory.Count ||
+                        dbStory[i].chapter_key != dbStory[i + 1].chapter_key ||
+                        dbStory[i].stage_key != dbStory[i + 1].stage_key)
+                    {
+                        m_nextOpenOrderNumber = dbStory[i].order_num;
+                        break;
+                    }
+                }
             }
             return m_nextOpenOrderNumber;
         }
@@ -218,17 +228,7 @@ public class Data_StoryMode
 
         if (nextStory.chapter_key == _stageInfo.chapterNumber && nextStory.stage_key == _stageInfo.stageNumber)
         {
-            for (int i = 0; i < dbStory.Count; i++)
-            {
-                bool isNextSame = i + 1 < dbStory.Count && dbStory[i + 1].order_num == dbStory[i].order_num;
-
-                if (isNextSame == false)
-                {
-                    m_nextOpenOrderNumber = dbStory[i + 1].order_num;
-                    break;
-                }
-            }
-
+            m_nextOpenOrderNumber = 0;
             PopupManager.instance.AlertShow("해금된_스토리가_있습니다.");
             Signal.instance.UnlockStoryMode.Emit();
         }

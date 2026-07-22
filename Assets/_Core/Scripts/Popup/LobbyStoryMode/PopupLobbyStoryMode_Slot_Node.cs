@@ -58,19 +58,20 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                     m_data.RemoveAt(i--);
             }
         }
-        // 처음꺼는 좀 예외로 둘거야.
-        else if (m_data[0].order_num == 1)
-        {
-            // 안깬게 있으면 그걸 먼저 보여줄거고, 다 깻으면 그냥 내 국가꺼 보여줄거야.
-            for (int i = 0; i < m_data.Count; i++)
-            {
-                if (DataManager.storyMode.IsComplete(m_data[i].node_key) == false)
-                {
-                    m_curIdx = i;
-                    break;
-                }
-            }
-        }
+        // 하나라 묶지 않고 풀어버릴거야.
+        //// 처음꺼는 좀 예외로 둘거야.
+        //else if (m_data[0].order_num == 1)
+        //{
+        //    // 안깬게 있으면 그걸 먼저 보여줄거고, 다 깻으면 그냥 내 국가꺼 보여줄거야.
+        //    for (int i = 0; i < m_data.Count; i++)
+        //    {
+        //        if (DataManager.storyMode.IsComplete(m_data[i].node_key) == false)
+        //        {
+        //            m_curIdx = i;
+        //            break;
+        //        }
+        //    }
+        //}
 
         SetActive_Choice(false);
         m_element.btnChange.gameObject.SetActive(m_data.Count > 1);
@@ -214,7 +215,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         if (storyNode.reward_character.IsActive() == true)
         {
             // 첫번째인데 내 국가가 아니면 군주 추가해줘야해.
-            if (storyNode.order_num == 1 && storyNode.region_type != DataManager.userInfo.region)
+            if (storyNode.order_num <= 3 && storyNode.region_type != DataManager.userInfo.region)
             {
                 var startHero = TableManager.region.Get(storyNode.region_type).master;
                 storyNode.reward_character = $"{startHero},{storyNode.reward_character}";
@@ -222,6 +223,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
             var rewards = storyNode.reward_character.Replace(" ", "").Split(',');
 
+            float alertTime = 3f;
             for (int i = 0; i < rewards.Length; i++)
             {
                 var heroKey = rewards[i];
@@ -249,6 +251,9 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                     await PopupManager.instance.AlertShowAsync($"[{heroName}]의_영혼석을_획득했습니다.");
                 }
             }
+
+            await UniTask.WaitUntil(() => PopupManager.instance.isAlerting == false);
+            PopupManager.instance.AlertShow("보상을_모두_수령했습니다.");
         }
         else if (storyNode.reward_currency_type.IsActive())
         {

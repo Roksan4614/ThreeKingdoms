@@ -62,7 +62,8 @@ public class PopupSelectRegionComponent : BasePopupComponent
     }
 
     void StartFade(RegionData _region, bool _isIn, bool _isTween)
-        => StartFadeAsync(_region, _isIn, _isTween).Forget();
+        => _region.btnHero.gameObject.SetActive(_isIn);
+    //=> StartFadeAsync(_region, _isIn, _isTween).Forget();
 
     async UniTask StartFadeAsync(RegionData _region, bool _isIn, bool _isTween)
     {
@@ -79,7 +80,8 @@ public class PopupSelectRegionComponent : BasePopupComponent
     public override void OnManualValidate()
         => m_element.Initialize(transform);
 
-    [SerializeField, HideInInspector]
+    //[SerializeField, HideInInspector]
+    [SerializeField]
     ElementData m_element;
 
     [Serializable]
