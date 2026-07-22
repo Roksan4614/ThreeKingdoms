@@ -72,11 +72,13 @@ public class CharacterComponent : TargetComponent
         talkbox.OnUpdate();
     }
 
+    public void MoveSpeedMultiple(float _value)
+        => m_stat.moveSpeed *= _value;
+
     public virtual void SetHeroData(string _key)
     {
         m_info = DataManager.userInfo.GetHeroInfoData(_key);
         m_stat = DataManager.stat.GetResultStat(m_info);
-
         attack.ResetFX();
 
         m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text").text = m_info.name;

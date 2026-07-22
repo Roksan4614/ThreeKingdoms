@@ -23,7 +23,7 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
 
         CameraManager.instance.SetCameraPosTarget(liuBei.cameraPos);
 
-        await UniTask.WaitForSeconds(.5f);
+        await PopupManager.instance.ShowDimmAsync(false);
 
         // .. 황건적을 토벌 할 의용군을 모집한다??
         await TalkStartAsync();
@@ -32,7 +32,7 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
 
         // 장비가 다가온다.
         await zhangFei.move.MoveToPointAsync(zhangFei.position + Vector3.right * 4);
-        await WaitClick();
+        await WaitPointerDown();
 
         // 장비	사내가 먼 한숨이오?? 한심하기는!
         liuBei.move.SetFlip(false);
@@ -45,10 +45,13 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
 
         // 유비	음.. 의용군에게는 뛰어난 지도자가 필요하오.
         liuBei.talkbox.SetActive(false);
-        await TalkStartAsync();
+        TalkAutoClose(0);
+        await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
 
         //관우 ??
-        TalkAutoClose();
+        isLock_MoveCamera = true;
+        TalkAutoClose(0);
+        await WaitPointerDown();
 
         // 유비	지도자 없는 의용군은 오합지졸일 뿐..
         await TalkStartAsync();
@@ -92,10 +95,10 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
         TalkAutoClose(0);
 
         // 장비 왔다갔다하자.
-        await zhangFei.move.MoveToPointAsync(zhangFei.position + Vector3.right * 2);
-        await zhangFei.move.MoveToPointAsync(zhangFei.position + Vector3.left * 2);
+        await zhangFei.move.MoveToPointAsync(zhangFei.position + Vector3.right * 2, false);
+        await zhangFei.move.MoveToPointAsync(zhangFei.position + Vector3.left * 2, false);
 
-        await WaitClick();
+        await WaitPointerDown();
         zhangFei.talkbox.SetActive(false);
 
         // 관우  없는 살림에 너무 무리하시는게 아닐런지..
@@ -135,20 +138,25 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
 
         // 장비 응?? 그건 좀..
         TalkAutoClose(0);
-
-        await WaitForSeconds(1);
+        await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == true);
+        await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == false);
 
         // 관우 뜨거운 맹세! 영원히 변치 않을 것입니다!
-        IngameLog.Add("관우 뜨거운 맹세! 영원히 변치 않을 것입니다!");
+        isLock_MoveCamera = true;
         TalkAutoClose(0);
 
         await WaitForSeconds(1);
 
         // 장비  않을 것이오!!
-        isLock_MoveCamera = true;
         TalkAutoClose(0);
+        await UniTask.NextFrame();
+        await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == true);
+        await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == false);
+
+        await WaitForSeconds(.5f);
 
         PopupManager.instance.AlertShow("스토리를_완료했습니다.");
-        await WaitClick();
+        await WaitPointerDown();
+
     }
 }

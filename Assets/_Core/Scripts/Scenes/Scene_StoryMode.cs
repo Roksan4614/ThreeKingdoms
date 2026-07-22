@@ -20,8 +20,6 @@ public class Scene_StoryMode : SceneBase
 
         await UniTask.WhenAll(tasks);
 
-        PopupManager.instance.ShowDimm(false);
-
         isReady = true;
     }
 }

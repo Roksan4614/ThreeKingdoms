@@ -39,6 +39,11 @@ public enum CharacterAnimType
     Die_1,
     Die_2,
 
+    Knockdown,
+
+    Frust,          //ÁÂÀı°¨
+    Frust_Loop,
+
     MAX
 }
 

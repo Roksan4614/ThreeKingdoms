@@ -21,8 +21,8 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
     protected CancellationTokenSource m_cts;
 
-    public GameObject objWeapon;
-    public GameObject objSub;
+    public Transform pWeapon;
+    public Transform pSub;
 
 
     protected virtual void Awake()
@@ -186,8 +186,22 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
     public void SetActive_Weapon(bool _isActive)
     {
-        objSub.SetActive(_isActive);
-        objWeapon.SetActive(_isActive);
+        int i = 0;
+        while (true)
+        {
+            if (i < pWeapon.childCount)
+                pWeapon.GetChild(i).gameObject.SetActive(_isActive);
+
+            if (i < pSub.childCount)
+                pSub.GetChild(i).gameObject.SetActive(_isActive);
+
+            if (i >= pWeapon.childCount && i >= pSub.childCount)
+                break;
+
+            i++;
+        }
+        //pSub.gameObject.SetActive(_isActive);
+        //pWeapon.gameObject.SetActive(_isActive);
     }
 
     public virtual void OnManualValidate()
@@ -209,8 +223,8 @@ public class Character_Weapon : MonoBehaviour, IValidatable
             }
         }
 
-        objWeapon = transform.Find("Panel/Parts/Weapon").gameObject;
-        objSub = transform.Find("Panel/Parts/Sub").gameObject;
+        pWeapon = transform.Find("Panel/Parts/Weapon");
+        pSub = transform.Find("Panel/Parts/Sub");
     }
 
 }

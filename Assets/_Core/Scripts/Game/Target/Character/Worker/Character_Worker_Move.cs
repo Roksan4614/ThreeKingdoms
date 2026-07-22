@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Character_Worker_Move : Character_Worker
 {
@@ -71,10 +72,13 @@ public class Character_Worker_Move : Character_Worker
         }
     }
 
-    public void MoveToPoint(Vector3 _targetPos, bool _isFreezeRot = true)
-        => MoveToPointAsync(_targetPos, _isFreezeRot).Forget();
+    public void MoveToPointAdd(Vector3 _addPos, bool _isFreezeRot = true, UnityAction _onComplete = null)
+        => MoveToPointAsync(m_owner.position + _addPos, _isFreezeRot, _onComplete).Forget();
 
-    public async UniTask MoveToPointAsync(Vector3 _targetPos, bool _isFreezeRot = true)
+    public void MoveToPoint(Vector3 _targetPos, bool _isFreezeRot = true, UnityAction _onComplete = null)
+        => MoveToPointAsync(_targetPos, _isFreezeRot, _onComplete).Forget();
+
+    public async UniTask MoveToPointAsync(Vector3 _targetPos, bool _isFreezeRot = true, UnityAction _onComplete = null)
     {
         m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS(true);
         var token = m_ctsMoveTarget.Token;
@@ -90,8 +94,10 @@ public class Character_Worker_Move : Character_Worker
 
             await UniTask.NextFrame(cancellationToken: token);
         }
+
         MoveStop();
         m_owner.position = _targetPos;
+        _onComplete?.Invoke();
     }
 
     public void MoveTarget(CharacterComponent _target, bool _isAttack)

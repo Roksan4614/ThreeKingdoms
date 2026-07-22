@@ -20,6 +20,8 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
 
     async UniTask Phase_First()
     {
+        PopupManager.instance.ShowDimm(false);
+
         var token = m_cts.Token;
 
         CameraManager.instance.SetCameraPosTarget(mainHero.cameraPos);
@@ -100,7 +102,7 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
             etc.UpdateSortingOreder(true);
 
             await UniTask.WaitUntil(() => caoRen.talkbox.isTyping == false);
-            await WaitClick();
+            await WaitPointerDown();
 
             caoRen.talkbox.SetActive(false);
             caoRen.move.LookTarget(etc);
