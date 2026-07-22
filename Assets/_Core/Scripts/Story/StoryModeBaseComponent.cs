@@ -222,10 +222,15 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
     protected async UniTask WaitForSeconds(float _second)
     {
+        await UniTask.NextFrame(cancellationToken: m_cts.Token);
+
         var time = Time.time + _second;
 
-        while (Time.time < time)
+        while (Time.time < time && ControllerManager.isScreenPointerDown == false)
             await UniTask.NextFrame(cancellationToken: m_cts.Token);
+
+        if (ControllerManager.isScreenPointerDown == true)
+            IngameLog.Add("WaitForSeconds: PointerDown");
     }
 
     protected async UniTask WaitPointerDown()

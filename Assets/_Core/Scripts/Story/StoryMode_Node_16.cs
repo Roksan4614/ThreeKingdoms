@@ -149,7 +149,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
 
         //안량  "이보시오, 당신이 관운장이오?우리 진영에 지금.."
         TalkAutoClose(0);
-        await UniTask.WaitUntil(() => guanYu.move.isMoving == false );
+        await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
         await WaitPointerDown();
 
         // 관우 스킬 날려주자
@@ -364,6 +364,8 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
 
                 //원소	"오늘 밤 관우를 맞이하는                술잔을 기울이도록 하지ㅋ"
                 await TalkStartAsync();
+
+                liuBei.move.MoveToPointAdd(Vector2.left * .5f);
             }
             else
             {
