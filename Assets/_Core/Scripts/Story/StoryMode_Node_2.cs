@@ -13,7 +13,7 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         //while (m_queTalk.Peek().target != CharacterName.CaoCao.ToString())
         //    m_queTalk.Dequeue();
 
-        SetNextPhase();
+        await SetNextPhaseAsync();
 
         await Phase_Second();
     }
@@ -136,8 +136,6 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
 
     async UniTask Phase_Second()
     {
-        await UniTask.NextFrame();
-
         var heroes = phase.heroes.Values.ToList();
         foreach (var h in heroes)
             h.SetActive_HP(false);

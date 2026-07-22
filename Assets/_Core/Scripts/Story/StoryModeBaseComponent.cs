@@ -66,10 +66,12 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
     protected abstract UniTask StartAsync();
 
-    protected void SetNextPhase()
+    protected async UniTask SetNextPhaseAsync()
     {
         Destroy(m_phases[m_idxPhase++].gameObject);
         m_phases[m_idxPhase].gameObject.SetActive(true);
+
+        await UniTask.NextFrame(cancellationToken: m_cts.Token);
     }
 
     protected StoryModePhaseComponent phase => m_idxPhase < m_phases.Count ? m_phases[m_idxPhase] : null;

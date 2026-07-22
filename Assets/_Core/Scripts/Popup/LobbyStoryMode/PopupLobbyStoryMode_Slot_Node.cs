@@ -223,20 +223,27 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
             var rewards = storyNode.reward_character.Replace(" ", "").Split(',');
 
-            float alertTime = 3f;
+            //일단 보상에 넣어주자
+            //배치하다가 꺼버릴수도 있어서
+            List<string> newHero = new();
+            foreach (var key in rewards)
+            {
+                DataManager.userInfo.AddHeroSoul(key, 10);
+                newHero.Add(key);
+            }
+
+            //연출
             for (int i = 0; i < rewards.Length; i++)
             {
                 var heroKey = rewards[i];
-                await UniTask.WaitForSeconds(.5f);
+                await UniTask.WaitForSeconds(.5f, cancellationToken: destroyCancellationToken);
 
                 var heroName = KoreanHelper.AppendJosa(TableManager.stringHero.GetHeroName(heroKey), KoreanHelper.JosaType.EulLeul, "[{0}]");
                 PopupManager.instance.AlertShow($"{heroName}_얻었습니다.", 70);
 
                 var heroInfoData = DataManager.userInfo.GetHeroInfoData(heroKey);
 
-                DataManager.userInfo.AddHeroSoul(heroKey, 10);
-
-                if (heroInfoData.isActive == false)
+                if (newHero.Contains(heroKey) == true)
                 {
                     PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
                     popupHeroInfo.AutoCloseAsync(5f).Forget();
@@ -244,16 +251,13 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
                     await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true, true);
 
-                    await UniTask.WaitUntil(() => popupHeroInfo == null);
+                    await UniTask.WaitUntil(() => popupHeroInfo == null, cancellationToken: destroyCancellationToken);
                 }
                 else
                 {
                     await PopupManager.instance.AlertShowAsync($"[{heroName}]의_영혼석을_획득했습니다.");
                 }
             }
-
-            await UniTask.WaitUntil(() => PopupManager.instance.isAlerting == false);
-            PopupManager.instance.AlertShow("보상을_모두_수령했습니다.");
         }
         else if (storyNode.reward_currency_type.IsActive())
         {
@@ -266,6 +270,9 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         }
 
         DataManager.storyMode.isLockUI = false;
+
+        await UniTask.WaitUntil(() => PopupManager.instance.isAlerting == false, cancellationToken: destroyCancellationToken);
+        PopupManager.instance.AlertShow("보상을_모두_수령했습니다.");
     }
 
     #region VALIDATE

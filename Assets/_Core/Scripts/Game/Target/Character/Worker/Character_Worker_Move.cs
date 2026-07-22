@@ -16,16 +16,18 @@ public class Character_Worker_Move : Character_Worker
     public bool isMoving => m_owner.rig.linearVelocity != Vector2.zero;
     public bool isFlip => m_owner.panel.localScale.x < 0; // 오른쪽을 보는게 플립임. 기본이 왼쪽보니까
 
-    public void MoveStop()
+    public void MoveStop(bool _isAnimPlay = true)
     {
         m_owner.rig.linearVelocity = Vector2.zero;
-        m_owner.anim.Play(CharacterAnimType.Idle);
+
+        if (_isAnimPlay == true)
+            m_owner.anim.Play(CharacterAnimType.Idle);
 
         m_owner.target.SetTarget(null);
         m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS();
     }
 
-    public void OnMoveUpdate(Vector2 _velocity, bool _isAnim = true, bool _isFreezeRot = false)
+    public void OnMoveUpdate(Vector2 _velocity, bool _isAnimPlay = true, bool _isFreezeRot = false)
     {
         if (_velocity == Vector2.zero)
             return;
@@ -35,7 +37,7 @@ public class Character_Worker_Move : Character_Worker
             if (m_owner.buff.IsActive(BuffType.DEBUFF_NO_MOVE))
                 return;
 
-            if (_isAnim == true &&
+            if (_isAnimPlay == true &&
             m_owner.anim.IsType(CharacterAnimType.Walk) == false &&
             m_owner.anim.IsType(CharacterAnimType.Walk_Back) == false)
             {
@@ -72,13 +74,13 @@ public class Character_Worker_Move : Character_Worker
         }
     }
 
-    public void MoveToPointAdd(Vector3 _addPos, bool _isFreezeRot = true, UnityAction _onComplete = null)
-        => MoveToPointAsync(m_owner.position + _addPos, _isFreezeRot, _onComplete).Forget();
+    public void MoveToPointAdd(Vector3 _addPos, bool _isFreezeRot = true, bool _isAniPlay = true, UnityAction _onComplete = null)
+        => MoveToPointAsync(m_owner.position + _addPos, _isFreezeRot, _isAniPlay, _onComplete).Forget();
 
-    public void MoveToPoint(Vector3 _targetPos, bool _isFreezeRot = true, UnityAction _onComplete = null)
-        => MoveToPointAsync(_targetPos, _isFreezeRot, _onComplete).Forget();
+    public void MoveToPoint(Vector3 _targetPos, bool _isFreezeRot = true, bool _isAniPlay = true, UnityAction _onComplete = null)
+        => MoveToPointAsync(_targetPos, _isFreezeRot, _isAniPlay, _onComplete).Forget();
 
-    public async UniTask MoveToPointAsync(Vector3 _targetPos, bool _isFreezeRot = true, UnityAction _onComplete = null)
+    public async UniTask MoveToPointAsync(Vector3 _targetPos, bool _isFreezeRot = true, bool _isAniPlay = true, UnityAction _onComplete = null)
     {
         m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS(true);
         var token = m_ctsMoveTarget.Token;
@@ -90,12 +92,12 @@ public class Character_Worker_Move : Character_Worker
             if (lookAt.sqrMagnitude < 0.01f)
                 break;
 
-            OnMoveUpdate(lookAt.normalized * m_owner.stat.moveSpeed, _isFreezeRot: _isFreezeRot);
+            OnMoveUpdate(lookAt.normalized * m_owner.stat.moveSpeed, _isAnimPlay: _isAniPlay, _isFreezeRot: _isFreezeRot);
 
             await UniTask.NextFrame(cancellationToken: token);
         }
 
-        MoveStop();
+        MoveStop(_isAniPlay);
         m_owner.position = _targetPos;
         _onComplete?.Invoke();
     }
@@ -154,8 +156,8 @@ public class Character_Worker_Move : Character_Worker
     }
 
     Tween m_tweenDash;
-    public void Dash(Vector3 _targetPos)
-        => DashAsync(_targetPos).Forget();
+    public void Dash(Vector3 _targetPos, float _power = 5)
+        => DashAsync(_targetPos, _power).Forget();
     public async UniTask DashAsync(Vector3 _targetPos, float _power = 5)
     {
         //test
@@ -166,20 +168,29 @@ public class Character_Worker_Move : Character_Worker
         m_tweenDash = null;
 
         Vector3 lookAt = Vector3.zero, target = Vector3.zero;
-
-        if (_targetPos == Vector3.zero)
+        float duration = 0.2f;
+        if (_power == 0)
         {
-            _targetPos = m_owner.rig.linearVelocity;
-
-            lookAt = m_owner.rig.linearVelocity;
-            if (lookAt == Vector3.zero)
-                lookAt = m_owner.move.isFlip ? Vector3.right : Vector3.left;
+            duration *= (m_owner.position - target).magnitude / 5;
+            target = _targetPos;
         }
         else
         {
-            lookAt = (_targetPos - m_owner.position);
+            if (_targetPos == Vector3.zero)
+            {
+                _targetPos = m_owner.rig.linearVelocity;
+
+                lookAt = m_owner.rig.linearVelocity;
+                if (lookAt == Vector3.zero)
+                    lookAt = m_owner.move.isFlip ? Vector3.right : Vector3.left;
+            }
+            else
+            {
+                lookAt = (_targetPos - m_owner.position);
+            }
+
+            target = m_owner.position + lookAt.normalized * _power;
         }
-        target = m_owner.position + lookAt.normalized * _power;
 
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
 
@@ -202,7 +213,7 @@ public class Character_Worker_Move : Character_Worker
         bool isFlipDash = lookAt.x == 0 ? isFlip : lookAt.x > 0;
         EffectWorker.instance.Dash(m_owner, isFlipDash);
 
-        m_tweenDash = DOTween.To(() => m_owner.position, _pos => m_owner.rig.MovePosition(_pos), target, 0.2f).SetUpdate(UpdateType.Fixed);
+        m_tweenDash = DOTween.To(() => m_owner.position, _pos => m_owner.rig.MovePosition(_pos), target, duration).SetUpdate(UpdateType.Fixed);
         await m_tweenDash.OnUpdate(
             () =>
             {

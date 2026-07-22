@@ -122,6 +122,8 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         DateTime dt = DateTime.Now.AddSeconds(0.1f);
         EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);
 
+        m_owner.element.collider.enabled = false;
+
         var m_tweenSkillMove = DOTween.To(() => m_owner.position, _pos => m_owner.rig.MovePosition(_pos), targetPos, 0.2f).SetUpdate(UpdateType.Fixed)
             .OnUpdate(() =>
             {
@@ -138,6 +140,8 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             });
 
         await m_tweenSkillMove.ToUniTask(TweenCancelBehaviour.Kill, token);
+
+        m_owner.element.collider.enabled = true;
 
         bool isTargetting = false;
         var damage = m_owner.stat.attackPower * 2;

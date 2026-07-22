@@ -47,9 +47,10 @@ public class PopupHeroInfo : BasePopupComponent
 
         m_element.btnBatch.onClick.AddListener(() =>
         {
+            DataManager.storyMode.isLockUI = false;
             PopupManager.instance.CloseAll();
             BottomComponent.instance.OnButton_OpenScreen(LobbyScreenType.Hero);
-            Close();
+            //Close();
         });
 
         m_element.btnEnchant.onClick.AddListener(() => OnButtonAsync_Upgrade(false).Forget());

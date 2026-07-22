@@ -81,7 +81,13 @@ public class CharacterComponent : TargetComponent
         m_stat = DataManager.stat.GetResultStat(m_info);
         attack.ResetFX();
 
-        m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text").text = m_info.name;
+        var txtName = m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text");
+        var key = $"NAME_{m_info.regionKey}";
+
+        if (TableManager.stringHero.Exists(key))
+            txtName.text = m_info.name;
+        else
+            txtName.gameObject.SetActive(false);
     }
 
     public void SetHeroData_StoryModeMain(string _key, FactionType _faction)
@@ -94,7 +100,13 @@ public class CharacterComponent : TargetComponent
 
         SetFaction(_faction);
 
-        m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text").text = m_info.name;
+        var txtName = m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text");
+        var key = $"NAME_{m_info.regionKey}";
+
+        if (TableManager.stringHero.Exists(key))
+            txtName.text = m_info.name;
+        else
+            txtName.transform.parent.gameObject.SetActive(false);
     }
 
     public void SlotUpdateHeroStat(string _key)

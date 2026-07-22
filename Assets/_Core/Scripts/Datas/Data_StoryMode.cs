@@ -198,11 +198,14 @@ public class Data_StoryMode
 
                 for (int i = 0; i < dbStory.Count; i++)
                 {
+                    var data = dbStory[i];
                     if (i + 1 == dbStory.Count ||
-                        dbStory[i].chapter_key != dbStory[i + 1].chapter_key ||
-                        dbStory[i].stage_key != dbStory[i + 1].stage_key)
+                        data.chapter_key != dbStory[i + 1].chapter_key ||
+                        data.stage_key != dbStory[i + 1].stage_key)
                     {
-                        m_nextOpenOrderNumber = dbStory[i].order_num;
+                        m_nextOpenOrderNumber = data.order_num;
+
+                        IngameLog.Add($"다음 해금될 것: {data.name}: {data.chapter_key}-{data.stage_key}");
                         break;
                     }
                 }
@@ -210,7 +213,7 @@ public class Data_StoryMode
             return m_nextOpenOrderNumber;
         }
     }
-    public void ClearStage_AddStoryMode(StageManager.LoadData_Stage _stageInfo)
+    public bool ClearStage_AddStoryMode(StageManager.LoadData_Stage _stageInfo)
     {
         var dbStory = TableManager.storyNode.list.ToList()
             .FindAll(x =>
@@ -221,17 +224,21 @@ public class Data_StoryMode
         if (dbStory.Count == 0 || _stageInfo.level > 1)
         {
             m_nextOpenOrderNumber = int.MaxValue;
-            return;
+            return false;
         }
 
         var nextStory = dbStory[0];
 
+        IngameLog.Add($"스테이지 클리어: {_stageInfo.chapterNumber}-{_stageInfo.stageNumber}");
         if (nextStory.chapter_key == _stageInfo.chapterNumber && nextStory.stage_key == _stageInfo.stageNumber)
         {
+            IngameLog.Add($"해금된 스토리: {nextStory.name}");
             m_nextOpenOrderNumber = 0;
             PopupManager.instance.AlertShow("해금된_스토리가_있습니다.");
-            Signal.instance.UnlockStoryMode.Emit();
+            return true;
         }
+
+        return false;
     }
 
     public bool IsUnlock(string _nodeKey)

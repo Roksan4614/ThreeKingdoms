@@ -43,12 +43,14 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         //장료	앗!!
         isLock_MoveCamera = true;
         TalkAutoClose(0);
+        zhangLiao.MoveSpeedMultiple(2f);
         zhangLiao.move.MoveToPointAdd(Vector2.left * .5f);
 
         // 관우 대사 치고 클릭할 때까지 기다리기
         await UniTask.WaitUntil(() => guanYu.talkbox.isTyping == false);
         await WaitPointerDown();
 
+        zhangLiao.MoveSpeedMultiple(.5f);
         zhangLiao.talkbox.SetActive(false);
         zhangLiao.move.SetFlip(true);
 
@@ -61,7 +63,7 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         CameraManager.instance.SetCameraPosTarget(null);
         TalkAutoClose(0);
 
-        await UniTask.WaitUntil(() => (zhangLiao.position - caoCao.position).sqrMagnitude < 4);
+        await UniTask.WaitUntil(() => (zhangLiao.position - caoCao.position).sqrMagnitude < 8);
 
         {
             var target = zhangLiao.position + new Vector3(2, 3);
@@ -190,24 +192,27 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
 
         await WaitForSeconds(.5f);
 
-        //장료	음?? 갑자기 번개가..?
-        isLock_MoveCamera = true;
-        zhangLiao.move.MoveToPointAdd(Vector3.right, false);
-        TalkAutoClose(0);
-
         await UniTask.WaitUntil(() => caoCao.talkbox.isTyping == false);
         await WaitPointerDown();
         caoCao.talkbox.SetActive(false);
         xunYu.talkbox.SetActive(false);
         zhangLiao.talkbox.SetActive(false);
-        zhangLiao.move.MoveToPointAdd(Vector3.left, false);
+
+        //장료	음?? 갑자기 번개가..?
+        isLock_MoveCamera = true;
+        zhangLiao.move.MoveToPointAdd(Vector3.right, false);
+        TalkAutoClose(0);
 
         //관우	..
+        await TalkStartAsync();
+        zhangLiao.talkbox.SetActive(false);
+        zhangLiao.move.MoveToPointAdd(Vector3.left, false);
+
         //관우	"조공, 마지막으로 부탁이 있소.        내게 병력을 내어주시오."
         //조조 병력을.. ?
         //관우  "우선 원소의 모가지에서 흐르는 피로  형님의 넋을 달래주어야겠소."
         isLock_MoveCamera = true;
-        await TalkStartAsync(4);
+        await TalkStartAsync(3);
 
         //장료; ;
         isLock_MoveCamera = true;

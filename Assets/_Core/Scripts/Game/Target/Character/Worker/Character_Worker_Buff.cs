@@ -29,8 +29,8 @@ public class Character_Worker_Buff : Character_Worker
         if (_duration > 0)
             Timer(buffData.hash, _buffType, _duration).Forget();
 
-        if (m_owner.isMain)
-            IngameLog.Add("BUFF ADD: " + _buffType + ": " + buffData.hash);
+        //if (m_owner.isMain)
+        //    IngameLog.Add("BUFF ADD: " + _buffType + ": " + buffData.hash);
 
         return buffData.hash;
     }

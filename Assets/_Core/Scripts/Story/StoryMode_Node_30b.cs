@@ -8,7 +8,7 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
     {
         await Phase_First();
 
-        SetNextPhase();
+        await SetNextPhaseAsync();
 
         await Phase_Second();
     }
@@ -80,8 +80,6 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
     }
     async UniTask Phase_Second()
     {
-        await UniTask.NextFrame();
-
         var liuBei = mainHero;
         var guanYu = phase.GetHero(CharacterName.GuanYu);
         var zhangFei = phase.GetHero(CharacterName.ZhangFei);

@@ -259,7 +259,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
             // 보스까지 다 깻으면
             if (m_loadData.isBossWait == false)
             {
-                DataManager.storyMode.ClearStage_AddStoryMode(m_loadData);
+                bool isUnlockStoryMode = DataManager.storyMode.ClearStage_AddStoryMode(m_loadData);
 
                 MapManager.instance.FadeDimm(true, _token: m_cts);
                 await UniTask.WaitForSeconds(0.2f, cancellationToken: ctsToken);
@@ -281,6 +281,9 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
                     await LoadStageAsync();
                     m_loadData.level++;
                 }
+
+                if (isUnlockStoryMode)
+                    Signal.instance.UnlockStoryMode.Emit();
 
                 SaveData();
 

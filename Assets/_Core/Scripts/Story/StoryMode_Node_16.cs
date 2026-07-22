@@ -150,6 +150,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         //안량  "이보시오, 당신이 관운장이오?우리 진영에 지금.."
         TalkAutoClose(0);
         await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
+        await UniTask.WaitUntil(() => yanLiang.talkbox.isTyping == false);
         await WaitPointerDown();
 
         // 관우 스킬 날려주자
@@ -173,6 +174,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
                         guanYu.attack.ShowSlashEffect(true);
                     }
                 }).ToUniTask(cancellationToken: m_cts.Token);
+
         }
 
         //안량.. ?
@@ -237,7 +239,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         guanYu.move.MoveToPoint(wenChou.position + Vector3.left * 5, false);
 
         //문추 흥!대체 안량이 어떻게..
-        await TalkStartAsync();
+        TalkAutoClose(0);
 
         await UniTask.WaitUntil(() => guanYu.move.isMoving == false, cancellationToken: m_cts.Token);
 
@@ -285,10 +287,13 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         await wenChou.transform.DOMoveX(wenChou.position.x + -1, 0.2f);
 
         //문추	"헉헉.. 이건 내가 어찌 할 수        있는 자가 아니다.."
+        await TalkStartAsync();
+        wenChou.move.MoveToPointAdd(Vector2.left * .5f, _isAniPlay: false);
         //문추	일단 도망을..
-        await TalkStartAsync(2);
+        await TalkStartAsync();
 
         //관우	ㅉㅉ
+        wenChou.move.MoveToPointAdd(Vector2.left * .5f, _isAniPlay: false);
         guanYu.move.MoveToPoint(guanYu.position + Vector3.left, false);
         await TalkStartAsync();
 
@@ -299,8 +304,6 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
 
             // 카메라 흔들기
             CameraManager.instance.Shake();
-
-            wenChou.anim.PlayAttack();
 
             guanYu.anim.AttackMotionFirstFrame(CharacterAnimType.Attack_Move, 1);
             await DOTween.To(() => guanYu.position, _pos => guanYu.rig.MovePosition(_pos), wenChou.position + Vector3.left * 3f, 0.2f).SetUpdate(UpdateType.Fixed)
@@ -372,17 +375,28 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
                 guanYu.anim.PlayAttack(true, true);
                 await WaitForSeconds(.5f);
 
+                var lookAt = (liuBei.position - yuanShao.position).normalized;
+
                 //원소	..
                 //유비    ..관우야 ??
+                await TalkStartAsync(2);
+
                 //원소  "유비.. 네 놈 때문에 내가 제일 아끼는   장수 두명을 잃었다."
                 //유비  "아니 죽인 것은 관우인데요?      그게 아니라. 제가 지금 당장 밀서를.."
+                yuanShao.move.MoveToPointAdd(lookAt * .3f);
+                await TalkStartAsync(2);
+
                 //원소 아니오.
                 //유비  "안량, 문추를 잃은 것은    안타까운.."
+                yuanShao.move.MoveToPointAdd(lookAt * .3f);
+                await TalkStartAsync(2);
+
                 //원소  "자네의 목으로 그들의      원한을 풀어주겠소."
                 //유비  "저를 살려주시면     관우를 얻게 될 것입니다!"
-                await TalkStartAsync(8);
+                await TalkStartAsync(2);
 
                 //원소	"가서 안량과 문추에게                안부나 전해주시게."
+                yuanShao.move.MoveToPointAdd(lookAt * .3f);
                 yuanShao.attack.SetActive_Weapon(true);
                 await TalkStartAsync();
 
@@ -398,7 +412,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
             //2.관우      흐음.. 갑자기 형님이 그립군..
             await TalkStartAsync();
 
-            guanYu.anim.PlayAttack(true);
+            //guanYu.anim.PlayAttack(true);
         }
     }
 }
