@@ -212,6 +212,8 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
         character.talkbox.Start(m_cts.Token, talk.talkArray);
 
+        await UniTask.WaitUntil(() => character.talkbox.isTyping == true);
+
         if (_duration == 0)
             return;
 

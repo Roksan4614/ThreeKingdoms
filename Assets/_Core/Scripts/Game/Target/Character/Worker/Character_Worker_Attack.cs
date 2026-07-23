@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -95,20 +96,31 @@ public class Character_Worker_Attack : Character_Worker
         m_ctsAttackPush = null;
     }
 
-    //public void ControlAttack()
-    //{
+    public async UniTask RushAsync(Vector3 _targetPos, bool _isCameraShake = true)
+    {
+        m_owner.move.MoveStop();
+        m_owner.move.SetFlip(_targetPos.x > m_owner.position.x);
 
-    //    m_owner.target.SetTargetNearest();
+        DateTime dt = DateTime.Now.AddSeconds(0.1f);
+        EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);
 
-    //    bool isCritical = m_owner.target.target != null && IsCritical();
-    //    m_weapon.Attack(isCritical, 1);
+        if (_isCameraShake)
+            CameraManager.instance.Shake();
 
-    //    if (isCritical == false)
-    //        m_weapon.ShowSlashEffect(_isForceShake: m_owner.target.target != null);
+        m_owner.anim.AttackMotionFirstFrame(CharacterAnimType.Attack_Move, 1);
+        await DOTween.To(() => m_owner.position, _pos => m_owner.rig.MovePosition(_pos), _targetPos, 0.2f).SetUpdate(UpdateType.Fixed)
+            .OnUpdate(() =>
+            {
+                if (DateTime.Now > dt)
+                {
+                    EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);
+                    dt = DateTime.Now.AddSeconds(10);
 
-    //    //if (m_owner.target.isAttackTarget)
-    //    m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
-    //}
+                    m_owner.anim.AttackMotionEnd();
+                    m_owner.attack.ShowSlashEffect(true);
+                }
+            });
+    }
 
     bool IsCritical()
     {

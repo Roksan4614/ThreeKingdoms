@@ -156,9 +156,17 @@ public class Character_Worker_Move : Character_Worker
     }
 
     Tween m_tweenDash;
-    public void Dash(Vector3 _targetPos, float _power = 5)
-        => DashAsync(_targetPos, _power).Forget();
-    public async UniTask DashAsync(Vector3 _targetPos, float _power = 5)
+    public void Dash(Vector3 _targetPos, float _power = 5, float _targetDuration = 0)
+        => DashAsync(_targetPos, _power, _targetDuration).Forget();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_targetPos">지정위치</param>
+    /// <param name="_power">지정된 값만큼만 이동. 0이면 targetPos로 이동함</param>
+    /// <param name="_targetDuration">0이면 5가 0.2인데 거리만큼 자동으로 늘어남. 그 외값이면 그 값이 duration이 됨</param>
+    /// <returns></returns>
+    public async UniTask DashAsync(Vector3 _targetPos, float _power = 5, float _targetDuration = 0)
     {
         //test
         if (m_tweenDash != null)
@@ -171,7 +179,11 @@ public class Character_Worker_Move : Character_Worker
         float duration = 0.2f;
         if (_power == 0)
         {
-            duration *= (m_owner.position - target).magnitude / 5;
+            if (_targetDuration == 0)
+                duration *= (m_owner.position - target).magnitude / 5;
+            else
+                duration = _targetDuration;
+
             target = _targetPos;
         }
         else
@@ -213,6 +225,7 @@ public class Character_Worker_Move : Character_Worker
         bool isFlipDash = lookAt.x == 0 ? isFlip : lookAt.x > 0;
         EffectWorker.instance.Dash(m_owner, isFlipDash);
 
+        MoveStop();
         m_tweenDash = DOTween.To(() => m_owner.position, _pos => m_owner.rig.MovePosition(_pos), target, duration).SetUpdate(UpdateType.Fixed);
         await m_tweenDash.OnUpdate(
             () =>

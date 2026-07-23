@@ -154,28 +154,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         await WaitPointerDown();
 
         // 관우 스킬 날려주자
-        {
-            DateTime dt = DateTime.Now.AddSeconds(0.1f);
-            EffectWorker.instance.Dash(guanYu, true);
-
-            // 카메라 흔들기
-            CameraManager.instance.Shake();
-
-            guanYu.anim.AttackMotionFirstFrame(CharacterAnimType.Attack_Move, 1);
-            await DOTween.To(() => guanYu.position, _pos => guanYu.rig.MovePosition(_pos), yanLiang.position + Vector3.right * 3, 0.2f).SetUpdate(UpdateType.Fixed)
-                .OnUpdate(() =>
-                {
-                    if (DateTime.Now > dt)
-                    {
-                        EffectWorker.instance.Dash(guanYu, true);
-                        dt = DateTime.Now.AddSeconds(10);
-
-                        guanYu.anim.AttackMotionEnd();
-                        guanYu.attack.ShowSlashEffect(true);
-                    }
-                }).ToUniTask(cancellationToken: m_cts.Token);
-
-        }
+        await guanYu.attack.RushAsync(yanLiang.position + Vector3.right * 3);
 
         //안량.. ?
         yanLiang.anim.Play(CharacterAnimType.Knockdown);
@@ -247,29 +226,8 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         await TalkStartAsync();
 
         // 관우 스킬 날려주자
-        {
-            DateTime dt = DateTime.Now.AddSeconds(0.1f);
-            EffectWorker.instance.Dash(guanYu, true);
-
-            // 카메라 흔들기
-            CameraManager.instance.Shake();
-
-            wenChou.anim.PlayAttack();
-
-            guanYu.anim.AttackMotionFirstFrame(CharacterAnimType.Attack_Move, 1);
-            await DOTween.To(() => guanYu.position, _pos => guanYu.rig.MovePosition(_pos), wenChou.position + Vector3.right * 3.5f, 0.2f).SetUpdate(UpdateType.Fixed)
-                .OnUpdate(() =>
-                {
-                    if (DateTime.Now > dt)
-                    {
-                        EffectWorker.instance.Dash(guanYu, true);
-                        dt = DateTime.Now.AddSeconds(10);
-
-                        guanYu.anim.AttackMotionEnd();
-                        guanYu.attack.ShowSlashEffect(true);
-                    }
-                }).ToUniTask(cancellationToken: m_cts.Token);
-        }
+        wenChou.anim.PlayAttack();
+        await guanYu.attack.RushAsync(wenChou.position + Vector3.right * 3.5f);
 
         //문추	아니!!
         wenChou.move.SetFlip(true);
@@ -298,27 +256,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         await TalkStartAsync();
 
         // 관우 스킬 날려주자
-        {
-            DateTime dt = DateTime.Now.AddSeconds(0.1f);
-            EffectWorker.instance.Dash(guanYu, true);
-
-            // 카메라 흔들기
-            CameraManager.instance.Shake();
-
-            guanYu.anim.AttackMotionFirstFrame(CharacterAnimType.Attack_Move, 1);
-            await DOTween.To(() => guanYu.position, _pos => guanYu.rig.MovePosition(_pos), wenChou.position + Vector3.left * 3f, 0.2f).SetUpdate(UpdateType.Fixed)
-                .OnUpdate(() =>
-                {
-                    if (DateTime.Now > dt)
-                    {
-                        EffectWorker.instance.Dash(guanYu, true);
-                        dt = DateTime.Now.AddSeconds(10);
-
-                        guanYu.anim.AttackMotionEnd();
-                        guanYu.attack.ShowSlashEffect(true);
-                    }
-                }).ToUniTask(cancellationToken: m_cts.Token);
-        }
+        await guanYu.attack.RushAsync(wenChou.position + Vector3.left * 3f);
 
         //문추	으아!
         wenChou.anim.Play(CharacterAnimType.Die_1);

@@ -141,8 +141,7 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
 
         //조조	 - -+
         isLock_MoveCamera = true;
-        TalkAutoClose(0);
-        await UniTask.WaitUntil(() => caoCao.talkbox.isTyping == true);
+        await TalkAutoCloseAsync(0);
         await UniTask.WaitUntil(() => caoCao.talkbox.isTyping == false);
 
         //순욱	..??

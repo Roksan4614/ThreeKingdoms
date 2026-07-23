@@ -135,8 +135,7 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
         await TalkStartAsync();
 
         // 장비 응?? 그건 좀..
-        TalkAutoClose(0);
-        await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == true);
+        await TalkAutoCloseAsync(0);
         await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == false);
 
         // 관우 뜨거운 맹세! 영원히 변치 않을 것입니다!
@@ -146,9 +145,7 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
         await WaitForSeconds(1);
 
         // 장비  않을 것이오!!
-        TalkAutoClose(0);
-        await UniTask.NextFrame();
-        await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == true);
+        await TalkAutoCloseAsync(0);
         await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == false);
 
         await WaitForSeconds(.5f);

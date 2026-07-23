@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public abstract class TargetComponent : MonoBehaviour, IValidatable
+public class TargetComponent : MonoBehaviour, IValidatable
 {
     public virtual bool isLive => true;
 

@@ -128,7 +128,7 @@ public enum CharacterName
     LiuBei,                 // 유비
     GuanYu,                 // 관우
     ZhangFei,               // 장비
-    ZhaYun,                 // 조운
+    ZhaoYun,                 // 조운
     HuangZhong,             // 황충
     ZhugeLiang,             // 제갈량
     LuBu,                   // 여포
