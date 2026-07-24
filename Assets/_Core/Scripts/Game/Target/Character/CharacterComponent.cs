@@ -81,13 +81,29 @@ public class CharacterComponent : TargetComponent
         m_stat = DataManager.stat.GetResultStat(m_info);
         attack.ResetFX();
 
-        var txtName = m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text");
-        var key = $"NAME_{m_info.regionKey}";
+        SetTalkboxName();
+    }
 
-        if (TableManager.stringHero.Exists(key))
-            txtName.text = m_info.name;
+    public void SetTalkboxName(string _name = null)
+    {
+        var txtName = m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text");
+        if (_name.IsActive() == false)
+        {
+            var key = $"NAME_{m_info.regionKey}";
+
+            if (TableManager.stringHero.Exists(key))
+            {
+                txtName.text = m_info.name;
+                txtName.transform.parent.gameObject.SetActive(true);
+            }
+            else
+                txtName.transform.parent.gameObject.SetActive(false);
+        }
         else
-            txtName.gameObject.SetActive(false);
+        {
+            txtName.text = _name;
+            txtName.transform.parent.gameObject.SetActive(true);
+        }
     }
 
     public void SetHeroData_StoryModeMain(string _key, FactionType _faction)
@@ -99,14 +115,7 @@ public class CharacterComponent : TargetComponent
             m_stat.SetDefault();
 
         SetFaction(_faction);
-
-        var txtName = m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text");
-        var key = $"NAME_{m_info.regionKey}";
-
-        if (TableManager.stringHero.Exists(key))
-            txtName.text = m_info.name;
-        else
-            txtName.transform.parent.gameObject.SetActive(false);
+        SetTalkboxName();
     }
 
     public void SlotUpdateHeroStat(string _key)
@@ -289,9 +298,9 @@ public class CharacterComponent : TargetComponent
         Destroy(gameObject);
     }
 
-    public void SetColorParts(Color _color, float _duration = 0)
+    public void SetColorParts(Color _color, float _duration = 0, bool _isSetPrev = true)
     {
-        if (_color == Color.white)
+        if (_color == Color.white && _isSetPrev == true)
         {
             if (m_element.partsRenders[0].color == m_element.colorParts[0])
                 return;

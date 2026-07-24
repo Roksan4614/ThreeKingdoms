@@ -125,6 +125,7 @@ public class Data_StoryMode
         lastHistory = m_historyData.Find(x => x.key == curNodeKey);
 
         m_nextPlayOrderNumber = 0;
+        m_nextOpenOrderNumber = 0;
 
         Signal.instance.UnlockStoryMode.Emit();
     }

@@ -60,9 +60,11 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
 
         //조조	어찌한다..
         await TalkStartAsync();
+        guanYu.MoveSpeedMultiple(2f);
         caoCao.talkbox.SetActive(true);
 
         await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
+        guanYu.MoveSpeedMultiple(.5f);
         caoCao.talkbox.SetActive(false);
         xiahoDun.talkbox.SetActive(false);
 

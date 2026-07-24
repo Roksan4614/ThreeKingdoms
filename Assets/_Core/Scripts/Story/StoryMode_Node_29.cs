@@ -9,9 +9,6 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
     {
         await FirstPhaseAsync();
 
-        //while (m_queTalk.Peek().kr.IsActive() == true)
-        //    m_queTalk.Dequeue();
-
         await SetNextPhaseAsync();
 
         await SecondPhaseAsync();

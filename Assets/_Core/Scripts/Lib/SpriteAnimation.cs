@@ -1,10 +1,8 @@
+using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class SpriteAnimaion : MonoBehaviour, IValidatable
@@ -33,7 +31,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
     private void OnEnable()
     {
         if (m_element.sprite.Length > 0)
-            m_coPlay = StartCoroutine(DoPlayAnimation());
+            PlayAnimationAsync().Forget();
         else
             gameObject.SetActive(false);
     }
@@ -44,24 +42,24 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
 
         if (gameObject.activeSelf == true)
         {
-            if (m_coPlay != null)
-                StopCoroutine(m_coPlay);
-
-            m_coPlay = StartCoroutine(DoPlayAnimation());
+            PlayAnimationAsync().Forget();
         }
         else if (m_element.sprite.Length > 0)
             gameObject.SetActive(true);
     }
 
-    Coroutine m_coPlay;
-    IEnumerator DoPlayAnimation()
+    CancellationTokenSource m_cts;
+    async UniTask PlayAnimationAsync()
     {
+        m_cts = m_cts.ReleaseCTS(true);
+        var token = m_cts.Token;
+
         Transform effect = m_element.image?.transform ?? m_element.renderer.transform;
 
         if (m_element.sprite.Length == 0)
         {
             effect.gameObject.SetActive(false);
-            yield break;
+            return;
         }
 
         effect.gameObject.SetActive(true);
@@ -81,7 +79,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
                 m_element.renderer.sprite = m_element.sprite[indexSprite];
 
             while (Time.time - time < effectData.duration)
-                yield return new WaitForEndOfFrame();
+                await UniTask.NextFrame(cancellationToken: token);
 
             time = Time.time;
             indexSprite += increaseValue;
@@ -93,7 +91,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
                 else if (effectData.loopType == LoopType.loop)
                 {
                     indexSprite = 0;
-                    yield return new WaitForSeconds(effectData.delay);
+                    await UniTask.WaitForSeconds(effectData.delay, cancellationToken: token);
                 }
                 else
                 {
@@ -102,7 +100,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
                         break;
 
                     if (increaseValue > 0)
-                        yield return new WaitForSeconds(effectData.delay);
+                        await UniTask.WaitForSeconds(effectData.delay, cancellationToken: token);
                 }
 
                 ResetScaleRot(effect);
@@ -113,7 +111,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
         ResetScaleRot(effect);
         gameObject.SetActive(false);
 
-        m_coPlay = null;
+        m_cts = null;
     }
 
     void ResetScaleRot(Transform _trns)
@@ -144,11 +142,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
 
     public void Stop()
     {
-        if (m_coPlay != null)
-        {
-            StopCoroutine(m_coPlay);
-            m_coPlay = null;
-        }
+        m_cts = m_cts.ReleaseCTS();
         gameObject.SetActive(false);
 
         ResetScaleRot(m_element.image?.transform ?? m_element.renderer.transform);

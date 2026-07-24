@@ -96,6 +96,9 @@ public class Character_Worker_Attack : Character_Worker
         m_ctsAttackPush = null;
     }
 
+    public void Rush(Vector3 _targetPos, bool _isCameraShake = true)
+        => RushAsync(_targetPos, _isCameraShake).Forget();
+
     public async UniTask RushAsync(Vector3 _targetPos, bool _isCameraShake = true)
     {
         m_owner.move.MoveStop();

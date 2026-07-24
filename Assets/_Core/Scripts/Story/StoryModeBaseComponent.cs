@@ -210,10 +210,16 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
             return;
 
         var prevText = talk.message;
-        await UniTask.WaitForSeconds(_duration, cancellationToken: m_cts.Token);
+
+        var endTime = Time.time + _duration;
+        while (endTime > Time.time && ControllerManager.isScreenPointerDown == false)
+            await UniTask.NextFrame(cancellationToken: m_cts.Token);
 
         if (prevText == character.talkbox.text)
             character.talkbox.SetActive(false);
+
+        if (ControllerManager.isScreenPointerDown == true)
+            IngameLog.Add("TalkAutoCloseAsync: PointerDown");
     }
 
     protected async UniTask WaitForSeconds(float _second)

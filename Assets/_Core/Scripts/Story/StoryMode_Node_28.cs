@@ -72,6 +72,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
         var zhangLiao = GetHero(CharacterName.ZhangLiao);
         var xiahouDun = GetHero(CharacterName.XiahouDun);
         var zhangFei = GetHero("??");
+        zhangFei.SetTalkboxName("??");
 
         CameraManager.instance.SetCameraPosTarget(enemy.cameraPos);
 

@@ -69,7 +69,10 @@ public class Character_Worker_Anim : Character_Worker
     {
         Play(CharacterAnimType.Attack);
         if (_isShowFx)
+        {
+            m_owner.attack.ResetFX();
             m_owner.attack.ShowSlashEffect(_isShake);
+        }
     }
 
     public void AttackMotionFirstFrame(CharacterAnimType _animType = CharacterAnimType.Attack, int _layerIndex = 0)

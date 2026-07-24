@@ -78,7 +78,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
             }
         }
 
-        DataManager.storyMode.lastHistory = default();
+        DataManager.storyMode.lastHistory = default;
 
         var stageData = StageManager.instance.data;
         if (stageData.level == 1)
