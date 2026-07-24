@@ -75,7 +75,7 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
 
         ControllerManager.instance.SetActiveButton_StoryMode(false);
         // 흥 별것도 아닌것들이
-        TalkAutoClose(0);
+        await TalkAutoCloseAsync(0);
 
         {
             //부하가 나타나는걸 표현하자

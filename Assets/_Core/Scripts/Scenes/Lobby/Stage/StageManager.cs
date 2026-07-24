@@ -321,6 +321,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
     public void TestSaveLoadData(LoadData_Stage _loadData)
     {
         m_loadData = _loadData;
+        SaveData();
     }
 
     public void RestartStage(bool _isRestart = true)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
+public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
 {
     List<StoryModePhaseComponent> m_phases = new();
     protected Queue<TableStringData> m_queTalk = new();
@@ -145,24 +145,19 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
 
     protected bool IsTalkEnd() => m_queTalk.Peek().target.IsActive();
 
-    protected async UniTask TalkStartAsync(int _count = 1)
+    protected async UniTask TalkStartAsync(int _count = 1, bool _isLockMoveCamera = false)
     {
-        var prevLock = isLock_MoveCamera;
-
         for (int i = 0; i < _count; i++)
         {
             TableStringData talk = default;
             while (talk.target == null && m_queTalk.Count > 0)
                 talk = m_queTalk.Dequeue();
 
-            isLock_MoveCamera = prevLock;
-            await TalkStartAsync(talk);
+            await TalkStartAsync(talk, _isLockMoveCamera);
         }
     }
 
-    // 대화할 때 대상으로 카메라를 이동하는데, 그걸 막는다. 이건 1회용임. 매번 true를 해줘야 해. 자동으로 false 해주기 때문
-    protected bool isLock_MoveCamera { get; set; }
-    protected async UniTask TalkStartAsync(TableStringData _talk)
+    protected async UniTask TalkStartAsync(TableStringData _talk, bool _isLockMoveCamera = false)
     {
         if (_talk.target.IsActive() == false)
             return;
@@ -170,26 +165,24 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
         var p = phase;
         if (p.heroes.ContainsKey(_talk.target))
         {
-            if (isLock_MoveCamera == false)
+            if (_isLockMoveCamera == false)
                 CameraManager.instance.SetCameraPosTarget(p.heroes[_talk.target].cameraPos, false);
 
-            isLock_MoveCamera = false;
             await p.heroes[_talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, _talk.talkArray);
         }
         else if (p.enemies.ContainsKey(_talk.target))
         {
-            if (isLock_MoveCamera == false)
+            if (_isLockMoveCamera == false)
                 CameraManager.instance.SetCameraPosTarget(p.enemies[_talk.target].cameraPos, false);
 
-            isLock_MoveCamera = false;
             await p.enemies[_talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, _talk.talkArray);
         }
     }
 
-    protected void TalkAutoClose(float _duration = 3f)
-        => TalkAutoCloseAsync(_duration).Forget();
+    protected void TalkAutoClose(float _duration = 3f, bool _isLockMoveCamera = false)
+        => TalkAutoCloseAsync(_duration, _isLockMoveCamera).Forget();
 
-    protected async UniTask TalkAutoCloseAsync(float _duration = 3f)
+    protected async UniTask TalkAutoCloseAsync(float _duration = 3f, bool _isLockMoveCamera = false)
     {
         TableStringData talk = default;
         while (talk.target == null && m_queTalk.Count > 0)
@@ -206,9 +199,8 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
         if (character == null)
             return;
 
-        if (isLock_MoveCamera == false)
+        if (_isLockMoveCamera == false)
             CameraManager.instance.SetCameraPosTarget(character.cameraPos, false);
-        isLock_MoveCamera = false;
 
         character.talkbox.Start(m_cts.Token, talk.talkArray);
 
@@ -246,19 +238,19 @@ public abstract class StoryModeBaseComponent : MonoBehaviour, IValidatable
     protected CharacterComponent GetHero(CharacterName _key)
         => phase.GetHero(_key);
 
-    #region VALIDATE
-    public virtual void OnManualValidate() => m_elementBase.Initialize(transform);
+    //#region VALIDATE
+    //public virtual void OnManualValidate() => m_elementBase.Initialize(transform);
 
-    [SerializeField, HideInInspector]
-    protected ElementData m_elementBase;
+    //[SerializeField, HideInInspector]
+    //protected ElementData m_elementBase;
 
-    [System.Serializable]
-    protected struct ElementData
-    {
-        public void Initialize(Transform _transform)
-        {
-        }
-    }
-    #endregion VALIDATE
+    //[System.Serializable]
+    //protected struct ElementData
+    //{
+    //    public void Initialize(Transform _transform)
+    //    {
+    //    }
+    //}
+    //#endregion VALIDATE
 
 }

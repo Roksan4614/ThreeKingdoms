@@ -130,9 +130,8 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
         await WaitForSeconds(1f);
 
         //관우	..?
-        isLock_MoveCamera = true;
         guanYu.move.SetFlip(false);
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         guanYu.move.MoveToPoint(etc.position + Vector3.right * 5f);
 
@@ -143,9 +142,8 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
         await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
 
         //Etc	사..살려주세요ㅜㅜ
-        isLock_MoveCamera = true;
         etc.move.MoveToPointAdd(Vector2.left * .5f);
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         {
             var target = guanYu.position + Vector3.right * 3.5f;
@@ -207,8 +205,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
         guanYu.move.SetFlip(false);
 
         //??	흥!!
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         zhangFei.move.SetFlip(true);
         await WaitForSeconds(1f);
@@ -248,16 +245,14 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 
         //??	".."
         //??	"어이가 없군ㅋㅋ        악귀가 따로 없지 않은가ㅋ"
-        isLock_MoveCamera = true;
-        await TalkStartAsync(2);
+        await TalkStartAsync(2, true);
 
         zhangFei.move.SetFlip(false);
         await WaitForSeconds(1f);
         zhangFei.anim.PlayAttack(true, true);
 
         //??	"흥! 아직 내가 나설 수        없음을 감사히 여기거라"
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         //??	3년상만 아니었어도.. 에잇!!
         zhangFei.move.MoveToPointAdd(Vector3.left * .5f);
@@ -273,8 +268,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 
         //하후돈	"멧돼지 같은게,        엄청 빠르군."
         xiahouDun.move.MoveToPointAdd(Vector2.left * .5f);
-        isLock_MoveCamera = true;
-        TalkAutoClose(0);
+        TalkAutoClose(0, true);
 
         PopupManager.instance.AlertShow("스토리를_완료했습니다.");
         await WaitPointerDown();

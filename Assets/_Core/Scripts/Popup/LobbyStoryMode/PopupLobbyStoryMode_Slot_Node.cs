@@ -217,7 +217,10 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             // 첫번째인데 내 국가가 아니면 군주 추가해줘야해.
             if (storyNode.order_num <= 3 && storyNode.region_type != DataManager.userInfo.region)
             {
-                var startHero = TableManager.region.Get(storyNode.region_type).master;
+                var startHero = storyNode.region_type == RegionType.WU ?
+                    CharacterName.SunJian.ToString() :
+                    TableManager.region.Get(storyNode.region_type).master;
+
                 storyNode.reward_character = $"{startHero},{storyNode.reward_character}";
             }
 

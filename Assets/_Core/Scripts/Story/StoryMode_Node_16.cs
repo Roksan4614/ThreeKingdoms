@@ -148,7 +148,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         await TalkStartAsync();
 
         //안량  "이보시오, 당신이 관운장이오?우리 진영에 지금.."
-        TalkAutoClose(0);
+        await TalkAutoCloseAsync(0);
         await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
         await UniTask.WaitUntil(() => yanLiang.talkbox.isTyping == false);
         await WaitPointerDown();
@@ -234,8 +234,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         TalkAutoClose(0);
 
         //관우 ..
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         await guanYu.move.MoveToPointAsync(wenChou.position + Vector3.right * 3, false);
         guanYu.anim.PlayAttack(true, true);

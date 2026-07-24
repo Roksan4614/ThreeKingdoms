@@ -121,7 +121,7 @@ public class Data_StoryMode
 
     public void TestSave(Table_StoryMode_Node.TableStoryModeNodeData _storyNode)
     {
-        SaveHistoryData(_storyNode.node_key, _storyNode.hasIfStory > 0 ? 2 : 1);
+        SaveHistoryData(_storyNode.node_key, 1);
         lastHistory = m_historyData.Find(x => x.key == curNodeKey);
 
         m_nextPlayOrderNumber = 0;

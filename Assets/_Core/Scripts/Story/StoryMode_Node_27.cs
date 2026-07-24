@@ -16,33 +16,28 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
 
         //관우	뭐라고? 방금 뭐라고 하셨소!?
         guanYu.move.MoveToPointAdd(Vector3.left * .5f);
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         //장료	"원소군에 의탁해 있던 현덕공이        원소의 의해 처형당했다 합니다."
         await TalkStartAsync();
 
         //관우	"서..설마.. 내가 안량과 문추를        베어서..인가 ?? "
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         //관우	흑흑.. 형님.. ㅜㅜ
         guanYu.anim.Play(CharacterAnimType.Frust);
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+                await TalkStartAsync(1, true);
 
         //관우	"한날 한시에 죽겠다는 맹세,        결코 헛되지 않을 것이오!"
         guanYu.anim.Play(CharacterAnimType.Idle);
         guanYu.attack.SetActive_Weapon(true);
         guanYu.move.SetFlip(false);
-        isLock_MoveCamera = true;
-        TalkAutoClose(0);
+        TalkAutoClose(0, true);
 
         await WaitForSeconds(1f);
 
         //장료	앗!!
-        isLock_MoveCamera = true;
-        TalkAutoClose(0);
+        TalkAutoClose(0, true);
         zhangLiao.MoveSpeedMultiple(2f);
         zhangLiao.move.MoveToPointAdd(Vector2.left * .5f);
 
@@ -59,9 +54,8 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         caoCao.move.MoveToPoint(zhangLiao.position);
 
         //조조	관공!!
-        isLock_MoveCamera = true;
         CameraManager.instance.SetCameraPosTarget(null);
-        TalkAutoClose(0);
+        TalkAutoClose(0, true);
 
         await UniTask.WaitUntil(() => (zhangLiao.position - caoCao.position).sqrMagnitude < 8);
 
@@ -79,20 +73,18 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         //조조	어찌 이리 어리석은!
         await TalkStartAsync();
 
-        isLock_MoveCamera = true;
         //관우	"조공. 그대에겐 이미 공을 세워        빚을 다 갚았다 생각하오."
         //관우  "그대는 그대의 일을 하시오."
         //조조	어찌 그런 소리를 하시는거요?
         //관우  "유비 형님이 안계신 이상    한왕실의 운명도 여기까지요."
-        await TalkStartAsync(4);
+        await TalkStartAsync(4, true);
 
         //조조	"나를 도와 한왕실을 부흥을 시키고,        천하를 안정토록 하면 될 것 아니오?"
         caoCao.move.MoveToPointAdd(Vector3.left * .5f);
         await TalkStartAsync();
 
         //관우	"조공, 그대에게 한왕실은        그저 도구일 뿐이지 않소."
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         //조조	그..그건..
         TalkAutoClose(0);
@@ -112,8 +104,7 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         caoCao.move.SetFlip(true);
 
         //순욱	관장군! 말씀이 너무 지나치시오!
-        isLock_MoveCamera = true;
-        TalkAutoClose(0);
+        TalkAutoClose(0, true);
         await UniTask.WaitUntil(() => xunYu.move.isMoving == false);
         caoCao.talkbox.SetActive(false);
 
@@ -126,8 +117,7 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         await TalkStartAsync();
 
         //조조	.. 저기..
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         caoCao.move.SetFlip(false);
         xunYu.move.MoveToPointAdd(Vector3.left * 2);
@@ -135,18 +125,15 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         await TalkStartAsync();
 
         //순욱	그렇지 않습니까, 주군.
-        isLock_MoveCamera = true;
         xunYu.move.SetFlip(true);
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         //조조	 - -+
-        isLock_MoveCamera = true;
-        await TalkAutoCloseAsync(0);
+        await TalkAutoCloseAsync(0, true);
         await UniTask.WaitUntil(() => caoCao.talkbox.isTyping == false);
 
         //순욱	..??
-        isLock_MoveCamera = true;
-        TalkAutoClose(0);
+        TalkAutoClose(0, true);
         await WaitPointerDown();
 
         caoCao.move.MoveToPointAdd(Vector2.left);
@@ -160,14 +147,11 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         //관우	..
         //조조	"유비의 두 부인 또한 극진히        모실 것을 내 약속하겠소."
         //관우	"조공.. 그대는 진심으로 한왕실을 위하고,        백성을 먼저 생각하는 길을 갈 수 있겠소 ? "
-
-        isLock_MoveCamera = true;
-        await TalkStartAsync(3);
+        await TalkStartAsync(3, true);
 
         //조조	그..그건..
         caoCao.move.MoveToPointAdd(Vector2.right * .5f);
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         //관우	"형님께서 바라시던 바는 그 것 뿐이었소.        그 것만 약조해준다면.."
         guanYu.move.MoveToPointAdd(Vector3.left * .5f, false);
@@ -186,8 +170,7 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         await WaitForSeconds(1f);
 
         //순욱	오오!!
-        isLock_MoveCamera = true;
-        TalkAutoClose(0);
+        TalkAutoClose(0, true);
 
         await WaitForSeconds(.5f);
 
@@ -198,9 +181,8 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         zhangLiao.talkbox.SetActive(false);
 
         //장료	음?? 갑자기 번개가..?
-        isLock_MoveCamera = true;
         zhangLiao.move.MoveToPointAdd(Vector3.right, false);
-        TalkAutoClose(0);
+        TalkAutoClose(0, true);
 
         //관우	..
         await TalkStartAsync();
@@ -210,16 +192,13 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         //관우	"조공, 마지막으로 부탁이 있소.        내게 병력을 내어주시오."
         //조조 병력을.. ?
         //관우  "우선 원소의 모가지에서 흐르는 피로  형님의 넋을 달래주어야겠소."
-        isLock_MoveCamera = true;
-        await TalkStartAsync(3);
+        await TalkStartAsync(3, true);
 
         //장료; ;
-        isLock_MoveCamera = true;
-        TalkAutoClose(0);
+        TalkAutoClose(0, true);
 
         //조조 그..그렇게 하시오..
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         PopupManager.instance.AlertShow("스토리를_완료했습니다.");
 

@@ -9,6 +9,9 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
     {
         await FirstPhaseAsync();
 
+        //while (m_queTalk.Peek().kr.IsActive() == true)
+        //    m_queTalk.Dequeue();
+
         await SetNextPhaseAsync();
 
         await SecondPhaseAsync();
@@ -55,8 +58,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         zhangLiao.move.SetFlip(true);
 
         //장료	흐음..
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         await PopupManager.instance.ShowDimmAsync(true);
 
@@ -86,30 +88,25 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
 
         //관우	창끝이 더 날카로워졌군, 자룡.
         guanYu.move.MoveToPointAdd(Vector2.right);
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         //조운	"그냥 얌전히 목을 내어        주실 순 없으십니까 ? "
         //관우  그럴 수만은 없다네..
-        isLock_MoveCamera = true;
-        await TalkStartAsync(2);
+        await TalkStartAsync(2, true);
 
         //조운  "관우님도 느끼고 있으실 것입니다.   아수라의 기운을.."
         //관우	"아무래도 신선술을        익힌 모양이군.."
         zhaoYun.move.MoveToPointAdd(Vector2.left * .5f);
-        isLock_MoveCamera = true;
-        await TalkStartAsync(2);
+        await TalkStartAsync(2, true);
 
         //관우	"허나, 자네에게 내 목을        내어줄 순 없네."
         //조운	..? 무슨 말씀이신지..
         guanYu.move.SetFlip(false);
-        isLock_MoveCamera = true;
-        await TalkStartAsync(2);
+        await TalkStartAsync(2, true);
 
         //관우	그냥 지나가 주시게, 자룡.
         guanYu.move.MoveToPointAdd(Vector2.left * .5f);
-        isLock_MoveCamera = true;
-        await TalkStartAsync();
+        await TalkStartAsync(1, true);
 
         //조운	안됩니다. 더 늦었다간..
         zhaoYun.move.MoveToPointAdd(Vector2.left);
@@ -118,8 +115,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         //관우	곧 끝이 날 걸세.
         //조운..
         //조운  "그렇군요. 알겠습니다.     그 때까지 화기를 잘 다루십시오."
-        isLock_MoveCamera = true;
-        await TalkStartAsync(3);
+        await TalkStartAsync(3, true);
 
         //관우	"알고 있네. 혹시..        만약에 말일세.."
         guanYu.move.SetFlip(true);
@@ -131,8 +127,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         await zhangLiao.move.DashAsync(guanYu.position + Vector3.left * 4f, 0, 0.2f);
 
         //장료	장군!!
-        isLock_MoveCamera = true;
-        await TalkAutoCloseAsync(0);
+        await TalkAutoCloseAsync(0, true);
         await UniTask.WaitUntil(() => guanYu.talkbox.isTyping == false);
         await WaitPointerDown();
         guanYu.talkbox.SetActive(false);
@@ -141,8 +136,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         //조운	".. 전 이만 가보겠습니다.        늦기 전에 찾아뵙지요."
         //관우	음.. 알겠네.
         zhaoYun.move.MoveToPointAdd(Vector3.right, false);
-        isLock_MoveCamera = true;
-        await TalkStartAsync(2);
+        await TalkStartAsync(2, true);
 
         zhaoYun.move.Dash(zhaoYun.position + Vector3.right, 10);
 
@@ -178,8 +172,43 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
 
     async UniTask SecondPhaseAsync()
     {
+        var guanYu = GetHero(CharacterName.GuanYu);
+        var xiahouDun = GetHero(CharacterName.XiahouDun);
+
+        CameraManager.instance.SetCameraPosTarget(guanYu.cameraPos);
+        PopupManager.instance.ShowDimm(false, _duration: 1);
+        await guanYu.move.DashAsync(guanYu.position + Vector3.left);
+        await WaitForSeconds(.5f);
+
+        //관우	..
+        //관우	"괴물치고는..        급소는 모두 피했군."
+        guanYu.move.SetFlip(true);
+        await TalkStartAsync(2);
+
+        //관우	후훗..
+        TalkAutoClose(2);
+        var target = xiahouDun.position + Vector3.left * 3;
+        target.y = guanYu.position.y;
+        guanYu.move.MoveToPoint(target, false);
+        await UniTask.WaitUntil(() => (guanYu.position - xiahouDun.position).sqrMagnitude < 36);
+
+        //하후돈	으으.. 장군..
+        guanYu.talkbox.SetActive(false);
+        await TalkStartAsync(1, true);
+
+        await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
 
         PopupManager.instance.AlertShow("스토리를_완료했습니다.");
-        await WaitPointerDown();
+        await WaitForSeconds(1f);
+
+        //관우	"몸을 추스리시오.        다녀와서 그대의 술잔을 받도록 하지."
+        await TalkStartAsync();
+
+        CameraManager.instance.SetCameraPosTarget(null);
+        guanYu.move.Dash(guanYu.position + Vector3.left * 15f, 0);
+
+        //하후돈	캬캬캬
+        await TalkAutoCloseAsync(0, true);
+        await UniTask.WaitUntil(() => xiahouDun.talkbox.isTyping == false);
     }
 }
