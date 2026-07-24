@@ -228,7 +228,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
 
         var time = Time.time + _second;
 
-        while (Time.time < time && ControllerManager.isScreenPointerDown == false)
+        while (Time.time < time && ControllerManager.isScreenPointerDown == false && Input.GetKeyDown(KeyCode.Space) == false)
             await UniTask.NextFrame(cancellationToken: m_cts.Token);
 
         if (ControllerManager.isScreenPointerDown == true)
@@ -237,7 +237,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
 
     protected async UniTask WaitPointerDown()
         => await UniTask.WaitUntil(()
-            => ControllerManager.isScreenPointerDown, cancellationToken: m_cts.Token);
+            => ControllerManager.isScreenPointerDown || Input.GetKeyDown(KeyCode.Space), cancellationToken: m_cts.Token);
 
     protected CharacterComponent GetHero(string _key)
         => phase.GetHero(_key);

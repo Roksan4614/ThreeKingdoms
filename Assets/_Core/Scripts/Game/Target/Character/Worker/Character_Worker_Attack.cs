@@ -99,8 +99,10 @@ public class Character_Worker_Attack : Character_Worker
     public void Rush(Vector3 _targetPos, bool _isCameraShake = true)
         => RushAsync(_targetPos, _isCameraShake).Forget();
 
+    public bool isRush { get; private set; }
     public async UniTask RushAsync(Vector3 _targetPos, bool _isCameraShake = true)
     {
+        isRush = true;
         m_owner.move.MoveStop();
         m_owner.move.SetFlip(_targetPos.x > m_owner.position.x);
 
@@ -123,6 +125,8 @@ public class Character_Worker_Attack : Character_Worker
                     m_owner.attack.ShowSlashEffect(true);
                 }
             });
+
+        isRush = false;
     }
 
     bool IsCritical()

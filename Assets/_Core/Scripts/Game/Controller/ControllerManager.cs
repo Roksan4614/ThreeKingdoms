@@ -339,9 +339,9 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     async UniTask WaitClickDown()
     {
-        isScreenPointer = isScreenPointerDown = true;
+        await UniTask.NextFrame();
 
-        await UniTask.WaitUntil(() => isClickDown == false);
+        isScreenPointer = isScreenPointerDown = true;
         await UniTask.NextFrame();
 
         isScreenPointerDown = false;

@@ -7,28 +7,28 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 {
     protected override async UniTask StartAsync()
     {
-        //await FirstPhaseAsync();
+        await FirstPhaseAsync();
 
-        while (m_queTalk.Peek().kr.IsActive() == true)
-            m_queTalk.Dequeue();
+        //while (m_queTalk.Peek().kr.IsActive() == true)
+        //    m_queTalk.Dequeue();
 
-        GetHero(CharacterName.CaoRen).gameObject.SetActive(false);
-        GetHero(CharacterName.CaoCao).gameObject.SetActive(false);
+        //GetHero(CharacterName.CaoRen).gameObject.SetActive(false);
+        //GetHero(CharacterName.CaoCao).gameObject.SetActive(false);
 
-        var guanYu = GetHero(CharacterName.GuanYu);
-        var zhangFei = GetHero(CharacterName.ZhangFei);
-        zhangFei.SetColorParts(Color.white, _isSetPrev: false);
-        zhangFei.element.parts.Find("Head/Eyes").gameObject.SetActive(false);
+        //var guanYu = GetHero(CharacterName.GuanYu);
+        //var zhangFei = GetHero(CharacterName.ZhangFei);
+        //zhangFei.SetColorParts(Color.white, _isSetPrev: false);
+        //zhangFei.element.parts.Find("Head/Eyes").gameObject.SetActive(false);
 
-        guanYu.position = Vector3.zero;
-        guanYu.move.SetFlip(true);
-        zhangFei.position = guanYu.position + Vector3.right * 5;
+        //guanYu.position = Vector3.zero;
+        //guanYu.move.SetFlip(true);
+        //zhangFei.position = guanYu.position + Vector3.right * 5;
 
-        await PopupManager.instance.ShowDimmAsync(false);
+        //await PopupManager.instance.ShowDimmAsync(false);
 
-        await BattleAsync(zhangFei, guanYu);
+        //await BattleAsync(zhangFei, guanYu);
 
-        await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Escape));
+        //await UniTask.WaitUntil(() => Input.GetKey(KeyCode.Escape));
     }
 
     async UniTask FirstPhaseAsync()
@@ -98,7 +98,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         zhangFei.move.MoveToPoint(caoCao.position + Vector3.right * 5f);
         await TalkAutoCloseAsync(0);
 
-        await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == false);
+        await UniTask.WaitUntil(() => (zhangFei.position - caoCao.position).sqrMagnitude < 49);
         caoCao.move.MoveToPointAdd(Vector2.left * .5f);
 
         await UniTask.WaitUntil(() => zhangFei.move.isMoving == false);
@@ -124,8 +124,10 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         zhangFei.transform.DOMoveX(zhangFei.position.x + 5, 0.2f).Forget();
 
         guanYu.move.SetFlip(true);
-        guanYu.position = zhangFei.position + Vector3.left * .5f;
+        guanYu.position = zhangFei.position;
         guanYu.anim.PlayAttack(true, true);
+        guanYu.move.MoveToPointAdd(Vector2.left * .5f, _isAniPlay: false);
+        caoCao.move.MoveToPointAdd(Vector2.left * .5f, _isAniPlay: false);
 
         await WaitForSeconds(1f);
 
@@ -141,6 +143,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await TalkStartAsync(2);
 
         {
+            caoCao.move.MoveToPointAdd(Vector2.left);
             var target = caoCao.position + Vector3.right;
             target.y -= .3f;
             await zhangLiao.move.DashAsync(target, 0, 0.2f);
@@ -385,8 +388,9 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
             zhangDa.transform.DOMove(target, 0.2f).Forget();
         }
 
+        await UniTask.WaitUntil(() => guanYu.attack.isRush == false);
         await WaitForSeconds(1f);
-        guanYu.move.MoveToPointAdd(Vector2.left * .5f, false);
+        guanYu.move.MoveToPoint(zhangFei.position + Vector3.right * 3f, false);
 
         //관우	마..막내야??
         await TalkStartAsync();

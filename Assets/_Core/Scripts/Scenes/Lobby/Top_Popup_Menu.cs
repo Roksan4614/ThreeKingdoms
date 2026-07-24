@@ -77,7 +77,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
                 DataManager.storyMode.TestSave(node);
             }
         }
-
+        DataManager.storyMode.nodeKeyNewClear = null;
         DataManager.storyMode.lastHistory = default;
 
         var stageData = StageManager.instance.data;
@@ -90,6 +90,8 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
 
             StageManager.instance.RestartStage();
         }
+
+        gameObject.SetActive(false);
     }
 
     #region VALIDATE

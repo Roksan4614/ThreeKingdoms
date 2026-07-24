@@ -260,7 +260,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
         await TalkStartAsync();
 
         zhangFei.element.collider.enabled = false;
-        zhangFei.move.Dash(zhangFei.position + Vector3.left, 10);
+        zhangFei.move.Dash(zhangFei.position + Vector3.left, 15);
 
         await WaitForSeconds(1f);
 
