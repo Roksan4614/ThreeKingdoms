@@ -339,10 +339,10 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     async UniTask WaitClickDown()
     {
-        await UniTask.NextFrame();
+        await UniTask.Yield(PlayerLoopTiming.Initialization);
 
         isScreenPointer = isScreenPointerDown = true;
-        await UniTask.NextFrame();
+        await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
 
         isScreenPointerDown = false;
     }
