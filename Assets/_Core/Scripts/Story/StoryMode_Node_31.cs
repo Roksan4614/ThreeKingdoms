@@ -351,9 +351,10 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         }
         guanYu.talkbox.SetActive(false);
 
+        //범강    푸슉
         //장비	..?
         //범강	하하.. 잡았다..
-        await TalkStartAsync(2);
+        await TalkStartAsync(3);
 
         var zhangDa = GetHero("ZhangDa");
         {
@@ -363,10 +364,12 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         }
 
         zhangFei.anim.Play(CharacterAnimType.Knockdown);
+
+        //장달    푸슈슉
         //장달	"내가 이 괴물같은 녀석의        심장을 뚫었다!!"
         //장비 크읔..
         //관우	이..이 버러지같은 것들이!!
-        await TalkStartAsync(3);
+        await TalkStartAsync(4);
 
         guanYu.attack.SetActive_Weapon(true);
         guanYu.attack.Rush(zhangFei.position + Vector3.right * 5f);
