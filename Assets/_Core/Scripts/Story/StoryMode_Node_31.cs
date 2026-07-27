@@ -68,10 +68,10 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         zhangFei.gameObject.SetActive(true);
         CameraManager.instance.SetCameraPosTarget(zhangFei.cameraPos, false);
-        await WaitForSeconds(.1f);
+        await WaitForSeconds(.1f, false);
 
         zhangFei.anim.PlayAttack(true, true);
-        await WaitForSeconds(5 / 60f);
+        await WaitForSeconds(5 / 60f, false);
         zhangFei.move.MoveToPointAdd(Vector2.right, _isAniPlay: false);
 
         CameraManager.instance.SetCameraPosTarget(null);
@@ -108,7 +108,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
             bool isBooster = false;
             while (zhangFei.move.isMoving == true)
             {
-                if (ControllerManager.isScreenPointerDown == true)
+                if (ControllerManager.isScreenPointerDown == true && isBooster == false)
                 {
                     zhangFei.MoveSpeedMultiple(2f);
                     isBooster = true;
@@ -247,6 +247,8 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         await zhaoYun.move.DashAsync(guanYu.position + Vector3.right * 5f, 0, 0.2f, _isFilp: false);
 
+        guanYu.element.panel.Find("FX/Bomb").gameObject.SetActive(true);
+
         //조운	"아수라가.. 현현한다..        이제 이 세계는 끝이야.."
         zhaoYun.move.MoveToPointAdd(Vector3.right * .5f, _isAniPlay: false);
         await TalkStartAsync();
@@ -256,16 +258,16 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         guanYu.anim.animSpeed = 0;
         zhangFei.anim.animSpeed = 0;
 
+        {
+            var target = zhangFei.position + (guanYu.position - zhangFei.position) * .5f + Vector3.right * 15f;
+            target.y -= 3f;
+            liuBei.position = target;
+        }
+
         liuBei.gameObject.SetActive(true);
         liuBei.SetTalkboxName("신선." + liuBei.info.name);
         //유비	아으.. 바쁘다 바빠!!
         await TalkAutoCloseAsync(0);
-
-        {
-            var target = zhangFei.position + (guanYu.position - zhangFei.position) * .5f + Vector3.right * 15f;
-            target.y -= 2f;
-            liuBei.position = target;
-        }
         liuBei.move.MoveToPointAdd(Vector3.left * 15f);
         await UniTask.WaitUntil(() => liuBei.move.isMoving == false);
         await WaitPointerDown();
@@ -287,6 +289,8 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await TalkStartAsync(3, false);
 
         liuBei.anim.PlayAttack();
+
+        await WaitForSeconds(.5f);
     }
 
     async UniTask BattleAsync(CharacterComponent zhangFei, CharacterComponent guanYu)
@@ -374,7 +378,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
             guanYu.position = pos;
             await UniTask.NextFrame();
         }
-        guanYu.move.MoveToPointAdd(Vector2.right);
+        await guanYu.transform.DOMoveX(guanYu.position.x + 3, 0.2f);
 
         await WaitForSeconds(.5f);
 
