@@ -32,7 +32,10 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         else if (DataManager.dailyDungeon.isRunning)
             DataManager.dailyDungeon.ExitAsync().Forget();
         else if (DataManager.storyMode.isRunning)
-            DataManager.storyMode.ExitAsync().Forget();
+        {
+            (SceneBase.instance as Scene_StoryMode).OnButtonAsync_Skip(
+                _result => m_element.btnExit.interactable = _result != StatusType.Success).Forget();
+        }
         else
         {
 #if UNITY_EDITOR

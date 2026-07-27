@@ -366,7 +366,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
         hero.anim.AttackMotionFirstFrame();
         await hero.transform.DOLocalMoveX(0, 0.1f).SetEase(Ease.InCubic).AsyncWaitForCompletion();
-        hero.anim.AttackMotionEnd();
+        hero.anim.animSpeed = 1f;
         hero.attack.ShowSlashEffect(true);
 
         if (itemComp.data.isNew)

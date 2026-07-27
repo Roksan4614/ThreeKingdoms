@@ -20,6 +20,8 @@ public class Character_Worker_Talkbox : Character_Worker
         m_trnsRB = m_rtTalkbox.Find("rb");
 
         SetActive(false);
+
+        Signal.instance.Update_StoryMode_PlayingMode.connectLambda = new(m_owner, () => PlayingTimer_StoryModeAsync(true).Forget());
     }
 
     RectTransform m_rtTalkbox;
@@ -77,8 +79,10 @@ public class Character_Worker_Talkbox : Character_Worker
     public async UniTask StartAsyncClickDisable(CancellationToken _token, params string[] _talks)
     {
         await StartAsync(_token, _talks);
+        PlayingTimer_StoryModeAsync(false).Forget();
         await UniTask.WaitUntil(()
             => ControllerManager.isScreenPointerDown
+            || m_isPlayingEnd == true
             || Input.GetKeyDown(KeyCode.Return)
             || Input.GetKeyDown(KeyCode.Space), cancellationToken: _token);
         SetActive(false);
@@ -190,4 +194,31 @@ public class Character_Worker_Talkbox : Character_Worker
 
     public void SetActive(bool _isActive)
         => m_rtTalkbox.gameObject.SetActive(_isActive);
+
+    CancellationTokenSource m_cts_PlayingTimer;
+    bool m_isPlayingEnd;
+    async UniTask PlayingTimer_StoryModeAsync(bool _isForce)
+    {
+        m_isPlayingEnd = false;
+
+        if (DataManager.storyMode.isRunning == false)
+            return;
+
+        if (DataManager.storyMode.isPlayingMode == true)
+        {
+            if (_isForce == false)
+            {
+                m_cts_PlayingTimer = m_cts_PlayingTimer.ReleaseCTS(true);
+                var token = m_cts_PlayingTimer.Token;
+
+                var endTime = Time.time + 1f;
+                while (endTime > Time.time)
+                    await UniTask.NextFrame(cancellationToken: token);
+            }
+
+            m_isPlayingEnd = true;
+        }
+
+        m_cts_PlayingTimer = m_cts_PlayingTimer.ReleaseCTS();
+    }
 }

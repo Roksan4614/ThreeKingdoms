@@ -14,6 +14,8 @@ public class Data_StoryMode
     public int siblingIndexSlot { get; private set; }
     public int siblingIndexNode { get; private set; }
 
+    bool m_isPlayingMode; public bool isPlayingMode => m_isPlayingMode;
+
     public bool isLockUI { get; set; }
 
     public async UniTask InitializeAsync()
@@ -23,6 +25,8 @@ public class Data_StoryMode
         m_historyData = PPWorker.Get<List<StoryModeHistoryData>>(c_key);
         if (m_historyData == null)
             m_historyData = new();
+
+        m_isPlayingMode = PPWorker.Get<int>(c_key + "_PLAYING") > 0;
     }
 
     public async UniTask EnterAsync(string _nodeKey)
@@ -278,6 +282,19 @@ public class Data_StoryMode
     {
         siblingIndexSlot = _siblingSlot;
         siblingIndexNode = _siblingNode;
+    }
+
+    public void SetPlayingMode(bool _isPlayingMode, bool _isSave = true)
+    {
+        if (m_isPlayingMode != _isPlayingMode)
+        {
+            m_isPlayingMode = _isPlayingMode;
+            if (_isSave)
+            {
+                PPWorker.Set(c_key + "_PLAYING", m_isPlayingMode ? 1 : 0);
+                Signal.instance.Update_StoryMode_PlayingMode.Emit();
+            }
+        }
     }
 
     public bool IsComplete(string _nodeKey)

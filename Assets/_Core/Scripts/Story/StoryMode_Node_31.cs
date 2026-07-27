@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -40,6 +41,9 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         var caoRen = GetHero(CharacterName.CaoRen);
         var guanYu = GetHero(CharacterName.GuanYu);
         var zhangLiao = GetHero(CharacterName.ZhangLiao);
+        var zhaoYun = GetHero(CharacterName.ZhaoYun);
+        var liuBei = GetHero(CharacterName.LiuBei);
+        liuBei.gameObject.SetActive(false);
 
         CameraManager.instance.SetCameraPosTarget(caoRen.cameraPos);
 
@@ -59,15 +63,16 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         //조인	아??
         TalkAutoClose(0);
+        await WaitForSeconds(.5f, false);
         await WaitPointerDown();
 
         zhangFei.gameObject.SetActive(true);
         CameraManager.instance.SetCameraPosTarget(zhangFei.cameraPos, false);
-        await WaitForSeconds(.5f);
+        await WaitForSeconds(.1f);
 
-        zhangFei.move.MoveToPointAdd(Vector2.right, _isAniPlay: false);
         zhangFei.anim.PlayAttack(true, true);
         await WaitForSeconds(5 / 60f);
+        zhangFei.move.MoveToPointAdd(Vector2.right, _isAniPlay: false);
 
         CameraManager.instance.SetCameraPosTarget(null);
         caoRen.anim.Play(CharacterAnimType.Die_2);
@@ -87,7 +92,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         zhangFei.move.SetFlip(false);
         caoCao.gameObject.SetActive(true);
         //조조	멈추어라!
-        TalkAutoClose(0, true);
+        TalkAutoClose(0, false);
         await WaitPointerDown();
         caoCao.talkbox.SetActive(false);
 
@@ -98,16 +103,37 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         zhangFei.move.MoveToPoint(caoCao.position + Vector3.right * 5f);
         await TalkAutoCloseAsync(0);
 
-        await UniTask.WaitUntil(() => (zhangFei.position - caoCao.position).sqrMagnitude < 49);
-        caoCao.move.MoveToPointAdd(Vector2.left * .5f);
+        Func<UniTask> moveZhangFei = async () =>
+        {
+            bool isBooster = false;
+            while (zhangFei.move.isMoving == true)
+            {
+                if (ControllerManager.isScreenPointerDown == true)
+                {
+                    zhangFei.MoveSpeedMultiple(2f);
+                    isBooster = true;
+                }
+                await UniTask.NextFrame();
+            }
+            if (isBooster == true)
+                zhangFei.MoveSpeedMultiple(.5f);
+        };
+
+        moveZhangFei().Forget();
+
+        //await UniTask.WaitUntil(() => (zhangFei.position - caoCao.position).sqrMagnitude < 64);
+        //caoCao.move.MoveToPointAdd(Vector2.left * .5f);
 
         await UniTask.WaitUntil(() => zhangFei.move.isMoving == false);
+        caoCao.move.MoveToPointAdd(Vector2.left * .5f);
         await WaitPointerDown();
         zhangFei.talkbox.SetActive(false);
 
         //조조	역적이라고??
-        //장비	" '동소'라고 했던가? 네 놈을 위왕에        봉하라는 상소를 올렸다지? ㅋ"
-        await TalkStartAsync(2);
+        //장비	"그 자 이름이..        [동소] 라고 했던가?? "
+        //조조    ??
+        //장비  "네 놈을 위왕에 봉 하라는       상소를 올렸다지?ㅋ"
+        await TalkStartAsync(4);
 
         //조조	"어리석은!! 난 한 나라의 신하일 뿐,        천하를 편안하게 하는 것 외엔 관심없다!"
         caoCao.anim.PlayAttack();
@@ -116,15 +142,16 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         //조조	이야앗!!
         await TalkAutoCloseAsync(0);
-        zhangFei.anim.AttackMotionFirstFrame();
+        //zhangFei.anim.AttackMotionFirstFrame();
         await UniTask.WaitUntil(() => caoCao.talkbox.isTyping == false);
 
-        zhangFei.anim.AttackMotionEnd();
+        zhangFei.anim.PlayAttack();
         await caoCao.attack.RushAsync(zhangFei.position + Vector3.left * 3f);
         zhangFei.transform.DOMoveX(zhangFei.position.x + 5, 0.2f).Forget();
 
         guanYu.move.SetFlip(true);
         guanYu.position = zhangFei.position;
+        CameraManager.instance.SetCameraPosTarget(guanYu.cameraPos, false);
         guanYu.anim.PlayAttack(true, true);
         guanYu.move.MoveToPointAdd(Vector2.left * .5f, _isAniPlay: false);
         caoCao.move.MoveToPointAdd(Vector2.left * .5f, _isAniPlay: false);
@@ -132,15 +159,15 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await WaitForSeconds(1f);
 
         //장비	!?
-        TalkAutoClose(0);
+        TalkAutoClose(0, false);
 
         //조조	..? 관공?
-        await TalkStartAsync();
+        await TalkStartAsync(1, false);
         zhangFei.talkbox.SetActive(false);
 
         //관우 이번에는 번개가 안치는군요, 승상.
         //조조 ??
-        await TalkStartAsync(2);
+        await TalkStartAsync(2, false);
 
         {
             caoCao.move.MoveToPointAdd(Vector2.left);
@@ -151,25 +178,30 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         //장료	주공, 일단 자리를 피하시지요.
         //조조	..번개?
-        await TalkStartAsync(2);
+        await TalkStartAsync(2, false);
 
-        CameraManager.instance.SetCameraPosTarget(null);
-
-        zhangLiao.move.Dash(zhangLiao.position + Vector3.left * 10, 0);
+        zhangLiao.move.Dash(zhangLiao.position + Vector3.left * 15, 0);
         caoCao.move.Dash(caoCao.position + Vector3.left * 10, 0);
 
+        guanYu.move.SetFlip(false);
+        CameraManager.instance.SetCameraPosTarget(guanYu.cameraPos, false);
+
         await WaitForSeconds(1f);
-        Destroy(caoCao.gameObject);
-        Destroy(zhangLiao.gameObject);
+        guanYu.move.SetFlip(true);
+
 
         //장비	"ㅋㅋ 악귀놈, 이제야 온 것이냐ㅋ        어차피 네놈 또한.."
         //관우  "3년동안 제삿밥만 먹더니        살이 좀 빠졌구나, 막내야."
         //장비 고생하긴 했지..음 ??
         await TalkStartAsync(3);
 
+        Destroy(caoCao.gameObject);
+        Destroy(zhangLiao.gameObject);
+
         //장비  뭐야!! 어떻게 안것이냐, 네놈!!
         zhangFei.anim.PlayAttack(true, true);
         zhangFei.SetColorParts(Color.white, _isSetPrev: false);
+        zhangFei.SetTalkboxName();
         zhangFei.element.parts.Find("Head/Eyes").gameObject.SetActive(false);
         //관우  ".. 배불뚝이.. 짐승같은 눈매..      아름답지 못한 턱수염..그리고.."
         await TalkStartAsync(2);
@@ -183,8 +215,78 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         await BattleAsync(zhangFei, guanYu);
 
-        PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+        // 조운 등장
+        CameraManager.instance.SetCameraPosTarget(zhangFei.cameraPos, false);
+        await zhaoYun.move.DashAsync(guanYu.position + Vector3.right * 10f);
+
+        //조운	이..이런!!
+        await TalkStartAsync();
+
+        await zhaoYun.attack.RushAsync(guanYu.position + Vector3.right * 4f);
+        await UniTask.WaitForSeconds(.2f);
+        zhaoYun.anim.PlayAttack(true, true);
+        await UniTask.WaitForSeconds(.2f);
+        zhaoYun.anim.Play(CharacterAnimType.Skill);
+        zhaoYun.attack.ResetFX();
+        zhaoYun.attack.ShowSlashEffect(true);
+        await UniTask.WaitForSeconds(.2f);
+        zhaoYun.anim.PlayAttack(true, true);
+        await UniTask.WaitForSeconds(.2f);
+        zhaoYun.anim.PlayAttack(true, true);
+
+        await zhaoYun.move.DashAsync(zhaoYun.position + Vector3.right * 8f, 0, 0.2f, _isFilp: false);
+
+        zhaoYun.anim.AttackMotionFirstFrame();
+        await WaitForSeconds(.5f, false);
+        zhaoYun.anim.animSpeed = 1f;
+
+        await zhaoYun.attack.RushAsync(guanYu.position + Vector3.right * 3f);
+        await WaitForSeconds(.5f, false);
+        //조운 크..큰일났다!!
+        await TalkStartAsync();
+
+        await zhaoYun.move.DashAsync(guanYu.position + Vector3.right * 5f, 0, 0.2f, _isFilp: false);
+
+        //조운	"아수라가.. 현현한다..        이제 이 세계는 끝이야.."
+        zhaoYun.move.MoveToPointAdd(Vector3.right * .5f, _isAniPlay: false);
+        await TalkStartAsync();
+
+        // 유비등장
+        zhaoYun.anim.animSpeed = 0;
+        guanYu.anim.animSpeed = 0;
+        zhangFei.anim.animSpeed = 0;
+
+        liuBei.gameObject.SetActive(true);
+        liuBei.SetTalkboxName("신선." + liuBei.info.name);
+        //유비	아으.. 바쁘다 바빠!!
+        await TalkAutoCloseAsync(0);
+
+        {
+            var target = zhangFei.position + (guanYu.position - zhangFei.position) * .5f + Vector3.right * 15f;
+            target.y -= 2f;
+            liuBei.position = target;
+        }
+        liuBei.move.MoveToPointAdd(Vector3.left * 15f);
+        await UniTask.WaitUntil(() => liuBei.move.isMoving == false);
         await WaitPointerDown();
+
+        //유비	"아깝군. 이대로만 갔어도         좋은 흐름이었는데.."
+        await TalkStartAsync();
+        //유비  "범강, 장달.. 으으 저 두 놈은 어느    시간선에서든 문제를 일으키는군 - -+"
+        //유비  "우선 아수라가 현현하는 건 막아야한다..   시간을 되돌릴 수 밖에.."
+        liuBei.move.SetFlip(true);
+        await TalkStartAsync(2);
+
+        PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+        await WaitForSeconds(.5f);
+
+        //유비  "응?? 아수라를 한번      상대해보겠다고 ?? "
+        //유비  "아서라 아서. 아직은 안돼       더 강해지라고ㅋ"
+        //유비 자 그럼, 다음에 또 보자고~
+        liuBei.move.SetFlip(false);
+        await TalkStartAsync(3, false);
+
+        liuBei.anim.PlayAttack();
     }
 
     async UniTask BattleAsync(CharacterComponent zhangFei, CharacterComponent guanYu)
@@ -225,7 +327,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         // 강 공격!
         zhangFei.anim.AttackMotionFirstFrame();
         await WaitForSeconds(.5f);
-        zhangFei.anim.AttackMotionEnd();
+        zhangFei.anim.animSpeed = 1f;
         zhangFei.anim.PlayAttack(true, true);
 
         // 관우 피하기!!
@@ -234,20 +336,19 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         // 장비 돌격!!
         zhangFei.attack.Rush(guanYu.position);
-
         // 가까이 올때까지 대기
         await UniTask.WaitUntil(() => (zhangFei.position - guanYu.position).sqrMagnitude < 16);
 
         guanYu.move.SetFlip(false);
-        await guanYu.move.DashAsync(guanYu.position + Vector3.right * 6f, 0, 0.2f);
-        guanYu.move.SetFlip(false);
         actionIdle();
+        await guanYu.move.DashAsync(guanYu.position + Vector3.right * 6f, 0, 0.2f);
+
+        guanYu.move.SetFlip(false);
 
         await WaitForSeconds(1f);
-        zhangFei.move.SetFlip(true);
 
         //장비	??
-        zhangFei.move.MoveToPointAdd(Vector2.right * .5f);
+        zhangFei.move.MoveToPointAdd(Vector2.right * .5f, false);
         await TalkAutoCloseAsync();
 
         zhangFei.attack.Rush(guanYu.position);
@@ -314,7 +415,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await WaitPointerDown();
         guanYu.talkbox.SetActive(false);
 
-        zhangFei.anim.AttackMotionEnd();
+        zhangFei.anim.animSpeed = 1f;
         zhangFei.anim.Play(CharacterAnimType.Idle);
 
         //장비	"뭐냐!! 네 녀석이라면 충분히        막을 수 있었을텐데..이놈!!"
@@ -354,7 +455,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         //범강    푸슉
         //장비	..?
         //범강	하하.. 잡았다..
-        await TalkStartAsync(3);
+        await TalkStartAsync(3, false);
 
         var zhangDa = GetHero("ZhangDa");
         {
@@ -369,14 +470,14 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         //장달	"내가 이 괴물같은 녀석의        심장을 뚫었다!!"
         //장비 크읔..
         //관우	이..이 버러지같은 것들이!!
-        await TalkStartAsync(4);
+        await TalkStartAsync(4, false);
 
         guanYu.attack.SetActive_Weapon(true);
         guanYu.attack.Rush(zhangFei.position + Vector3.right * 5f);
 
         await WaitForSeconds(.1f);
 
-        zhangFei.anim.Play(CharacterAnimType.Die_1);
+        zhangFei.anim.Play(CharacterAnimType.Die_2);
         zhangFei.move.SetFlip(true);
         zhangFei.move.MoveToPointAdd(Vector2.right, _isAniPlay: false);
 
@@ -397,6 +498,9 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         //관우	마..막내야??
         await TalkStartAsync();
+
+        Destroy(zhangDa.gameObject);
+        Destroy(fanJiang.gameObject);
 
         guanYu.attack.SetActive_Weapon(false);
         guanYu.anim.Play(CharacterAnimType.Knockdown);

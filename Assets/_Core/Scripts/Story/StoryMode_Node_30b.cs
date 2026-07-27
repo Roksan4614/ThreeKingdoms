@@ -49,7 +49,7 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
         await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
 
         //관우 ??
-        TalkAutoClose(0, true);
+        TalkAutoClose(0, false);
         await WaitPointerDown();
 
         // 유비	지도자 없는 의용군은 오합지졸일 뿐..
@@ -87,7 +87,7 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
 
         // 장비 오오!복숭아 밭 파티장이라니ㅋ 근사하구만ㅋ
         CameraManager.instance.SetCameraPosTarget(null);
-        TalkAutoClose(0, true);
+        TalkAutoClose(0, false);
 
         // 장비 왔다갔다하자.
         await zhangFei.move.MoveToPointAsync(zhangFei.position + Vector3.right * 2, false);
@@ -136,7 +136,7 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
         await UniTask.WaitUntil(() => zhangFei.talkbox.isTyping == false);
 
         // 관우 뜨거운 맹세! 영원히 변치 않을 것입니다!
-        TalkAutoClose(0, true);
+        TalkAutoClose(0, false);
 
         await WaitForSeconds(1);
 

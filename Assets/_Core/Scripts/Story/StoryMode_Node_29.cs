@@ -55,7 +55,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         zhangLiao.move.SetFlip(true);
 
         //장료	흐음..
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         await PopupManager.instance.ShowDimmAsync(true);
 
@@ -81,29 +81,29 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         await WaitForSeconds(1f);
 
         //조운	!?
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         //관우	창끝이 더 날카로워졌군, 자룡.
         guanYu.move.MoveToPointAdd(Vector2.right);
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         //조운	"그냥 얌전히 목을 내어        주실 순 없으십니까 ? "
         //관우  그럴 수만은 없다네..
-        await TalkStartAsync(2, true);
+        await TalkStartAsync(2, false);
 
         //조운  "관우님도 느끼고 있으실 것입니다.   아수라의 기운을.."
         //관우	"아무래도 신선술을        익힌 모양이군.."
         zhaoYun.move.MoveToPointAdd(Vector2.left * .5f);
-        await TalkStartAsync(2, true);
+        await TalkStartAsync(2, false);
 
         //관우	"허나, 자네에게 내 목을        내어줄 순 없네."
         //조운	..? 무슨 말씀이신지..
         guanYu.move.SetFlip(false);
-        await TalkStartAsync(2, true);
+        await TalkStartAsync(2, false);
 
         //관우	그냥 지나가 주시게, 자룡.
         guanYu.move.MoveToPointAdd(Vector2.left * .5f);
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         //조운	안됩니다. 더 늦었다간..
         zhaoYun.move.MoveToPointAdd(Vector2.left);
@@ -112,7 +112,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         //관우	곧 끝이 날 걸세.
         //조운..
         //조운  "그렇군요. 알겠습니다.     그 때까지 화기를 잘 다루십시오."
-        await TalkStartAsync(3, true);
+        await TalkStartAsync(3, false);
 
         //관우	"알고 있네. 혹시..        만약에 말일세.."
         guanYu.move.SetFlip(true);
@@ -123,7 +123,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         await zhangLiao.move.DashAsync(guanYu.position + Vector3.left * 4f, 0, 0.2f);
 
         //장료	장군!!
-        await TalkAutoCloseAsync(0, true);
+        await TalkAutoCloseAsync(0, false);
         await UniTask.WaitUntil(() => guanYu.talkbox.isTyping == false);
         guanYu.talkbox.SetActive(false);
         await WaitPointerDown();
@@ -132,7 +132,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         //조운	".. 전 이만 가보겠습니다.        늦기 전에 찾아뵙지요."
         //관우	음.. 알겠네.
         zhaoYun.move.MoveToPointAdd(Vector3.right, false);
-        await TalkStartAsync(2, true);
+        await TalkStartAsync(2, false);
 
         zhaoYun.move.Dash(zhaoYun.position + Vector3.right, 10);
 
@@ -190,7 +190,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
 
         //하후돈	으으.. 장군..
         guanYu.talkbox.SetActive(false);
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
 
@@ -204,7 +204,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
         guanYu.move.Dash(guanYu.position + Vector3.left * 15f, 0);
 
         //하후돈	캬캬캬
-        await TalkAutoCloseAsync(0, true);
+        await TalkAutoCloseAsync(0, false);
         await UniTask.WaitUntil(() => xiahouDun.talkbox.isTyping == false);
     }
 }

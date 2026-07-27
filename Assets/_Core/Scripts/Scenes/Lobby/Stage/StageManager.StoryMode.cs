@@ -6,6 +6,8 @@ public partial class StageManager
 {
     AsyncOperationHandle<GameObject> m_handleStoryMode;
 
+    public StoryModeBaseComponent slotStory { get; private set; }
+
     public async UniTask InitializeAsync_StoryMode()
     {
         await LoadStoryModeAsync(DataManager.storyMode.curNodeKey);
@@ -28,7 +30,7 @@ public partial class StageManager
             await LoadStoryModeAsync("none");
             return;
         }
-        var slot = Instantiate(m_handleDailyDungeon.Result, m_element.chapter);
+        slotStory = Instantiate(m_handleDailyDungeon.Result, m_element.chapter).GetComponent<StoryModeBaseComponent>();
     }
 
     void OnDestroy_StoryMode()

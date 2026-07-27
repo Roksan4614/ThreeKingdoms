@@ -460,7 +460,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
         public void Initialize(Transform _transform)
         {
-            startPos = _transform.GetChild(0).position;
+            startPos = _transform.childCount == 0 ? Vector3.zero : _transform.GetChild(0).position;
             heroInfo = GameObject.Find("Canvas/HeroInfo").transform;
         }
     }

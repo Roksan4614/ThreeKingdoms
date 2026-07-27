@@ -121,7 +121,7 @@ public class Character_Worker_Attack : Character_Worker
                     EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);
                     dt = DateTime.Now.AddSeconds(10);
 
-                    m_owner.anim.AttackMotionEnd();
+                    m_owner.anim.animSpeed = 1f;
                     m_owner.attack.ShowSlashEffect(true);
                 }
             });

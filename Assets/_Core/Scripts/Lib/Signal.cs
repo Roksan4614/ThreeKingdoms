@@ -306,5 +306,7 @@ public class Signal
     public SignalObject<Data_BossRaid.BossRaidStatusType> BossRaidStatus = new();
     public SignalObject<Data_DailyDungeon.DailyDungeonStatusType> DailyDungeonStatus = new();
     public SignalObject<GradeType> DailyDungeonNextStep = new();
+
+    public SignalObject Update_StoryMode_PlayingMode = new();
     #endregion
 }

@@ -92,7 +92,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
         enemy.move.MoveToPoint(guanYu.position, _isAniPlay: false);
         await UniTask.WaitUntil(() => (enemy.position - guanYu.position).sqrMagnitude < 36);
         enemy.move.MoveStop();
-        enemy.anim.AttackMotionEnd();
+        enemy.anim.animSpeed = 1f;
         enemy.move.MoveToPointAdd(Vector2.left, _isAniPlay: false);
         enemy.anim.Play(CharacterAnimType.Die_1);
         enemy.talkbox.SetActive(false);
@@ -132,7 +132,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 
         //관우	..?
         guanYu.move.SetFlip(false);
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         guanYu.move.MoveToPoint(etc.position + Vector3.right * 5f);
 
@@ -144,7 +144,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 
         //Etc	사..살려주세요ㅜㅜ
         etc.move.MoveToPointAdd(Vector2.left * .5f);
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         {
             var target = guanYu.position + Vector3.right * 3.5f;
@@ -186,7 +186,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
         guanYu.move.MoveStop();
         guanYu.move.SetFlip(true);
         guanYu.move.MoveToPointAdd(Vector2.left, _isAniPlay: false);
-        guanYu.anim.AttackMotionEnd();
+        guanYu.anim.animSpeed = 1f;
         guanYu.anim.PlayAttack(true, true);
 
         // 백성 뒤로 밀리기
@@ -206,7 +206,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
         guanYu.move.SetFlip(false);
 
         //??	흥!!
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         zhangFei.move.SetFlip(true);
         await WaitForSeconds(1f);
@@ -246,14 +246,14 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 
         //??	".."
         //??	"어이가 없군ㅋㅋ        악귀가 따로 없지 않은가ㅋ"
-        await TalkStartAsync(2, true);
+        await TalkStartAsync(2, false);
 
         zhangFei.move.SetFlip(false);
         await WaitForSeconds(1f);
         zhangFei.anim.PlayAttack(true, true);
 
         //??	"흥! 아직 내가 나설 수        없음을 감사히 여기거라"
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         //??	3년상만 아니었어도.. 에잇!!
         zhangFei.move.MoveToPointAdd(Vector3.left * .5f);
@@ -269,7 +269,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 
         //하후돈	"멧돼지 같은게,        엄청 빠르군."
         xiahouDun.move.MoveToPointAdd(Vector2.left * .5f);
-        TalkAutoClose(0, true);
+        TalkAutoClose(0, false);
 
         PopupManager.instance.AlertShow("스토리를_완료했습니다.");
         await WaitPointerDown();

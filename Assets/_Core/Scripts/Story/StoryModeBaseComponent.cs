@@ -11,6 +11,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
 
     int m_idxPhase;
     protected int m_resultTalkIdx = -1;
+    public int resultTalkIdx => m_resultTalkIdx;
 
     protected CancellationTokenSource m_cts;
 
@@ -31,6 +32,8 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
         m_queTalk = TableManager.scenarioTalk.GetTalk(DataManager.storyMode.curNodeKey.ToUpper(), true);
 
         WaitReadyAsync().Forget();
+
+        Signal.instance.Update_StoryMode_PlayingMode.connectLambda = new(this, () => PlayingTimerAsync(true).Forget());
     }
 
     void OnDestroy()
@@ -145,7 +148,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
 
     protected bool IsTalkEnd() => m_queTalk.Peek().target.IsActive();
 
-    protected async UniTask TalkStartAsync(int _count = 1, bool _isLockMoveCamera = false)
+    protected async UniTask TalkStartAsync(int _count = 1, bool _isActiveMoveCamera = true)
     {
         for (int i = 0; i < _count; i++)
         {
@@ -153,11 +156,11 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
             while (talk.target == null && m_queTalk.Count > 0)
                 talk = m_queTalk.Dequeue();
 
-            await TalkStartAsync(talk, _isLockMoveCamera);
+            await TalkStartAsync(talk, _isActiveMoveCamera);
         }
     }
 
-    protected async UniTask TalkStartAsync(TableStringData _talk, bool _isLockMoveCamera = false)
+    protected async UniTask TalkStartAsync(TableStringData _talk, bool _isActiveMoveCamera = true)
     {
         if (_talk.target.IsActive() == false)
             return;
@@ -165,24 +168,24 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
         var p = phase;
         if (p.heroes.ContainsKey(_talk.target))
         {
-            if (_isLockMoveCamera == false)
+            if (_isActiveMoveCamera == true)
                 CameraManager.instance.SetCameraPosTarget(p.heroes[_talk.target].cameraPos, false);
 
             await p.heroes[_talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, _talk.talkArray);
         }
         else if (p.enemies.ContainsKey(_talk.target))
         {
-            if (_isLockMoveCamera == false)
+            if (_isActiveMoveCamera == true)
                 CameraManager.instance.SetCameraPosTarget(p.enemies[_talk.target].cameraPos, false);
 
             await p.enemies[_talk.target].talkbox.StartAsyncClickDisable(m_cts.Token, _talk.talkArray);
         }
     }
 
-    protected void TalkAutoClose(float _duration = 3f, bool _isLockMoveCamera = false)
-        => TalkAutoCloseAsync(_duration, _isLockMoveCamera).Forget();
+    protected void TalkAutoClose(float _duration = 3f, bool _isActiveMoveCamera = true)
+        => TalkAutoCloseAsync(_duration, _isActiveMoveCamera).Forget();
 
-    protected async UniTask TalkAutoCloseAsync(float _duration = 3f, bool _isLockMoveCamera = false)
+    protected async UniTask TalkAutoCloseAsync(float _duration = 3f, bool _isActiveMoveCamera = true)
     {
         TableStringData talk = default;
         while (talk.target == null && m_queTalk.Count > 0)
@@ -199,7 +202,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
         if (character == null)
             return;
 
-        if (_isLockMoveCamera == false)
+        if (_isActiveMoveCamera == true)
             CameraManager.instance.SetCameraPosTarget(character.cameraPos, false);
 
         character.talkbox.Start(m_cts.Token, talk.talkArray);
@@ -222,13 +225,14 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
             IngameLog.Add("TalkAutoCloseAsync: PointerDown");
     }
 
-    protected async UniTask WaitForSeconds(float _second)
+    protected async UniTask WaitForSeconds(float _second, bool _isPointerDown = true)
     {
         await UniTask.NextFrame(cancellationToken: m_cts.Token);
 
         var time = Time.time + _second;
 
-        while (Time.time < time && ControllerManager.isScreenPointerDown == false && Input.GetKeyDown(KeyCode.Space) == false)
+        while (Time.time < time &&
+            ((ControllerManager.isScreenPointerDown == false && Input.GetKeyDown(KeyCode.Space) == false) || _isPointerDown == false))
             await UniTask.NextFrame(cancellationToken: m_cts.Token);
 
         if (ControllerManager.isScreenPointerDown == true)
@@ -236,8 +240,36 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
     }
 
     protected async UniTask WaitPointerDown()
-        => await UniTask.WaitUntil(()
-            => ControllerManager.isScreenPointerDown || Input.GetKeyDown(KeyCode.Space), cancellationToken: m_cts.Token);
+    {
+        PlayingTimerAsync(false).Forget();
+
+        await UniTask.WaitUntil(()
+            => ControllerManager.isScreenPointerDown || Input.GetKeyDown(KeyCode.Space) || m_isPlayingEnd == true, cancellationToken: m_cts.Token);
+    }
+
+    CancellationTokenSource m_cts_PlayingTimer;
+    bool m_isPlayingEnd;
+    async UniTask PlayingTimerAsync(bool _isForce)
+    {
+        m_isPlayingEnd = false;
+
+        if (DataManager.storyMode.isPlayingMode == true)
+        {
+            if (_isForce == false)
+            {
+                m_cts_PlayingTimer = m_cts_PlayingTimer.ReleaseCTS(true);
+                var token = m_cts_PlayingTimer.Token;
+
+                var endTime = Time.time + 1f;
+                while (endTime > Time.time)
+                    await UniTask.NextFrame(cancellationToken: token);
+            }
+
+            m_isPlayingEnd = true;
+        }
+
+        m_cts_PlayingTimer = m_cts_PlayingTimer.ReleaseCTS();
+    }
 
     protected CharacterComponent GetHero(string _key)
         => phase.GetHero(_key);

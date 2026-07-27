@@ -2,7 +2,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.TableStoryModeNodeData>
 {
@@ -119,7 +118,16 @@ public class Table_StoryMode_Unlock : BaseTable<string, Table_StoryMode_Unlock.T
 
 public class Table_StoryMode_Choice : BaseTable<string, Table_StoryMode_Choice.TableStoryModeChoiceData>
 {
-    public Table_StoryMode_Choice(List<TableStoryModeChoiceData> _table) : base(_table) { }
+    Dictionary<string, List<TableStoryModeChoiceData>> m_group;
+
+    public Table_StoryMode_Choice(List<TableStoryModeChoiceData> _table) : base(_table)
+    {
+        m_group = _table.GroupBy(x => x.node_key).ToDictionary(x => x.Key, x => x.ToList());
+
+    }
+
+    public TableStoryModeChoiceData[] GetChoices(string _nodeKey)
+        => m_group.ContainsKey(_nodeKey) ? m_group[_nodeKey].ToArray() : Array.Empty<TableStoryModeChoiceData>();
 
     public struct TableStoryModeChoiceData
     {
@@ -127,5 +135,7 @@ public class Table_StoryMode_Choice : BaseTable<string, Table_StoryMode_Choice.T
         public int choice_seq;
 
         public bool isActive => node_key.IsActive();
+
+        public string stringChoice => TableManager.storyString.GetString($"{node_key.ToUpper()}_CHOICE_{choice_seq}");
     }
 }

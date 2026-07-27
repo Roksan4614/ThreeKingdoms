@@ -236,7 +236,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         TalkAutoClose(0);
 
         //°ü¿ì ..
-        await TalkStartAsync(1, true);
+        await TalkStartAsync(1, false);
 
         await guanYu.move.MoveToPointAsync(wenChou.position + Vector3.right * 3, false);
         guanYu.anim.PlayAttack(true, true);

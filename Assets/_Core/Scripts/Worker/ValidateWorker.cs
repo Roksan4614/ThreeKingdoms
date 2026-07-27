@@ -40,15 +40,34 @@ public class ValidateWorkerButton : Editor
 
         if (GUILayout.Button("Validate"))
         {
+            float startTime = Time.realtimeSinceStartup;
+
             foreach (var t in targets)
             {
-                if (t is IValidatable validatable)
+                GameObject target = null;
+                if (t is Component component)
+                    target = component.gameObject;
+                else if (t is GameObject go)
+                    target = go;
+
+                if (target == null)
+                    continue;
+
+                var validatables = target.GetComponentsInChildren<IValidatable>(includeInactive: true);
+
+                foreach (var v in validatables)
                 {
-                    validatable.OnManualValidate();
-                    EditorUtility.SetDirty((Object)validatable);
+                    v.OnManualValidate();
+
+                    if (v is Object unityObject)
+                    {
+                        EditorUtility.SetDirty(unityObject);
+                    }
                 }
             }
             AssetDatabase.SaveAssets();
+
+            Debug.Log($"VALIDATE FINISHED: {(Time.realtimeSinceStartup - startTime):0.#0}s");
         }
     }
 }

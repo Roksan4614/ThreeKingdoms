@@ -85,6 +85,7 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
         => funcUp?.Invoke();
 
     [SerializeField, HideInInspector]
+    //[SerializeField]
     ElementData m_element;
 
     [SerializeField]

@@ -57,6 +57,9 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
 
         bool isCompleteLastNode = nextData.next_node_key.IsActive() == false && DataManager.storyMode.IsComplete(nextData.node_key);
 
+        m_element.txtDesc.text = isCompleteLastNode ?
+             "시간을_돌려_되돌아갑니다." : "시간이_어긋나_있습니다.";
+
         m_element.btnConfirm.text = isCompleteLastNode ? "돌아가기_" : "포기하기_";
         m_element.btnConfirm.onClick.RemoveAllListeners();
         m_element.btnConfirm.onClick.AddListener(() =>
@@ -84,6 +87,8 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
             }
             else
             {
+                PopupManager.instance.AlertShow("시간을_돌려_되돌아갑니다.");
+
                 Utils.SetActivePunch(m_element.panel, false);
                 Utils.SetActivePunch(transform.parent, true);
 

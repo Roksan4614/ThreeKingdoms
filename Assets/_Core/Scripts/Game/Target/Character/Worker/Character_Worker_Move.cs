@@ -156,8 +156,8 @@ public class Character_Worker_Move : Character_Worker
     }
 
     Tween m_tweenDash;
-    public void Dash(Vector3 _targetPos, float _power = 5, float _targetDuration = 0)
-        => DashAsync(_targetPos, _power, _targetDuration).Forget();
+    public void Dash(Vector3 _targetPos, float _power = 5, float _targetDuration = 0, bool _isFilp = true)
+        => DashAsync(_targetPos, _power, _targetDuration, _isFilp).Forget();
 
     /// <summary>
     /// 
@@ -166,7 +166,7 @@ public class Character_Worker_Move : Character_Worker
     /// <param name="_power">지정된 값만큼만 이동. 0이면 targetPos로 이동함</param>
     /// <param name="_targetDuration">0이면 5가 0.2인데 거리만큼 자동으로 늘어남. 그 외값이면 그 값이 duration이 됨</param>
     /// <returns></returns>
-    public async UniTask DashAsync(Vector3 _targetPos, float _power = 5, float _targetDuration = 0)
+    public async UniTask DashAsync(Vector3 _targetPos, float _power = 5, float _targetDuration = 0, bool _isFilp = true)
     {
         //test
         if (m_tweenDash != null)
@@ -208,7 +208,14 @@ public class Character_Worker_Move : Character_Worker
 
         var hashBuff = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
 
-        if (ControllerManager.instance.isKeyboardMode)
+        if (_isFilp == false)
+        {
+            if (isFlip == target.x > m_owner.position.x)
+                m_owner.anim.Play(CharacterAnimType.Dash);
+            else
+                m_owner.anim.Play(CharacterAnimType.Dash_Back);
+        }
+        else if (ControllerManager.instance.isKeyboardMode)
         {
             //if (lookAt.x != 0 && m_owner.factionType == FactionType.Alliance && m_owner.position.x < CameraManager.posPointer.x != lookAt.x > 0)
             if (lookAt.x != 0 && m_owner.position.x < CameraManager.posPointer.x != lookAt.x > 0)
