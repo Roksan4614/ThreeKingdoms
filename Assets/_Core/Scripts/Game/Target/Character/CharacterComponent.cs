@@ -15,7 +15,7 @@ public class CharacterComponent : TargetComponent
     [SerializeField]
     protected HeroInfoData m_info;
 
-    public List<CharacterComponent> targetTest = new();
+    //public List<CharacterComponent> targetTest = new();
 
     [SerializeField]
     CharacterStateType m_stateType;
@@ -337,8 +337,11 @@ public class CharacterComponent : TargetComponent
         base.OnManualValidate();
     }
 
-    //[SerializeField, HideInInspector]
-    [SerializeField]
+    [SerializeField] CharacterAnimationClipData m_animationClipData;
+    public CharacterAnimationClipData animationClipData => m_animationClipData;
+
+    [SerializeField, HideInInspector]
+    //[SerializeField]
     protected ElementData m_element;
     public ElementData element => m_element;
     [Serializable]
@@ -353,7 +356,6 @@ public class CharacterComponent : TargetComponent
         [SerializeField] Transform m_skillRage;
         [SerializeField] Collider2D m_collider;
         [SerializeField] TextMeshProUGUI m_txtTalk;
-        [SerializeField] CharacterAnimationClipData m_animationClipData;
         [SerializeField] RectTransform m_rtHP;
 
         public SpriteRenderer[] partsRenders;
@@ -369,7 +371,6 @@ public class CharacterComponent : TargetComponent
         public Transform skillRange => m_skillRage;
         public Transform parts => m_animator.transform;
         public Collider2D collider => m_collider;
-        public CharacterAnimationClipData animationClipData => m_animationClipData;
         public TextMeshProUGUI txtTalk => m_txtTalk;
         public RectTransform rtHP => m_rtHP;
         public GameObject objHP => rtHP.parent.gameObject;

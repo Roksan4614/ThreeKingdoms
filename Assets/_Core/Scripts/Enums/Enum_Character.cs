@@ -40,6 +40,7 @@ public enum CharacterAnimType
     Die_2,
 
     Knockdown,
+    Knockdown_Loop,
 
     Frust,          //ÁÂÀý°¨
     Frust_Loop,

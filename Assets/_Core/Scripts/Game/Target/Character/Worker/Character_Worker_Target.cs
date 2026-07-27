@@ -28,7 +28,7 @@ public class Character_Worker_Target : Character_Worker
         if (IsEnemy(_target) == false || m_targetList.Contains(_target) == true)
             return;
 
-        m_owner.targetTest.Add(_target);
+        //m_owner.targetTest.Add(_target);
         m_targetList.Add(_target);
     }
 
@@ -37,7 +37,7 @@ public class Character_Worker_Target : Character_Worker
         m_targetList.Clear();
         target = null;
 
-        m_owner.targetTest.Clear();
+        //m_owner.targetTest.Clear();
     }
 
     public void RemoveTarget(CharacterComponent _target)
@@ -46,7 +46,7 @@ public class Character_Worker_Target : Character_Worker
             //if (m_owner.isLive == false || IsEnemy(_target) == false)
             return;
 
-        m_owner.targetTest.Remove(_target);
+        //m_owner.targetTest.Remove(_target);
         m_targetList.Remove(_target);
     }
 

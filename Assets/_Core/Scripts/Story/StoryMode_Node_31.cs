@@ -387,7 +387,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await WaitForSeconds(.1f);
 
         actionIdle();
-        await guanYu.move.DashAsync(guanYu.position + Vector3.left, 7);
+        await guanYu.move.DashAsync(guanYu.position + Vector3.left, 9);
         guanYu.move.SetFlip(true);
         guanYu.move.MoveToPointAdd(Vector2.left * .5f);
 

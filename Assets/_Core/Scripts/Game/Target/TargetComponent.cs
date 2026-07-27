@@ -5,9 +5,9 @@ public class TargetComponent : MonoBehaviour, IValidatable
 {
     public virtual bool isLive => true;
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     protected SortingGroup m_sortingGroup;
-    [SerializeField]
+    [SerializeField, HideInInspector]
     protected Canvas m_canvas;
 
     protected bool isSwitchSorting { get; set; } = true;

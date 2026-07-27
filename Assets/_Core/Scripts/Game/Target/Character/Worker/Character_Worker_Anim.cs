@@ -14,11 +14,11 @@ public class Character_Worker_Anim : Character_Worker
 
         for (var i = CharacterAnimType.NONE + 1; i < CharacterAnimType.MAX; i++)
         {
-            var clip = m_owner.element.animationClipData.GetClip(i);
+            var clip = m_owner.animationClipData.GetClip(i);
 
             // Attack move 가 없을 땐 일단 기본으로 채워주자
             if (i == CharacterAnimType.Attack_Move && clip == null)
-                clip = m_owner.element.animationClipData.GetClip(CharacterAnimType.Attack);
+                clip = m_owner.animationClipData.GetClip(CharacterAnimType.Attack);
 
             if (clip == null)
                 continue;
@@ -102,6 +102,12 @@ public struct CharacterAnimationClipData
     [SerializeField] AnimationClip die1;
     [SerializeField] AnimationClip die2;
 
+    [SerializeField] AnimationClip knockdown;
+    [SerializeField] AnimationClip knockdown_Loop;
+
+    [SerializeField] AnimationClip frust;
+    [SerializeField] AnimationClip frust_Loop;
+
     public AnimationClip GetClip(CharacterAnimType _animType) => _animType switch
     {
         CharacterAnimType.Idle => idle,
@@ -112,6 +118,10 @@ public struct CharacterAnimationClipData
         CharacterAnimType.Die_2 => die2,
         CharacterAnimType.Dash => dash,
         CharacterAnimType.Dash_Back => dash_back,
+        CharacterAnimType.Knockdown => knockdown,
+        CharacterAnimType.Knockdown_Loop => knockdown_Loop,
+        CharacterAnimType.Frust => frust,
+        CharacterAnimType.Frust_Loop => frust_Loop,
         _ => null,
     };
 }

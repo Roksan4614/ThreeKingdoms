@@ -46,7 +46,7 @@ public class Scene_StoryMode : SceneBase
         _callback?.Invoke(result);
 
         if (result == StatusType.Success)
-            DataManager.storyMode.ExitAsync().Forget();
+            DataManager.storyMode.ExitAsync(StageManager.instance.slotStory.resultTalkIdx).Forget();
         else
             m_element.btnSkip.interactable = true;
     }
