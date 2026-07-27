@@ -17,11 +17,12 @@ public partial class InfoStage_Boss
 
     async UniTask StartTimerAsync_DailyDungeon()
     {
-#if UNITY_EDITOR
-        await TimerAsync(5 / 60f, Utils.GetUTC().AddMinutes(5 / 60f));
-#else
+        //#if UNITY_EDITOR
+        //        await TimerAsync(5 / 60f, Utils.GetUTC().AddMinutes(5 / 60f));
+        //#else
+        //        await TimerAsync(1, Utils.GetUTC().AddMinutes(1));
+        //#endif
         await TimerAsync(1, Utils.GetUTC().AddMinutes(1));
-#endif
 
         DataManager.dailyDungeon.TimeoutAsync().Forget();
     }

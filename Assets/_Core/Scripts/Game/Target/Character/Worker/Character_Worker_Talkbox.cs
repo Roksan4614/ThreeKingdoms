@@ -101,9 +101,12 @@ public class Character_Worker_Talkbox : Character_Worker
     bool m_isCancel;
     public async UniTask StartAsync(CancellationToken _token, params string[] _talks)
     {
+        m_isIgnoreRoundScreen = isSwitch_IgnoreRoundScreen;
+        isSwitch_IgnoreRoundScreen = false;
+
         await UniTask.WaitUntil(()
-            => ControllerManager.isScreenPointer == false && Input.GetKey(KeyCode.Return) == false && Input.GetKey(KeyCode.Space) == false
-            , cancellationToken: _token);
+                => ControllerManager.isScreenPointer == false && Input.GetKey(KeyCode.Return) == false && Input.GetKey(KeyCode.Space) == false
+                , cancellationToken: _token);
 
         if (isTyping == true)
         {
@@ -159,9 +162,11 @@ public class Character_Worker_Talkbox : Character_Worker
         isTyping = false;
     }
 
+    public bool isSwitch_IgnoreRoundScreen { get; set; }
+    bool m_isIgnoreRoundScreen;
     public override void OnUpdate()
     {
-        if (m_rtTalkbox.gameObject.activeSelf == false)
+        if (m_rtTalkbox.gameObject.activeSelf == false || m_isIgnoreRoundScreen == true)
             return;
 
         // 일단 포지션 값은 0이 기본이야.

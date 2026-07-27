@@ -38,6 +38,9 @@ public class ValidateWorkerButton : Editor
         base.OnInspectorGUI();
         IValidatable generator = target as IValidatable;
 
+        if (HasValidatable() == false)
+            return;
+
         if (GUILayout.Button("Validate"))
         {
             float startTime = Time.realtimeSinceStartup;
@@ -69,6 +72,24 @@ public class ValidateWorkerButton : Editor
 
             Debug.Log($"VALIDATE FINISHED: {(Time.realtimeSinceStartup - startTime):0.#0}s");
         }
+    }
+
+    private bool HasValidatable()
+    {
+        foreach (var t in targets)
+        {
+            if (t is Component comp)
+            {
+                if (comp.GetComponent<IValidatable>() != null)
+                    return true;
+            }
+            else if (t is GameObject go)
+            {
+                if (go.GetComponent<IValidatable>() != null)
+                    return true;
+            }
+        }
+        return false;
     }
 }
 

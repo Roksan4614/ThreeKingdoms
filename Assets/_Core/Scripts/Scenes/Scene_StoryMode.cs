@@ -35,7 +35,7 @@ public class Scene_StoryMode : SceneBase
     {
         if (StageManager.instance.slotStory.resultTalkIdx == -1 && TableManager.storyChoice.GetChoices(DataManager.storyMode.curNodeKey).Length > 0)
         {
-            PopupManager.instance.AlertShow("선택할_사항이_남아_건너띄기할_수_없습니다.");
+            PopupManager.instance.AlertShow("건너띄기할_수_없습니다.");
             return;
         }
 

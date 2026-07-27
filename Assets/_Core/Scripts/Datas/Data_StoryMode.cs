@@ -275,7 +275,7 @@ public class Data_StoryMode
         if (TableManager.storyString.Exists(key) == false)
             return null;
 
-        return $"선택_{historyData.choiceIdx}: {TableManager.storyString.GetString(key)}";
+        return $"선택_{historyData.choiceIdx}:_{TableManager.storyString.GetString(key)}";
     }
 
     public void SetPopupSiblingIndex(int _siblingSlot, int _siblingNode)

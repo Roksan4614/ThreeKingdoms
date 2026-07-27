@@ -16,6 +16,7 @@ public class CharacterComponent : TargetComponent
     protected HeroInfoData m_info;
 
     //public List<CharacterComponent> targetTest = new();
+    public List<BuffType> buffs = new();
 
     [SerializeField]
     CharacterStateType m_stateType;
