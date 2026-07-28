@@ -24,7 +24,7 @@ public class MissionComponent : Singleton<MissionComponent>, IValidatable
 
     void OpenGuideQuest()
     {
-        TutorialManager.data.idxTutorial
+         //TutorialManager.data.idx;
     }
 
     #region VALIDATE
