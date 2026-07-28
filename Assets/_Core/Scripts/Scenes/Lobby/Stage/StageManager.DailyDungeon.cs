@@ -6,6 +6,8 @@ public partial class StageManager
 {
     AsyncOperationHandle<GameObject> m_handleDailyDungeon;
 
+    public Character_Enemy_DailyDungeonBoss boss_dailyDungeon { get; private set; }
+
     public async UniTask InitializeAsync_DailyDungeon()
     {
         await LoadDailyDungeonAsync();
@@ -23,7 +25,8 @@ public partial class StageManager
             }
         }, null, key);
 
-        var slot = Instantiate(m_handleDailyDungeon.Result, m_element.chapter);//.GetComponent<BossRaid_BossSlotComponent>();
+        boss_dailyDungeon = Instantiate(m_handleDailyDungeon.Result, m_element.chapter)
+            .GetComponent<DailyDungeonComponent>().boss;
     }
 
     void OnDestroy_DailyDungeon()

@@ -15,6 +15,9 @@ public class Scene_Login : SceneBase
 
     async UniTask StartAsync()
     {
+        var timeStart = Time.realtimeSinceStartup;
+        IngameLog.Add("Login: StartAsync: START");
+
         DataManager.option.Initialize();
         await UniTask.NextFrame();
 
@@ -34,11 +37,11 @@ public class Scene_Login : SceneBase
 
         await UniTask.WhenAll(tasks);
 
-#if !UNITY_EDITOR
-        IngameLog.Add("LOAD ASSET: " + (System.DateTime.Now - dtStart).TotalSeconds);
-#endif
-
         TimeManager.instance.InitializeAsync().Forget();
+
+#if !UNITY_EDITOR
+        IngameLog.Add($"Login: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
+#endif
 
         AddressableManager.instance.LoadScene("02_Lobby");
     }

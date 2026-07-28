@@ -28,6 +28,9 @@ public class Scene_Boot : MonoBehaviour, IValidatable
     {
 
         List<UniTask> tasks = new();
+
+        var timeStart = Time.realtimeSinceStartup;
+        IngameLog.Add("Boot: StartAsync: START");
         tasks.Add(AddressableManager.instance.InitializeAsync());
         tasks.Add(TableManager.instance.InitializeAsync());
 
@@ -37,9 +40,12 @@ public class Scene_Boot : MonoBehaviour, IValidatable
 
         await UniTask.WaitForEndOfFrame();
 
-        await m_element.logo.DOFade(1, 0.5f).AsyncWaitForCompletion();
+#if !UNITY_EDITOR && UNITY_WEBGL
+        MessageHandler.StartGame();
+        MessageHandler.UnityProgressCall(1, 1);
+#endif
 
-        float timeStart = Time.time;
+        await m_element.logo.DOFade(1, 0.5f).AsyncWaitForCompletion();
 
         // 사이에 세팅할것들
 #if SERVICE_DEV && !UNITY_EDITOR 
@@ -84,17 +90,15 @@ public class Scene_Boot : MonoBehaviour, IValidatable
 #endif
 
         await UniTask.WhenAll(tasks);
+#if !UNITY_EDITOR
+        IngameLog.Add($"Boot: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
+#endif
 
-        var time = Time.time - timeStart;
+        var time = Time.realtimeSinceStartup - timeStart;
         if (time < 1)
             await UniTask.WaitForSeconds(1 - time);
 
         await m_element.logo.DOFade(0, 0.5f).AsyncWaitForCompletion();
-
-#if !UNITY_EDITOR && UNITY_WEBGL
-        MessageHandler.StartGame();
-        MessageHandler.UnityProgressCall(1, 1);
-#endif
 
         AddressableManager.instance.LoadScene("01_Login");
     }

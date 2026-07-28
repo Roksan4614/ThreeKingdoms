@@ -22,6 +22,11 @@ public class MissionComponent : Singleton<MissionComponent>, IValidatable
         m_tweenMovePanel = m_element.rt.DOAnchorPosY(target, _duration);
     }
 
+    void OpenGuideQuest()
+    {
+        TutorialManager.data.idxTutorial
+    }
+
     #region VALIDATE
     public void OnManualValidate()
         => m_element.Initialize(transform);
@@ -35,10 +40,16 @@ public class MissionComponent : Singleton<MissionComponent>, IValidatable
         public RectTransform rt;
         public Transform panel;
 
+        public TextMeshProUGUI textTitle;
+        public TextMeshProUGUI textStatus;
+
         public void Initialize(Transform _transform)
         {
             rt = (RectTransform)_transform;
             panel = rt.Find("Panel");
+
+            textTitle = panel.GetComponent<TextMeshProUGUI>("Text");
+            textStatus = panel.GetComponent<TextMeshProUGUI>("txt_status");
         }
     }
     #endregion VALIDATE

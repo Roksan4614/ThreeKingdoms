@@ -125,9 +125,13 @@ public class Character_Worker_Attack : Character_Worker
                     m_owner.attack.ShowSlashEffect(true);
                 }
             });
+        m_owner.anim.animSpeed = 1f;
 
         isRush = false;
     }
+
+    public void ShowHitEffect(CharacterComponent _target)
+        => EffectWorker.instance.ShowHitEffect(m_owner.transform, _target);
 
     bool IsCritical()
     {

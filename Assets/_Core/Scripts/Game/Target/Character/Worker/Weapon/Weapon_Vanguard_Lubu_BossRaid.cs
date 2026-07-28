@@ -71,9 +71,9 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             case BossRaidStatusType.Finished:
                 m_cts = m_cts.ReleaseCTS();
                 m_element.warning_Circle.transform.SetParent(m_owner.transform.parent);
-                m_element.warning_Circle.SetDisable();
+                m_element.warning_Circle.SetActive(false);
                 m_element.warning_RedHare.transform.parent.SetParent(m_owner.transform.parent);
-                m_element.warning_RedHare.SetDisable();
+                m_element.warning_RedHare.SetActive(false);
                 break;
         }
     }
@@ -261,7 +261,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         await UniTask.WaitForSeconds(1f, cancellationToken: token);
 
-        m_element.warning_Circle.SetDisable();
+        m_element.warning_Circle.SetActive(false);
 
         m_owner.buff.Remove(hashDebuff);
 
@@ -342,7 +342,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             m_element.mount.Play("Skill_End");
             m_owner.anim.Play("Mount_Skill_End");
 
-            m_element.warning_RedHare.SetDisable();
+            m_element.warning_RedHare.SetActive(false);
             m_owner.move.SetFlip(m_owner.position.x < target.position.x);
 
             await UniTask.WaitForSeconds(.5f, cancellationToken: token);
@@ -448,8 +448,8 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
     }
     public override void Die()
     {
-        m_element.warning_Circle.SetDisable();
-        m_element.warning_RedHare.SetDisable();
+        m_element.warning_Circle.SetActive(false);
+        m_element.warning_RedHare.SetActive(false);
 
         ReleaseCTS();
     }

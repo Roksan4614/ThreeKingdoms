@@ -1,13 +1,13 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 
 public class WarningAreaComponent : MonoBehaviour, IValidatable
 {
     List<CharacterComponent> m_target = new();
+    CancellationTokenSource m_cts;
 
     public IReadOnlyList<CharacterComponent> target => m_target;
 
@@ -20,6 +20,8 @@ public class WarningAreaComponent : MonoBehaviour, IValidatable
         Loop,
         End,
     }
+    public void Show(float _speed, CancellationToken _token, bool _isDisable = true)
+        => ShowAsync(_speed, _token, _isDisable).Forget();
 
     public async UniTask ShowAsync(float _speed, CancellationToken _token, bool _isDisable = true)
     {
@@ -35,25 +37,36 @@ public class WarningAreaComponent : MonoBehaviour, IValidatable
 
         await UniTask.WaitForSeconds(duration, cancellationToken: _token);
 
+        if (gameObject.activeSelf == false)
+            return;
+
         m_element.animator.speed = 1;
 
         Play(WarningAnimationType.Loop);
 
         await UniTask.WaitForSeconds(m_element.lengthLoop, cancellationToken: _token);
 
+        if (gameObject.activeSelf == false)
+            return;
+
         Play(WarningAnimationType.End);
 
         await UniTask.NextFrame();
         await UniTask.WaitForSeconds(m_element.animator.GetCurrentAnimatorStateInfo(0).length, cancellationToken: _token);
 
+        if (gameObject.activeSelf == false)
+            return;
+
         if (_isDisable)
-            SetDisable();
+            SetActive(false);
 
         //m_isShow = false;
     }
 
-    public void SetDisable()
-        => gameObject.SetActive(false);
+    public void SetActive(bool _isActive)
+        => gameObject.SetActive(_isActive);
+    public void SetParent(Transform _parent)
+        => transform.SetParent(_parent);
 
     void Play(WarningAnimationType _type)
     {
@@ -77,6 +90,22 @@ public class WarningAreaComponent : MonoBehaviour, IValidatable
             var hero = _collision.transform.parent.GetComponent<CharacterComponent>();
             if (hero != null)
                 m_target.Remove(hero);
+        }
+    }
+
+    public void SetLookTarget_Box(Vector3 _targetPos, bool _isScale = true)
+    {
+        var lookAt = _targetPos - transform.position;
+        lookAt += lookAt.normalized;
+
+        float angle = Mathf.Atan2(lookAt.y, lookAt.x) * Mathf.Rad2Deg - 90f;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
+        if (_isScale == true)
+        {
+            var scale = transform.localScale;
+            scale.y = lookAt.magnitude / transform.parent.lossyScale.y;
+            transform.localScale = scale;
         }
     }
 

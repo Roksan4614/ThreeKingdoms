@@ -75,6 +75,9 @@ public class EffectWorker : Singleton<EffectWorker>, IValidatable
         animation.Play(() => trns.SetParent(m_element.renderer));
     }
 
+    public void ShowHitEffect(Transform _attacker, CharacterComponent _target)
+        => SlotDamageTakenEffect(new() { attacker = _attacker, target = _target });
+
     public void SlotDamageTakenEffect(HitData _hitData)
     {
         //if (m_fx_text[EffectType.damage] == null)

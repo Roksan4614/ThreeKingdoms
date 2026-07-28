@@ -258,7 +258,7 @@ public class Tutorial_START : TutorialBase
             TeamManager.instance.mainHero.talkbox.SetActive(false);
 
         StageManager.instance.ClearEnemyList();
-        TutorialManager.instance.Complete(TutorialType.START);
+        //TutorialManager.instance.Complete(TutorialType.START);
 
         ControllerManager.instance.SetSwitch(true);
         TeamManager.instance.SetState(CharacterStateType.Wait);

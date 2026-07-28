@@ -98,6 +98,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 		enemy.talkbox.SetActive(false);
 
 		// 관우 돌격
+		guanYu.attack.ShowHitEffect(enemy);
 		await guanYu.attack.RushAsync(enemy.position + Vector3.left * 5f);
 
 		//Enemy	으으..

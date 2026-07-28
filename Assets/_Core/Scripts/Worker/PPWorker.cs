@@ -8,7 +8,7 @@ public enum PlayerPrefsType
     OPTION,
     USER_DATA,
     HERO_SORTING_DATA,
-    TUTORIAL_DATA,
+    GUIDE_QUEST_DATA,
 
     SUMMON_SKIP_ACTION,
 
@@ -27,9 +27,9 @@ public class PPWorker
     public static bool HasKey(string _key)
         => PlayerPrefs.HasKey(_key);
 
-    public static void DeleteKey(PlayerPrefsType _type)
-        => DeleteKey(_type.ToString());
-    public static void DeleteKey(string _type)
+    public static void DeleteKey(PlayerPrefsType _type, bool _isUserData = true)
+        => DeleteKey(PPKey(_type, _isUserData), _isUserData);
+    public static void DeleteKey(string _type, bool _isUserData = true)
     {
         PlayerPrefs.DeleteKey(_type);
         PlayerPrefs.Save();

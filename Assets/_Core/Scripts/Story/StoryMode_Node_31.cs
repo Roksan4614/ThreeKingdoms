@@ -70,6 +70,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         CameraManager.instance.SetCameraPosTarget(zhangFei.cameraPos, false);
         await WaitForSeconds(.1f, false);
 
+        zhangFei.attack.ShowHitEffect(caoRen);
         zhangFei.anim.PlayAttack(true, true);
         await WaitForSeconds(5 / 60f, false);
         zhangFei.move.MoveToPointAdd(Vector2.right, _isAniPlay: false);
@@ -225,14 +226,19 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await zhaoYun.attack.RushAsync(guanYu.position + Vector3.right * 4f);
         await UniTask.WaitForSeconds(.2f);
         zhaoYun.anim.PlayAttack(true, true);
+        zhaoYun.attack.ShowHitEffect(guanYu);
+
         await UniTask.WaitForSeconds(.2f);
         zhaoYun.anim.Play(CharacterAnimType.Skill);
+        zhaoYun.attack.ShowHitEffect(guanYu);
         zhaoYun.attack.ResetFX();
         zhaoYun.attack.ShowSlashEffect(true);
         await UniTask.WaitForSeconds(.2f);
         zhaoYun.anim.PlayAttack(true, true);
+        zhaoYun.attack.ShowHitEffect(guanYu);
         await UniTask.WaitForSeconds(.2f);
         zhaoYun.anim.PlayAttack(true, true);
+        zhaoYun.attack.ShowHitEffect(guanYu);
 
         await zhaoYun.move.DashAsync(zhaoYun.position + Vector3.right * 8f, 0, 0.2f, _isFilp: false);
 
@@ -240,6 +246,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await WaitForSeconds(.5f, false);
         zhaoYun.anim.animSpeed = 1f;
 
+        zhaoYun.attack.ShowHitEffect(guanYu);
         await zhaoYun.attack.RushAsync(guanYu.position + Vector3.right * 3f);
         await WaitForSeconds(.5f, false);
         //炼款 农..奴老车促!!
@@ -406,6 +413,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         zhangFei.move.MoveToPointAdd(Vector2.right * .5f);
         await TalkStartAsync();
 
+        zhangFei.attack.ShowHitEffect(guanYu);
         zhangFei.attack.Rush(guanYu.position + Vector3.right * 2);
         await UniTask.WaitUntil(() => (zhangFei.position - guanYu.position).sqrMagnitude < 9);
 
@@ -450,6 +458,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         var fanJiang = GetHero("FanJiang");
         {
+            fanJiang.attack.ShowHitEffect(zhangFei);
             var target = zhangFei.position + Vector3.right * 2;
             target.y -= .3f;
             await fanJiang.transform.DOMove(target, 0.2f);
@@ -463,6 +472,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         var zhangDa = GetHero("ZhangDa");
         {
+            zhangDa.attack.ShowHitEffect(zhangFei);
             var target = zhangFei.position + Vector3.right * 3;
             target.y += .3f;
             await zhangDa.transform.DOMove(target, 0.2f);
@@ -477,6 +487,8 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await TalkStartAsync(4, false);
 
         guanYu.attack.SetActive_Weapon(true);
+        guanYu.attack.ShowHitEffect(zhangDa);
+        guanYu.attack.ShowHitEffect(fanJiang);
         guanYu.attack.Rush(zhangFei.position + Vector3.right * 5f);
 
         await WaitForSeconds(.1f);

@@ -8,33 +8,56 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public enum TutorialType
 {
-    START,
+    NONE = -1,
+
+    MOVE,
+    ATTACK_NORMAL,
+    SKILL_USE,
+    DASH_USE,
+    STORYMODE_FIRST,
 
     CASTLE_START,
     CASTLE_WALLY,
     CASTLE_FINISHED,
+
+    MAX
 }
 
 public class TutorialManager
 {
     public static TutorialManager instance { get; private set; } = new();
 
-    List<TutorialType> m_loadData;
+    public struct TutorialData
+    {
+        public int idx;
+        public TutorialType curTutorial;
+        public List<TutorialType> history;
+
+        public TutorialType maxTutorial => (TutorialType)idx;
+    }
+
+    TutorialData m_data;
+    public static TutorialData data => instance.m_data;
 
     public async UniTask InitializeAsync()
     {
         await UniTask.Yield();
 
-        m_loadData = PPWorker.Get<List<TutorialType>>(PlayerPrefsType.TUTORIAL_DATA);
-        if (m_loadData == null)
-            m_loadData = new();
+        //PPWorker.DeleteKey(PlayerPrefsType.GUIDE_QUEST_DATA);
+        m_data = PPWorker.Get<TutorialData>(PlayerPrefsType.GUIDE_QUEST_DATA);
+
+        if (m_data.history == null)
+        {
+            m_data.history = new();
+            SaveData();
+        }
     }
 
     public void Complete(TutorialType _type)
     {
-        if (m_loadData.Contains(_type) == false)
+        if (m_data.history.Contains(_type) == false)
         {
-            m_loadData.Add(_type);
+            m_data.history.Add(_type);
             SaveData();
         }
     }
@@ -43,37 +66,11 @@ public class TutorialManager
         => await UniTask.WaitUntil(() => instance.IsComplete(_type), cancellationToken: _token);
 
     public bool IsComplete(TutorialType _type)
-        => m_loadData.Contains(_type);
+        => m_data.history.Contains(_type);
 
     void SaveData()
     {
-        PPWorker.Set(PlayerPrefsType.TUTORIAL_DATA, m_loadData);
+        PPWorker.Set(PlayerPrefsType.GUIDE_QUEST_DATA, m_data);
     }
 
-    public async UniTask StartAsync(TutorialType _tutorialType)
-    {
-        string key = $"Tutorial/Tutorial_{_tutorialType}.prefab";
-
-        AsyncOperationHandle<GameObject> handle = default;
-        await AddressableManager.instance.LoadAssetAsync<GameObject>(
-            _result =>
-            {
-                if (_result.Count > 0)
-                    handle = _result.First().Value;
-            }, null, key);
-
-        if (handle.IsValid() == false)
-            return;
-
-        var tutorial = GameObject.Instantiate(handle.Result, StageManager.instance.transform);
-        tutorial.transform.position = Vector3.zero;
-        await tutorial.GetComponent<TutorialBase>().StartAsync(_tutorialType).SuppressCancellationThrow();
-
-        await UniTask.WaitUntil(() => PopupManager.instance.isTweenDimm == false);
-
-        TeamManager.instance.RemoveBuff(BuffType.NONE);
-
-        GameObject.Destroy(tutorial.gameObject);
-        handle.Release();
-    }
 }

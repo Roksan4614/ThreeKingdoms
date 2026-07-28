@@ -124,6 +124,11 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         if (isHasRecord)
             m_element.txtRecord.text += $"<size=90%><color=#555555> ({(recordData.percent * 100):0.#0}%)</color></size>";
         SetRewardData(_bossData);
+
+        // BG
+        for (int i = 0; i < m_element.parentBG.childCount; i++)
+            m_element.parentBG.GetChild(i).gameObject.SetActive(i == (int)_bossData.weekday - 1);
+
     }
 
     void SetRewardData(TableDailyDungeonBossData _bossData)
@@ -198,6 +203,8 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         public ButtonHelper btnSweep;
         public ButtonHelper btnAD;
 
+        public GameObject[] objBG;
+
         public void Initialize(Transform _transform)
         {
             scrollTab = _transform.GetComponent<ScrollRect>("Panel/Front/Tab");
@@ -215,7 +222,15 @@ public class LobbyScreen_Boss : LobbyScreen_Base
             btnAD = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_ad");
 
             txtCount = _transform.GetComponent<TextMeshProUGUI>("Panel/Front/Button/txt_count");
+
+            var bg = _transform.Find("Panel/BG");
+            List<GameObject> lstBG = new();
+            for (int i = 0; i < bg.childCount; i++)
+                lstBG.Add(bg.GetChild(i).gameObject);
+            objBG = lstBG.ToArray();
         }
+
+        public Transform parentBG => objBG[0].transform.parent;
     }
 }
 

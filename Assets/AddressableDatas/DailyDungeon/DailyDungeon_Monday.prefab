@@ -147,16 +147,16 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4464697656244975315}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.5899997, y: -0.21999997, z: 0}
+  m_LocalScale: {x: 0.84999996, y: 0.84999996, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4875746268071521590}
   - {fileID: 5261662051813026133}
   - {fileID: 293855618296595667}
   - {fileID: 7883077410537686154}
-  m_Father: {fileID: 3905109008084824039}
+  m_Father: {fileID: 7069152269104731574}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4799277891238609699
 GameObject:
@@ -238,6 +238,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5979341496786187045}
+  - {fileID: 1276898751126795254}
   m_Father: {fileID: 6725685888938760928}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1037094501488037795
@@ -370,10 +371,7 @@ PrefabInstance:
     - {fileID: 8078312852335429389, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
     - {fileID: 4311280374402929733, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 2302169597321960740, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1276898751126795254}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3899720424933641519, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
       insertIndex: 1
@@ -512,11 +510,6 @@ Canvas:
   m_CorrespondingSourceObject: {fileID: 2048380938885168554, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
   m_PrefabInstance: {fileID: 3009329235010958019}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &3905109008084824039 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2302169597321960740, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
-  m_PrefabInstance: {fileID: 3009329235010958019}
-  m_PrefabAsset: {fileID: 0}
 --- !u!212 &4119733708282630603 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 1220320486037463816, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
@@ -603,16 +596,19 @@ MonoBehaviour:
   pWeapon: {fileID: 7614715396266969359}
   pSub: {fileID: 2886923651450456889}
   m_element:
-    minions:
-    - {fileID: 4436855996242669194}
-    - {fileID: 3980598928704416489}
-    - {fileID: 8803196143193261935}
-    - {fileID: 1395712655721531190}
-    orinLocalPosition:
-    - {x: 2.01, y: 2.83, z: 0}
-    - {x: 1.4900002, y: -2.2599998, z: 0}
-    - {x: 3.75, y: 1.27, z: 0}
-    - {x: 3.49, y: -0.78, z: 0}
+    minion:
+    - anim: {fileID: 4436855996242669194}
+      orinLocalPosition: {x: 2.01, y: 2.83, z: 0}
+      warning: {fileID: 9077276408784158526}
+    - anim: {fileID: 3980598928704416489}
+      orinLocalPosition: {x: 1.4900002, y: -2.2599998, z: 0}
+      warning: {fileID: 8599617351840562013}
+    - anim: {fileID: 8803196143193261935}
+      orinLocalPosition: {x: 3.75, y: 1.27, z: 0}
+      warning: {fileID: 4197684198269015771}
+    - anim: {fileID: 1395712655721531190}
+      orinLocalPosition: {x: 3.49, y: -0.78, z: 0}
+      warning: {fileID: 5995564933260727938}
 --- !u!212 &6766562287877581469 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 8369060788034984030, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
@@ -677,6 +673,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1276898751126795254}
     m_Modifications:
+    - target: {fileID: 1202035051784937104, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
+      propertyPath: m_element.lossyScale
+      value: 1.7850006
+      objectReference: {fileID: 0}
     - target: {fileID: 2375625123554157492, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
       propertyPath: m_Name
       value: Minion_2
@@ -691,7 +691,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3385769224537345176, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.27
+      value: 1.0700003
       objectReference: {fileID: 0}
     - target: {fileID: 3385769224537345176, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -735,6 +735,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3385769224537345176, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
   m_PrefabInstance: {fileID: 3093787175665125451}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4197684198269015771 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1202035051784937104, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
+  m_PrefabInstance: {fileID: 3093787175665125451}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 893a78ea90a97884d99c4504584fc4c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WarningAreaComponent
 --- !u!95 &8803196143193261935 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5819894589597830948, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
@@ -748,6 +759,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1276898751126795254}
     m_Modifications:
+    - target: {fileID: 1202035051784937104, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
+      propertyPath: m_element.lossyScale
+      value: 1.7850006
+      objectReference: {fileID: 0}
     - target: {fileID: 2375625123554157492, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
       propertyPath: m_Name
       value: Minion_3
@@ -806,6 +821,17 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 5819894589597830948, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
   m_PrefabInstance: {fileID: 4871480862308222994}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5995564933260727938 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1202035051784937104, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
+  m_PrefabInstance: {fileID: 4871480862308222994}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 893a78ea90a97884d99c4504584fc4c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WarningAreaComponent
 --- !u!4 &7883077410537686154 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3385769224537345176, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
@@ -819,6 +845,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1276898751126795254}
     m_Modifications:
+    - target: {fileID: 1202035051784937104, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
+      propertyPath: m_element.lossyScale
+      value: 1.7850006
+      objectReference: {fileID: 0}
     - target: {fileID: 2375625123554157492, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
       propertyPath: m_Name
       value: Minion_1
@@ -878,6 +908,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3385769224537345176, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
   m_PrefabInstance: {fileID: 7492167794579498445}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8599617351840562013 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1202035051784937104, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
+  m_PrefabInstance: {fileID: 7492167794579498445}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 893a78ea90a97884d99c4504584fc4c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WarningAreaComponent
 --- !u!1001 &7878636666492641710
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -886,6 +927,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1276898751126795254}
     m_Modifications:
+    - target: {fileID: 1202035051784937104, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
+      propertyPath: m_element.lossyScale
+      value: 1.7850006
+      objectReference: {fileID: 0}
     - target: {fileID: 2375625123554157492, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
       propertyPath: m_Name
       value: Minion
@@ -896,7 +941,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3385769224537345176, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.83
+      value: 2.63
       objectReference: {fileID: 0}
     - target: {fileID: 3385769224537345176, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -945,3 +990,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3385769224537345176, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
   m_PrefabInstance: {fileID: 7878636666492641710}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9077276408784158526 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1202035051784937104, guid: a8f594a459a8d1947b20c68c29b3c9bb, type: 3}
+  m_PrefabInstance: {fileID: 7878636666492641710}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 893a78ea90a97884d99c4504584fc4c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WarningAreaComponent

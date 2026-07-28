@@ -156,6 +156,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         await WaitPointerDown();
 
         // 관우 스킬 날려주자
+        guanYu.attack.ShowHitEffect(yanLiang);
         await guanYu.attack.RushAsync(yanLiang.position + Vector3.right * 3);
 
         //안량.. ?
@@ -229,6 +230,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
 
         // 관우 스킬 날려주자
         wenChou.anim.PlayAttack();
+        guanYu.attack.ShowHitEffect(wenChou);
         await guanYu.attack.RushAsync(wenChou.position + Vector3.right * 3.5f);
 
         //문추	아니!!
@@ -240,6 +242,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
 
         await guanYu.move.MoveToPointAsync(wenChou.position + Vector3.right * 3, false);
         guanYu.anim.PlayAttack(true, true);
+        guanYu.attack.ShowHitEffect(wenChou);
 
         //문추 넉백
         wenChou.anim.Play(CharacterAnimType.Knockdown);
@@ -257,6 +260,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
         await TalkStartAsync();
 
         // 관우 스킬 날려주자
+        guanYu.attack.ShowHitEffect(wenChou);
         await guanYu.attack.RushAsync(wenChou.position + Vector3.left * 3f);
 
         //문추	으아!
@@ -339,6 +343,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
                 yuanShao.attack.SetActive_Weapon(true);
                 await TalkStartAsync();
 
+                yuanShao.attack.ShowHitEffect(liuBei);
                 yuanShao.anim.PlayAttack(true, true);
                 liuBei.anim.Play(CharacterAnimType.Die_1);
                 //LiuBei	유비	으윽..

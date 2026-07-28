@@ -47,3 +47,14 @@ public class Table_String_Hero : Table_String_Base
     public string GetHeroPositionType(HeroPositionType _positionType)
         => _positionType.ToString().ToUpper().Split("_").Last(); //GetString("HERO_POSITION_" + _positionType.ToString().ToUpper());
 }
+
+public class Table_String_GuideQuest : Table_String_Base
+{
+    public Table_String_GuideQuest(List<TableStringData> _table) : base(_table)
+    {
+        SetDictionary(x => x.key);
+    }
+
+    public string GetGuideQuestTitle(TutorialType _type)
+        => GetString($"{(int)_type:0000}_TITLE");
+}

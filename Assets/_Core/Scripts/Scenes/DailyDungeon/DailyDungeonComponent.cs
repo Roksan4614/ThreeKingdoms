@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class DailyDungeonComponent : MonoBehaviour, IValidatable
 {
+    public Character_Enemy_DailyDungeonBoss boss => m_element.boss;
+
     void Start()
     {
         m_element.boss.SetBossData(m_element.boss.name);
