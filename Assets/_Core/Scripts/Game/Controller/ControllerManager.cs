@@ -295,7 +295,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
             float progress = (Time.time - startTime) / (endTime - startTime);
             m_element.imgDashTimer.fillAmount = 1 - progress;
 
-            await UniTask.NextFrame(cancellationToken: token);
+            await UniTask.NextFrame(token);
         }
 
         m_element.imgCallTimer.gameObject.SetActive(false);

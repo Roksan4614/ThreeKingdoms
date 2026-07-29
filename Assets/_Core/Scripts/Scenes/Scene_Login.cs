@@ -16,7 +16,6 @@ public class Scene_Login : SceneBase
     async UniTask StartAsync()
     {
         var timeStart = Time.realtimeSinceStartup;
-        IngameLog.Add("Login: StartAsync: START");
 
         DataManager.option.Initialize();
         await UniTask.NextFrame();

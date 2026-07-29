@@ -61,7 +61,7 @@ public class Team_HeroInfo
         else if (BossRaidWorker.instance.isRunning == true)
             RankBossRaidComponent.instance.SetMove_HeroInfoDown(m_isHide, true, duration);
         else
-            MissionComponent.instance.SetMoveArea(m_isHide, true, duration);
+            GuideQuestComponent.instance.SetMoveArea(m_isHide, true, duration);
 
         var pos = m_panel.anchoredPosition;
         pos.y = m_isHide ? m_prevPosY - m_panel.rect.height : m_prevPosY;

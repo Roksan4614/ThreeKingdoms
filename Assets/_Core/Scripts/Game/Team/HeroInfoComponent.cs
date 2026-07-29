@@ -249,7 +249,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
                     dieTime = Time.time;
                 }
 
-                await UniTask.NextFrame(cancellationToken: m_ctsCooldownSkill.Token);
+                await UniTask.NextFrame(m_ctsCooldownSkill.Token);
                 continue;
             }
             else if (dieTime > 0)
@@ -295,7 +295,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
                     if (DataManager.option.isAutoSkill)
                         OnButton_UseSkill();
 
-                    await UniTask.NextFrame(cancellationToken: m_ctsCooldownSkill.Token);
+                    await UniTask.NextFrame(m_ctsCooldownSkill.Token);
                 }
 
                 // 스킬 사용하기!!
@@ -313,7 +313,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
             if (m_ctsCooldownSkill == null)
                 break;
 
-            await UniTask.NextFrame(cancellationToken: m_ctsCooldownSkill.Token);
+            await UniTask.NextFrame(m_ctsCooldownSkill.Token);
         }
     }
 

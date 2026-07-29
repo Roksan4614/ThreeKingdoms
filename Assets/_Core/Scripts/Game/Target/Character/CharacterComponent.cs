@@ -87,7 +87,11 @@ public class CharacterComponent : TargetComponent
 
     public void SetTalkboxName(string _name = null)
     {
-        var txtName = m_element.txtTalk.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text");
+        var txtName = m_element.txtTalk?.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text");
+
+        if (txtName == null)
+            return;
+
         if (_name.IsActive() == false)
         {
             var key = $"NAME_{m_info.regionKey}";

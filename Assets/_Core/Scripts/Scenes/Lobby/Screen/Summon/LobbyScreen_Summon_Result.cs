@@ -105,7 +105,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
             int i = 0;
 
-            //if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
             //{
             //    i++;
             //    result.Add(new()

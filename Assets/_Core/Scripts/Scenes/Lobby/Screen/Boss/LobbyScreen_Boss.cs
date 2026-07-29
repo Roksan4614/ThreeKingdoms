@@ -79,13 +79,6 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
         if (m_curWeekday == WeekdayType.None)
             m_curWeekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
-
-        // 탭 현재 위치로
-        int idxWeekday = (int)m_curWeekday;
-        var layout = m_element.scrollTab.content.GetComponent<HorizontalLayoutGroup>();
-        var widthSlot = ((RectTransform)m_element.scrollTab.content.GetChild(0)).rect.width;
-        var posX = m_element.scrollTab.viewport.rect.width * 0.5f - widthSlot * idxWeekday - layout.spacing * idxWeekday + widthSlot * .5f;
-        m_element.scrollTab.content.SetAnchoredPositionX(Mathf.Min(0, posX));
     }
 
     public override void Close(bool _isTween = true)
@@ -109,6 +102,14 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         var gradeType = DataManager.dailyDungeon.GetRecordGradeType(m_curWeekday).gradeType;
         if (gradeType > GradeType.Normal != m_element.btnSweep.gameObject.activeSelf)
             m_element.btnSweep.gameObject.SetActive(gradeType > GradeType.Normal);
+
+        // 탭 현재 위치로
+        int idxWeekday = (int)m_curWeekday;
+        var layout = m_element.scrollTab.content.GetComponent<HorizontalLayoutGroup>();
+        var widthSlot = ((RectTransform)m_element.scrollTab.content.GetChild(0)).rect.width;
+        var posX = m_element.scrollTab.viewport.rect.width * 0.5f - widthSlot * idxWeekday - layout.spacing * idxWeekday + widthSlot * .5f;
+        m_element.scrollTab.content.SetAnchoredPositionX(Mathf.Min(0, posX));
+        m_element.scrollTab.velocity = Vector2.zero;
     }
 
     void SetDungeonInfo(TableDailyDungeonBossData _bossData)

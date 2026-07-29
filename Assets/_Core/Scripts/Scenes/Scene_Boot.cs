@@ -30,7 +30,6 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         List<UniTask> tasks = new();
 
         var timeStart = Time.realtimeSinceStartup;
-        IngameLog.Add("Boot: StartAsync: START");
         tasks.Add(AddressableManager.instance.InitializeAsync());
         tasks.Add(TableManager.instance.InitializeAsync());
 
@@ -40,9 +39,12 @@ public class Scene_Boot : MonoBehaviour, IValidatable
 
         await UniTask.WaitForEndOfFrame();
 
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if UNITY_EDITOR
+        Configure.isPC = true;
+#elif UNITY_WEBGL
         MessageHandler.StartGame();
         MessageHandler.UnityProgressCall(1, 1);
+        Configure.isPC = MessageHandler.IsMobileBrowser() == false;
 #endif
 
         await m_element.logo.DOFade(1, 0.5f).AsyncWaitForCompletion();

@@ -55,6 +55,6 @@ public class Table_String_GuideQuest : Table_String_Base
         SetDictionary(x => x.key);
     }
 
-    public string GetGuideQuestTitle(TutorialType _type)
+    public string GetGuideQuestTitle(GuideQuestType _type)
         => GetString($"{(int)_type:0000}_TITLE");
 }

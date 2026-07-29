@@ -18,8 +18,8 @@ public class Scene_Lobby : SceneBase
 
         await TeamManager.instance.SpawnUpdateAsync();
 
-        //if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
-        //    await TutorialManager.instance.StartAsync(TutorialType.START);
+        //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
+        //    await TutorialManager.instance.StartAsync(GuideQuestType.START);
 
         StageManager.instance.StartStageAsync().Forget();
 
@@ -30,7 +30,7 @@ public class Scene_Lobby : SceneBase
         if (DataManager.dailyDungeon.enterWeekday == WeekdayType.MAX)
         {
             DataManager.dailyDungeon.enterWeekday = WeekdayType.None;
-            BottomComponent.instance.OnButton_OpenScreen(LobbyScreenType.Boss);
+            LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Boss);
         }
         // 스토리에서 나온거면
         else if (DataManager.storyMode.isExit == true)
@@ -55,7 +55,7 @@ public class Scene_Lobby : SceneBase
         }
 
         // TEST
-        //TutorialManager.instance.Complete(TutorialType.CASTLE_FINISHED);
+        //TutorialManager.instance.Complete(GuideQuestType.CASTLE_FINISHED);
     }
 
     //private void Update()

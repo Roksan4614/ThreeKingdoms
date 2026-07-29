@@ -223,7 +223,7 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
             if (xunYu.position.x < guanYu.position.x && xunYu.move.isFlip == false)
                 xunYu.move.SetFlip(true);
 
-            await UniTask.NextFrame(cancellationToken: m_cts.Token);
+            await UniTask.NextFrame(m_cts.Token);
         }
 
         await PopupManager.instance.ShowDimmAsync(true, _duration: 1f);

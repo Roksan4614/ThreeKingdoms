@@ -21,7 +21,7 @@ public class ScenarioBase : MonoBehaviour, IValidatable
 
     public async UniTask InitializeAsync(string _stageKey)
     {
-        m_dbTalk = TableManager.scenarioTalk.GetTalk(_stageKey, true, false).ToList();
+        m_dbTalk = TableManager.scenarioTalk.GetTalk(_stageKey, false).ToList();
 
         await StartAsync(_stageKey);
     }

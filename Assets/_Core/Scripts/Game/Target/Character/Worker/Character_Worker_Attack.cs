@@ -47,7 +47,7 @@ public class Character_Worker_Attack : Character_Worker
             else if (m_timeAttack < Time.realtimeSinceStartup)
                 break;
 
-            await UniTask.NextFrame(cancellationToken: _token);
+            await UniTask.NextFrame(_token);
         }
     }
 

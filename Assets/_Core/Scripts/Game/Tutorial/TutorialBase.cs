@@ -13,7 +13,7 @@ public abstract class TutorialBase : MonoBehaviour, IValidatable
             m_elementBase.arrows[i].gameObject.SetActive(false);
     }
 
-    public virtual async UniTask StartAsync(TutorialType _type)
+    public virtual async UniTask StartAsync(GuideQuestType _type)
         => await UniTask.Yield();
 
     public virtual async UniTask FinishAsync(bool _isSkip)

@@ -112,7 +112,7 @@ public partial class InfoStage_Boss
             if (process >= 1)
                 break;
 
-            await UniTask.NextFrame(cancellationToken: token);
+            await UniTask.NextFrame(token);
         }
 
         m_ctsTimer = m_ctsTimer.ReleaseCTS();

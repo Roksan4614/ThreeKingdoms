@@ -37,13 +37,13 @@ public class PopupUpgradeGuideComponent : BasePopupComponent, IValidatable
         switch (_type)
         {
             case UpgradeGuideType.SCREEN_HERO:
-                BottomComponent.instance.OnButton_OpenScreen(LobbyScreenType.Hero);
+                LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Hero);
                 break;
             case UpgradeGuideType.CASTLE:
-                BottomComponent.instance.OnButton_OpenScreen(LobbyScreenType.Castle);
+                LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Castle);
                 break;
             case UpgradeGuideType.GACHA:
-                BottomComponent.instance.OnButton_OpenScreen(LobbyScreenType.Summon);
+                LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Summon);
                 break;
             case UpgradeGuideType.TIMELOOP:
                 TimeLoopAsync().Forget();

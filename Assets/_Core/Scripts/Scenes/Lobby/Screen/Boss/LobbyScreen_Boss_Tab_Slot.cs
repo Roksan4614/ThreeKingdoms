@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -19,8 +20,23 @@ public class LobbyScreen_Boss_Tab_Slot : MonoBehaviour, IValidatable
 #endif
 
         m_element.dimm.SetActive(isActive == false);
+
+        for (int i = 0; i < m_element.icons.Length; i++)
+            m_element.icons[i].gameObject.SetActive(i == (int)_bossData.weekday - 1);
+
         m_element.button.interactable = isActive;
     }
+#if SERVICE_DEV
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            m_element.dimm.SetActive(m_element.dimm.activeSelf == false);
+            m_element.button.interactable = m_element.dimm.activeSelf == false;
+        }
+    }
+#endif
 
     public void SetSelect(bool _isSelect)
         => m_element.objSelect.SetActive(_isSelect);
@@ -40,12 +56,20 @@ public class LobbyScreen_Boss_Tab_Slot : MonoBehaviour, IValidatable
         public GameObject dimm;
         public GameObject objSelect;
 
+        public GameObject[] icons;
+
         public void Initialize(Transform _transform)
         {
             button = _transform.GetComponent<Button>();
             txtName = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_name");
             dimm = _transform.Find("Panel/Dimm").gameObject;
             objSelect = _transform.Find("Select").gameObject;
+
+            List<GameObject> lstIcons = new();
+            var pIcon = _transform.Find("Panel/Icon");
+            for (int i = 0; i < pIcon.childCount; i++)
+                lstIcons.Add(pIcon.GetChild(i).gameObject);
+            icons = lstIcons.ToArray();
         }
     }
     #endregion VALIDATE

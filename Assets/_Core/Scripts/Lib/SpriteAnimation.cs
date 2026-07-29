@@ -79,7 +79,7 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
                 m_element.renderer.sprite = m_element.sprite[indexSprite];
 
             while (Time.time - time < effectData.duration)
-                await UniTask.NextFrame(cancellationToken: token);
+                await UniTask.NextFrame(token);
 
             time = Time.time;
             indexSprite += increaseValue;

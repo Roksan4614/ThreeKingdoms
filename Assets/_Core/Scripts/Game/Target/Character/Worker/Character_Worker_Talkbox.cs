@@ -12,6 +12,10 @@ public class Character_Worker_Talkbox : Character_Worker
     public Character_Worker_Talkbox(CharacterComponent _owner) : base(_owner)
     {
         m_txtTalk = m_owner.element.txtTalk;
+
+        if (m_txtTalk == null)
+            return;
+
         m_rtTalkbox = (RectTransform)m_txtTalk.transform.parent;
         m_layout = m_rtTalkbox.GetComponent<HorizontalLayoutGroup>();
         m_fitter = m_rtTalkbox.GetComponent<ContentSizeFitter>();
@@ -166,7 +170,7 @@ public class Character_Worker_Talkbox : Character_Worker
     bool m_isIgnoreRoundScreen;
     public override void OnUpdate()
     {
-        if (m_rtTalkbox.gameObject.activeSelf == false || m_isIgnoreRoundScreen == true)
+        if (m_rtTalkbox == null || m_rtTalkbox.gameObject.activeSelf == false || m_isIgnoreRoundScreen == true)
             return;
 
         // 일단 포지션 값은 0이 기본이야.
@@ -198,7 +202,8 @@ public class Character_Worker_Talkbox : Character_Worker
     }
 
     public void SetActive(bool _isActive)
-        => m_rtTalkbox.gameObject.SetActive(_isActive);
+        => m_rtTalkbox?.gameObject.SetActive(_isActive);
+    public bool isActive => m_rtTalkbox == null ? false : m_rtTalkbox.gameObject.activeSelf;
 
     CancellationTokenSource m_cts_PlayingTimer;
     bool m_isPlayingEnd;
@@ -218,7 +223,7 @@ public class Character_Worker_Talkbox : Character_Worker
 
                 var endTime = Time.time + 1f;
                 while (endTime > Time.time)
-                    await UniTask.NextFrame(cancellationToken: token);
+                    await UniTask.NextFrame(token);
             }
 
             m_isPlayingEnd = true;

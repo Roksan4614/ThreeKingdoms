@@ -9,7 +9,7 @@ public class Tutorial_START : TutorialBase
 {
     CancellationTokenSource m_cts;
 
-    public override async UniTask StartAsync(TutorialType _type)
+    public override async UniTask StartAsync(GuideQuestType _type)
     {
         m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
@@ -32,11 +32,7 @@ public class Tutorial_START : TutorialBase
             }
         }
 
-#if !UNITY_EDITOR && UNITY_WEBGL
-        var talk = TableManager.scenarioTalk.GetTalk("TUTORIAL_START", MessageHandler.IsMobileBrowser() == false);
-#else
-        var talk = TableManager.scenarioTalk.GetTalk("TUTORIAL_START", true);
-#endif
+        var talk = TableManager.scenarioTalk.GetTalk("TUTORIAL_START");
         var mainHero = TeamManager.instance.mainHero;
         mainHero.SetActive_HP(false);
         mainHero.move.SetFlip(true);
@@ -90,7 +86,7 @@ public class Tutorial_START : TutorialBase
                     RewardWorker.instance.Run(enemy.transform.position,
                         ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1), _durationWait: 2f);
 
-                    await UniTask.NextFrame(cancellationToken: token);
+                    await UniTask.NextFrame(token);
                 }
             }
         }
@@ -138,7 +134,7 @@ public class Tutorial_START : TutorialBase
             if (isDash == false)
                 isDash = mainHero.move.isDash;
 
-            await UniTask.NextFrame(cancellationToken: token);
+            await UniTask.NextFrame(token);
         }
 
         enemy.target.SetTarget(null);
@@ -258,7 +254,7 @@ public class Tutorial_START : TutorialBase
             TeamManager.instance.mainHero.talkbox.SetActive(false);
 
         StageManager.instance.ClearEnemyList();
-        //TutorialManager.instance.Complete(TutorialType.START);
+        //TutorialManager.instance.Complete(GuideQuestType.START);
 
         ControllerManager.instance.SetSwitch(true);
         TeamManager.instance.SetState(CharacterStateType.Wait);
@@ -289,7 +285,7 @@ public class Tutorial_START : TutorialBase
         while (screen == null)
         {
             screen = LobbyScreenManager.instance.GetScreenSummon();
-            await UniTask.NextFrame(cancellationToken: _token);
+            await UniTask.NextFrame(_token);
         }
 
         screen.SetRegionType(TeamManager.instance.mainHero.info.regionType);
@@ -312,7 +308,7 @@ public class Tutorial_START : TutorialBase
                 break;
             }
 
-            await UniTask.NextFrame(cancellationToken: _token);
+            await UniTask.NextFrame(_token);
         }
 
         screen.SetRegionType(RegionType.NONE);
@@ -353,7 +349,7 @@ public class Tutorial_START : TutorialBase
 
             int i = 0;
 
-            //if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
             //{
             //    i++;
             //    result.Add(new()

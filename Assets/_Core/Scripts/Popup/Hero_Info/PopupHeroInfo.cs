@@ -49,7 +49,7 @@ public class PopupHeroInfo : BasePopupComponent
         {
             DataManager.storyMode.isLockUI = false;
             PopupManager.instance.CloseAll();
-            BottomComponent.instance.OnButton_OpenScreen(LobbyScreenType.Hero);
+            LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Hero);
             //Close();
         });
 

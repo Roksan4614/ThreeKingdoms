@@ -36,7 +36,7 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
             foreach (var hero in heroes)
                 hero.move?.OnMoveUpdate(Vector2.right * 10);
 
-            await UniTask.NextFrame(cancellationToken: m_cts.Token);
+            await UniTask.NextFrame(m_cts.Token);
         }
 
         foreach (var hero in heroes)
@@ -96,7 +96,7 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
                 etc.move.OnMoveUpdate(lookAt.normalized * 20);
                 lookAt = target - etc.transform.position;
 
-                await UniTask.NextFrame(cancellationToken: token);
+                await UniTask.NextFrame(token);
             }
             etc.move.MoveStop();
             etc.UpdateSortingOreder(true);
@@ -129,7 +129,7 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
                 foreach (var hero in heroes)
                     hero.move.OnMoveUpdate(lookAt * 30);
 
-                await UniTask.NextFrame(cancellationToken: m_cts.Token);
+                await UniTask.NextFrame(m_cts.Token);
             }
         }
     }

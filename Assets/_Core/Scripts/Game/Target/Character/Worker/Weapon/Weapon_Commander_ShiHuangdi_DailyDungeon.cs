@@ -55,7 +55,7 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
 
         if (target == null)
         {
-            await UniTask.NextFrame(cancellationToken: m_cts.Token);
+            await UniTask.NextFrame(m_cts.Token);
             SkillAsync_MinionRush(_countMaxMinion).Forget();
             return;
         }
@@ -174,7 +174,7 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
                 _minion.transform.localScale = scale;
             }
 
-            await UniTask.NextFrame(cancellationToken: m_cts.Token);
+            await UniTask.NextFrame(m_cts.Token);
         }
 
         await UniTask.WaitForSeconds(.5f, cancellationToken: m_cts.Token);

@@ -41,6 +41,10 @@ public class TableManager
     public static Table_StoryMode_Choice storyChoice { get; private set; }
     public static Table_String_Story storyString { get; private set; }
 
+    public static Table_GuideQuest guideQuest { get; private set; }
+    public static Table_GuideQuest_Repeat guideQuestRepeat { get; private set; }
+    public static Table_String_GuideQuest guideQuestString { get; private set; }
+
 
     public static Dictionary<CastleObjectType, Table_Castle_Effect> castleEffect { get; private set; } = new();
 
@@ -81,6 +85,10 @@ public class TableManager
             storyUnlock = new(LoadList<Table_StoryMode_Unlock.TableStoryModeUnlockData>(_result, "StoryMode_Unlock"));
             storyChoice = new(LoadList<Table_StoryMode_Choice.TableStoryModeChoiceData>(_result, "StoryMode_Choice"));
             storyString = new(LoadList<TableStringData>(_result, "String_Story"));
+
+            guideQuest = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "GuideQuest"));
+            guideQuestRepeat = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "GuideQuest_Repeat"));
+            guideQuestString = new(LoadList<TableStringData>(_result, "String_GuideQuest"));
 
             foreach (var h in _result)
                 h.Value.Release();

@@ -29,7 +29,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
             m_phases[i].gameObject.SetActive(i == 0);
         }
 
-        m_queTalk = TableManager.scenarioTalk.GetTalk(DataManager.storyMode.curNodeKey.ToUpper(), true);
+        m_queTalk = TableManager.scenarioTalk.GetTalk(DataManager.storyMode.curNodeKey.ToUpper());
 
         WaitReadyAsync().Forget();
 
@@ -74,7 +74,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
         Destroy(m_phases[m_idxPhase++].gameObject);
         m_phases[m_idxPhase].gameObject.SetActive(true);
 
-        await UniTask.NextFrame(cancellationToken: m_cts.Token);
+        await UniTask.NextFrame(m_cts.Token);
     }
 
     protected StoryModePhaseComponent phase => m_idxPhase < m_phases.Count ? m_phases[m_idxPhase] : null;
@@ -216,7 +216,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
 
         var endTime = Time.time + _duration;
         while (endTime > Time.time && ControllerManager.isScreenPointerDown == false)
-            await UniTask.NextFrame(cancellationToken: m_cts.Token);
+            await UniTask.NextFrame(m_cts.Token);
 
         if (prevText == character.talkbox.text)
             character.talkbox.SetActive(false);
@@ -227,13 +227,13 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
 
     protected async UniTask WaitForSeconds(float _second, bool _isPointerDown = true)
     {
-        await UniTask.NextFrame(cancellationToken: m_cts.Token);
+        await UniTask.NextFrame(m_cts.Token);
 
         var time = Time.time + _second;
 
         while (Time.time < time &&
             ((ControllerManager.isScreenPointerDown == false && Input.GetKeyDown(KeyCode.Space) == false) || _isPointerDown == false))
-            await UniTask.NextFrame(cancellationToken: m_cts.Token);
+            await UniTask.NextFrame(m_cts.Token);
 
         if (ControllerManager.isScreenPointerDown == true)
             IngameLog.Add("WaitForSeconds: PointerDown");
@@ -262,7 +262,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
 
                 var endTime = Time.time + 1f;
                 while (endTime > Time.time)
-                    await UniTask.NextFrame(cancellationToken: token);
+                    await UniTask.NextFrame(token);
             }
 
             m_isPlayingEnd = true;

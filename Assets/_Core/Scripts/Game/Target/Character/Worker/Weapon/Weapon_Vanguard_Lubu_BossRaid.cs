@@ -90,7 +90,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 
-        await UniTask.NextFrame(cancellationToken: token);
+        await UniTask.NextFrame(token);
 
         CameraManager.instance.SetCameraPosTarget(m_owner.cameraPos);
 
@@ -114,10 +114,10 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             var skill = dbSkill[0];
 
             while (skill.timeAction > Time.time)
-                await UniTask.NextFrame(cancellationToken: token);
+                await UniTask.NextFrame(token);
 
             while (TeamManager.instance.GetRandomHero(true) == null)
-                await UniTask.NextFrame(cancellationToken: token);
+                await UniTask.NextFrame(token);
 
             // 모두 죽어있으면 기다리자
             if (TeamManager.instance.GetRandomHero(true) == null)
@@ -194,7 +194,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
                 m_owner.move.SetFlip(m_element.warning_Circle.transform.position.x > m_owner.position.x);
 
-                await UniTask.NextFrame(cancellationToken: token);
+                await UniTask.NextFrame(token);
             }
         }
 
@@ -274,7 +274,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         var hashNoDie = m_owner.buff.Add(BuffType.BUFF_NO_DIE);
 
         var token = m_cts.Token;
-        await UniTask.NextFrame(cancellationToken: token);
+        await UniTask.NextFrame(token);
 
         m_owner.move.MoveStop();
         {
@@ -319,7 +319,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
                 float angle = Mathf.Atan2(lookAt.y, lookAt.x) * Mathf.Rad2Deg;
                 waring.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-                await UniTask.NextFrame(cancellationToken: token);
+                await UniTask.NextFrame(token);
             }
 
             var distance = (m_owner.position - m_element.targetRedHare.position).sqrMagnitude;
@@ -374,7 +374,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
             await m_owner.move.DashAsync(targetPos);
         }
 
-        await UniTask.NextFrame(cancellationToken: token);
+        await UniTask.NextFrame(token);
 
         m_skillType = BossRaidSkillType_LuBu.Swing;
 
@@ -388,7 +388,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         m_element.warning_Circle.ShowAsync(1, token).Forget();
         m_owner.anim.Play(CharacterAnimType.Skill);
 
-        await UniTask.NextFrame(cancellationToken: token);
+        await UniTask.NextFrame(token);
 
         await UniTask.WaitForSeconds(m_owner.anim.GetStateInfo().length, cancellationToken: token);
 

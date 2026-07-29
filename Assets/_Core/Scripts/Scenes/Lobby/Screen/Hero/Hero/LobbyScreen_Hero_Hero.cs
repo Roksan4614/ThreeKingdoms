@@ -251,7 +251,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
             EffectWorker.instance.ResetEffect();
 
-            //if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
             //{
             //    await TeamManager.instance.SpawnUpdateAsync();
 

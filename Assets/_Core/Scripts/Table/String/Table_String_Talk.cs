@@ -9,7 +9,7 @@ public class Table_String_Talk : Table_String_Base
         SetDictionary(x => x.key);
     }
 
-    public Queue<TableStringData> GetTalk(string _key, bool _isPC, bool _isWithLast = false)
+    public Queue<TableStringData> GetTalk(string _key, bool _isWithLast = false)
     {
         var key = _key + "_";
 
@@ -19,7 +19,7 @@ public class Table_String_Talk : Table_String_Base
                 var split = x.key.Replace(key, "").Split("_");
                 if (split.Length == 1)
                     return true;
-                else if (_isWithLast == false || split[1] == (_isPC ? "MOBILE" : "PC"))
+                else if (_isWithLast == false || split[1] == (Configure.isPC ? "PC" : "MOBILE"))
                     return false;
                 return true;
             }));

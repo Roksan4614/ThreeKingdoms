@@ -27,7 +27,7 @@ public class Data_UserInfo
             await AddressableManager.instance.Load_HeroIconAsync(m_element.myHero.Select(x => x.skin).ToArray());
             await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
 
-            //if (TutorialManager.instance.IsComplete(TutorialType.START) == false)
+            //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
             //{
             //    var heroes = m_element.myHero.FindAll(x => x.isMain == false && x.isBatch == true).ToList();
             //    if (heroes.Count > 0)

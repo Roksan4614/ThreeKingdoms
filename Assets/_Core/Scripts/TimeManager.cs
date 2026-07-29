@@ -15,7 +15,7 @@ public class TimeManager
         var lastDate = Utils.GetUTC().Date;
 
         while (lastDate == Utils.GetUTC().Date)
-            await UniTask.NextFrame(cancellationToken: token);
+            await UniTask.NextFrame(token);
 
         Signal.instance.DayChange.Emit();
         InitializeAsync().Forget();
