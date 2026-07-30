@@ -259,7 +259,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
             // 보스까지 다 깻으면
             if (m_loadData.isBossWait == false)
             {
-                GuideQuestComponent.instance.Action_StageBossKill();
+                TutorialManager.instance.Action_StageBossKill();
                 bool isUnlockStoryMode = DataManager.storyMode.ClearStage_AddStoryMode(m_loadData);
 
                 MapManager.instance.FadeDimm(true, _token: m_cts);

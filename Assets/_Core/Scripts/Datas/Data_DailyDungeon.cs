@@ -59,6 +59,8 @@ public class Data_DailyDungeon
 
         if (recordData.gradeType > GradeType.Normal)
         {
+            TutorialManager.instance.Action_DailyDungeonPlay();
+
             m_data.count--;
             _onUpdate();
 
@@ -71,6 +73,8 @@ public class Data_DailyDungeon
     {
         if (m_data.enterWeekday == _weekType && _isForce == false)
             return false;
+
+        TutorialManager.instance.Action_DailyDungeonPlay();
 
         m_data.enterWeekday = _weekType;
         m_data.curGradeType = GradeType.Normal;

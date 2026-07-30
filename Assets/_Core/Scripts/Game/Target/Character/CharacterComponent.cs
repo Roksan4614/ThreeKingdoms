@@ -266,7 +266,7 @@ public class CharacterComponent : TargetComponent
                         ControllerManager.instance.SetDie_SkillTimer();
 
                     if (m_faction == FactionType.Enemy)
-                        GuideQuestComponent.instance.Action_EnemyKill();
+                        TutorialManager.instance.Action_EnemyKill();
                 }
             }
 

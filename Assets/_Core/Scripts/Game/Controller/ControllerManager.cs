@@ -463,6 +463,33 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public void SetActive(bool _isActive)
         => gameObject.SetActive(_isActive);
 
+    public void SetActive_GuideQuestArrow(bool _isActive, GuideQuestType _guideType)
+    {
+        Transform arrow = null;
+        switch (_guideType)
+        {
+            case GuideQuestType.NORMAL_ATTACK:
+                arrow = m_element.btnAttack.transform.Find("Arrow");
+                break;
+            case GuideQuestType.MAIN_SKILL_USE:
+                SetActive_GuideQuestArrow(false, GuideQuestType.NORMAL_ATTACK);
+                arrow = m_element.skill.transform.Find("Arrow");
+                break;
+            case GuideQuestType.DASH_USE:
+                SetActive_GuideQuestArrow(false, GuideQuestType.MAIN_SKILL_USE);
+                arrow = m_element.btnDash.transform.Find("Arrow");
+                break;
+        }
+
+        if (arrow == null)
+            return;
+
+        if (_isActive == false)
+            Destroy(arrow.gameObject);
+        else
+            arrow.gameObject.SetActive(true);
+    }
+
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 

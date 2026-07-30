@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-public class TutorialManager
+public partial class TutorialManager
 {
     public static TutorialManager instance { get; private set; } = new();
 
@@ -203,12 +203,13 @@ public enum GuideQuestType
 {
     NONE = -1,
 
-    MOVE,                                 // 이동하기
-    NORMAL_ATTACK,                        // 기본공격 하기
-    MAIN_SKILL_USE,                       // 스킬 사용하기
-    DASH_USE,                             // 대쉬 사용하기
-    STORYMODE_PLAY,                       // 스토리모드 클리어하기
-    CHARACTER_DEPLOY,                     // 장수 배치하기
+    MOVE,                               // 이동하기
+    NORMAL_ATTACK,                      // 기본공격 하기
+    MAIN_SKILL_USE,                     // 스킬 사용하기
+    DASH_USE,                           // 대쉬 사용하기
+    STORYMODE_PLAY,                     // 스토리모드 클리어하기
+    CHARACTER_DEPLOY,                   // 장수 배치하기
+    DAILY_DUNGEON_PLAY,                 // 요일 던전
 
     CASTLE_START,
     CASTLE_WALLY,

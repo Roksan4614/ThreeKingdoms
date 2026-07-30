@@ -23,7 +23,7 @@ public class TutorialArrowComponent : MonoBehaviour, IValidatable
         while (gameObject?.activeSelf == true)
         {
             m_element.rt.anchoredPosition = startPos;
-            await m_element.rt.DOAnchorPosY(prevPos.y, duration).SetEase(Ease.OutCubic).AsyncWaitForCompletion();
+            await m_element.rt.DOAnchorPosY(prevPos.y, duration).SetEase(Ease.OutCubic).ToUniTask(cancellationToken: destroyCancellationToken);
 
             await UniTask.WaitForSeconds(waitTime, cancellationToken: destroyCancellationToken);
         }

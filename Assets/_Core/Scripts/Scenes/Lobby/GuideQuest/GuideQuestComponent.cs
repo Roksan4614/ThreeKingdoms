@@ -17,9 +17,12 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
 
     private void Start()
     {
-        StartGuideQuest();
-
         m_element.button.onClick.AddListener(OnButton_Quest);
+
+        if (TutorialManager.instance.IsCompleteGuide(GuideQuestType.DASH_USE))
+            ControllerManager.instance.SetActive_GuideQuestArrow(false, GuideQuestType.DASH_USE);
+
+        StartGuideQuest();
     }
 
     Tween m_tweenMovePanel;
@@ -71,21 +74,35 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
     {
         await UniTask.WaitUntil(() => TeamManager.instance.mainHero == true);
 
+        if (TutorialManager.data.isComplete == true)
+            return;
+
         if (TutorialManager.data.isGuide)
         {
-            switch (TutorialManager.data.guideType)
+            var guideType = TutorialManager.data.guideType;
+            switch (guideType)
             {
                 case GuideQuestType.MOVE:
+                    OnButton_Quest();
                     await MoveAsync();
                     break;
                 case GuideQuestType.NORMAL_ATTACK:
+                    OnButton_Quest();
+                    ControllerManager.instance.SetActive_GuideQuestArrow(true, guideType);
                     await NormalAttackAsync();
+                    ControllerManager.instance.SetActive_GuideQuestArrow(false, guideType);
                     break;
                 case GuideQuestType.MAIN_SKILL_USE:
+                    OnButton_Quest();
+                    ControllerManager.instance.SetActive_GuideQuestArrow(true, guideType);
                     await MainSkillUseAsync();
+                    ControllerManager.instance.SetActive_GuideQuestArrow(false, guideType);
                     break;
                 case GuideQuestType.DASH_USE:
+                    OnButton_Quest();
+                    ControllerManager.instance.SetActive_GuideQuestArrow(true, guideType);
                     await DashUseAsync();
+                    ControllerManager.instance.SetActive_GuideQuestArrow(false, guideType);
                     break;
                 case GuideQuestType.STORYMODE_PLAY:
                     await StoryModePlayAsync();
@@ -149,7 +166,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                         {
                             if (talkbox.isActive == false)
                                 talkbox.Start_AutoClose(destroyCancellationToken,
-                                    Configure.isPC ? "[W][A][S][D]를_눌러\n이동해보자." : "화면을_터치해_이동해보자.");
+                                    Configure.isPC ? "[W,A,S,D]를_눌러\n이동해보자." : "화면을_터치해_이동해보자.");
                         }
                         break;
                     case GuideQuestType.NORMAL_ATTACK:
@@ -184,6 +201,9 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                         break;
                     case GuideQuestType.CHARACTER_DEPLOY:
                         LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Hero);
+                        break;
+                    case GuideQuestType.DAILY_DUNGEON_PLAY:
+                        LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Boss);
                         break;
                 }
             }
