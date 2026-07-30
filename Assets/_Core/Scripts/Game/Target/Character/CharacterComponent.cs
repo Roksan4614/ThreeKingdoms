@@ -264,6 +264,9 @@ public class CharacterComponent : TargetComponent
 
                     if (m_info.isMain == true)
                         ControllerManager.instance.SetDie_SkillTimer();
+
+                    if (m_faction == FactionType.Enemy)
+                        GuideQuestComponent.instance.Action_EnemyKill();
                 }
             }
 
@@ -310,26 +313,26 @@ public class CharacterComponent : TargetComponent
             if (m_element.partsRenders[0].color == m_element.colorParts[0])
                 return;
 
-            if (_duration == 0)
-                for (int i = 0; i < m_element.partsRenders.Length; i++)
+            for (int i = 0; i < m_element.partsRenders.Length; i++)
+            {
+                m_element.partsRenders[i].DOKill();
+                if (_duration == 0)
                     m_element.partsRenders[i].color = m_element.colorParts[i];
-            else
-                for (int i = 0; i < m_element.partsRenders.Length; i++)
+                else
                     m_element.partsRenders[i].DOColor(m_element.colorParts[i], _duration);
+            }
         }
         else
         {
             if (m_element.partsRenders[0].color == _color)
                 return;
 
-            if (_duration == 0)
+            for (int i = 0; i < m_element.partsRenders.Length; i++)
             {
-                for (int i = 0; i < m_element.partsRenders.Length; i++)
+                m_element.partsRenders[i].DOKill();
+                if (_duration == 0)
                     m_element.partsRenders[i].color = _color;
-            }
-            else
-            {
-                for (int i = 0; i < m_element.partsRenders.Length; i++)
+                else
                     m_element.partsRenders[i].DOColor(_color, _duration);
             }
         }

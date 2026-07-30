@@ -64,7 +64,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
 
         bool isComplete = TutorialManager.data.isComplete;
         m_element.textTitle.alpha = isComplete ? 1 : .9f;
-        m_element.outline.CrossFadeAlpha(isComplete ? 1 : .8f, 0f, true);
+        m_element.complete.SetActive(isComplete);
     }
 
     public async UniTask RunAsync()
@@ -130,7 +130,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                         LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Summon);
                         break;
                     case NavigationType.STORY:
-                        PopupManager.instance.OpenPopup(PopupType.LobbyStoryMode);
+                        BannerComponent.instance.story.OnButtonAsync_OpenPopup().Forget();
                         break;
                     case NavigationType.RAID:
                         PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid);
@@ -180,7 +180,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                         }
                         break;
                     case GuideQuestType.STORYMODE_PLAY:
-                        PopupManager.instance.OpenPopup(PopupType.LobbyStoryMode);
+                        BannerComponent.instance.story.OnButtonAsync_OpenPopup().Forget();
                         break;
                     case GuideQuestType.CHARACTER_DEPLOY:
                         LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Hero);
@@ -197,13 +197,9 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         List<TableItemData> rewards = new();
         var tableData = TutorialManager.data.tableData;
 
-        rewards.Add(new()
-        {
-            key = tableData.reward_item,
-            count = tableData.reward_count
-        });
+        rewards.Add(TableManager.item.GetItemData(tableData.reward_item, tableData.reward_count));
 
-        RewardWorker.instance.RunAsync(m_element.reward.transform.position, rewards.ToArray()).Forget();
+        RewardWorker.instance.RunAsync(m_element.reward.transform.position, _itemData: rewards.ToArray()).Forget();
 
         TutorialManager.instance.NextOpen();
     }
@@ -225,13 +221,13 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         public TextMeshProUGUI textStatus;
 
         public Button button;
-        public Image outline;
+        public GameObject complete;
 
         public void Initialize(Transform _transform)
         {
             rt = (RectTransform)_transform;
             button = rt.Find("Panel").GetComponent<Button>();
-            outline = panel.GetComponent<Image>("Outline");
+            complete = panel.Find("Complete").gameObject;
 
             reward = panel.Find("Reward").GetChild(0).GetComponent<ItemComponent>();
             textTitle = panel.GetComponent<TextMeshProUGUI>("Text");

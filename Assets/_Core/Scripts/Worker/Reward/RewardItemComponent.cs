@@ -135,14 +135,21 @@ public class RewardItemComponent : TargetComponent, IValidatable
         if (m_data.isCurrency)
             Signal.instance.UpdateAsset.Emit((true, m_data.itemType));
 
+        FinishedAsync().Forget();
+    }
+
+    async UniTask FinishedAsync()
+    {
         var emission = m_element.ps.emission;
         var prevValue = emission.rateOverDistanceMultiplier;
         emission.rateOverDistanceMultiplier = 0f;
+
         await UniTask.WaitUntil(() => m_element.ps.particleCount == 0);
         emission.rateOverDistanceMultiplier = prevValue;
 
         gameObject.SetActive(false);
     }
+
     protected override void LateUpdate()
     {
     }

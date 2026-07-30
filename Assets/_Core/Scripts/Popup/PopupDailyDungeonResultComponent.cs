@@ -43,8 +43,8 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
     {
         if (DataManager.dailyDungeon.data.count > 0)
         {
+            await CloseAsync();
             result = StatusType.Success;
-            Close();
         }
         else if (await DataManager.dailyDungeon.ShowAdsAsync() == true)
             SetCountText();
@@ -107,10 +107,14 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
 
     async UniTask CloseAsync()
     {
-        if (m_resultData.isSweep == true)
-            await RewardWorker.instance.RunAsync(CameraManager.posPointer, m_rewards.ToArray());
+        List<UniTask> tasks = new();
+        for (int i = 0; i < m_rewards.Count; i++)
+            tasks.Add(RewardWorker.instance.RunAsync(m_element.pReward.GetChild(i).position, _itemData: m_rewards[i]));
+
+        await UniTask.WhenAll(tasks);
 
         await Utils.SetActivePunchAsync(m_element.panel, false);
+
         base.Close();
     }
 

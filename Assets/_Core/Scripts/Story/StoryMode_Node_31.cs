@@ -84,7 +84,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
             await caoRen.transform.DOMove(target, 0.2f);
         }
 
-        await WaitForSeconds(1f);
+        await WaitForSeconds(1f, false);
         Destroy(caoRen.gameObject);
 
         //장비	"어휴.. 죽이지 않고 패는게        더 힘들구만.."
@@ -157,7 +157,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         guanYu.move.MoveToPointAdd(Vector2.left * .5f, _isAniPlay: false);
         caoCao.move.MoveToPointAdd(Vector2.left * .5f, _isAniPlay: false);
 
-        await WaitForSeconds(1f);
+        await WaitForSeconds(1f, false);
 
         //장비	!?
         TalkAutoClose(0, false);
@@ -187,7 +187,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         guanYu.move.SetFlip(false);
         CameraManager.instance.SetCameraPosTarget(guanYu.cameraPos, false);
 
-        await WaitForSeconds(1f);
+        await WaitForSeconds(1f, false);
         guanYu.move.SetFlip(true);
 
 
@@ -203,7 +203,8 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         zhangFei.anim.PlayAttack(true, true);
         zhangFei.SetColorParts(Color.white, _isSetPrev: false);
         zhangFei.SetTalkboxName();
-        zhangFei.element.parts.Find("Head/Eyes").gameObject.SetActive(false);
+        var eyesZhangFei = zhangFei.element.parts.Find("Head/Eyes").gameObject;
+        eyesZhangFei.SetActive(false);
         //관우  ".. 배불뚝이.. 짐승같은 눈매..      아름답지 못한 턱수염..그리고.."
         await TalkStartAsync(2);
 
@@ -244,7 +245,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         zhaoYun.anim.AttackMotionFirstFrame();
         await WaitForSeconds(.5f, false);
-        zhaoYun.anim.animSpeed = 1f;
+        zhaoYun.anim.SetSpeed(1f);
 
         zhaoYun.attack.ShowHitEffect(guanYu);
         await zhaoYun.attack.RushAsync(guanYu.position + Vector3.right * 3f);
@@ -261,9 +262,9 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await TalkStartAsync();
 
         // 유비등장
-        zhaoYun.anim.animSpeed = 0;
-        guanYu.anim.animSpeed = 0;
-        zhangFei.anim.animSpeed = 0;
+        zhaoYun.anim.SetSpeed(0);
+        guanYu.anim.SetSpeed(0);
+        zhangFei.anim.SetSpeed(0);
 
         {
             var target = zhangFei.position + (guanYu.position - zhangFei.position) * .5f + Vector3.right * 15f;
@@ -321,28 +322,37 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         // 공격!
         zhangFei.anim.PlayAttack(true, true);
         zhangFei.transform.DOMoveX(guanYu.position.x + 3, .2f).Forget();
-        await WaitForSeconds(.1f);
+        await WaitForSeconds(.1f, false);
 
         actionDefence();
         guanYu.move.MoveToPointAdd(Vector2.left * .5f);
 
-        await WaitForSeconds(.4f);
+        await WaitForSeconds(.4f, false);
 
         // 공격!
         zhangFei.anim.PlayAttack(true, true);
-        await WaitForSeconds(.1f);
+        await WaitForSeconds(.1f, false);
         guanYu.move.MoveToPointAdd(Vector2.left * .5f);
 
-        await WaitForSeconds(.4f);
+        await WaitForSeconds(.4f, false);
 
         // 강 공격!
         zhangFei.anim.AttackMotionFirstFrame();
-        await WaitForSeconds(.5f);
-        zhangFei.anim.animSpeed = 1f;
+        zhangFei.SetColorParts(Color.black, .1f);
+
+        var eyesZhangFei = zhangFei.element.parts.Find("Head/Eyes").GetComponent<SpriteRenderer>();
+        eyesZhangFei.gameObject.SetActive(true);
+        eyesZhangFei.DOColor(Color.white, .1f).Forget();
+        await WaitForSeconds(.5f, false);
+        eyesZhangFei.gameObject.SetActive(false);
+
+        zhangFei.SetColorParts(Color.white, 0, false);
+        zhangFei.anim.SetSpeed(1f);
         zhangFei.anim.PlayAttack(true, true);
+        zhangFei.transform.DOMoveX(zhangFei.position.x - 2, .2f).Forget();
 
         // 관우 피하기!!
-        await WaitForSeconds(.1f);
+        await WaitForSeconds(.1f, false);
         await guanYu.move.DashAsync(guanYu.position + Vector3.left);
 
         // 장비 돌격!!
@@ -356,7 +366,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
 
         guanYu.move.SetFlip(false);
 
-        await WaitForSeconds(1f);
+        await WaitForSeconds(1f, false);
 
         //장비	??
         zhangFei.move.MoveToPointAdd(Vector2.right * .5f, false);
@@ -367,12 +377,12 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         actionDefence();
         await guanYu.transform.DOMoveX(guanYu.position.x + 4, .2f);
 
-        await WaitForSeconds(.3f);
+        await WaitForSeconds(.3f, false);
 
         zhangFei.anim.PlayAttack(true, true);
-        await WaitForSeconds(.2f);
+        await WaitForSeconds(.2f, false);
         guanYu.move.MoveToPointAdd(Vector2.right * .5f);
-        await WaitForSeconds(.3f);
+        await WaitForSeconds(.3f, false);
 
         zhangFei.attack.Rush(guanYu.position + Vector3.right * 5);
 
@@ -387,18 +397,18 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         }
         await guanYu.transform.DOMoveX(guanYu.position.x + 3, 0.2f);
 
-        await WaitForSeconds(.5f);
+        await WaitForSeconds(.2f, false);
 
         zhangFei.anim.PlayAttack(true, true);
 
-        await WaitForSeconds(.1f);
+        await WaitForSeconds(.1f, false);
 
         actionIdle();
         await guanYu.move.DashAsync(guanYu.position + Vector3.left, 9);
         guanYu.move.SetFlip(true);
         guanYu.move.MoveToPointAdd(Vector2.left * .5f);
 
-        await WaitForSeconds(.5f);
+        await WaitForSeconds(.2f, false);
         zhangFei.move.SetFlip(false);
 
         //장비	"뭐냐!? 어찌하여 공격을        하지 않는 것이냐! ? "
@@ -427,7 +437,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         await WaitPointerDown();
         guanYu.talkbox.SetActive(false);
 
-        zhangFei.anim.animSpeed = 1f;
+        zhangFei.anim.SetSpeed(1f);
         zhangFei.anim.Play(CharacterAnimType.Idle);
 
         //장비	"뭐냐!! 네 녀석이라면 충분히        막을 수 있었을텐데..이놈!!"
@@ -491,7 +501,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         guanYu.attack.ShowHitEffect(fanJiang);
         guanYu.attack.Rush(zhangFei.position + Vector3.right * 5f);
 
-        await WaitForSeconds(.1f);
+        await WaitForSeconds(.1f, false);
 
         zhangFei.anim.Play(CharacterAnimType.Die_2);
         zhangFei.move.SetFlip(true);
@@ -509,7 +519,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         }
 
         await UniTask.WaitUntil(() => guanYu.attack.isRush == false);
-        await WaitForSeconds(1f);
+        await WaitForSeconds(1f, false);
         guanYu.move.MoveToPoint(zhangFei.position + Vector3.right * 3f, false);
 
         //관우	마..막내야??

@@ -38,7 +38,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             Run(posFrom, ItemType.Rice, _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
     }
 
-    public async UniTask RunAsync(Vector3 _posFrom, TableItemData[] _itemData, bool _isPopup = true, bool _isStartPunch = false)
+    public async UniTask RunAsync(Vector3 _posFrom, bool _isPopup = true, bool _isStartPunch = false, params TableItemData[] _itemData)
     {
         List<UniTask> tasks = new();
 
@@ -46,15 +46,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         {
             var data = _itemData[i];
 
-            if (data.category == ItemCategoryType.Currency)
-            {
-                if (data.key == ItemType.Gold)
-                    DataManager.userInfo.SetGold(data.count, false);
-                else if (data.key == ItemType.Rice)
-                    DataManager.userInfo.SetProvision(data.count, false);
-
-                // todo 아이템들 갯수 업데이트 해야 해.
-            }
+            DataManager.userInfo.AddItem(false, _isAction: false, _itemData: _itemData);
 
             tasks.Add(RunAsync(_posFrom, _itemData[i].key, _itemData[i].count, _isPopup: _isPopup, _isStartPunch: _isStartPunch));
         }
@@ -62,6 +54,21 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         await UniTask.WhenAll(tasks);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_posFrom"></param>
+    /// <param name="_itemType"></param>
+    /// <param name="_count"></param>
+    /// <param name="_isStartPunch">시작할 때 흐트러 트릴거야</param>
+    /// <param name="_isFXStart">시작부터 FX 켜줄거야</param>
+    /// <param name="_distMax">거리 최대거리</param>
+    /// <param name="_isField">필드인지</param>
+    /// <param name="_isScreen">로비 스크린인지</param>
+    /// <param name="_isPopup">팝업인지</param>
+    /// <param name="_durationWait">기다리는 시간</param>
+    /// <param name="_isTargetPunch">방향으로 흐터질거야</param>
+    /// <param name="_posTargetPunch">흐터지는 위치</param>
     public void Run(Vector3 _posFrom, ItemType _itemType, long _count = 1, bool _isStartPunch = true
         , bool _isFXStart = false, float _distMax = 0
         , bool _isField = false, bool _isScreen = false, bool _isPopup = false,
@@ -157,8 +164,10 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         }
 
         //목적지까지 날려주자
+        List<UniTask> tasks = new();
         for (int i = 0; i < rewardComps.Count; i++)
-            rewardComps[i].ThrowStart(m_actionData.durationMove).Forget();
+            tasks.Add(rewardComps[i].ThrowStart(m_actionData.durationMove));
+        await UniTask.WhenAll(tasks);
     }
 
     public Vector3 GetPositionStartPunch(Vector3 _startPos)

@@ -52,7 +52,7 @@ public class Character_Worker_Attack : Character_Worker
     }
 
     CancellationTokenSource m_ctsAttackPush;
-    public bool isAttackPush => m_ctsAttackPush != null;
+    public bool isAttackPush { get; private set; }
 
     public async UniTask ControlAttackAsync(UnityAction _onAttack, bool _isPushButton)
     {
@@ -86,11 +86,13 @@ public class Character_Worker_Attack : Character_Worker
                     ShowSlashEffect(true);
 
                 m_weapon.Attack(isCritical);
+                isAttackPush = true;
 
                 m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
             }
             _isPushButton = false;
             await UniTask.NextFrame(token, true);
+            isAttackPush = false;
         }
 
         m_ctsAttackPush = null;
@@ -121,11 +123,11 @@ public class Character_Worker_Attack : Character_Worker
                     EffectWorker.instance.Dash(m_owner, m_owner.move.isFlip);
                     dt = DateTime.Now.AddSeconds(10);
 
-                    m_owner.anim.animSpeed = 1f;
+                    m_owner.anim.SetSpeed(1f);
                     m_owner.attack.ShowSlashEffect(true);
                 }
             });
-        m_owner.anim.animSpeed = 1f;
+        m_owner.anim.SetSpeed(1f);
 
         isRush = false;
     }
@@ -158,6 +160,7 @@ public class Character_Worker_Attack : Character_Worker
         m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
         isUseSkill = true;
         await m_weapon.UseSkillAsync();
+        isUseSkill = false;
     }
 
     public void ShowSlashEffect(bool _isShake = false) => m_weapon.ShowSlashEffect(_isForceShake: _isShake);

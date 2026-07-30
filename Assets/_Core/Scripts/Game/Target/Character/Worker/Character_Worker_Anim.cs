@@ -77,11 +77,11 @@ public class Character_Worker_Anim : Character_Worker
 
     public void AttackMotionFirstFrame(CharacterAnimType _animType = CharacterAnimType.Attack, int _layerIndex = 0)
     {
-        animSpeed = 0;
+        SetSpeed(0);
         Play(_animType, _layerIndex);
     }
 
-    public float animSpeed { get => m_animator.speed; set => m_animator.speed = value; }
+    public float animSpeed => m_animator.speed;
 
     public AnimatorStateInfo GetStateInfo(int _layerIndex = 0)
         => m_animator.GetCurrentAnimatorStateInfo(_layerIndex);

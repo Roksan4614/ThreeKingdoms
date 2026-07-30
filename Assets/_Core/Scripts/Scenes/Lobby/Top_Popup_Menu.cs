@@ -16,7 +16,11 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         {
             var btn = Instantiate(m_element.btnSetting, m_element.btnSetting.transform.parent);
             btn.text = "길잡이 초기화";
-            btn.onClick.AddListener(TutorialManager.instance.TestResetData);
+            btn.onClick.AddListener(() =>
+            {
+                TutorialManager.instance.TestResetData();
+                gameObject.SetActive(false);
+            });
             btn.transform.SetSiblingIndex(1);
         }
         {

@@ -55,7 +55,7 @@ public class Banner_Story : MonoBehaviour, IValidatable
     //    }
     //}
 
-    async UniTask OnButtonAsync_OpenPopup()
+    public async UniTask OnButtonAsync_OpenPopup()
     {
         PPWorker.DeleteKey(c_keyReddot);
 

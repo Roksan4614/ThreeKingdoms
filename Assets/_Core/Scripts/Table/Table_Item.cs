@@ -7,6 +7,15 @@ public class Table_Item : BaseTable<ItemType, TableItemData>
     {
         SetDictionary(x => x.key);
     }
+
+    public TableItemData GetItemData(ItemType _itemType, int _count = 0)
+    {
+        var result = Get(_itemType);
+        if (result.isActive == true)
+            result.count = _count;
+
+        return result;
+    }
 }
 
 public enum ItemCategoryType

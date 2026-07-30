@@ -26,7 +26,13 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T
         get
         {
             if (m_instance == null)
+            {
+#if UNITY_EDITOR
+                if (Application.isPlaying == false)
+                    return null;
+#endif
                 new GameObject("S_" + typeof(T).ToString(), typeof(T)).GetComponent<T>();
+            }
             return m_instance;
         }
     }

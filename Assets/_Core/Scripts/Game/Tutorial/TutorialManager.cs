@@ -165,6 +165,7 @@ public class TutorialManager
             chapterKey = stageKey = 1;
         }
 
+        public GuideQuestRepeatType nowRepeatType => isGuide ? GuideQuestRepeatType.NONE : repeatType;
         public bool isActive => historyGuide != null;
         public bool isGuide => guideType > GuideQuestType.NONE;
         public string name => TableManager.guideQuestString.Get(

@@ -298,4 +298,21 @@ public static class Utils
 
         return false;
     }
+
+    public static int[] RandomIndex(int _countMaxMinion)
+    {
+        int[] result = new int[_countMaxMinion];
+        for (int i = 0; i < _countMaxMinion; i++)
+            result[i] = i;
+
+        for (int i = result.Length - 1; i > 0; i--)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, i + 1);
+
+            int temp = result[i];
+            result[i] = result[randomIndex];
+            result[randomIndex] = temp;
+        }
+        return result;
+    }
 }

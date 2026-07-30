@@ -4,6 +4,21 @@ using UnityEngine;
 
 public class StoryMode_Node_30b : StoryModeBaseComponent
 {
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            phase.mainHero.attack.SetActive_Weapon(true);
+            phase.mainHero.anim.AttackMotionFirstFrame();
+            phase.mainHero.SetColorParts(Color.black, .2f);
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            phase.mainHero.anim.SetSpeed(1);
+            phase.mainHero.SetColorParts(Color.white, .1f);
+        }
+    }
+
     protected async override UniTask StartAsync()
     {
         await Phase_First();

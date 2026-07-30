@@ -93,13 +93,14 @@ public class WarningAreaComponent : MonoBehaviour, IValidatable
         }
     }
 
-    public void SetLookTarget_Box(Vector3 _targetPos, bool _isScale = true)
+    public void SetLookTarget_Box(Vector3 _targetPos, bool _isScale = true, bool _isSlerp = true)
     {
         var lookAt = _targetPos - transform.position;
         lookAt += lookAt.normalized;
 
         float angle = Mathf.Atan2(lookAt.y, lookAt.x) * Mathf.Rad2Deg - 90f;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        var target = Quaternion.AngleAxis(angle, Vector3.forward);
+        transform.rotation = _isSlerp ? Quaternion.Slerp(transform.rotation, target, 10f * Time.deltaTime) : target;
 
         if (_isScale == true)
         {

@@ -43,6 +43,12 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
         while (DataManager.dailyDungeon.isRunning == true)
         {
             await UniTask.WaitForSeconds(10f, cancellationToken: m_cts.Token);
+
+            if (TeamManager.instance.GetFarthestHero(m_owner.position) == null)
+            {
+                await UniTask.WaitUntil(() => TeamManager.instance.GetFarthestHero(m_owner.position) == true, cancellationToken: m_cts.Token);
+                await UniTask.WaitForSeconds(3f, cancellationToken: m_cts.Token);
+            }
             SkillAsync_MinionRush(4).Forget();
         }
     }
@@ -54,11 +60,7 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
             target = TeamManager.instance.GetFarthestHero(m_owner.position);
 
         if (target == null)
-        {
-            await UniTask.NextFrame(m_cts.Token);
-            SkillAsync_MinionRush(_countMaxMinion).Forget();
             return;
-        }
 
         m_owner.move.MoveStop();
         var hashDebuff = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
@@ -69,7 +71,7 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
 
         // 일어서라
         var boss = StageManager.instance.boss_dailyDungeon;
-        var randomIdx = RandomIndex(_countMaxMinion);
+        var randomIdx = Utils.RandomIndex(_countMaxMinion);
         m_element.parentMinion.position = boss.position;
         for (int i = 0; i < randomIdx.Length; i++)
         {
@@ -100,12 +102,12 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
         m_owner.anim.Play("Skill_Cast02");
 
         // 미니언 돌격 시작
-        randomIdx = RandomIndex(_countMaxMinion);
+        randomIdx = Utils.RandomIndex(_countMaxMinion);
         List<UniTask> tasksRush = new();
         for (int i = 0; i < randomIdx.Length; i++)
         {
             tasksRush.Add(RushMinionAsync(target, m_element.minion[randomIdx[i]]));
-            await UniTask.WaitForSeconds(.5f);
+            await UniTask.WaitForSeconds(.55f);
         }
 
         await UniTask.WhenAll(tasksRush);
@@ -116,23 +118,6 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
         await UniTask.WaitForSeconds(1f);
 
         m_owner.buff.Remove(BuffType.DEBUFF_NO_MOVE, hashDebuff);
-    }
-
-    int[] RandomIndex(int _countMaxMinion)
-    {
-        int[] result = new int[_countMaxMinion];
-        for (int i = 0; i < _countMaxMinion; i++)
-            result[i] = i;
-
-        for (int i = result.Length - 1; i > 0; i--)
-        {
-            int randomIndex = UnityEngine.Random.Range(0, i + 1);
-
-            int temp = result[i];
-            result[i] = result[randomIndex];
-            result[randomIndex] = temp;
-        }
-        return result;
     }
 
     async UniTask RushMinionAsync(CharacterComponent _target, MinionData _minion)
@@ -149,10 +134,17 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
         _minion.warning.Show(duration, m_cts.Token, false);
 
         var targetPos = _target.position;
+        _minion.warning.SetLookTarget_Box(targetPos, _isSlerp: false);
+        bool isResearch = false;
         while (endTime > Time.time)
         {
             if (_target.isLive == false)
+            {
                 _target = TeamManager.instance.GetFarthestHero(_minion.transform.position);
+                isResearch = true;
+            }
+            else
+                isResearch = false;
 
             if (_target == null)
             {
@@ -165,7 +157,7 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
             targetPos = _target.position;
             targetPos += (targetPos - _minion.transform.position).normalized * 3f;
 
-            _minion.warning.SetLookTarget_Box(targetPos);
+            _minion.warning.SetLookTarget_Box(targetPos, _isSlerp: isResearch == false);
 
             // left == 
             if (scale.x > 0 == targetPos.x > _minion.transform.position.x)

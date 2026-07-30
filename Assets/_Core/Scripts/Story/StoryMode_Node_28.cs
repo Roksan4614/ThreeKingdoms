@@ -92,7 +92,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 		enemy.move.MoveToPoint(guanYu.position, _isAniPlay: false);
 		await UniTask.WaitUntil(() => (enemy.position - guanYu.position).sqrMagnitude < 36);
 		enemy.move.MoveStop();
-		enemy.anim.animSpeed = 1f;
+		enemy.anim.SetSpeed(1f);
 		enemy.move.MoveToPointAdd(Vector2.left, _isAniPlay: false);
 		enemy.anim.Play(CharacterAnimType.Die_1);
 		enemy.talkbox.SetActive(false);
@@ -187,7 +187,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 		guanYu.move.MoveStop();
 		guanYu.move.SetFlip(true);
 		guanYu.move.MoveToPointAdd(Vector2.left, _isAniPlay: false);
-		guanYu.anim.animSpeed = 1f;
+		guanYu.anim.SetSpeed(1f);
 		guanYu.anim.PlayAttack(true, true);
 
 		// 백성 뒤로 밀리기

@@ -281,6 +281,33 @@ public class Data_UserInfo
     public long GetAssetAmount(ItemType _itemType)
         => _itemType switch { ItemType.Gold => m_element.gold, ItemType.Rice => m_element.rice, _ => -1 };
 
+    public void AddItem(ItemType _itemType, int _count, bool _isUpdate = true, bool _isTween = true, bool _isAction = true, Vector3 _actionPosition = default)
+    {
+        AddItem(_isUpdate, _isTween, _isAction, _actionPosition, TableManager.item.GetItemData(_itemType, _count));
+    }
+
+    public void AddItem(bool _isUpdate = true, bool _isTween = true, bool _isAction = true, Vector3 _actionPosition = default, params TableItemData[] _itemData)
+    {
+        if (_isAction)
+            RewardWorker.instance.RunAsync(_actionPosition, _itemData: _itemData).Forget();
+        else
+        {
+            foreach (var item in _itemData)
+            {
+                switch (item.key)
+                {
+                    case ItemType.Rice:
+                    case ItemType.Gold:
+                        AddAsset(item.key, item.count, _isUpdate, _isTween);
+                        break;
+                    case ItemType.Dedicated_Soul_Stone:
+                        AddHeroSoul(item.value, (int)item.count);
+                        break;
+                }
+            }
+        }
+    }
+
     public void AddAsset(long _gold, long _rice, bool _isUpdate = true, bool _isTween = true)
     {
         SetAsset(
@@ -291,10 +318,10 @@ public class Data_UserInfo
     public void AddAsset(ItemType _itemType, long _amount, bool _isUpdate = true, bool _isTween = true)
         => AddAsset(_itemType == ItemType.Gold ? _amount : 0, _itemType == ItemType.Rice ? _amount : 0, _isUpdate, _isTween);
 
-    public void SetProvision(long _amount, bool _isUpdate = true, bool _isTween = true)
-        => SetAsset(-1, _amount, _isUpdate, _isTween);
-    public void SetGold(long _amount, bool _isUpdate = true, bool _isTween = true)
-        => SetAsset(_amount, -1, _isUpdate, _isTween);
+    //public void SetProvision(long _amount, bool _isUpdate = true, bool _isTween = true)
+    //    => SetAsset(-1, _amount, _isUpdate, _isTween);
+    //public void SetGold(long _amount, bool _isUpdate = true, bool _isTween = true)
+    //    => SetAsset(_amount, -1, _isUpdate, _isTween);
     public void SetAsset(long _gold, long _rice, bool _isUpdate = true, bool _isTween = true)
     {
         ItemType itemType = ItemType.Gold;

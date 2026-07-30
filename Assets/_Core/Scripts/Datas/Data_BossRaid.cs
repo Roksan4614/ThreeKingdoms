@@ -60,7 +60,7 @@ public class Data_BossRaid
 
         if (m_data.tickNextRound == 0)
         {
-            await UniTask.WaitForSeconds(UnityEngine.Random.Range(10f, 20f));
+            await UniTask.WaitForSeconds(UnityEngine.Random.Range(10f, 20f), cancellationToken: token);
             //m_data.tickNextRound = System.DateTime.UtcNow.AddMinutes(10).Ticks;
             m_data.tickNextRound = System.DateTime.UtcNow.AddSeconds(70).Ticks;
             SaveData();
@@ -68,7 +68,7 @@ public class Data_BossRaid
 
         m_raidStatus = BossRaidStatusType.Wait;
         // 대기중
-        await UniTask.WaitUntil(() => System.DateTime.UtcNow.Ticks > m_data.tickNextRound);
+        await UniTask.WaitUntil(() => System.DateTime.UtcNow.Ticks > m_data.tickNextRound, cancellationToken: token);
 
         // 게임시작
 

@@ -90,7 +90,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
         CameraManager.instance.Shake();
 
-        await UniTask.Yield();
+        await UniTask.NextFrame();
 
         isUseSkill = false;
     }
