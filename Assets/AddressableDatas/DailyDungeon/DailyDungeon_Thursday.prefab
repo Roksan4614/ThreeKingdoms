@@ -204,7 +204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DailyDungeonComponent
   m_element:
-    boss: {fileID: 0}
+    boss: {fileID: 7606889510657936139}
     fxChangeBoss: {fileID: 0}
 --- !u!1 &6498651937957534381
 GameObject:
@@ -839,13 +839,13 @@ MonoBehaviour:
   m_element:
     minion:
     - anim: {fileID: 6505716129984922356}
-      orinLocalPosition: {x: 2.01, y: 2.83, z: 0}
+      orinLocalPosition: {x: 2.01, y: 2.63, z: 0}
       warning: {fileID: 1883320002967245632}
     - anim: {fileID: 5829908610274477719}
       orinLocalPosition: {x: 1.4900002, y: -2.2599998, z: 0}
       warning: {fileID: 1192865901614012195}
     - anim: {fileID: 2157557496573815569}
-      orinLocalPosition: {x: 3.75, y: 1.27, z: 0}
+      orinLocalPosition: {x: 3.75, y: 1.0700003, z: 0}
       warning: {fileID: 6745047354996734629}
     - anim: {fileID: 8395978676626287432}
       orinLocalPosition: {x: 3.49, y: -0.78, z: 0}
@@ -904,6 +904,11 @@ RectTransform:
 --- !u!212 &8075496249281100987 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 4470023496469864966, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
+  m_PrefabInstance: {fileID: 5627629962327121597}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &8225995178172271720 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4337459754001666773, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
   m_PrefabInstance: {fileID: 5627629962327121597}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &8649106677558875026 stripped
@@ -966,6 +971,7 @@ MonoBehaviour:
     m_rtHP: {fileID: 441247700807079164}
     partsRenders:
     - {fileID: 6842701378972777909}
+    - {fileID: 8225995178172271720}
     - {fileID: 4196716931176433379}
     - {fileID: 1327317944739663647}
     - {fileID: 1067951751161483939}
@@ -978,6 +984,7 @@ MonoBehaviour:
     - {fileID: 7051791763646162988}
     - {fileID: 2888067590817065258}
     colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
     - {r: 1, g: 1, b: 1, a: 1}
     - {r: 0, g: 0, b: 0, a: 1}
     - {r: 1, g: 1, b: 1, a: 1}

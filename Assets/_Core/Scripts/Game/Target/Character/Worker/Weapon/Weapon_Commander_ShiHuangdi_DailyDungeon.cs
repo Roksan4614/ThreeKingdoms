@@ -189,7 +189,7 @@ public class Weapon_Commander_ShiHuangdi_DailyDungeon : Weapon_Commander_ShiHuan
         {
             var target = _minion.warning.target[i];
 
-            if (target.isLive == false)
+            if (target is Character_Enemy || target.isLive == false)
                 continue;
 
             target.OnDamage(null, damage);

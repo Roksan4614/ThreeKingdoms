@@ -14,7 +14,7 @@ public class TutorialManager
     {
         await UniTask.Yield();
 
-        PPWorker.DeleteKey(PlayerPrefsType.GUIDE_QUEST_DATA);
+        //PPWorker.DeleteKey(PlayerPrefsType.GUIDE_QUEST_DATA);
         m_data = PPWorker.Get<GuideQuestRepeatData>(PlayerPrefsType.GUIDE_QUEST_DATA);
 
         if (m_data.isActive == false)
@@ -22,6 +22,15 @@ public class TutorialManager
             m_data.SetDefault();
             SaveData();
         }
+    }
+
+    public void TestResetData()
+    {
+        m_data = default;
+        m_data.SetDefault();
+        SaveData();
+
+        GuideQuestComponent.instance.StartGuideQuest();
     }
 
     public bool Update()

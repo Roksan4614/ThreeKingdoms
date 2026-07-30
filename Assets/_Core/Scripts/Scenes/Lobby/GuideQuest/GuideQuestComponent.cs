@@ -103,6 +103,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                     break;
             }
         }
+
     }
 
     void OnButton_Quest()
@@ -147,23 +148,23 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                     case GuideQuestType.MOVE:
                         {
                             if (talkbox.isActive == false)
-                                talkbox.Start(destroyCancellationToken,
+                                talkbox.Start_AutoClose(destroyCancellationToken,
                                     Configure.isPC ? "[W][A][S][D]를_눌러\n이동해보자." : "화면을_터치해_이동해보자.");
                         }
                         break;
                     case GuideQuestType.NORMAL_ATTACK:
                         {
                             if (talkbox.isActive == false)
-                                talkbox.Start(destroyCancellationToken,
+                                talkbox.Start_AutoClose(destroyCancellationToken,
                                     Configure.isPC ?
-                                    "[X]키를_눌러_공격해보자.\n버튼을_눌러서도_가능해." :
+                                    "[X]키를_눌러_공격해보자.\n화면을_터치해도_가능해." :
                                     "공격_버튼을_눌러보자.");
                         }
                         break;
                     case GuideQuestType.MAIN_SKILL_USE:
                         {
                             if (talkbox.isActive == false)
-                                talkbox.Start(destroyCancellationToken,
+                                talkbox.Start_AutoClose(destroyCancellationToken,
                                     Configure.isPC ?
                                     "[C]키를_누른_후_좌클릭해봐.\n버튼을_눌러서도_가능해." :
                                     "스킬_버튼을_눌러보자.");
@@ -172,7 +173,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                     case GuideQuestType.DASH_USE:
                         {
                             if (talkbox.isActive == false)
-                                talkbox.Start(destroyCancellationToken,
+                                talkbox.Start_AutoClose(destroyCancellationToken,
                                     Configure.isPC ?
                                     "[SpaceBar]키를_눌러보자.\n버튼을_눌러서도_가능해." :
                                     "대쉬_버튼을_눌러보자.");

@@ -35,6 +35,8 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
+    public Banner_Story story => m_element.story;
+
     [SerializeField]
     ElementData m_element;
 

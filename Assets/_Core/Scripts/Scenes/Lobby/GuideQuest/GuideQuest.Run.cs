@@ -39,12 +39,12 @@ public partial class GuideQuestComponent
 
         while (true)
         {
-            await UniTask.WaitUntil(() => main.attack.isAttack == true);
+            await UniTask.WaitUntil(() => main.attack.isAttackPush == true);
 
             if (TutorialManager.instance.Update() == true)
                 return;
 
-            await UniTask.WaitUntil(() => main.attack.isAttack == false);
+            await UniTask.WaitUntil(() => main.attack.isAttackPush == false);
         }
     }
 
@@ -82,6 +82,12 @@ public partial class GuideQuestComponent
     {
         while (true)
         {
+            if (BannerComponent.instance.story.isActive == false)
+            {
+                TeamManager.instance.mainHero.talkbox.Start(destroyCancellationToken, "스토리_모드_해금!");
+                Signal.instance.UnlockStoryMode.Emit();
+            }
+
             await UniTask.WaitUntil(() => DataManager.storyMode.isRunning == true, cancellationToken: destroyCancellationToken);
 
             if (TutorialManager.instance.Update() == true)

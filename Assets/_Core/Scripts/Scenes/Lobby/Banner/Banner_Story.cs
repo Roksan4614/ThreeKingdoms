@@ -14,14 +14,25 @@ public class Banner_Story : MonoBehaviour, IValidatable
     {
         var stageData = StageManager.instance.data;
 
-        var dbStory = TableManager.storyNode.list.ToList()
+        var dbStory2 = TableManager.storyNode.list.ToList()
             .FindAll(x =>
                 (x.chapter_key < stageData.chapterNumber ||
                 (x.stage_key < stageData.stageNumber && x.chapter_key == stageData.chapterNumber))
                 && x.chapter_key > 0);
 
-        if (dbStory.Count == 0 && stageData.level == 1)
+        if (TutorialManager.instance.IsCompleteGuide(GuideQuestType.STORYMODE_PLAY - 1) == false)
             gameObject.SetActive(false);
+        else
+        {
+            var dbStory = TableManager.storyNode.list.ToList()
+                .FindAll(x =>
+                    (x.chapter_key < stageData.chapterNumber ||
+                    (x.stage_key < stageData.stageNumber && x.chapter_key == stageData.chapterNumber))
+                    && x.chapter_key > 0);
+
+            if (dbStory.Count == 0 && stageData.level == 1)
+                gameObject.SetActive(false);
+        }
 
         m_element.reddot.SetActive(PPWorker.HasKey(c_keyReddot));
     }
@@ -61,6 +72,8 @@ public class Banner_Story : MonoBehaviour, IValidatable
         PPWorker.Set(c_keyReddot, 1);
         m_element.reddot.SetActive(true);
     }
+
+    public bool isActive => gameObject.activeSelf;
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

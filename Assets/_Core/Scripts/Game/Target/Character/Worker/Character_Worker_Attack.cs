@@ -52,7 +52,7 @@ public class Character_Worker_Attack : Character_Worker
     }
 
     CancellationTokenSource m_ctsAttackPush;
-
+    public bool isAttackPush => m_ctsAttackPush != null;
 
     public async UniTask ControlAttackAsync(UnityAction _onAttack, bool _isPushButton)
     {

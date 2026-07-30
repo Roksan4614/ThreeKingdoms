@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DailyDungeonComponent
   m_element:
-    boss: {fileID: 0}
+    boss: {fileID: 4216169707241076950}
     fxChangeBoss: {fileID: 0}
 --- !u!1 &5570632920571050089
 GameObject:
@@ -410,6 +410,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 131485360862951930, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
   m_PrefabInstance: {fileID: 2092654387950185824}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &2394607400305590197 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4337459754001666773, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
+  m_PrefabInstance: {fileID: 2092654387950185824}
+  m_PrefabAsset: {fileID: 0}
 --- !u!212 &2522627926236761958 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 4470023496469864966, guid: 17eb0ce2d565dc040ab370b5edb44c2b, type: 3}
@@ -480,6 +485,7 @@ MonoBehaviour:
     m_rtHP: {fileID: 6128380689401571105}
     partsRenders:
     - {fileID: 1001462747844300392}
+    - {fileID: 2394607400305590197}
     - {fileID: 7579129801837327678}
     - {fileID: 4717614158898609346}
     - {fileID: 6755929147249795454}
@@ -492,6 +498,7 @@ MonoBehaviour:
     - {fileID: 3661213782196296689}
     - {fileID: 8865260663166769911}
     colorParts:
+    - {r: 1, g: 1, b: 1, a: 1}
     - {r: 1, g: 1, b: 1, a: 1}
     - {r: 0, g: 0, b: 0, a: 1}
     - {r: 1, g: 1, b: 1, a: 1}
@@ -622,13 +629,13 @@ MonoBehaviour:
   m_element:
     minion:
     - anim: {fileID: 674189673797742889}
-      orinLocalPosition: {x: 2.01, y: 2.83, z: 0}
+      orinLocalPosition: {x: 2.01, y: 2.63, z: 0}
       warning: {fileID: 5274036385193697437}
     - anim: {fileID: 284922256592893258}
       orinLocalPosition: {x: 1.4900002, y: -2.2599998, z: 0}
       warning: {fileID: 4872376385182999806}
     - anim: {fileID: 5684368097590892748}
-      orinLocalPosition: {x: 3.75, y: 1.27, z: 0}
+      orinLocalPosition: {x: 3.75, y: 1.0700003, z: 0}
       warning: {fileID: 1047361118763223416}
     - anim: {fileID: 2852823282806478997}
       orinLocalPosition: {x: 3.49, y: -0.78, z: 0}

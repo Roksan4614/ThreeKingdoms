@@ -92,12 +92,16 @@ public class Character_Worker_Talkbox : Character_Worker
         SetActive(false);
     }
 
-    //public async UniTask StartAsyncAutoDisable(float _duration, CancellationToken _token, params string[] _talks)
-    //{
-    //    await StartAsync(_talks);
-    //    await UniTask.WaitForSeconds(_duration, cancellationToken: _token);
-    //    SetActive(false);
-    //}
+    public void Start_AutoClose(CancellationToken _token, params string[] _talks)
+        => StartAsync_AutoClose(_token, _talks).Forget();
+
+    public async UniTask StartAsync_AutoClose(CancellationToken _token, params string[] _talks)
+    {
+        await StartAsync(_token, _talks);
+        await UniTask.WaitForSeconds(3f, cancellationToken: _token);
+        SetActive(false);
+    }
+
 
     public void Start(CancellationToken _token, params string[] _talks)
         => StartAsync(_token, _talks).Forget();

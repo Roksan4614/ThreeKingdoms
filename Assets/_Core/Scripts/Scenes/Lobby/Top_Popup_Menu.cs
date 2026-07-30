@@ -12,7 +12,19 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         m_rt = (RectTransform)transform;
 
         m_element.btnExit.onClick.AddListener(OnButton_Exit);
-        m_element.btnCheat_StorMode.onClick.AddListener(OnButton_Cheat_StoryMode);
+
+        {
+            var btn = Instantiate(m_element.btnSetting, m_element.btnSetting.transform.parent);
+            btn.text = "길잡이 초기화";
+            btn.onClick.AddListener(TutorialManager.instance.TestResetData);
+            btn.transform.SetSiblingIndex(1);
+        }
+        {
+            var btn = Instantiate(m_element.btnSetting, m_element.btnSetting.transform.parent);
+            btn.text = "스토리모드 해금";
+            btn.onClick.AddListener(OnButton_Cheat_StoryMode);
+            btn.transform.SetSiblingIndex(2);
+        }
 
         m_element.btnExit.text = DataManager.instance.isLobby ? "종_료" : "_나가기_";
     }
@@ -107,12 +119,12 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
     struct ElementData
     {
         public ButtonHelper btnExit;
-        public ButtonHelper btnCheat_StorMode;
+        public ButtonHelper btnSetting;
 
         public void Initialize(Transform _transform)
         {
             btnExit = _transform.GetComponent<ButtonHelper>("btn_exit");
-            btnCheat_StorMode = _transform.GetComponent<ButtonHelper>("btn_cheat_storymode");
+            btnSetting = _transform.GetComponent<ButtonHelper>("btn_setting");
         }
     }
     #endregion VALIDATE
