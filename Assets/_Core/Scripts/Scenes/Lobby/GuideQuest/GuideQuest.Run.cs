@@ -5,11 +5,11 @@ public partial class GuideQuestComponent
 {
     async UniTask MoveAsync()
     {
-        var main = TeamManager.instance.mainHero;
-
         bool isComplete = false;
         while (true)
         {
+            var main = TeamManager.instance.mainHero;
+
             await UniTask.WaitUntil(() => ControllerManager.instance.isDoing == true);
 
             Vector3 prevPosition = main.position;
@@ -35,10 +35,10 @@ public partial class GuideQuestComponent
 
     async UniTask NormalAttackAsync()
     {
-        var main = TeamManager.instance.mainHero;
-
         while (true)
         {
+            var main = TeamManager.instance.mainHero;
+
             await UniTask.WaitUntil(() => main.attack.isAttackPush == true);
 
             if (TutorialManager.instance.Update() == true)
@@ -50,10 +50,10 @@ public partial class GuideQuestComponent
 
     async UniTask MainSkillUseAsync()
     {
-        var main = TeamManager.instance.mainHero;
-
         while (true)
         {
+            var main = TeamManager.instance.mainHero;
+
             await UniTask.WaitUntil(() => main.attack.isUseSkill == true);
 
             if (TutorialManager.instance.Update() == true)
@@ -65,10 +65,10 @@ public partial class GuideQuestComponent
 
     async UniTask DashUseAsync()
     {
-        var main = TeamManager.instance.mainHero;
-
         while (true)
         {
+            var main = TeamManager.instance.mainHero;
+
             await UniTask.WaitUntil(() => main.move.isDash == true);
 
             if (TutorialManager.instance.Update() == true)

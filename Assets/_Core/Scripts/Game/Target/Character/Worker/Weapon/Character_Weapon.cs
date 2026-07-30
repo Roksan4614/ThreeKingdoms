@@ -182,7 +182,7 @@ public class Character_Weapon : MonoBehaviour, IValidatable
     }
 
     public virtual void OnDrag_ControllSkill(Vector3 _targetPos) { }
-    public virtual void OnUp_ControllSkill() { }
+    public virtual void OnUp_ControllSkill() { m_owner.attack.UseSkillAsync().Forget(); }
     public virtual void OnCancel_ControllSkill() { }
 
     public void SetActive_Weapon(bool _isActive)
