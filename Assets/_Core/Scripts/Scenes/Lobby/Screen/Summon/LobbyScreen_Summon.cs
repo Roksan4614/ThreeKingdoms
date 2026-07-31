@@ -128,6 +128,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
             }
         }
 
+        m_hostData.comp.element.collider.enabled = false;
         m_element.txtHostInfo.text = $"_¡÷√÷¿⁄:{TableManager.hero.Get(m_hostData.key).name}\n<color=#636363><size=80%>øµ»•ºÆ 10∞≥ »πµÊ 100%";
 
         return m_hostData;

@@ -44,12 +44,14 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     struct ElementData
     {
         public ButtonHelper btnTutorialSkip;
+        public ButtonHelper btnTournament;
 
         public Banner_Story story;
 
         public void Initialize(Transform _transform)
         {
             btnTutorialSkip = _transform.parent.GetComponent<ButtonHelper>("btn_skip");
+            btnTournament = _transform.GetComponent<ButtonHelper>("Right/btn_tournament");
 
             story = _transform.GetComponent<Banner_Story>("Right/btn_story");
         }
