@@ -27,6 +27,7 @@ public enum PopupType
 
     LobbyStoryMode,
     LobbyBossRaid,
+    LobbyTournament,
     UserInfo,
 
     UpgradeGuide,

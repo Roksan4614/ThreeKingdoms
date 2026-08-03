@@ -12,6 +12,8 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
                 transform.GetChild(i).gameObject.SetActive(_isActive);
         });
 
+        m_element.btnTournament.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.LobbyTournament));
+
         Signal.instance.UnlockStoryMode.connect = SlotUnlockStoryMode;
     }
 

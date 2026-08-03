@@ -38,7 +38,6 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     /// <param name="_onUpdate">아이템이랑, 데이타 인덱스</param>
     public void Initialize<T>(int _count, UnityAction<T, int> _onUpdate)
     {
-
         m_curIndex = 0;
         m_countItem = _count;
 
@@ -148,6 +147,8 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
             content.anchoredPosition = pos;
     }
 
+    public Transform empty => m_element.empty;
+
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
@@ -161,12 +162,16 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
         public RectTransform rtBaseItem;
         public HorizontalOrVerticalLayoutGroup layout;
 
+        public Transform empty;
+
         public void Initialize(Transform _transform)
         {
             scroll = _transform.GetComponent<ScrollRect>();
             rtBaseItem = (RectTransform)scroll.content.GetChild(0);
 
             layout = scroll.content.GetComponent<HorizontalOrVerticalLayoutGroup>();
+
+            empty = scroll.viewport.Find("Empty");
         }
     }
     #endregion VALIDATE
