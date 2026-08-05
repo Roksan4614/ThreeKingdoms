@@ -39,6 +39,7 @@ public enum OrderLayerType
     FrontUI_Bottom,
     FrontUI_Screen,
     FrontUI_Top,
+    FrontUI_Top_01,
 
     Alert,
     MAX,

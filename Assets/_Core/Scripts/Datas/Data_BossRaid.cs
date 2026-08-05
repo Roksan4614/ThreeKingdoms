@@ -24,8 +24,8 @@ public class Data_BossRaid
     BossRaidRankerData m_rankPrevRaid = new();  //ÀÌÀü ¶ó¿îµå ·©Å·
     public BossRaidRankerData rankPrevRaid => m_rankPrevRaid;
 
-    List<BossRaidRankerUserData> m_rankNow = new(); //ÇöÀç·©Å·
-    public IReadOnlyList<BossRaidRankerUserData> rankNow => m_rankNow;
+    List<RankerUserData> m_rankNow = new(); //ÇöÀç·©Å·
+    public IReadOnlyList<RankerUserData> rankNow => m_rankNow;
 
     BossRaidStatusType m_raidStatus; public BossRaidStatusType raidStatus => m_raidStatus;
 
@@ -152,7 +152,7 @@ public class Data_BossRaid
         for (int i = 0; i < 50; i++)
         {
             bool isMine = i == 21;
-            BossRaidRankerUserData userData = new();
+            RankerUserData userData = new();
 
             userData.uid = isMine ? DataManager.userInfo.uid : DataManager.userInfo.uid + i + 1;
             userData.prevRank = i + 1;
@@ -160,7 +160,6 @@ public class Data_BossRaid
             userData.point = UnityEngine.Random.Range(100, 10000);
             userData.power = UnityEngine.Random.Range(1000, 3000);
             userData.skin = TableManager.hero.GetHeroList().RandomFirst().key;
-            userData.indexProfile = -1;
 
             if (isMine)
             {
@@ -188,7 +187,7 @@ public class Data_BossRaid
         for (int i = 0; i < 50; i++)
         {
             bool isMine = i == 21;
-            BossRaidRankerUserData userData = new();
+            RankerUserData userData = new();
 
             userData.uid = isMine ? DataManager.userInfo.uid : DataManager.userInfo.uid + i + 1;
             userData.prevRank = i + 1;
@@ -196,7 +195,6 @@ public class Data_BossRaid
             userData.point = UnityEngine.Random.Range(1000, 1000000);
             userData.power = UnityEngine.Random.Range(1000, 3000);
             userData.skin = TableManager.hero.GetHeroList().RandomFirst().key;
-            userData.indexProfile = -1;
 
             m_rankPrevRaid.ranker.Add(userData);
 
@@ -226,14 +224,14 @@ public class Data_BossRaid
         var nickname = Utils.GetRandomNicknameArray(20);
         m_rankNow.Clear();
 
-        var my = new BossRaidRankerUserData();
+        var my = new RankerUserData();
         my.nickname = DataManager.userInfo.nickname;
         my.uid = DataManager.userInfo.uid;
         m_rankNow.Add(my);
 
         for (int i = 0; i < nickname.Length; i++)
         {
-            var user = new BossRaidRankerUserData();
+            var user = new RankerUserData();
             user.nickname = nickname[i];
             user.uid = DataManager.userInfo.uid + i + 1;
 
@@ -353,20 +351,8 @@ public class Data_BossRaid
 
     public struct BossRaidRankerData
     {
-        public List<BossRaidRankerUserData> ranker;
-        public BossRaidRankerUserData my;
-    }
-
-    public struct BossRaidRankerUserData
-    {
-        public int rank;
-        public int prevRank;
-        public int indexProfile;
-        public string skin;
-        public string nickname;
-        public int uid;
-        public long point;
-        public int power;
+        public List<RankerUserData> ranker;
+        public RankerUserData my;
     }
 
     public enum BossRaidStatusType
@@ -381,4 +367,16 @@ public class Data_BossRaid
 
         Finished,
     }
+}
+
+public struct RankerUserData
+{
+    public int rank;
+    public int prevRank;
+    public int indexProfile;
+    public string skin;
+    public string nickname;
+    public int uid;
+    public long point;
+    public int power;
 }

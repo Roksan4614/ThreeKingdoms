@@ -5,7 +5,7 @@ public class RankBossRaid_Slot : MonoBehaviour, IValidatable
 {
     public RectTransform rt => (RectTransform)transform;
 
-    public void SetRankData(Data_BossRaid.BossRaidRankerUserData _userData)
+    public void SetRankData(RankerUserData _userData)
     {
         int _countMax = DataManager.bossRaid.rankNow.Count;
 

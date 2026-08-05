@@ -47,7 +47,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         return true;
     }
 
-    public void OpenPopup()
+    public virtual void OpenPopup()
     {
         Utils.SetActivePunch(transform, true);
 
@@ -72,7 +72,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
     void SetPodium()
     {
-        Data_BossRaid.BossRaidRankerUserData[] ranker = (m_curTabType == TabType.Point ? DataManager.bossRaid.rankPoint : DataManager.bossRaid.rankPrevRaid).ranker.Take(3).ToArray();
+        RankerUserData[] ranker = (m_curTabType == TabType.Point ? DataManager.bossRaid.rankPoint : DataManager.bossRaid.rankPrevRaid).ranker.Take(3).ToArray();
 
         for (int i = 0; i < ranker.Length; i++)
             m_element.podiums[i].SetRankerInfoAsync(m_curTabType, ranker[i], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget()).Forget();
@@ -127,7 +127,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
     Dictionary<int, List<HeroInfoData>> m_dbBatch = new();
     bool m_isOpenUserInfo;
-    async UniTask OnButtonAsync_UserInfo(Data_BossRaid.BossRaidRankerUserData _rankerData)
+    async UniTask OnButtonAsync_UserInfo(RankerUserData _rankerData)
     {
         if (m_isOpenUserInfo == true || _rankerData.uid == DataManager.userInfo.uid)
             return;
@@ -185,19 +185,19 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         m_isOpenUserInfo = false;
     }
 
-    void OnButton_Close()
+    protected virtual void OnButton_Close()
     {
         Utils.SetActivePunch(transform, false);
     }
 
     #region VALIDATE
-    public void OnManualValidate() => m_element.Initialize(transform);
+    public virtual void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
-    ElementData m_element;
+    protected ElementData m_element;
 
     [System.Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public Image imgPanel;
 

@@ -14,7 +14,7 @@ public class PopupLobbyBossRaid_PopupRanking_PodiumItem : MonoBehaviour, IValida
 
     public async UniTask SetRankerInfoAsync(
         PopupLobbyBossRaid_PopupRanking.TabType _tabType,
-        Data_BossRaid.BossRaidRankerUserData _rankerData, UnityAction<Data_BossRaid.BossRaidRankerUserData> _callback)
+        RankerUserData _rankerData, UnityAction<RankerUserData> _callback)
     {
         m_element.btnUserInfo.onClick.RemoveAllListeners();
         m_element.btnUserInfo.onClick.AddListener(() => _callback(_rankerData));

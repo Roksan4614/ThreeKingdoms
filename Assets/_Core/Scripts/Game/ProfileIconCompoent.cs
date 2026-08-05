@@ -5,7 +5,7 @@ public class ProfileIconCompoent : MonoBehaviour, IValidatable
 {
     public void SetProfileData(int _idxProfile, string _skin)
     {
-        if (_idxProfile > -1)
+        if (_idxProfile > 0)
             SetProfileData(_idxProfile);
         else
             SetProfileDataAsync(_skin).Forget();
@@ -31,6 +31,9 @@ public class ProfileIconCompoent : MonoBehaviour, IValidatable
     }
 
     void SetProfileData(int _idxProfile) { }
+
+    public void SetActivePanel(bool _isActive)
+        => m_element.panel.gameObject.SetActive(_isActive);
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
