@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Character_Enemy_Boss : Character_Enemy
 {
-    protected override void Awake()
+    public override void Awake()
     {
         isBoss = true;
         base.Awake();

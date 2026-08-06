@@ -43,8 +43,11 @@ public class CharacterComponent : TargetComponent
     public Vector3 position { get => transform.position; set => transform.position = value; }
     public Transform cameraPos => m_element.cameraPos;
 
-    protected virtual void Awake()
+    public virtual void Awake()
     {
+        if (anim != null)
+            return;
+
         anim = new(this);// m_element.animator = default;
         move = new(this);
         attack = new(this);

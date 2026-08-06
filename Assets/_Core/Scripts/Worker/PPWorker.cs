@@ -81,7 +81,10 @@ public class PPWorker
         else if (type == typeof(float))
             PlayerPrefs.SetFloat(_key, (float)_value);
         else
-            PlayerPrefs.SetString(_key, Newtonsoft.Json.JsonConvert.SerializeObject(_value));
+        {
+            var msg = Newtonsoft.Json.JsonConvert.SerializeObject(_value);
+            PlayerPrefs.SetString(_key, msg);
+        }
 
         if (_isAutoSave == true)
             PlayerPrefs.Save();

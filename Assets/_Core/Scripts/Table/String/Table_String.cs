@@ -16,6 +16,16 @@ public class Table_String : Table_String_Base
         ? $"<color=#{Palette.GetHexa_GradeText(_gradeType)}>{GetGradeType(_gradeType, _isDifficult)}</color>"
         : $"{GetString($"GRADE_{(_isDifficult ? "DIFFICULT_" : "")}{_gradeType.ToString().ToUpper()}")}";
 
+    public string GetGradeRankType(GradeType _gradeType, bool _isColor = false)
+    {
+        string message = $"{GetString($"GRADE_RANK_{_gradeType.ToString().ToUpper()}")}";
+
+        if (_isColor)
+            message = $"<color=#{Palette.GetHexa_GradeText(_gradeType)}>{message}</color>";
+
+        return message;
+    }
+
     public string GetRegionType(RegionType _regionType, bool _isFull)
         => GetString(_regionType == RegionType.NONE ? "TAB_ALL" : $"REGION_NAME_{(_isFull ? "FULL_" : "")}{_regionType}");
 

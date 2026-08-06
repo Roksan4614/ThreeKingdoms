@@ -46,7 +46,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
             var result = await PopupManager.instance.OpenModalAsync("광고보기??_");
 
             if (result == StatusType.Success && await ShowAdsAsync() == false)
-                PopupManager.instance.AlertShow("더 이상 입장할 수 없습니다.");
+                PopupManager.instance.AlertShow("입장할_수_없습니다.");
         }
         else if (_isSweep)
             await DataManager.dailyDungeon.SweepAsync(m_curWeekday, SetCountText);

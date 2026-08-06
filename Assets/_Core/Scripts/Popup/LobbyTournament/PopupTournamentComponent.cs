@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Rev9.Tournament;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,6 +39,8 @@ public class PopupTournamentComponent : BasePopupComponent
         var popup = transform.Find("Popup");
         for (int i = 0; i < popup.childCount; i++)
             popup.GetChild(i).gameObject.SetActive(false);
+
+        m_element.btnRefresh.onClick.AddListener(() => OnButtonAsync_Refresh().Forget());
     }
 
     private void Start()
@@ -57,25 +60,147 @@ public class PopupTournamentComponent : BasePopupComponent
         LoadDataAsync().Forget();
     }
 
+    private void OnDestroy() => TournamentWorker.instance?.StopTimer();
+
     async UniTask LoadDataAsync()
     {
         m_element.panel.gameObject.SetActive(false);
 
         await TournamentWorker.instance.InitailizeAsync();
+
+        m_element.txtTier.text = $"[{TableManager.stringTable.GetGradeRankType(TournamentWorker.data.grade)}]";
+        m_element.txtRank.text = "_현재순위\n<size=150%>";
+        m_element.txtRank.text += TournamentWorker.data.rank == 0 ? "- 위" : $"{TournamentWorker.data.rank:#,0}_위";
+        m_element.txtPoint.text = "_점수\n<size=150%>";
+        m_element.txtPoint.text += $"{TournamentWorker.data.point:#,0}";
+
+        SetPlayCount();
+        SetRefreshCount();
+        SetUserList();
+
+        await m_element.panelBatch.SetBatchDataAsync(TournamentWorker.instance.GetBatchData(true));
+
         Utils.SetActivePunch(m_element.panel, true);
     }
 
-    //void ResetData()
-    //{
-    //    m_element.txtTier.text = "";
-    //    m_element.txtRank.text = $"현재_순위";//\n<size=150%>{} 위</size>";
-    //    m_element.txtPoint.text = $"점수";
+    void SetPlayCount()
+    {
+        m_element.txtPlayCount.text = $"일일_입장_가능_횟수: {TournamentWorker.data.countPlay}";
+        m_element.buttons[(int)TournamentPopupType.AD].text = $"{TournamentWorker.data.countAD}/3";
+    }
 
-    //    m_element.txtPlayCount.text = "";
+    void SetRefreshCount()
+    {
+        var tournamentData = TournamentWorker.data;
+        int count = tournamentData.countRefresh;
 
-    //    foreach (var slot in m_element.slots)
-    //        slot.ResetData();
-    //}
+        // 최대치가 아니라면 카운트를 쳐줘야 해
+        if (count < 3)
+            TimerAsync().Forget();
+        else
+            m_element.txtRefreshTimer.gameObject.SetActive(false);
+
+        m_element.iconAsset.SetActive(tournamentData.isFreeRefresh == false);
+
+        if (tournamentData.isFreeRefresh == true)
+            m_element.txtRefreshCount.text = $"{TournamentWorker.data.countRefresh}/3";
+        else
+            m_element.txtRefreshCount.text = "1,200";
+
+        m_element.iconAsset.transform.parent.ForceRebuildLayout();
+    }
+    void SetUserList()
+    {
+        var user = TournamentWorker.data.battleUserList;
+        for (int i = 0; i < m_element.slots.Length; i++)
+            m_element.slots[i].SetUserData(user[i],
+                _rankerData => OnButtonAsync_Start(_rankerData).Forget(),
+                _rankerData => m_element.popupUserInfo.OpenAsync(_rankerData).Forget()
+                );
+    }
+
+    async UniTask TimerAsync()
+    {
+        var dtEnd = new System.DateTime(TournamentWorker.data.tickRefresh, System.DateTimeKind.Utc);
+        var prevCount = TournamentWorker.data.countRefresh;
+
+        m_element.txtRefreshTimer.gameObject.SetActive(true);
+
+        while (true)
+        {
+            var ts = dtEnd - Utils.GetUTC();
+
+            m_element.txtRefreshTimer.text = ts.ToRemainTime(15, _isStartMinute: true) + $" 후_무료_갱신_횟수_추가";
+
+            if (ts.TotalSeconds < 0)
+                break;
+
+            await UniTask.NextFrame(destroyCancellationToken);
+        }
+
+        await UniTask.WaitUntil(() => prevCount != TournamentWorker.data.countRefresh, cancellationToken: destroyCancellationToken);
+
+
+        m_element.txtRefreshTimer.gameObject.SetActive(false);
+        SetRefreshCount();
+    }
+
+    bool m_isEnter = false;
+    async UniTask OnButtonAsync_Start(RankerUserData _rankerData)
+    {
+        if (m_isEnter == true)
+            return;
+
+        if (TournamentWorker.data.countPlay <= 0)
+        {
+            if (TournamentWorker.data.countAD <= 0)
+                PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
+            else
+            {
+                var result = await PopupManager.instance.OpenModalAsync("광고보기??_");
+
+                if (result == StatusType.Success && await TournamentWorker.instance.ShowAdsAsync() == false)
+                    PopupManager.instance.AlertShow("입장할_수_없습니다.");
+                else
+                    SetPlayCount();
+            }
+
+            return;
+        }
+
+        m_isEnter = true;
+        TournamentWorker.instance.EnterBattleAsync().Forget();
+
+        IngameLog.Add("Enter: " + _rankerData.nickname);
+    }
+
+    async UniTask OnButtonAsync_Refresh()
+    {
+        if (TournamentWorker.data.countRefresh <= 0)
+        {
+            int cost = 1200;
+
+            if (DataManager.userInfo.rice < cost)
+            {
+                PopupManager.instance.AlertShow("재화가_부족합니다.");
+                return;
+            }
+
+            var result = await PopupManager.instance.OpenModalAsync("재화를_사용해서_갱신하시겠습니까?");
+
+            if (result == StatusType.Success)
+                DataManager.userInfo.AddAsset(ItemType.Rice, -cost);
+            else
+                return;
+        }
+        m_element.btnRefresh.interactable = false;
+
+        await TournamentWorker.instance.RefreshListAsync();
+
+        m_element.btnRefresh.interactable = true;
+        SetUserList();
+        SetRefreshCount();
+    }
 
     async UniTask OpenPopupAsync(TournamentPopupType _popupType)
     {
@@ -88,7 +213,10 @@ public class PopupTournamentComponent : BasePopupComponent
                 await m_element.popupRanking.OpenPopupAsync();
                 break;
             case TournamentPopupType.AD:
-                await ShowADAsync();
+                {
+                    if (await TournamentWorker.instance.ShowAdsAsync() == true)
+                        SetPlayCount();
+                }
                 break;
             case TournamentPopupType.Batch:
                 await m_element.popupBatch.OpenAsync();
@@ -97,11 +225,6 @@ public class PopupTournamentComponent : BasePopupComponent
                 await m_element.popupRewardInfo.OpenAsync();
                 break;
         }
-    }
-
-    async UniTask ShowADAsync()
-    {
-        await UniTask.NextFrame();
     }
 
     public override void Close()
@@ -121,6 +244,7 @@ public class PopupTournamentComponent : BasePopupComponent
         public TextMeshProUGUI txtTier;
         public TextMeshProUGUI txtRank;
         public TextMeshProUGUI txtPoint;
+        public TextMeshProUGUI txtPower;
 
         public TextMeshProUGUI txtPlayCount;
 
@@ -134,6 +258,10 @@ public class PopupTournamentComponent : BasePopupComponent
         public PopupTournament_RewardInfo popupRewardInfo;
 
         public PopupTournament_Slot[] slots;
+        public ButtonHelper btnRefresh;
+        public TextMeshProUGUI txtRefreshTimer;
+        public GameObject iconAsset;
+        public TextMeshProUGUI txtRefreshCount;
 
         public void Initialize(Transform _transform)
         {
@@ -142,6 +270,7 @@ public class PopupTournamentComponent : BasePopupComponent
             txtTier = _transform.GetComponent<TextMeshProUGUI>("Panel/TierInfo/txt_tier");
             txtRank = _transform.GetComponent<TextMeshProUGUI>("Panel/TierInfo/txt_rank");
             txtPoint = _transform.GetComponent<TextMeshProUGUI>("Panel/TierInfo/txt_point");
+            txtPower = _transform.GetComponent<TextMeshProUGUI>("Panel/Power/Text");
             txtPlayCount = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_play_count");
 
             panelBatch = _transform.GetComponent<PopupTournament_Batch_Panel>("Panel/Batch");
@@ -150,12 +279,16 @@ public class PopupTournamentComponent : BasePopupComponent
             for (var i = TournamentPopupType.None + 1; i < TournamentPopupType.MAX; i++)
                 buttons[(int)i] = _transform.GetComponent<ButtonHelper>($"Panel/Button/btn_{i.ToString().ToLower()}");
 
-            slots = _transform.Find("Panel/List").GetComponentsInChildren<PopupTournament_Slot>();
-
             popupRanking = _transform.GetComponent<PopupTournament_Ranking>("Popup/Ranking");
             popupBatch = _transform.GetComponent<PopupTournament_Batch>("Popup/Batch");
             popupUserInfo = _transform.GetComponent<PopupTournament_UserInfo>("Popup/UserInfo");
             popupRewardInfo = _transform.GetComponent<PopupTournament_RewardInfo>("Popup/RewardInfo");
+
+            slots = _transform.Find("Panel/List").GetComponentsInChildren<PopupTournament_Slot>();
+            btnRefresh = _transform.GetComponent<ButtonHelper>("Panel/btn_refresh");
+            txtRefreshTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/btn_refresh/Desc/txt_timer");
+            txtRefreshCount = _transform.GetComponent<TextMeshProUGUI>("Panel/btn_refresh/Desc/txt_count");
+            iconAsset = _transform.Find("Panel/btn_refresh/Desc/Icon").gameObject;
         }
 
         public Transform panel => txtPlayCount.transform.parent;

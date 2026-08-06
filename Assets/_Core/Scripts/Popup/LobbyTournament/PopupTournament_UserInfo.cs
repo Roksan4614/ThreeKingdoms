@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Tournament;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,11 +17,13 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         m_element.panel.GetComponent<TextMeshProUGUI>("Batch/Text").text = "상대_조합";
     }
 
-    async UniTask OpenAsync()
+    public async UniTask OpenAsync(RankerUserData _rankerData)
     {
         gameObject.SetActive(true);
         Utils.SetActivePunch(m_element.panel, true);
 
+        TournamentWorker.instance.
+        m_element.panelBatch.SetBatchDataAsync()
 
 
         SetBatchPosition();
@@ -65,10 +68,14 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         public Transform panel;
         public Transform treasure;
 
+        public PopupTournament_Batch_Panel panelBatch;
+
         public void Initialize(Transform _transform)
         {
             panel = _transform.Find("Panel");
             treasure = _transform.Find("Panel/Treasure/Layout");
+
+            panelBatch = _transform.GetComponent<PopupTournament_Batch_Panel>("Panel/Batch/Batch");
         }
 
     }

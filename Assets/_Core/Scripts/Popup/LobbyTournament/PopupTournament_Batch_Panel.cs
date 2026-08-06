@@ -1,8 +1,12 @@
 using UnityEngine;
 using Rev9.Tournament;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 
 public class PopupTournament_Batch_Panel : MonoBehaviour, IValidatable
 {
+    Dictionary<string, GameObject> m_db = new();
+
     private void Awake()
     {
         foreach (var slot in m_element.slots)
@@ -14,7 +18,38 @@ public class PopupTournament_Batch_Panel : MonoBehaviour, IValidatable
 
     private void Start()
     {
-        var heroes = TournamentWorker.instance.GetHeroes(true);
+    }
+
+    public async UniTask SetBatchDataAsync(TournamentBatchData _batchData)
+    {
+        foreach (var hero in m_db)
+            hero.Value.gameObject.SetActive(false);
+
+        for (int i = 0; i < _batchData.skinKey.Length; i++)
+        {
+            var key = _batchData.skinKey[i];
+            var slot = m_element.slots[_batchData.position[i]];
+
+            GameObject hero = null;
+            if (m_db.ContainsKey(key))
+            {
+                hero = m_db[key];
+                hero.transform.SetParent(slot);
+                hero.gameObject.SetActive(true);
+            }
+            else
+            {
+                var newhero = Instantiate(await AddressableManager.instance.GetHeroCharacterAsync(key), slot).GetComponent<CharacterComponent>();
+                newhero.transform.localScale = Vector2.one * 70;
+                newhero.Awake();
+                newhero.move.SetFlip(true);
+                hero = newhero.gameObject;
+
+                m_db.Add(key, hero);
+            }
+
+            hero.transform.localPosition = Vector3.zero;
+        }
     }
 
     #region VALIDATE

@@ -7,84 +7,107 @@ using UnityEngine;
 
 namespace Rev9.Tournament
 {
-    public partial class TournamentWorker : Singleton<TournamentWorker>
+    public partial class TournamentWorker
     {
-        TournamentData m_data;
-        public TournamentData data => m_data;
+        public static TournamentWorker instance { get; private set; } = new();
+        public void Release()
+        {
+            m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
+            instance = null;
+        }
 
+        TournamentData m_data;
+        public static TournamentData data => instance.m_data;
+
+#if SERVICE_DEV
+        const int c_refreshMinute = 1;
+#else
         const int c_refreshMinute = 5;
+#endif
 
         CancellationTokenSource m_ctsRefresh;
 
         public async UniTask InitailizeAsync()
         {
-            PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT);
-            m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
+            if (m_data.isActive == false)
+            {
+                //PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT);
+                m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
+            }
 
             // 날짜 확인
-            var dtBattle = Utils.GetDateTime(m_data.tickBattle);
+            var dtBattle = Utils.GetDateTime(m_data.tick);
             if (dtBattle.Date < Utils.GetUTC().Date)
             {
                 SlotDayChange();
-                await LoadBattleListAsync();
+                await API_LoadBattleListAsync();
             }
 
             // 갱신 업데이트
             var dtRefresh = Utils.GetDateTime(m_data.tickRefresh);
-            m_data.countRefresh = Mathf.Min(3, m_data.countRefresh + (int)((Utils.GetUTC() - dtRefresh).TotalMinutes / 5));
+            int addCount = (int)(Utils.GetUTC() - dtRefresh).TotalMinutes;
+            addCount /= 5;
+            m_data.countRefresh = Mathf.Min(3, m_data.countRefresh + addCount);
             if (m_data.countRefresh < 3)
                 TimerRefreshCountAsync().Forget();
+            else
+                SaveData();
 
             Signal.instance.DayChange.connect = SlotDayChange;
         }
 
-        public TournamentHeroData[] GetHeroes(bool _isAttack)
+        public void StopTimer() => m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
+
+        public TournamentBatchData GetBatchData(bool _isAttack)
         {
             var team = _isAttack ? m_data.teamAttack : m_data.teamDefence;
-            if (team == null)
+            if (team.isActive == false)
             {
-                team = new();
-
                 if (_isAttack == true)
                 {
+                    team.skinKey = TeamManager.instance.members.Select(x => x.Value.info.skin).ToArray();
+                    team.position = new int[team.skinKey.Length];
+                    team.treasure = DataManager.stat.relic.dataTreasure.Where(x => x.isBatch == true).Select(x => x.key).ToArray();
+
+                    int idx = 0;
                     foreach (var member in TeamManager.instance.members)
                     {
-                        var heroData = new TournamentHeroData();
-                        heroData.skinKey = member.Value.info.skin;
-
                         switch (member.Key)
                         {
                             case TeamPositionType.Front:
-                                heroData.position = 1;
+                                team.position[idx] = 1;
                                 break;
                             case TeamPositionType.Top:
-                                heroData.position = 3;
+                                team.position[idx] = 3;
                                 break;
                             case TeamPositionType.Bottom:
-                                heroData.position = 5;
+                                team.position[idx] = 5;
                                 break;
                             case TeamPositionType.Back:
-                                heroData.position = 7;
+                                team.position[idx] = 7;
                                 break;
                         }
-
-                        team.Add(heroData);
+                        idx++;
                     }
 
                     m_data.teamAttack = team;
-                    m_data.treasureAttack = DataManager.stat.relic.dataTreasure.Where(x => x.isBatch == true).Select(x => x.key).ToList();
                 }
                 else
                 {
-                    team.AddRange(m_data.teamAttack);
-                    m_data.teamDefence = team;
-                    m_data.treasureDefence.AddRange(m_data.treasureAttack);
+                    for (int i = 0; i < m_data.teamAttack.skinKey.Length; i++)
+                    {
+                        team.skinKey[i] = m_data.teamAttack.skinKey[i];
+                        team.position[i] = m_data.teamAttack.position[i];
+                    }
+
+                    for (int i = 0; i < m_data.teamAttack.treasure.Length; i++)
+                        team.treasure[i] = m_data.teamAttack.treasure[i];
                 }
 
                 SaveData();
             }
 
-            return team.ToArray();
+            return team;
         }
 
         void SaveData()
@@ -95,9 +118,22 @@ namespace Rev9.Tournament
         void SlotDayChange()
         {
             m_data.SetChangeDate();
+            m_data.tick = Utils.GetUTC().Ticks;
             SaveData();
 
             m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
+        }
+
+        public async UniTask<bool> ShowAdsAsync()
+        {
+            if (m_data.countAD > 0 && await AdsManager.instance.ShowAsync())
+            {
+                m_data.countPlay++;
+                m_data.countAD--;
+                SaveData();
+                return true;
+            }
+            return false;
         }
 
         public async UniTask EnterBattleAsync()
@@ -106,7 +142,6 @@ namespace Rev9.Tournament
                 return;
 
             m_data.countPlay--;
-            m_data.tickBattle = Utils.GetUTC().Ticks;
             SaveData();
 
             await UniTask.NextFrame();
@@ -117,10 +152,14 @@ namespace Rev9.Tournament
             if (m_data.countRefresh <= 0)
                 return;
 
-            await LoadBattleListAsync();
+            await API_LoadBattleListAsync();
 
             m_data.countRefresh--;
-            TimerRefreshCountAsync().Forget();
+            if (m_ctsRefresh == null)
+            {
+                m_data.tickRefresh = Utils.GetUTC().AddMinutes(c_refreshMinute).Ticks;
+                TimerRefreshCountAsync().Forget();
+            }
         }
 
         public async UniTask TimerRefreshCountAsync()
@@ -128,7 +167,6 @@ namespace Rev9.Tournament
             m_ctsRefresh = m_ctsRefresh.ReleaseCTS(true);
             var token = m_ctsRefresh.Token;
 
-            m_data.tickRefresh = Utils.GetUTC().AddMinutes(c_refreshMinute).Ticks;
             SaveData();
 
             while (Utils.GetUTC().Ticks < m_data.tickRefresh)
@@ -137,6 +175,8 @@ namespace Rev9.Tournament
             m_data.countRefresh++;
             if (m_data.countRefresh < 3)
                 TimerRefreshCountAsync().Forget();
+            else
+                m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
         }
 
         bool isRunnig_TimerRefresh => m_ctsRefresh != null;
@@ -144,22 +184,20 @@ namespace Rev9.Tournament
 
     public struct TournamentData
     {
+        public GradeType grade;
         public int rank;
         public int point;
 
         public List<TournamentHistoryData> history;
 
-        public List<TournamentHeroData> teamAttack;
-        public List<TournamentHeroData> teamDefence;
-
-        public List<string> treasureAttack;
-        public List<string> treasureDefence;
+        public TournamentBatchData teamAttack;
+        public TournamentBatchData teamDefence;
 
         public int countPlay;
         public int countAD;
         public int countRefresh;
 
-        public long tickBattle;
+        public long tick;
         public long tickRefresh;
 
         public RankerUserData[] battleUserList;
@@ -170,15 +208,21 @@ namespace Rev9.Tournament
             countAD = 3;
             countRefresh = 3;
 
-            tickBattle = 0;
+            tick = 0;
             tickRefresh = 0;
         }
+
+        public bool isActive => tick > 0;
+        public bool isFreeRefresh => countRefresh > 0;
     }
 
-    public struct TournamentHeroData
+    public struct TournamentBatchData
     {
-        public string skinKey;
-        public int position;
+        public string[] skinKey;
+        public int[] position;
+        public string[] treasure;
+
+        public bool isActive => skinKey != null;
     }
 
     public struct TournamentHistoryData

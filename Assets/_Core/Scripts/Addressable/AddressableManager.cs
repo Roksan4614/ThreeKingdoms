@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Tournament;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -39,6 +40,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         ScenarioManager.Release();
         TimeManager.instance.Release();
         AdsManager.instance.Release();
+        TournamentWorker.instance.Release();
     }
 
     public async UniTask InitializeAsync()
