@@ -4,6 +4,7 @@ using UnityEngine;
 
 public static class AutoOrderInLayerWorker
 {
+#if UNITY_EDITOR
     [MenuItem("Rev9/AutoOrderInLayer")]
     static void Run()
     {
@@ -60,4 +61,5 @@ public static class AutoOrderInLayerWorker
         Debug.Log($"VALIDATE FINISHED: {(Time.realtimeSinceStartup - startTime):0.#0}s");
 
     }
+#endif
 }
