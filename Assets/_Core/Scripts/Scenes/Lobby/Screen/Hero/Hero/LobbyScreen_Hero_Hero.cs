@@ -521,8 +521,8 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         if (mainTeamPos != m_teamPosition)
             DataManager.option.mainTeamPosition = mainTeamPos;
 
-        int i = 0;
-        for (; i < sortData.Count; i++)
+        //int i = 0;
+        for (int i = 0; i < sortData.Count; i++)
         {
             int idx = m_itemList.FindIndex(x => x.data.key == sortData[i].key);
             if (idx == -1)
@@ -533,7 +533,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         }
 
         var parent = m_element.scroll.content;
-        for (; i < m_itemList.Count; i++)
+        for (int i = 0; i < m_itemList.Count; i++)
         {
             var idx = sortData.FindIndex(x => x.key == m_itemList[i].data.key);
             if (idx == -1)

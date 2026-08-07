@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Rev9.Tournament;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +73,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         m_isAttackType = _isAttackType;
 
         m_myHero.Clear();
-        m_myHero.AddRange(m_isAttackType ? TournamentWorker.data.teamAttack.heroInfo : TournamentWorker.data.teamDefence.heroInfo);
+        m_myHero.AddRange(TournamentWorker.instance.GetBatchData(m_isAttackType).heroInfo);
 
         SetLayout_List();
     }
