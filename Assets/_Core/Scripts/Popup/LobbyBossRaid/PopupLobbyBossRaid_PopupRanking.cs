@@ -14,9 +14,13 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
         Point,
         PrevRaid,
+
+        Tutorial_Point = 0,
+        Tutorial_Win,
+        Tutorial_Winning,
     }
 
-    TabType m_curTabType = TabType.NONE;
+    protected TabType m_curTabType = TabType.NONE;
 
     PopupUserInfoComponent m_popupUserInfo;
 
@@ -56,7 +60,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         OnButton_Tab(TabType.Point);
     }
 
-    void OnButton_Tab(TabType _tabType)
+    protected void OnButton_Tab(TabType _tabType)
     {
         if (m_curTabType == _tabType)
             return;
@@ -66,37 +70,46 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         for (var i = 0; i < m_element.tabs.Length; i++)
             m_element.tabs[i].SetDrawSelect(i == (int)_tabType);
 
-        SetPodium();
-        SetRanking();
+        SetRankingAsync().Forget();
     }
 
-    void SetPodium()
-    {
-        RankerUserData[] ranker = (m_curTabType == TabType.Point ? DataManager.bossRaid.rankPoint : DataManager.bossRaid.rankPrevRaid).ranker.Take(3).ToArray();
 
-        for (int i = 0; i < ranker.Length; i++)
-            m_element.podiums[i].SetRankerInfoAsync(m_curTabType, ranker[i], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget()).Forget();
-    }
 
-    void SetRanking()
+    protected virtual async UniTask SetRankingAsync()
     {
-        var rankData = (m_curTabType == TabType.Point ? DataManager.bossRaid.rankPoint : DataManager.bossRaid.rankPrevRaid);
+        await UniTask.NextFrame();
+
+        var rankerData = (m_curTabType == TabType.Point ? DataManager.bossRaid.rankPoint : DataManager.bossRaid.rankPrevRaid);
 
         // 포인트 랭킹일 경우 내 위아래로 20명씩임.
         if (m_curTabType == TabType.Point)
-        {
-            var index = rankData.ranker.FindIndex(x => x.uid == rankData.my.uid);
-            int startIndex = Mathf.Max(0, index - 20);
-            int endIndex = Mathf.Min(rankData.ranker.Count - 1, index + 20);
-            rankData.ranker = rankData.ranker.GetRange(startIndex, endIndex - startIndex + 1);
-        }
+            rankerData.ranker = GetRankerUserRange(rankerData);
+        
+        SetScrollRankerData(rankerData);
+    }
 
-        m_element.scroll.Initialize<PopupLobbyBossRaid_PopupRanking_Item>(rankData.ranker.Count,
+    protected List<RankerUserData> GetRankerUserRange(RankerData _rankerData, int _range = 20)
+    {
+        var index = _rankerData.ranker.FindIndex(x => x.uid == _rankerData.my.uid);
+        int startIndex = Mathf.Max(0, index - 20);
+        int endIndex = Mathf.Min(_rankerData.ranker.Count - 1, index + 20);
+
+        return _rankerData.ranker.GetRange(startIndex, endIndex - startIndex + 1);
+    }
+
+    protected virtual void SetScrollRankerData(RankerData _rankerData, bool _isForceFindMe = false)
+    {
+        // 포디움 세우자
+        for (int i = 0; i < 3; i++)
+            m_element.podiums[i].SetRankerInfo(m_curTabType, _rankerData.ranker[i], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget());
+
+
+        m_element.scroll.Initialize<PopupLobbyBossRaid_PopupRanking_Item>(_rankerData.ranker.Count,
             (_item, _idxData) =>
             {
-                _item.SetRankerInfoAsync(m_curTabType, rankData.ranker[_idxData], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget()).Forget();
+                _item.SetRankerInfoAsync(m_curTabType, _rankerData.ranker[_idxData], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget()).Forget();
 #if UNITY_EDITOR
-                _item.name = rankData.ranker[_idxData].rank.ToString();
+                _item.name = _rankerData.ranker[_idxData].rank.ToString();
 #endif
             });
 
@@ -105,9 +118,9 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         // 유저 찾기
         UnityAction<bool> actionFind = _isTween =>
         {
-            for (int i = 0; i < rankData.ranker.Count; i++)
+            for (int i = 0; i < _rankerData.ranker.Count; i++)
             {
-                if (rankData.ranker[i].uid == rankData.my.uid)
+                if (_rankerData.ranker[i].uid == _rankerData.my.uid)
                 {
                     m_element.scroll.MoveToIndex(i, _isTween);
                     break;
@@ -116,18 +129,18 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         };
 
         // 콘텐츠 위치 설정
-        if (m_curTabType == TabType.Point)
+        if (m_curTabType == TabType.Point || _isForceFindMe == true)
             actionFind(false);
         else
             content.anchoredPosition = Vector2.zero;
 
         // 내 정보쪽으로 가기
-        m_element.myRankInfo.SetRankerInfoAsync(m_curTabType, rankData.my, _rankerData => actionFind(true)).Forget();
+        m_element.myRankInfo.SetRankerInfoAsync(m_curTabType, _rankerData.my, _rankerData => actionFind(true)).Forget();
     }
 
     Dictionary<int, List<HeroInfoData>> m_dbBatch = new();
     bool m_isOpenUserInfo;
-    async UniTask OnButtonAsync_UserInfo(RankerUserData _rankerData)
+    protected async UniTask OnButtonAsync_UserInfo(RankerUserData _rankerData)
     {
         if (m_isOpenUserInfo == true || _rankerData.uid == DataManager.userInfo.uid)
             return;

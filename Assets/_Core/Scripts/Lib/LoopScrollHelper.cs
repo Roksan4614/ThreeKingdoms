@@ -167,7 +167,8 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
         public void Initialize(Transform _transform)
         {
             scroll = _transform.GetComponent<ScrollRect>();
-            rtBaseItem = (RectTransform)scroll.content.GetChild(0);
+            if (scroll.content.childCount > 0)
+                rtBaseItem = (RectTransform)scroll.content.GetChild(0);
 
             layout = scroll.content.GetComponent<HorizontalOrVerticalLayoutGroup>();
 

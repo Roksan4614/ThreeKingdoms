@@ -1,5 +1,8 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Tournament;
+using System.Linq;
 using UnityEngine;
+using static UnityEditor.U2D.ScriptablePacker;
 
 public class PopupTournament_Ranking : PopupLobbyBossRaid_PopupRanking
 {
@@ -9,6 +12,7 @@ public class PopupTournament_Ranking : PopupLobbyBossRaid_PopupRanking
         Utils.SetActivePunch(transform, true);
 
         m_element.scroll.content.anchoredPosition = Vector2.zero;
+        OnButton_Tab(TabType.Tutorial_Point);
 
         await UniTask.WaitUntil(() => m_isClose == true);
     }
@@ -17,6 +21,15 @@ public class PopupTournament_Ranking : PopupLobbyBossRaid_PopupRanking
     {
         m_isClose = true;
         Utils.SetActivePunch(transform, false, _callback:()=> m_isClose = false);
+    }
+
+    protected override async UniTask SetRankingAsync()
+    {
+        var rankerData = (await TournamentWorker.instance.API_LoadRankerData(m_curTabType));
+
+        rankerData.ranker = GetRankerUserRange(rankerData);
+
+        SetScrollRankerData(rankerData, true);
     }
 
     #region VALIDATE

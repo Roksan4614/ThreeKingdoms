@@ -15,6 +15,7 @@ public enum PlayerPrefsType
     CHAPTER_STAGE_INFO,
 
     TOURNAMENT,
+    TOURNAMENT_IS_ON_BATCH_INFO,
 
     MAX
 }

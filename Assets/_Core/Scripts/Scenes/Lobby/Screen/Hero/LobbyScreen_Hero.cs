@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public partial class LobbyScreen_Hero : LobbyScreen_Base
+public class LobbyScreen_Hero : LobbyScreen_Base
 {
     public enum HeroTabType
     {

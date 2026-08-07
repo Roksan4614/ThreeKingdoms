@@ -9,13 +9,13 @@ using UnityEngine.UI;
 
 public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 {
-    PopupHeroFilter m_popupFilter;
+    protected PopupHeroFilter m_popupFilter;
     PopupHeroInfo m_popupHeroInfo;
 
     List<HeroIconComponent> m_itemBatch = new();
     List<HeroIconComponent> m_itemList = new();
 
-    List<HeroInfoData> m_myHero = new();
+    protected List<HeroInfoData> m_myHero = new();
 
     int m_curIndex_Batch = -1;
     int m_curIndex_List = -1;
@@ -37,6 +37,8 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                     m_popupFilter = await PopupManager.instance.OpenPopupAsync<PopupHeroFilter>(PopupType.Hero_Filter);
                 else
                     m_popupFilter.OpenPopup();
+
+                SetFilterSize();
 
                 await UniTask.WaitUntil(() => m_popupFilter.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
 
@@ -66,16 +68,19 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                 action();
             });
 
-        m_element.btnMainPosition.onClick.AddListener(OnButton_TeamPosition);
-
-        // 출정 중 히어로 세팅
+        if (m_element.btnMainPosition != null)
         {
-            var panel = m_element.batch.layout;
-            for (int i = 0; i < panel.childCount; i++)
+            m_element.btnMainPosition.onClick.AddListener(OnButton_TeamPosition);
+
+            // 출정 중 히어로 세팅
             {
-                var hero = panel.GetChild(i).GetComponent<HeroIconComponent>();
-                if (hero != null)
-                    m_itemBatch.Add(hero);
+                var panel = m_element.batch.layout;
+                for (int i = 0; i < panel.childCount; i++)
+                {
+                    var hero = panel.GetChild(i).GetComponent<HeroIconComponent>();
+                    if (hero != null)
+                        m_itemBatch.Add(hero);
+                }
             }
         }
 
@@ -83,7 +88,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             => m_isNeedUpdateLayout = true);
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         m_myHero.Clear();
         m_myHero.AddRange(DataManager.userInfo.myHero);
@@ -94,52 +99,55 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         SetLayout_Batch();
 
         // 리스트 아이콘 미리 생성
-        {
-            var scroll = m_element.scroll;
-            var baseItem = scroll.content.GetChild(0).GetComponent<HeroIconComponent>();
-            baseItem.transform.SetParent(scroll.viewport);
-            while (baseItem.element.icon.childCount > 0)
-                DestroyImmediate(baseItem.element.icon.GetChild(0).gameObject);
-
-            var dbHero = TableManager.hero.GetHeroList();
-            int i = 0;
-            for (; i < dbHero.Count; i++)
-            {
-                m_itemList.Add(Instantiate(baseItem, scroll.content));
-                var heroInfo = DataManager.userInfo.GetHeroInfoData(dbHero[i].key);
-
-                if (heroInfo.isActive == false)
-                    heroInfo = new(dbHero[i].key, _isMine: false);
-
-                m_itemList[i].name = dbHero[i].key;
-                m_itemList[i].SetHeroData(heroInfo, OnButton_ListHero, OnButton_ListHeroRemove);
-            }
-
-            if (i < 20)
-            {
-                scroll.verticalScrollbar.gameObject.SetActive(false);
-
-                baseItem.element.panel.gameObject.SetActive(false);
-                baseItem.element.btnHero.interactable = false;
-
-                // 20개 미리 생성은 해두자
-                for (; i < 20; i++)
-                    Instantiate(baseItem, scroll.content);
-            }
-
-            scroll.content.ForceRebuildLayout();
-
-            baseItem.gameObject.SetActive(false);
-            Destroy(baseItem.gameObject);
-        }
+        InstantiateList();
 
         m_isStarted = true;
         SetLayout_List();
     }
 
-    bool m_isStarted = false;
+    protected void InstantiateList()
+    {
+        var scroll = m_element.scroll;
+        var baseItem = scroll.content.GetChild(0).GetComponent<HeroIconComponent>();
+        baseItem.transform.SetParent(scroll.viewport);
+        while (baseItem.element.icon.childCount > 0)
+            DestroyImmediate(baseItem.element.icon.GetChild(0).gameObject);
 
-    protected void OnEnable()
+        var dbHero = TableManager.hero.GetHeroList();
+        int i = 0;
+        for (; i < dbHero.Count; i++)
+        {
+            m_itemList.Add(Instantiate(baseItem, scroll.content));
+            var heroInfo = DataManager.userInfo.GetHeroInfoData(dbHero[i].key);
+
+            if (heroInfo.isActive == false)
+                heroInfo = new(dbHero[i].key, _isMine: false);
+
+            m_itemList[i].name = dbHero[i].key;
+            m_itemList[i].SetHeroData(heroInfo, OnButton_ListHero, OnButton_ListHeroRemove);
+        }
+
+        if (i < 20)
+        {
+            scroll.verticalScrollbar.gameObject.SetActive(false);
+
+            baseItem.element.panel.gameObject.SetActive(false);
+            baseItem.element.btnHero.interactable = false;
+
+            // 20개 미리 생성은 해두자
+            for (; i < 20; i++)
+                Instantiate(baseItem, scroll.content);
+        }
+
+        scroll.content.ForceRebuildLayout();
+
+        baseItem.gameObject.SetActive(false);
+        Destroy(baseItem.gameObject);
+    }
+
+    protected bool m_isStarted = false;
+
+    protected virtual void OnEnable()
     {
         m_openHeroSkins = DataManager.userInfo.myHero.Where(x => x.isBatch).Select(x => x.skin).ToList();
 
@@ -491,7 +499,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     #endregion BATCH
 
     #region LIST
-    void SetLayout_List(HeroInfoData _updateInfoData = default)
+    protected void SetLayout_List(HeroInfoData _updateInfoData = default)
     {
         if (m_isStarted == false)
             return;
@@ -693,16 +701,18 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     }
     #endregion LIST
 
-    public void OnManualValidate()
+    protected virtual void SetFilterSize() { }
+
+    public virtual void OnManualValidate()
     {
         m_element.Initialize(transform);
     }
 
     [SerializeField, HideInInspector]
     //[SerializeField]
-    ElementData m_element;
+    protected ElementData m_element;
     [Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public Button btnFilter;
         public Button btnSort;
@@ -723,7 +733,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             imgSort = _transform.GetComponent<Image>("List/btn_sort/Image");
             btnMainPosition = _transform.GetComponent<Button>("Batch/btn_position");
 
-            txtMainPosition = btnMainPosition.GetComponentInChildren<TextMeshProUGUI>();
+            txtMainPosition = btnMainPosition?.GetComponentInChildren<TextMeshProUGUI>();
 
             batch.Initialize(_transform, "Batch");
             list.Initialize(_transform, "List");
@@ -733,7 +743,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     }
 
     [Serializable]
-    struct LayoutData
+    protected struct LayoutData
     {
         public Transform panel;
         public Transform layout;

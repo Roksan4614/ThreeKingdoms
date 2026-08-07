@@ -167,4 +167,24 @@ public struct HeroInfoData
             return result;
         }
     }
+
+    public long power
+    {
+        get
+        {
+            long result = 0;
+
+            var stat = DataManager.stat.GetResultStat(this);
+
+            int attackPoint = (int)(stat.attackPower * stat.attackSpeed);
+            attackPoint = attackPoint + (int)(attackPoint * (stat.criticalRate + stat.cooldownRate + stat.lifeSteel));
+
+            int defencePoint = (int)(stat.defenceValue + stat.healthMax + stat.moveSpeed);
+            //defencePoint = defencePoint + (int)(defencePoint * stat.moveSpeed);
+
+            result = attackPoint + defencePoint;
+
+            return result;
+        }
+    }
 }

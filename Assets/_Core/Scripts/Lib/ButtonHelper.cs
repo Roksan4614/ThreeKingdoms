@@ -43,6 +43,18 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
     public UnityAction funcDown { get; set; }
     public UnityAction funcUp { get; set; }
 
+    public Image image => m_element.image;
+
+    Image m_imgChild;
+    public Image imgChild
+    {
+        get
+        {
+            if (m_imgChild == null)
+                m_imgChild = transform.GetComponent<Image>("Image");
+            return m_imgChild;
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D _collision)
     {

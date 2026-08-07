@@ -12,7 +12,7 @@ public class PopupLobbyBossRaid_PopupRanking_PodiumItem : MonoBehaviour, IValida
             DestroyImmediate(m_element.pHero.GetChild(0).gameObject);
     }
 
-    public async UniTask SetRankerInfoAsync(
+    public virtual void SetRankerInfo(
         PopupLobbyBossRaid_PopupRanking.TabType _tabType,
         RankerUserData _rankerData, UnityAction<RankerUserData> _callback)
     {
@@ -20,32 +20,39 @@ public class PopupLobbyBossRaid_PopupRanking_PodiumItem : MonoBehaviour, IValida
         m_element.btnUserInfo.onClick.AddListener(() => _callback(_rankerData));
 
         m_element.txtName.text = _rankerData.nickname;
-        if( _tabType == PopupLobbyBossRaid_PopupRanking.TabType.Point)
+        SetRankerPoint(_rankerData, _tabType);
+
+        InstantiateCharacterAsync(_rankerData).Forget();
+    }
+
+    protected virtual void SetRankerPoint(RankerUserData _rankerData, PopupLobbyBossRaid_PopupRanking.TabType _tabType)
+    {
+        if (_tabType == PopupLobbyBossRaid_PopupRanking.TabType.Point)
             m_element.txtPoint.text = $"{_rankerData.point:#,0}p";
         else
             m_element.txtPoint.text = $"{_rankerData.point:#,0}";
+    }
 
-        // 캐릭터 생성
+    async UniTask InstantiateCharacterAsync(RankerUserData _rankerData)
+    {
+        bool isFinded = false;
+        for (int i = 0; i < m_element.pHero.childCount; i++)
         {
-            bool isFinded = false;
-            for (int i = 0; i < m_element.pHero.childCount; i++)
+            var obj = m_element.pHero.GetChild(i).gameObject;
+            obj.SetActive(obj.name.Contains(_rankerData.skin));
+
+            if (isFinded == false && obj.activeSelf == true)
+                isFinded = true;
+        }
+
+        if (isFinded == false)
+        {
+            var result = await AddressableManager.instance.GetHeroCharacterAsync(_rankerData.skin);
+
+            if (result != null)
             {
-                var obj = m_element.pHero.GetChild(i).gameObject;
-                obj.SetActive(obj.name.Contains(_rankerData.skin));
-
-                if (isFinded == false && obj.activeSelf == true)
-                    isFinded = true;
-            }
-
-            if (isFinded == false)
-            {
-                var result = await AddressableManager.instance.GetHeroCharacterAsync(_rankerData.skin);
-
-                if(result != null)
-                {
-                    var objHero = Instantiate(result, m_element.pHero);
-                    objHero.transform.localPosition = Vector3.zero;
-                }
+                var objHero = Instantiate(result, m_element.pHero);
+                objHero.transform.localPosition = Vector3.zero;
             }
         }
     }
@@ -54,10 +61,10 @@ public class PopupLobbyBossRaid_PopupRanking_PodiumItem : MonoBehaviour, IValida
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
-    ElementData m_element;
+    protected ElementData m_element;
 
     [System.Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public Transform pHero;
 

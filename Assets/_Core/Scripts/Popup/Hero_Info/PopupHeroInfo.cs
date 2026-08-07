@@ -30,7 +30,11 @@ public class PopupHeroInfo : BasePopupComponent
         //m_element.btnCharacter.onClick.AddListener(() => m_character.anim.Play(CharacterAnimType.Attack));
 
         m_element.btnStatus.onClick.AddListener(
-            () => m_element.popupPosition.SetActive(m_heroInfoData.key));
+            () =>
+            {
+                if (m_heroInfoData.isMine == true)
+                    m_element.popupPosition.SetActive(m_heroInfoData.key);
+            });
 
         for (int i = 0; i < m_element.popup.childCount; i++)
             m_element.popup.GetChild(i).gameObject.SetActive(false);
@@ -121,7 +125,8 @@ public class PopupHeroInfo : BasePopupComponent
         var key = $"{_data.regionType}_{_data.key}".ToUpper();
         m_element.txtName.text = $"{TableManager.stringHero.GetString("NAME_" + key)}<size=80%><color=#888888> {TableManager.stringHero.GetString("COURTESY_" + key)}";
         m_element.txtDescTalk.text = _data.talk;
-        m_element.txtEnchantLevel.text = _isJustWatch ? "" : $"(+{_data.enchantLevel})";
+        //m_element.txtEnchantLevel.text = _isJustWatch ? "" : $"(+{_data.enchantLevel})";
+        m_element.txtEnchantLevel.text = _data.enchantLevel == 0 ? "" : $"(+{_data.enchantLevel})";
         SetHeroInfoText($"등급_:_{_data.gradeClass}");
 
         // 고유 능력치

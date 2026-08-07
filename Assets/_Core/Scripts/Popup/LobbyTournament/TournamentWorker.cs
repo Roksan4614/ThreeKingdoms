@@ -65,8 +65,8 @@ namespace Rev9.Tournament
             {
                 if (_isAttack == true)
                 {
-                    team.skinKey = TeamManager.instance.members.Select(x => x.Value.info.skin).ToArray();
-                    team.position = new int[team.skinKey.Length];
+                    team.heroInfo = TeamManager.instance.members.Select(x => x.Value.info).ToArray();
+                    team.position = new int[team.heroInfo.Length];
                     team.treasure = DataManager.stat.relic.dataTreasure.Where(x => x.isBatch == true).Select(x => x.key).ToArray();
 
                     int idx = 0;
@@ -94,14 +94,11 @@ namespace Rev9.Tournament
                 }
                 else
                 {
-                    for (int i = 0; i < m_data.teamAttack.skinKey.Length; i++)
-                    {
-                        team.skinKey[i] = m_data.teamAttack.skinKey[i];
-                        team.position[i] = m_data.teamAttack.position[i];
-                    }
+                    Array.Copy(m_data.teamAttack.heroInfo, team.heroInfo, m_data.teamAttack.heroInfo.Length);
+                    Array.Copy(m_data.teamAttack.position, team.position, m_data.teamAttack.position.Length);
+                    Array.Copy(m_data.teamAttack.treasure, team.treasure, m_data.teamAttack.treasure.Length);
 
-                    for (int i = 0; i < m_data.teamAttack.treasure.Length; i++)
-                        team.treasure[i] = m_data.teamAttack.treasure[i];
+                    m_data.teamDefence = team;
                 }
 
                 SaveData();
@@ -121,6 +118,7 @@ namespace Rev9.Tournament
             m_data.tick = Utils.GetUTC().Ticks;
             SaveData();
 
+            m_dbRankData.Clear();
             m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
         }
 
@@ -218,11 +216,13 @@ namespace Rev9.Tournament
 
     public struct TournamentBatchData
     {
-        public string[] skinKey;
+        public int uid;
+
+        public HeroInfoData[] heroInfo;
         public int[] position;
         public string[] treasure;
 
-        public bool isActive => skinKey != null;
+        public bool isActive => heroInfo != null;
     }
 
     public struct TournamentHistoryData

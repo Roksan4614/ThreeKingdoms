@@ -18,11 +18,11 @@ public class Data_BossRaid
     BossRaidData m_data;
     public BossRaidData data => m_data;
 
-    BossRaidRankerData m_rankPoint = new(); // 포인트 랭킹
-    public BossRaidRankerData rankPoint => m_rankPoint;
+    RankerData m_rankPoint = new(); // 포인트 랭킹
+    public RankerData rankPoint => m_rankPoint;
 
-    BossRaidRankerData m_rankPrevRaid = new();  //이전 라운드 랭킹
-    public BossRaidRankerData rankPrevRaid => m_rankPrevRaid;
+    RankerData m_rankPrevRaid = new();  //이전 라운드 랭킹
+    public RankerData rankPrevRaid => m_rankPrevRaid;
 
     List<RankerUserData> m_rankNow = new(); //현재랭킹
     public IReadOnlyList<RankerUserData> rankNow => m_rankNow;
@@ -163,7 +163,7 @@ public class Data_BossRaid
 
             if (isMine)
             {
-                userData.point = 10001;
+                //userData.point = 10001;
                 m_rankPoint.my = userData;
             }
 
@@ -349,12 +349,6 @@ public class Data_BossRaid
         }
     }
 
-    public struct BossRaidRankerData
-    {
-        public List<RankerUserData> ranker;
-        public RankerUserData my;
-    }
-
     public enum BossRaidStatusType
     {
         Wait,
@@ -367,6 +361,12 @@ public class Data_BossRaid
 
         Finished,
     }
+}
+
+public struct RankerData
+{
+    public List<RankerUserData> ranker;
+    public RankerUserData my;
 }
 
 public struct RankerUserData

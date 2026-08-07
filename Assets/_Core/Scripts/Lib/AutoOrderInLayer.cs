@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(AutoOrderInLayer))]
+[CanEditMultipleObjects]
 public class AutoOrderInLayerButton : Editor
 {
     public override void OnInspectorGUI()
@@ -40,6 +41,9 @@ public enum OrderLayerType
     FrontUI_Screen,
     FrontUI_Top,
     FrontUI_Top_01,
+    FrontUI_Top_02,
+    FrontUI_Top_03,
+    FrontUI_Top_04,
 
     Alert,
     MAX,

@@ -321,7 +321,28 @@ public static class Extenssions
         => _source[UnityEngine.Random.Range(0, _source.Length)];
     public static T RandomFirst<T>(this IReadOnlyList<T> _source)
         => _source[UnityEngine.Random.Range(0, _source.Count)];
+    public static List<T> Shuffle<T>(this List<T> _source)
+    {
+        List<T> result = new List<T>(_source);
+        for (int i = result.Count - 1; i > 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            (result[i], result[j]) = (result[j], result[i]);
+        }
+        return result;
+    }
 
+    public static T[] Shuffle<T>(this T[] _source)
+    {
+        T[] result = new T[_source.Length];
+        Array.Copy(_source, result, _source.Length);
+        for (int i = result.Length - 1; i > 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            (result[i], result[j]) = (result[j], result[i]);
+        }
+        return result;
+    }
 
     #endregion SORTBY
 

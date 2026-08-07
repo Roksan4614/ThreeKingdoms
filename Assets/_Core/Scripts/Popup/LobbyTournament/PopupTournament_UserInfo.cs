@@ -1,20 +1,27 @@
 using Cysharp.Threading.Tasks;
 using Rev9.Tournament;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
 {
+    TournamentBatchData m_batchData;
+
     private void Awake()
     {
         transform.GetComponent<Button>("Panel/btn_close").onClick.AddListener(Close);
-        transform.GetComponent<Button>().onClick.AddListener(Close);
+        transform.GetComponent<Button>("Dimm").onClick.AddListener(Close);
 
-        transform.GetComponent<TextMeshProUGUI>("Panel/txt_title").text = "상세_정보";
+        transform.GetComponent<TextMeshProUGUI>("Panel/txt_title").text = "_상세정보_";
 
         m_element.treasure.parent.GetComponent<TextMeshProUGUI>("Text").text = "보물_";
-        m_element.panel.GetComponent<TextMeshProUGUI>("Batch/Text").text = "상대_조합";
+        m_element.panel.GetComponent<TextMeshProUGUI>("Batch/Text").text = "상대조합_";
+
+        PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO);
+        m_element.toggleInfo.isOn = PPWorker.GetInt(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO, false) == 1;
+        m_element.toggleInfo.onClick.AddListener(() => { m_element.toggleInfo.OnButtonToggle(); SetInfo(); });
     }
 
     public async UniTask OpenAsync(RankerUserData _rankerData)
@@ -22,24 +29,72 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         gameObject.SetActive(true);
         Utils.SetActivePunch(m_element.panel, true);
 
-        TournamentWorker.instance.
-        m_element.panelBatch.SetBatchDataAsync()
+        // batch;
+        m_batchData = await TournamentWorker.instance.API_LoadUserInfoData(_rankerData.uid);
+        await m_element.panelBatch.SetBatchDataAsync(m_batchData);
 
-
-        SetBatchPosition();
         SetTreasure();
+        SetInfo();
 
-        await UniTask.WaitUntil(() => gameObject.activeSelf == false);
-    }
-
-    void SetBatchPosition()
-    {
-
+        await UniTask.WaitUntil(() => gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
     }
 
     void SetTreasure()
     {
 
+    }
+
+    void SetInfo()
+    {
+        bool isOn = m_element.toggleInfo.isOn;
+        var parentInfo = m_element.parentInfo;
+
+        m_element.parentInfo.gameObject.SetActive(isOn);
+        long totalPower = 0;
+        int i = 0;
+
+        for (; i < m_batchData.heroInfo.Length; i++)
+        {
+            var heroInfo = m_batchData.heroInfo[i];
+            var power = heroInfo.power;
+            if (isOn == true)
+            {
+                var slot = i < parentInfo.childCount ? parentInfo.GetChild(i) : Instantiate(m_element.baseInfoSlot, parentInfo).transform;
+                slot.gameObject.SetActive(true);
+                slot.position = m_element.panelBatch.GetPosSlot(m_batchData.position[i]);
+
+                slot.GetComponent<TextMeshProUGUI>("Text").text =
+                    $"[{heroInfo.gradeName}] +{heroInfo.enchantLevel}\n<color=#ffffff><size=120%>{power.AmountKMBT(_isMBT: true)}</size></color>";
+
+                var button = slot.GetComponent<Button>();
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => OpenHeroInfoAsync(heroInfo).Forget());
+            }
+
+            totalPower += power;
+        }
+
+        if (isOn)
+        {
+            for (; i < parentInfo.childCount; i++)
+                parentInfo.GetChild(i).gameObject.SetActive(false);
+        }
+
+        m_element.txtTotalPower.text = totalPower.AmountKMBT(_isMBT: true);
+
+        PPWorker.Set(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO, isOn ? 1 : 0, false);
+    }
+
+
+    bool m_isOpenInfo = false;
+    public async UniTask OpenHeroInfoAsync(HeroInfoData _heroinfoData)
+    {
+        if (m_isOpenInfo == true)
+            return;
+
+        m_isOpenInfo = true;
+        await PopupManager.instance.OpenPopupAndWait(PopupType.Hero_HeroInfo, _heroinfoData);
+        m_isOpenInfo = false;
     }
 
     public bool CloseEscape()
@@ -65,18 +120,28 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
     [System.Serializable]
     struct ElementData
     {
-        public Transform panel;
+        public TextMeshProUGUI txtTotalPower;
         public Transform treasure;
 
         public PopupTournament_Batch_Panel panelBatch;
 
+        public ToggleHelper toggleInfo;
+        public GameObject baseInfoSlot;
+
         public void Initialize(Transform _transform)
         {
-            panel = _transform.Find("Panel");
+            txtTotalPower = _transform.GetComponent<TextMeshProUGUI>("Panel/Batch/Power/Text");
             treasure = _transform.Find("Panel/Treasure/Layout");
 
             panelBatch = _transform.GetComponent<PopupTournament_Batch_Panel>("Panel/Batch/Batch");
+
+            toggleInfo = _transform.GetComponent<ToggleHelper>("Panel/Toggle");
+            baseInfoSlot = _transform.Find("Panel/Batch/Info/Slot").gameObject;
         }
+
+        public Transform panel => toggleInfo.transform.parent;
+
+        public Transform parentInfo => baseInfoSlot.transform.parent;
 
     }
     #endregion VALIDATE

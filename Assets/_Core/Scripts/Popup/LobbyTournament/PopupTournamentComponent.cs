@@ -78,9 +78,9 @@ public class PopupTournamentComponent : BasePopupComponent
         SetRefreshCount();
         SetUserList();
 
-        await m_element.panelBatch.SetBatchDataAsync(TournamentWorker.instance.GetBatchData(true));
-
         Utils.SetActivePunch(m_element.panel, true);
+
+        await m_element.panelBatch.SetBatchDataAsync(TournamentWorker.instance.GetBatchData(true));
     }
 
     void SetPlayCount()

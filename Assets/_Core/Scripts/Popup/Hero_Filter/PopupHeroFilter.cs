@@ -10,6 +10,8 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
     string m_stringAll;
     public bool isNeedUpdate { get; private set; }
 
+    public RectTransform rtPanel => m_element.panel;
+
     HeroSortType m_sortType = HeroSortType.NONE;
     Dictionary<HeroSortType, ButtonHelper> m_dicSort = new();
 
@@ -257,6 +259,11 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
             btn.Value.isCheck = m_filterGrade.Contains(btn.Key);
     }
 
+    public void SetFilterSize(Vector2 _offsetMax)
+    {
+        rtPanel.offsetMax = _offsetMax;
+    }
+
     bool isAll_Region => m_filterRegion.Contains(RegionType.NONE);
     bool isAll_Class => m_filterClass.Contains(HeroClassType.NONE);
     bool isAll_Grade => m_filterGrade.Contains(GradeType.NONE);
@@ -276,6 +283,8 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
         {
             scroll = _transform.GetComponent<ScrollRect>("Panel/Scroll");
         }
+
+        public RectTransform panel => (RectTransform)scroll.transform.parent;
     }
     #endregion VALIDATE
 }

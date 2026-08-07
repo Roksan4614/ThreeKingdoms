@@ -50,6 +50,8 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     CancellationTokenSource m_cts;
 
+    PopupHeroInfo m_heroInfo;
+
     protected override void OnAwake()
     {
         transform.SetSiblingIndex(0);

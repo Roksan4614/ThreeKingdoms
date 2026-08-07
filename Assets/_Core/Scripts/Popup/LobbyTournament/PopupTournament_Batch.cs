@@ -16,7 +16,7 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
         gameObject.SetActive(true);
         Utils.SetActivePunch(m_element.panel, true);
 
-        await UniTask.WaitUntil(() => gameObject.activeSelf == false);
+        await UniTask.WaitUntil(() => gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
     }
 
     public bool CloseEscape()
@@ -37,6 +37,7 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
+    //[SerializeField]
     ElementData m_element;
 
     [System.Serializable]
@@ -58,8 +59,8 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
             btnAuto = panel.GetComponent<ButtonHelper>("Button/btn_auto");
             btnBatch = panel.GetComponent<ButtonHelper>("Button/btn_batch");
 
-            tabHero = panel.GetComponent<ButtonHelper>("Tab/tab_hero");
-            tabRelic = panel.GetComponent<ButtonHelper>("Tab/tab_relic");
+            tabHero = panel.GetComponent<ButtonHelper>("Tab/btn_hero");
+            tabRelic = panel.GetComponent<ButtonHelper>("Tab/btn_relic");
 
             panelHero = panel.GetComponent<PopupTournament_Batch_Hero>("Hero");
             panelRelic = panel.GetComponent<PopupTournament_Batch_Relic>("Relic");

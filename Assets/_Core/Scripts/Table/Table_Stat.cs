@@ -183,4 +183,14 @@ public struct TableStatData
         get => critical_damage;
         set => critical_damage = value;
     }
+    public float criticalRate
+    {
+        get => critical_rate;
+        set => critical_rate = value;
+    }
+    public float lifeSteel
+    {
+        get => life_steal;
+        set => life_steal = value;
+    }
 }

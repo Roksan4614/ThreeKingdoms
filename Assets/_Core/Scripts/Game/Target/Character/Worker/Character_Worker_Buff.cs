@@ -26,7 +26,7 @@ public class Character_Worker_Buff : Character_Worker
         else
         {
             m_dbBuff.Add(_buffType, new() { buffData });
-            m_owner.buffs.Add(_buffType);
+            //m_owner.buffs.Add(_buffType);
         }
 
         if (_duration > 0)
@@ -89,7 +89,7 @@ public class Character_Worker_Buff : Character_Worker
                 if (m_owner.isMain)
                     IngameLog.Add("BUFF REMOVE: " + _buffType);
                 m_dbBuff.Remove(_buffType);
-                m_owner.buffs.Remove(_buffType);
+                //m_owner.buffs.Remove(_buffType);
                 isContainsKey = false;
             }
 

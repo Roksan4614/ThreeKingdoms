@@ -16,8 +16,6 @@ public class PopupLobbyBossRaid_PopupRanking_Item : MonoBehaviour, IValidatable
         RankerUserData _rankerData,
         UnityAction<RankerUserData> _callback)
     {
-        await UniTask.Yield();
-
         if (m_element.button != null)
         {
             m_element.button.onClick.RemoveAllListeners();
@@ -38,10 +36,7 @@ public class PopupLobbyBossRaid_PopupRanking_Item : MonoBehaviour, IValidatable
         m_element.txtPower.text = $"cp{_rankerData.power:#,0}";
 
         // 포인트
-        if (_tabType == PopupLobbyBossRaid_PopupRanking.TabType.Point)
-            m_element.txtPoint.text = $"{_rankerData.point:#,0}p";
-        else
-            m_element.txtPoint.text = $"{_rankerData.point:#,0}";
+        SetRankerPoint(_rankerData, _tabType);
 
         // 내꺼일 경우 배경 색 적용
         if (_rankerData.uid == DataManager.userInfo.uid)
@@ -51,16 +46,26 @@ public class PopupLobbyBossRaid_PopupRanking_Item : MonoBehaviour, IValidatable
 
         // 아이콘
         m_element.profile.SetProfileData(_rankerData.indexProfile, _rankerData.skin);
+
+        await UniTask.NextFrame();
+    }
+
+    protected virtual void SetRankerPoint(RankerUserData _rankerData, PopupLobbyBossRaid_PopupRanking.TabType _tabType)
+    {
+        if (_tabType == PopupLobbyBossRaid_PopupRanking.TabType.Point)
+            m_element.txtPoint.text = $"{_rankerData.point:#,0}p";
+        else
+            m_element.txtPoint.text = $"{_rankerData.point:#,0}";
     }
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
-    ElementData m_element;
+    protected ElementData m_element;
 
     [System.Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public Image imgPanel;
 

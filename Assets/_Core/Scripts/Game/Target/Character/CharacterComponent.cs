@@ -16,7 +16,7 @@ public class CharacterComponent : TargetComponent
     protected HeroInfoData m_info;
 
     //public List<CharacterComponent> targetTest = new();
-    public List<BuffType> buffs = new();
+    //public List<BuffType> buffs = new();
 
     [SerializeField]
     CharacterStateType m_stateType;
@@ -86,6 +86,12 @@ public class CharacterComponent : TargetComponent
         attack.ResetFX();
 
         SetTalkboxName();
+    }
+
+    public void SetInfo(HeroInfoData _heroInfoData)
+    {
+        m_info = _heroInfoData;
+        m_stat = DataManager.stat.GetResultStat(m_info);
     }
 
     public void SetTalkboxName(string _name = null)
