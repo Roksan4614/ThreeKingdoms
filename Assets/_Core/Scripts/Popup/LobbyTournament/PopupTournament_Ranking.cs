@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using Rev9.Tournament;
 using System.Linq;
 using UnityEngine;
-using static UnityEditor.U2D.ScriptablePacker;
 
 public class PopupTournament_Ranking : PopupLobbyBossRaid_PopupRanking
 {
