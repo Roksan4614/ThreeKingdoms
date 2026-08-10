@@ -101,18 +101,19 @@ public struct TableHeroData
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
 }
 
+[JsonObject(MemberSerialization.OptIn)]
 public struct HeroInfoData
 {
-    public string key;
-    public string skin;
-    public GradeType grade;
-    public HeroPositionType positionType;
-    public int soulCount;
-    public int enchantLevel;
-    public int relicLevel;
-    public bool isBatch;
-    public bool isMain;
-    public bool isMine;
+    [JsonProperty] public string key;
+    [JsonProperty] public string skin;
+    [JsonProperty] public GradeType grade;
+    [JsonProperty] public HeroPositionType positionType;
+    [JsonProperty] public int soulCount;
+    [JsonProperty] public int enchantLevel;
+    [JsonProperty] public int relicLevel;
+    [JsonProperty] public bool isBatch;
+    [JsonProperty] public bool isMain;
+    [JsonProperty] public bool isMine;
 
     [JsonProperty] HeroClassType m_classType;
     [JsonProperty] RegionType m_regionType;
@@ -158,12 +159,14 @@ public struct HeroInfoData
         get
         {
             Dictionary<CoreStatType, int> result = new();
+
             var heroData = TableManager.hero.Get(key);
             for (int i = 0; i < heroData.coreStatPoint.Count; i++)
             {
                 var statType = (CoreStatType)i;
                 result[statType] = heroData.coreStatPoint[i] + (int)(grade) * 10 + enchantLevel;
             }
+
             return result;
         }
     }

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using System;
 using System.Threading;
 using UnityEngine;
@@ -143,14 +144,15 @@ public partial class Data_Castle
         PPWorker.Set(c_keyWally, m_wallyData);
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public struct CastleWallyData
     {
-        public long tickNextCheck;
-        public long tickSpawn;
-        public long tickEndSpawn;
+        [JsonProperty] public long tickNextCheck;
+        [JsonProperty] public long tickSpawn;
+        [JsonProperty] public long tickEndSpawn;
 
-        public float steelAmount_Gold;
-        public float steelAmount_Rice;
+        [JsonProperty] public float steelAmount_Gold;
+        [JsonProperty] public float steelAmount_Rice;
 
         public bool isSpawn => tickSpawn > 0;
         public DateTime dtNextCheck => new DateTime(tickNextCheck, DateTimeKind.Utc);

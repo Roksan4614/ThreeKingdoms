@@ -368,18 +368,19 @@ public partial class Data_Castle
         _onComplete(StatusType.Success);
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public struct CastleData
     {
-        public CastleObjectType type;
-        public List<string> heroes;
-        public int level;
+        [JsonProperty] public CastleObjectType type;
+        [JsonProperty] public List<string> heroes;
+        [JsonProperty] public int level;
 
-        public long tickClaim;          // 회수한 시간
-        public float totalAmount;       // 회수할 수 있는 총 재화량
+        [JsonProperty] public long tickClaim;          // 회수한 시간
+        [JsonProperty] public float totalAmount;       // 회수할 수 있는 총 재화량
         [JsonProperty] float today_claim_amount;
 
-        public long tickUpgradeEnd;     // 업그레이드 시작
-        public float remainUpgradeSeconds;  // 중단되서 멈췄을 때 남은 시간
+        [JsonProperty] public long tickUpgradeEnd;     // 업그레이드 시작
+        [JsonProperty] public float remainUpgradeSeconds;  // 중단되서 멈췄을 때 남은 시간
 
         public TableCastleRiseData dbRise => TableManager.castleRise.GetRiseData(type, level);
 

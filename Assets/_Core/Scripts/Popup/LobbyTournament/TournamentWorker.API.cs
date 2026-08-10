@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Rev9.Tournament
 {
@@ -44,13 +45,8 @@ namespace Rev9.Tournament
 
             await UniTask.NextFrame();
 
-            TournamentBatchData result = new()
-            {
-                uid = _uid,
-                heroInfo = new HeroInfoData[4],
-                position = new int[4],
-                treasure = new string[3],
-            };
+            TournamentBatchData result = new() { uid = _uid };
+            result.Default();
 
             var heroes = TableManager.hero.GetHeroList().Shuffle().Take(4).ToList();
             var arrayPosition = new int[4];
@@ -62,18 +58,20 @@ namespace Rev9.Tournament
             int idxFront = 0, idxMiddle = 0, idxBack = 0;
             for (int i = 0; i < 4; i++)
             {
-                result.heroInfo[i] = new HeroInfoData(heroes[i].key,
+                result.heroes[i] = new HeroInfoData(heroes[i].key,
                     GradeType.Normal + UnityEngine.Random.Range(0, (int)GradeType.MAX),
                     _skin: heroes[i].key, _enchantLevel: UnityEngine.Random.Range(1, 17), _isMine: false);
+
+                var heroInfo = result.heroes[i];
 
                 if (heroes[i].classType == HeroClassType.Champion)
                 {
                     if (countChampion == 1)
-                        result.position[i] = 1;
+                        heroInfo.sortIdx = 1;
                     else if (countChampion == 2)
-                        result.position[i] = idxFront * 2;
+                        heroInfo.sortIdx = idxFront * 2;
                     else
-                        result.position[i] = idxFront < 3 ? idxFront : 4;
+                        heroInfo.sortIdx = idxFront < 3 ? idxFront : 4;
 
                     idxFront++;
                 }
@@ -81,29 +79,31 @@ namespace Rev9.Tournament
                     heroes[i].classType == HeroClassType.Strategist)
                 {
                     if (countBack == 1)
-                        result.position[i] = 7;
+                        heroInfo.sortIdx = 7;
                     else if (countBack == 2)
-                        result.position[i] = idxBack == 0 ? 6 : 8;
+                        heroInfo.sortIdx = idxBack == 0 ? 6 : 8;
                     else if (countBack == 3)
-                        result.position[i] = 6 + idxBack;
+                        heroInfo.sortIdx = 6 + idxBack;
                     else
-                        result.position[i] = idxBack == 0 ? 4 : 5 + idxBack;
+                        heroInfo.sortIdx = idxBack == 0 ? 4 : 5 + idxBack;
                     idxBack++;
                 }
                 else
                 {
                     if (countMiddle == 1)
-                        result.position[i] = 4;
+                        heroInfo.sortIdx = 4;
                     else if (countMiddle == 2)
-                        result.position[i] = idxMiddle == 0 ? 3 : 5;
+                        heroInfo.sortIdx = idxMiddle == 0 ? 3 : 5;
                     else if (countMiddle == 3)
-                        result.position[i] = 3 + idxMiddle;
+                        heroInfo.sortIdx = 3 + idxMiddle;
                     else
-                        result.position[i] = idxMiddle == 0 ? 1 : 2 + idxMiddle;
+                        heroInfo.sortIdx = idxMiddle == 0 ? 1 : 2 + idxMiddle;
                     idxMiddle++;
                 }
 
-                if (i < result.treasure.Length)
+                result.heroes[i] = heroInfo;
+
+                if (i < result.treasure.Count)
                     result.treasure[i] = "Treasure_" + (i + 1);
             }
 
@@ -157,6 +157,54 @@ namespace Rev9.Tournament
 
             m_dbRankData.Add(_tabType, result);
             return result;
+        }
+
+        public TournamentBatchData ChangePosition(TournamentBatchData _batchData, int _prev, int _next)
+        {
+            int idxPrev = -1, idxNext = -1;
+            for (int i = 0; i < _batchData.heroes.Count; i++)
+            {
+                if (_batchData.heroes[i].isActive == false)
+                    continue;
+
+                if (_batchData.heroes[i].sortIdx == _prev)
+                    idxPrev = i;
+                else if (_batchData.heroes[i].sortIdx == _next)
+                    idxNext = i;
+
+                if (idxNext > -1 && idxPrev > -1)
+                    break;
+            }
+
+            var prevHero = _batchData.heroes[idxPrev];
+            prevHero.sortIdx = _next;
+            _batchData.heroes[idxPrev] = prevHero;
+
+            if (idxNext > -1 && idxPrev > -1)
+            {
+                var nextHero = _batchData.heroes[idxNext];
+
+                nextHero.sortIdx = _prev;
+
+                _batchData.heroes[idxNext] = nextHero;
+            }
+
+            _batchData.heroes = _batchData.heroes.SortBy(x => x.sortIdx);
+
+            return _batchData;
+        }
+
+        public async UniTask API_UpdateTeamData(bool _isAttackType, TournamentBatchData _batchData, UnityAction _callback = null)
+        {
+            await UniTask.NextFrame();
+
+            var team = m_data.GetTeam(_isAttackType);
+
+            team.heroes.Clear();
+            team.heroes.AddRange(_batchData.heroes);
+            SaveData();
+
+            _callback?.Invoke();
         }
     }
 }

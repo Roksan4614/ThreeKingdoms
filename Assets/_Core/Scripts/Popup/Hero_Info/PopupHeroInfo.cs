@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Tournament;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -217,6 +218,7 @@ public class PopupHeroInfo : BasePopupComponent
 
         if (m_element.popupUpgrade.isNeedUpdate)
         {
+            TournamentWorker.instance.UpdateHero();
             m_heroInfoData = m_element.popupUpgrade.heroInfoData;
             isNeedUpdate = true;
         }

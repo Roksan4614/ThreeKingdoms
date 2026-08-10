@@ -177,7 +177,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         txt.text = $"{TableManager.stringHero.GetString("CLASSTYPE_" + _classType.ToString().ToUpper())}_<color=#BA0700>+{amount.AmountKMBT()}%";
     }
 
-    void UpdateTreasure_TotalStat()
+    protected virtual void UpdateTreasure_TotalStat()
     {
         var scroll = m_element.scroll;
 

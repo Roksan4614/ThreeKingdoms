@@ -40,21 +40,10 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
 
     public UnityAction funcEnter { get; set; }
     public UnityAction funcExit { get; set; }
-    public UnityAction funcDown { get; set; }
-    public UnityAction funcUp { get; set; }
-
+    public UnityAction<int> funcDown { get; set; }
+    public UnityAction<int> funcUp { get; set; }
+    
     public Image image => m_element.image;
-
-    Image m_imgChild;
-    public Image imgChild
-    {
-        get
-        {
-            if (m_imgChild == null)
-                m_imgChild = transform.GetComponent<Image>("Image");
-            return m_imgChild;
-        }
-    }
 
     private void OnTriggerEnter2D(Collider2D _collision)
     {
@@ -90,11 +79,11 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    public void OnPointerDown(PointerEventData eventData)
-        => funcDown?.Invoke();
+    public void OnPointerDown(PointerEventData _eventData)
+        => funcDown?.Invoke(_eventData.pointerId);
 
-    public void OnPointerUp(PointerEventData eventData)
-        => funcUp?.Invoke();
+    public void OnPointerUp(PointerEventData _eventData)
+        => funcUp?.Invoke(_eventData.pointerId);
 
     [SerializeField, HideInInspector]
     //[SerializeField]

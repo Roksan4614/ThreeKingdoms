@@ -231,15 +231,16 @@ public class Data_Castle_Mission
         PPWorker.Set(c_key + "_levelinfo", m_levelInfo);
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public struct CastleMissionData
     {
-        public int idx;
-        public string key;
-        public List<string> heroes;
-        public GradeType grade;
-        public long tickStart;
-        public long tickEnd;
-        public float percentStat;
+        [JsonProperty] public int idx;
+        [JsonProperty] public string key;
+        [JsonProperty] public List<string> heroes;
+        [JsonProperty] public GradeType grade;
+        [JsonProperty] public long tickStart;
+        [JsonProperty] public long tickEnd;
+        [JsonProperty] public float percentStat;
 
         public TableCastleMissionData dbData
             => TableManager.castleMisson.Get(key);

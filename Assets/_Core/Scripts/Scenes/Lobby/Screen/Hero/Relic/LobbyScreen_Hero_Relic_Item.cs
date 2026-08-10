@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
 {
-    HeroInfoData m_heroInfoData;
+    protected HeroInfoData m_heroInfoData;
 
     bool isRelicTab => m_heroInfoData.isActive;
 
@@ -26,7 +26,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         _onCallback(m_heroInfoData);
     }
 
-    async UniTask OnButtonAsync_Select(UnityAction<HeroInfoData> _onCallback)
+    protected virtual async UniTask OnButtonAsync_Select(UnityAction<HeroInfoData> _onCallback)
     {
         await UniTask.Yield();
 
@@ -164,10 +164,10 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
-    ElementData m_element;
+    protected ElementData m_element;
 
     [Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public Image imgPanel;
         public Transform parentIcon;

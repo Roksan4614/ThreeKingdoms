@@ -53,15 +53,15 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         long totalPower = 0;
         int i = 0;
 
-        for (; i < m_batchData.heroInfo.Length; i++)
+        for (; i < m_batchData.heroes.Count; i++)
         {
-            var heroInfo = m_batchData.heroInfo[i];
+            var heroInfo = m_batchData.heroes[i];
             var power = heroInfo.power;
             if (isOn == true)
             {
                 var slot = i < parentInfo.childCount ? parentInfo.GetChild(i) : Instantiate(m_element.baseInfoSlot, parentInfo).transform;
                 slot.gameObject.SetActive(true);
-                slot.position = m_element.panelBatch.GetPosSlot(m_batchData.position[i]);
+                slot.position = m_element.panelBatch.GetSlot(m_batchData.heroes[i].sortIdx).position;
 
                 slot.GetComponent<TextMeshProUGUI>("Text").text =
                     $"[{heroInfo.gradeName}] +{heroInfo.enchantLevel}\n<color=#ffffff><size=120%>{power.AmountKMBT(_isMBT: true)}</size></color>";

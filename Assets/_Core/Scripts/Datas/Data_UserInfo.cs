@@ -149,34 +149,40 @@ public class Data_UserInfo
         lstBatch = null;
         lstNotBatch = null;
 
-        result = result.FindAll(x =>
-        {
-            if (x.isBatch == true)
-                return true;
-
-            if (m_sortData.isAll_Region == false &&
-                m_sortData.filter_region.Contains(x.regionType) == false)
-            {
-                return false;
-            }
-
-            if (m_sortData.isAll_Grade == false &&
-                m_sortData.filter_grade.Contains(x.grade) == false)
-            {
-                return false;
-            }
-
-            if (m_sortData.isAll_Class == false &&
-                m_sortData.filter_class.Contains(x.classType) == false)
-            {
-                return false;
-            }
-
-            return true;
-        });
+        result = GetFilter(result);
 
         return result;
     }
+
+    public List<HeroInfoData> GetFilter(List<HeroInfoData> _origin)
+    {
+        return _origin.FindAll(x =>
+          {
+              if (x.isBatch == true)
+                  return true;
+
+              if (m_sortData.isAll_Region == false &&
+                  m_sortData.filter_region.Contains(x.regionType) == false)
+              {
+                  return false;
+              }
+
+              if (m_sortData.isAll_Grade == false &&
+                  m_sortData.filter_grade.Contains(x.grade) == false)
+              {
+                  return false;
+              }
+
+              if (m_sortData.isAll_Class == false &&
+                  m_sortData.filter_class.Contains(x.classType) == false)
+              {
+                  return false;
+              }
+
+              return true;
+          });
+    }
+
 
     public bool HasHero(CharacterName _name)
         => HasHero(_name.ToString());

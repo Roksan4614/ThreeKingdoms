@@ -40,11 +40,11 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         await UniTask.WaitForEndOfFrame();
 
 #if UNITY_EDITOR
-        Configure.isPC = true;
+        Configure.instance.SetPC(true);
 #elif UNITY_WEBGL
         MessageHandler.StartGame();
         MessageHandler.UnityProgressCall(1, 1);
-        Configure.isPC = MessageHandler.IsMobileBrowser() == false;
+        Configure.instance.SetPC(MessageHandler.IsMobileBrowser() == false);
 #endif
 
         await m_element.logo.DOFade(1, 0.5f).AsyncWaitForCompletion();

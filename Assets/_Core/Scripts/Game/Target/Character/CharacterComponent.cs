@@ -309,6 +309,11 @@ public class CharacterComponent : TargetComponent
         m_element.effect_canvas_damage.parent.parent.gameObject.SetActive(false);
     }
 
+    public void DeleteCollider()
+    {
+        Destroy(m_element.collider);
+    }
+
     public void DestroyCharacter()
     {
         StopAllCoroutines();

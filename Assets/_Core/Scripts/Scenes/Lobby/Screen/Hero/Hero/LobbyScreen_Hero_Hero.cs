@@ -13,7 +13,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     PopupHeroInfo m_popupHeroInfo;
 
     List<HeroIconComponent> m_itemBatch = new();
-    List<HeroIconComponent> m_itemList = new();
+    protected List<HeroIconComponent> m_itemList = new();
 
     protected List<HeroInfoData> m_myHero = new();
 
@@ -24,7 +24,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
     TeamPositionType m_teamPosition;
 
-    bool m_isNeedUpdateLayout;
+    protected bool m_isNeedUpdateLayout;
 
     protected override void Awake()
     {
@@ -184,7 +184,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         m_teamPosition = DataManager.option.mainTeamPosition;
     }
 
-    protected void OnDisable()
+    protected virtual void OnDisable()
     {
         if (m_popupFilter != null)
             Destroy(m_popupFilter.gameObject);
@@ -499,7 +499,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     #endregion BATCH
 
     #region LIST
-    protected void SetLayout_List(HeroInfoData _updateInfoData = default)
+    protected virtual void SetLayout_List(HeroInfoData _updateInfoData = default)
     {
         if (m_isStarted == false)
             return;
@@ -539,59 +539,9 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             if (idx == -1)
                 m_itemList[i].element.panel.gameObject.SetActive(false);
         }
-
-        //var orderMap = sortData
-        //    .Select((_data, _index) => new { _data, _index })
-        //    .ToDictionary(x => x._data.key, x => x._index);
-
-        //m_itemList = m_itemList.SortBy(x =>
-        //    {
-        //        string key = x.data.key;
-        //        int result = orderMap.ContainsKey(key) ? orderMap[key] : int.MaxValue;
-        //        return result;
-        //    });
-
-        //for (int i = m_itemList.Count - 1; i > -1; i--)
-        //    m_itemList[i].transform.SetAsFirstSibling();
-
-        ////보유 미보유 전체
-        //bool isAll = true;
-        //var db = m_itemList.OrderByDescending(x => x.data.isMine || isAll);
-
-        ////정렬
-        //{
-        //    List<HeroInfoData> dataList = m_itemList.Select(item => item.data).ToList();
-
-        //    dataList = DataManager.userInfo.GetHeroSortData(dataList);
-
-        //    var dd = dataList.Select(x => x.key).ToList();
-        //}
-
-        //// 배치된 유저가 앞으로 오기
-        //var dbNotBatch = db.Where(x => x.data.isBatch == false).ToList();
-        //var dbBatch = db.Where(x => x.data.isBatch).ToList();
-        //m_itemList.Clear();
-        //for (int i = 0; i < m_itemBatch.Count; i++)
-        //{
-        //    var batchData = m_itemBatch[i];
-        //    if (batchData.data.isActive == false)
-        //        continue;
-
-        //    m_itemList.Add(dbBatch.Find(x => x.data.key == batchData.data.key));
-        //}
-        //m_itemList.AddRange(dbNotBatch);
-
-        //{
-        //    List<HeroInfoData> dataList = m_itemList.Select(item => item.data).ToList();
-
-        //    var dd = dataList.Select(x => x.key).ToList();
-        //}
-
-        //for (int i = m_itemList.Count - 1; i > -1; i--)
-        //    m_itemList[i].transform.SetAsFirstSibling();
     }
 
-    void ResetActiveButton_List()
+    protected void ResetActiveButton_List()
     {
         for (int i = 0; i < m_itemList.Count; i++)
         {
@@ -609,20 +559,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         if (_isRightClick)
         {
-            ResetActiveButton_Batch();
-            ResetActiveButton_List();
-
-            int idxSbling = _item.transform.GetSiblingIndex();
-
-            // 이미 출진 중이라면?
-            if (_item.data.isBatch == true)
-                OnButton_BatchHeroRemove(m_itemBatch.Find(x => x.data.isBatch == true && x.data.key == _item.data.key));
-            // 빈공간이 있으면?
-            else if (m_itemBatch.Any(x => x.data.isActive == false))
-            {
-                if (_item.data.isMine == true)
-                    OnButton_ListHeroRemove(_item);
-            }
+            OnRightClick_List(_item);
             return;
         }
 
@@ -655,7 +592,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         //if (_item.data.isMain && StageManager.instance.isClearFirstStage == false)
         //    PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
 
-        if (countBatch > 1 || m_itemBatch[0].data.key != _item.data.key)
+        if (countBatch > 1 || m_itemBatch.Count > 0 &&  m_itemBatch[0].data.key != _item.data.key)
         {
             for (int i = 0; i < m_itemBatch.Count; i++)
             {
@@ -666,6 +603,24 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                 if (isSelf)
                     m_curIndex_Batch = i;
             }
+        }
+    }
+
+    protected virtual void OnRightClick_List(HeroIconComponent _item)
+    {
+        ResetActiveButton_Batch();
+        ResetActiveButton_List();
+
+        int idxSbling = _item.transform.GetSiblingIndex();
+
+        // 이미 출진 중이라면?
+        if (_item.data.isBatch == true)
+            OnButton_BatchHeroRemove(m_itemBatch.Find(x => x.data.isBatch == true && x.data.key == _item.data.key));
+        // 빈공간이 있으면?
+        else if (m_itemBatch.Any(x => x.data.isActive == false))
+        {
+            if (_item.data.isMine == true)
+                OnButton_ListHeroRemove(_item);
         }
     }
 

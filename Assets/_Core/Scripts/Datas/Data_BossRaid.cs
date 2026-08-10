@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -298,23 +299,24 @@ public class Data_BossRaid
     void SaveData()
         => PPWorker.Set(c_key, m_data);
 
+    [JsonObject(MemberSerialization.OptIn)]
     public struct BossRaidData
     {
-        public int round;
+        [JsonProperty] public int round;
 
-        public string keyBoss;
+        [JsonProperty] public string keyBoss;
 
-        public GradeType prevGrade;
-        public GradeType nowGrade;
+        [JsonProperty] public GradeType prevGrade;
+        [JsonProperty] public GradeType nowGrade;
 
-        public GradeType gradeMin;
-        public GradeType gradeMax;
+        [JsonProperty] public GradeType gradeMin;
+        [JsonProperty] public GradeType gradeMax;
 
-        public long tickEndSeason;
-        public long tickPrevRound;
-        public long tickNextRound;
-        public long tickSecondPhase;
-        public long tickEndRound;
+        [JsonProperty] public long tickEndSeason;
+        [JsonProperty] public long tickPrevRound;
+        [JsonProperty] public long tickNextRound;
+        [JsonProperty] public long tickSecondPhase;
+        [JsonProperty] public long tickEndRound;
 
         public bool isActive => keyBoss.IsActive();
         public System.DateTime dtEndSeason => Utils.GetDateTime(tickEndSeason);

@@ -13,6 +13,7 @@ public interface IValidatable
 public void OnManualValidate() => m_element.Initialize(transform);
 
 [SerializeField, HideInInspector]
+//[SerializeField]
 ElementData m_element;
 
 [System.Serializable]

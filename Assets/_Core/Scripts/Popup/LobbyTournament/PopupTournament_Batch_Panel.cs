@@ -8,8 +8,14 @@ public class PopupTournament_Batch_Panel : MonoBehaviour, IValidatable
 {
     Dictionary<string, GameObject> m_db = new();
 
-    public Vector3 GetPosSlot(int _slotIndex)
-        => m_element.slots[_slotIndex].transform.position;
+    public RectTransform GetSlot(int _slotIndex)
+        => (RectTransform)m_element.slots[_slotIndex].transform;
+
+    public CharacterComponent GetCharacter(int _slotIndex)
+    {
+        var slot = m_element.slots[_slotIndex];
+        return slot.childCount == 0 ? null : slot.GetChild(0).GetComponent<CharacterComponent>();
+    }
 
     private void Awake()
     {
@@ -57,10 +63,11 @@ public class PopupTournament_Batch_Panel : MonoBehaviour, IValidatable
             }
         }
 
-        for (int i = 0; i < _batchData.heroInfo.Length; i++)
+        for (int i = 0; i < _batchData.heroes.Count; i++)
         {
-            var heroData = _batchData.heroInfo[i];
-            var slot = m_element.slots[_batchData.position[i]];
+            var heroData = _batchData.heroes[i];
+
+            var slot = m_element.slots[heroData.sortIdx];
             slot.GetComponent<Button>().interactable = slot.GetComponent<Image>().enabled = true;
             var skinKey = heroData.skin;
 
@@ -77,6 +84,7 @@ public class PopupTournament_Batch_Panel : MonoBehaviour, IValidatable
                 newhero.transform.localScale = Vector2.one * 70;
                 newhero.Awake();
                 newhero.SetInfo(heroData);
+                newhero.DeleteCollider();
                 newhero.move.SetFlip(true);
                 hero = newhero.gameObject;
 

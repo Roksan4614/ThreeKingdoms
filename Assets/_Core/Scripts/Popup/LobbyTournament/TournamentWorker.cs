@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -19,6 +18,9 @@ namespace Rev9.Tournament
         TournamentData m_data;
         public static TournamentData data => instance.m_data;
 
+        public bool isAttackType { get; set; }
+
+
 #if SERVICE_DEV
         const int c_refreshMinute = 1;
 #else
@@ -31,7 +33,7 @@ namespace Rev9.Tournament
         {
             if (m_data.isActive == false)
             {
-                //PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT);
+                PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT);
                 m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
             }
 
@@ -58,45 +60,76 @@ namespace Rev9.Tournament
 
         public void StopTimer() => m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
 
+        // 승급이나 강화했을 때 
+        public void UpdateHero()
+        {
+            if (m_data.isActive == false)
+                m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (m_data.teamAttack.heroes != null && i < m_data.teamAttack.heroes.Count)
+                {
+                    var newData = DataManager.userInfo.GetHeroInfoData(m_data.teamAttack.heroes[i].key);
+                    var data = m_data.teamAttack.heroes[i];
+                    newData.sortIdx = data.sortIdx;
+                    m_data.teamAttack.heroes[i] = newData;
+                }
+                if (m_data.teamDefence.heroes != null && i < m_data.teamDefence.heroes.Count)
+                {
+                    var newData = DataManager.userInfo.GetHeroInfoData(m_data.teamDefence.heroes[i].key);
+                    var data = m_data.teamDefence.heroes[i];
+                    newData.sortIdx = data.sortIdx;
+                    m_data.teamDefence.heroes[i] = newData;
+                }
+            }
+
+            SaveData();
+        }
+
         public TournamentBatchData GetBatchData(bool _isAttack)
         {
             var team = _isAttack ? m_data.teamAttack : m_data.teamDefence;
             if (team.isActive == false)
             {
+                team.Default();
+
                 if (_isAttack == true)
                 {
-                    team.heroInfo = TeamManager.instance.members.Select(x => x.Value.info).ToArray();
-                    team.position = new int[team.heroInfo.Length];
-                    team.treasure = DataManager.stat.relic.dataTreasure.Where(x => x.isBatch == true).Select(x => x.key).ToArray();
+                    team.heroes.AddRange(TeamManager.instance.members.Select(x => x.Value.info).ToList());
+                    team.treasure.AddRange(DataManager.stat.relic.dataTreasure.Where(x => x.isBatch == true).Select(x => x.key).ToList());
 
-                    int idx = 0;
                     foreach (var member in TeamManager.instance.members)
                     {
+                        var idxPosition = -1;
                         switch (member.Key)
                         {
                             case TeamPositionType.Front:
-                                team.position[idx] = 1;
+                                idxPosition = 1;
                                 break;
                             case TeamPositionType.Top:
-                                team.position[idx] = 3;
+                                idxPosition = 3;
                                 break;
                             case TeamPositionType.Bottom:
-                                team.position[idx] = 5;
+                                idxPosition = 5;
                                 break;
                             case TeamPositionType.Back:
-                                team.position[idx] = 7;
+                                idxPosition = 7;
                                 break;
                         }
-                        idx++;
+
+                        var idxHeroInfo = team.heroes.FindIndex(x => x.skin == member.Value.info.skin);
+                        var heroInfo = team.heroes[idxHeroInfo];
+                        heroInfo.sortIdx = idxPosition;
+                        team.heroes[idxHeroInfo] = heroInfo;
                     }
 
                     m_data.teamAttack = team;
                 }
                 else
                 {
-                    Array.Copy(m_data.teamAttack.heroInfo, team.heroInfo, m_data.teamAttack.heroInfo.Length);
-                    Array.Copy(m_data.teamAttack.position, team.position, m_data.teamAttack.position.Length);
-                    Array.Copy(m_data.teamAttack.treasure, team.treasure, m_data.teamAttack.treasure.Length);
+                    team.heroes.AddRange(m_data.teamAttack.heroes);
+                    team.treasure.AddRange(m_data.teamAttack.treasure);
 
                     m_data.teamDefence = team;
                 }
@@ -104,7 +137,13 @@ namespace Rev9.Tournament
                 SaveData();
             }
 
-            return team;
+            TournamentBatchData result = new();
+            result.Default();
+
+            result.heroes.AddRange(team.heroes);
+            result.treasure.AddRange(team.treasure);
+
+            return result;
         }
 
         void SaveData()
@@ -177,7 +216,93 @@ namespace Rev9.Tournament
                 m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
         }
 
-        bool isRunnig_TimerRefresh => m_ctsRefresh != null;
+        public int GetPositionByClass(TournamentBatchData _batchData, HeroClassType _classType)
+        {
+            switch (_classType)
+            {
+                case HeroClassType.Champion:
+                    {
+                        int countChampion = _batchData.heroes.Count(x => x.sortIdx < 3);
+
+                        if (countChampion == 0)
+                            return 1;
+                        else if (countChampion == 1)
+                        {
+                            if (_batchData.heroes.Any(x => x.sortIdx == 0))
+                                return 2;
+                            else
+                                return 0;
+                        }
+                        else if (countChampion == 2)
+                        {
+                            for (int i = 0; i < 3; i++)
+                            {
+                                if (_batchData.heroes.Any(x => x.sortIdx == i) == false)
+                                    return i;
+                            }
+                        }
+                    }
+                    return 4;
+                case HeroClassType.Strategist:
+                case HeroClassType.Archer:
+                    {
+                        int countBack = _batchData.heroes.Count(x => x.sortIdx >= 6);
+
+                        if (countBack == 0)
+                            return 7;
+                        else if (countBack == 1)
+                        {
+                            if (_batchData.heroes.Any(x => x.sortIdx == 6))
+                                return 8;
+                            else
+                                return 6;
+                        }
+                        else if (countBack == 2)
+                        {
+                            for (int i = 0; i < 3; i++)
+                            {
+                                int idx = 6 + i;
+                                if (_batchData.heroes.Any(x => x.sortIdx == idx) == false)
+                                    return idx;
+                            }
+                        }
+                    }
+                    return 4; // 뒤에 3명이면 앞 4번이 비어있을거야.
+                default:
+                    {
+                        int countMiddle = _batchData.heroes.Count(x => 3 <= x.sortIdx && x.sortIdx < 6);
+
+                        if (countMiddle == 0)
+                            return 4;
+                        else if (countMiddle == 1)
+                        {
+                            if (_batchData.heroes.Any(x => x.sortIdx == 3))
+                                return 5;
+                            else
+                                return 3;
+                        }
+                        else if (countMiddle == 2)
+                        {
+                            for (int i = 0; i < 3; i++)
+                            {
+                                int idx = 3 + i;
+                                if (_batchData.heroes.Any(x => x.sortIdx == idx) == false)
+                                    return idx;
+                            }
+                        }
+                    }
+                    return 1;
+            }
+        }
+
+        public void AddTreasure(string _key)
+        {
+
+        }
+        public void DeleteTreasure(string _key)
+        {
+
+        }
     }
 
     public struct TournamentData
@@ -212,17 +337,25 @@ namespace Rev9.Tournament
 
         public bool isActive => tick > 0;
         public bool isFreeRefresh => countRefresh > 0;
+
+        public TournamentBatchData GetTeam(bool _isAttackType)
+            => _isAttackType ? teamAttack : teamDefence;
     }
 
     public struct TournamentBatchData
     {
         public int uid;
 
-        public HeroInfoData[] heroInfo;
-        public int[] position;
-        public string[] treasure;
+        public List<HeroInfoData> heroes;
+        public List<string> treasure;
 
-        public bool isActive => heroInfo != null;
+        public bool isActive => heroes != null;
+
+        public void Default()
+        {
+            heroes = new();
+            treasure = new();
+        }
     }
 
     public struct TournamentHistoryData

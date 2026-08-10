@@ -8,9 +8,7 @@ public class Configure : MonoSingleton<Configure>
     public float timeGapFromServer { get; set; }
 
     bool m_isPC;
-    public static bool isPC
-    {
-        get => instance.m_isPC;
-        set => instance.m_isPC = value;
-    }
+    public static bool isPC => instance.m_isPC;
+
+    public void SetPC(bool _isPC) => m_isPC = _isPC;
 }

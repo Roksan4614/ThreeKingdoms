@@ -219,7 +219,11 @@ public class PopupTournamentComponent : BasePopupComponent
                 }
                 break;
             case TournamentPopupType.Batch:
-                await m_element.popupBatch.OpenAsync();
+                {
+                    // 열었는데 공격 배치가 바뀌었어? 그럼 업데이트 해줘야지
+                    if (await m_element.popupBatch.OpenAsync())
+                        await m_element.panelBatch.SetBatchDataAsync(TournamentWorker.instance.GetBatchData(true));
+                }
                 break;
             case TournamentPopupType.Reward:
                 await m_element.popupRewardInfo.OpenAsync();
