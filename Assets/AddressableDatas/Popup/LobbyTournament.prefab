@@ -11439,6 +11439,7 @@ PrefabInstance:
     - {fileID: 1038789154268103437, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
     - {fileID: 3946464305994090826, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
     - {fileID: 5034874129452771625, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
+    - {fileID: 134012592152162795, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
     m_RemovedGameObjects:
     - {fileID: 3537838809781990232, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
     - {fileID: 4604105997915900638, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
@@ -11478,6 +11479,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6051227700516847117, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9220642943405644052}
+    - targetCorrespondingSourceObject: {fileID: 6975893824156069165, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7661667619271129061}
   m_SourcePrefab: {fileID: 100100000, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
 --- !u!114 &175439294249187512 stripped
 MonoBehaviour:
@@ -11716,6 +11720,32 @@ MonoBehaviour:
     tabRelic: {fileID: 4040728262777012804}
     panelHero: {fileID: 874371605534970619}
     panelRelic: {fileID: 9220642943405644052}
+--- !u!1 &3758847791769924772 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6975893824156069165, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
+  m_PrefabInstance: {fileID: 6117373046490454409}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7661667619271129061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3758847791769924772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e9b59a9de7c6d644bad82064d20becd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopupTournament_Batch_Relic_Item
+  m_element:
+    imgPanel: {fileID: 0}
+    parentIcon: {fileID: 0}
+    txt_title: {fileID: 0}
+    txt_stat: {fileID: 0}
+    btn_select: {fileID: 0}
+    btn_enchant: {fileID: 0}
+    txt_amount: {fileID: 0}
+    txt_level: {fileID: 0}
 --- !u!114 &4040728262777012804 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7851685847465745357, guid: 25eb614243071ee4bab60bebd5018cab, type: 3}
