@@ -1,7 +1,5 @@
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Table_Treasure : BaseTable<string, TableTreasureData>
@@ -58,6 +56,41 @@ public struct TableTreasureData
 
             return m_dbEffect;
         }
+    }
+
+    public string GetStringEffect(bool _isTwoLine = true)
+    {
+        string result = "";
+
+        int i = 0;
+        foreach (var effect in dbEffect)
+        {
+            var data = effect.Value;
+            result += $"{data.statName} {data.stringPercent}";
+
+            // 두개이하면 위아래로
+            if (_isTwoLine == false)
+            {
+                if (i < dbEffect.Count - 1)
+                    result += "\n";
+            }
+            else if (dbEffect.Count <= 2)
+            {
+                if (i == 0)
+                    result += "\n";
+            }
+            else
+            {
+                if (i == 1)
+                    result += "\n";
+                else if (i < dbEffect.Count - 1)
+                    result += "  ";
+            }
+
+            i++;
+        }
+
+        return result;
     }
 }
 

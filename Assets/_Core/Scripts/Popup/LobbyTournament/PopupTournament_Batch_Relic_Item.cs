@@ -20,9 +20,7 @@ public class PopupTournament_Batch_Relic_Item : LobbyScreen_Hero_Relic_Item
 
         m_heroInfoData.isBatch = !m_heroInfoData.isBatch;
 
-        TournamentWorker.instance.AddTreasure(m_heroInfoData.skin);
-
-        DataManager.stat.relic.SetTreasureStatus(m_heroInfoData.skin, m_heroInfoData.isBatch);
+        TournamentWorker.instance.SetTreasureStatus(m_heroInfoData.skin, m_heroInfoData.isBatch);
 
         m_element.btn_select.SetDrawSelect(m_heroInfoData.isBatch);
         m_element.btn_select.text = m_heroInfoData.isBatch ? "_선택중_" : "선택_하기";

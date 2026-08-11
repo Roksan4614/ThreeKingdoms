@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Tournament;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,7 @@ public class TableManager
     public static Table_GuideQuest_Repeat guideQuestRepeat { get; private set; }
     public static Table_String_GuideQuest guideQuestString { get; private set; }
 
+    public static Table_TournamentReward tournamentReward { get; private set; }
 
     public static Dictionary<CastleObjectType, Table_Castle_Effect> castleEffect { get; private set; } = new();
 
@@ -89,6 +91,8 @@ public class TableManager
             guideQuest = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "GuideQuest"));
             guideQuestRepeat = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "GuideQuest_Repeat"));
             guideQuestString = new(LoadList<TableStringData>(_result, "String_GuideQuest"));
+
+            tournamentReward = new(new());
 
             foreach (var h in _result)
                 h.Value.Release();

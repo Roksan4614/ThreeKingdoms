@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -321,6 +322,11 @@ public static class Extenssions
         => _source[UnityEngine.Random.Range(0, _source.Length)];
     public static T RandomFirst<T>(this IReadOnlyList<T> _source)
         => _source[UnityEngine.Random.Range(0, _source.Count)];
+    public static List<T> Shuffle<T>(this IReadOnlyList<T> _source)
+    {
+        List<T> result = new List<T>(_source);
+        return result.Shuffle();
+    }
     public static List<T> Shuffle<T>(this List<T> _source)
     {
         List<T> result = new List<T>(_source);

@@ -190,4 +190,7 @@ public struct HeroInfoData
             return result;
         }
     }
+
+    public TableStatData resultStat
+        => DataManager.stat.GetResultStat(this);
 }

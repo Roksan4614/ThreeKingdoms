@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -20,7 +21,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         {
             m_heroInfoData.relicLevel++;
             DataManager.stat.relic.Upgrade_HeroRelic(m_heroInfoData);
-            SetRelicDataAsync(m_heroInfoData, true).Forget();
+            SetRelicData(m_heroInfoData, true);
         }
 
         _onCallback(m_heroInfoData);
@@ -45,9 +46,9 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         _onCallback(m_heroInfoData);
     }
 
-    public async UniTask SetTreasureDataAsync(TableTreasureData _treasureData, UnityAction<HeroInfoData> _onClick = null)
+    public async UniTask SetTreasureDataAsync(List<Data_Stat_Relic.TreasureBatchData> _dbBatchData, TableTreasureData _treasureData, UnityAction<HeroInfoData> _onClick = null)
     {
-        var myTreasureData = DataManager.stat.relic.dataTreasure.Where(x => x.key == _treasureData.key).FirstOrDefault();
+        var myTreasureData = _dbBatchData.Where(x => x.key == _treasureData.key).FirstOrDefault();
 
         m_heroInfoData = new();
         m_heroInfoData.skin = _treasureData.key;
@@ -69,31 +70,8 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
 
         if (m_heroInfoData.isMine == true)
         {
-            int i = 0;
-            foreach (var effect in _treasureData.dbEffect)
-            {
-                var data = effect.Value;
-                m_element.txt_stat.text += $"{data.statName} {data.stringPercent}";
-
-                // 두개이하면 위아래로
-                if (_treasureData.dbEffect.Count <= 2)
-                {
-                    if (i == 0)
-                        m_element.txt_stat.text += "\n";
-                }
-                else
-                {
-                    if (i == 1)
-                        m_element.txt_stat.text += "\n";
-                    else if (i < _treasureData.dbEffect.Count - 1)
-                        m_element.txt_stat.text += "  ";
-                }
-
-                i++;
-            }
-
+            m_element.txt_stat.text = _treasureData.GetStringEffect();
             m_element.imgPanel.color = myTreasureData.isBatch == true ? Color.gray8 : Color.white;
-
             m_element.btn_select.text = myTreasureData.isBatch ? "_선택중_" : "선택_하기";
         }
         else
@@ -104,10 +82,12 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
 
         m_element.btn_select.SetDrawSelect(myTreasureData.isBatch);
 
+        SetIconAsync("Treasure_" + _treasureData.key, false).Forget();
+
         await UniTask.Yield();
     }
 
-    public async UniTask SetRelicDataAsync(HeroInfoData _heroInfoData, bool _isUpdate, UnityAction<HeroInfoData> _onClick = null)
+    public void SetRelicData(HeroInfoData _heroInfoData, bool _isUpdate, UnityAction<HeroInfoData> _onClick = null)
     {
         //능력치 +000.00%\n< size = 80 %> (지휘관 + 000.00 %)
         var statValue = _heroInfoData.relicLevel * 0.01f;
@@ -115,6 +95,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
             $"기본 능력치_+{(_heroInfoData.relicLevel * 10).AmountKMBT()}%\n<size=80%> ({_heroInfoData.className}_+{(_heroInfoData.relicLevel * 0.1f).AmountKMBT()}%)";
 
         m_element.txt_level.text = $"Lv.{_heroInfoData.relicLevel}";
+        m_element.imgPanel.color = Color.white;
 
         if (_isUpdate == false)
         {
@@ -133,29 +114,34 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
                 $"{_heroInfoData.name}:_무기";
 
             // ICON
-            bool isFinded = false;
-            var p = m_element.parentIcon;
-            for (int i = 0; i < p.childCount; i++)
+            SetIconAsync(_heroInfoData.key, true).Forget();
+        }
+    }
+
+    async UniTask SetIconAsync(string _key, bool _isRelic)
+    {
+        bool isFinded = false;
+        var p = m_element.parentIcon;
+        for (int i = 0; i < p.childCount; i++)
+        {
+            var icon = p.GetChild(i);
+            icon.gameObject.SetActive(icon.name == _key);
+            if (isFinded == false && icon.gameObject.activeSelf == true)
+                isFinded = true;
+        }
+
+        if (isFinded == false)
+        {
+            var prefab = await AddressableManager.instance.GetIconAsync(_key, _isRelic);
+
+            if (prefab != null)
             {
-                var icon = p.GetChild(i);
-                icon.gameObject.SetActive(icon.name == _heroInfoData.key);
-                if (isFinded == false && icon.gameObject.activeSelf == true)
-                    isFinded = true;
-            }
+                var icon = Instantiate(prefab, p);
 
-            if (isFinded == false)
-            {
-                var prefab = await AddressableManager.instance.GetRelicIconAsync(_heroInfoData.key);
+                var rtParent = icon.transform.parent as RectTransform;
+                await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0, cancellationToken: destroyCancellationToken);
 
-                if (prefab != null)
-                {
-                    var icon = Instantiate(prefab, p);
-
-                    var rtParent = icon.transform.parent as RectTransform;
-                    await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0, cancellationToken: destroyCancellationToken);
-
-                    icon.AutoResizeParent().name = _heroInfoData.key;
-                }
+                icon.AutoResizeParent().name = _key;
             }
         }
     }

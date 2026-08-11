@@ -29,7 +29,7 @@ public class HeroIconComponent_UserInfo : HeroIconComponent
 
         if (isFinded == false)
         {
-            var prefab = await AddressableManager.instance.GetRelicIconAsync(_heroData.key);
+            var prefab = await AddressableManager.instance.GetHeroIconAsync(_heroData.key);
 
             if (prefab != null)
             {

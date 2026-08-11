@@ -8,7 +8,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
     public TableItemData data { get; private set; }
     public RectTransform rt => (RectTransform)transform;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         txtCount = "";
 
@@ -63,12 +63,10 @@ public class ItemComponent : MonoBehaviour, IValidatable
         {
             var result = await AddressableManager.instance.GetIconAsync(_key, _isHero);
             if (result == null)
-            {
                 return;
-            }
 
             var icon = Instantiate(result, m_element.iconPanel);
-            icon.AutoResizeParent();
+            icon.AutoResizeParent().name = _key;
         }
     }
 
@@ -130,10 +128,10 @@ public class ItemComponent : MonoBehaviour, IValidatable
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
-    ElementData m_element;
+    protected ElementData m_element;
 
     [Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public Transform panel;
         public GameObject empty;

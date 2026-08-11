@@ -20,6 +20,10 @@ public class Data_Stat
     {
         var result = TableManager.statHero.GetStatData(_heroInfoData);
 
+        // 내께 아니면 혹시 모르니 기본만..
+        if (_heroInfoData.isMine == false)
+            return result;
+
         // todo
         //var statData = GetBonusStatData(_heroInfoData);
 

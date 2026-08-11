@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Rev9.Tournament;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,9 @@ using UnityEngine.UI;
 
 public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
 {
-    enum TabType
+    protected bool m_isScreenHeroMode = true;
+
+    protected enum TabType
     {
         NONE = -1,
         Relic, Treasure,
@@ -65,18 +68,29 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         }
     }
 
-    private void Start()
+    bool m_isStarted = false;
+    protected virtual void Start()
     {
-        m_curTab = TabType.Relic - 1;
-        SetActiveTab(TabType.Relic);
+        m_curTab = TabType.NONE;
+        SetActiveTab(m_isScreenHeroMode ? TabType.Relic : TabType.Treasure);
+        m_isStarted = true;
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
-        SetActiveTab(TabType.Relic);
+        if (m_isStarted == true)
+            OnEnableAsync().Forget();
     }
 
-    void SetActiveTab(TabType _tabType)
+    async UniTask OnEnableAsync()
+    {
+        m_curTab = TabType.NONE;
+        SetActiveTab(m_isScreenHeroMode ? TabType.Relic : TabType.Treasure);
+        await UniTask.NextFrame();
+        RebuildLayout();
+    }
+
+    protected virtual void SetActiveTab(TabType _tabType)
     {
         if (m_curTab == _tabType)
             return;
@@ -149,8 +163,8 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         m_element.scroll.Initialize<LobbyScreen_Hero_Relic_Item>(myHero.Length,
             (_item, _idxData) =>
             {
-                _item.SetRelicDataAsync(myHero[_idxData], false
-                    , _heroInfo => OnButton_Item(_heroInfo.key.IsActive() ? TabType.Relic : TabType.Treasure, _heroInfo)).Forget();
+                _item.SetRelicData(myHero[_idxData], false
+                    , _heroInfo => OnButton_Item(_heroInfo.key.IsActive() ? TabType.Relic : TabType.Treasure, _heroInfo));
 #if UNITY_EDITOR
                 _item.name = myHero[_idxData].key;
 #endif
@@ -189,7 +203,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         m_element.scroll.Initialize<LobbyScreen_Hero_Relic_Item>(dbTreasure.Length,
             (_item, _idxData) =>
             {
-                _item.SetTreasureDataAsync(dbTreasure[_idxData]
+                _item.SetTreasureDataAsync(DataManager.stat.relic.dataTreasure.ToList(), dbTreasure[_idxData]
                     , _heroInfo => OnButton_Item(_heroInfo.key.IsActive() ? TabType.Relic : TabType.Treasure, _heroInfo)).Forget();
 #if UNITY_EDITOR
                 _item.name = dbTreasure[_idxData].key;
@@ -203,9 +217,9 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         SetTextTotalTreasure();
     }
 
-    void SetTextTotalTreasure()
+    protected void SetTextTotalTreasure()
     {
-        var dbBonusTreasure = DataManager.stat.relic.bonusTreasureBonus;
+        var dbBonusTreasure = m_isScreenHeroMode ? DataManager.stat.relic.bonusTreasureBonus : TournamentWorker.data.GetTeam().bonusTreasureBonus;
         var pTotalTreasure = m_element.pTotalTreasure;
 
         int i = 0;
@@ -228,7 +242,10 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         for (; i < m_totalRelic.Count; i++)
             m_totalRelic[i].SetActive(false);
 
-        var countBatchTreasure = DataManager.stat.relic.dataTreasure.Count(x => x.isBatch == true);
+        var countBatchTreasure = m_isScreenHeroMode ?
+            DataManager.stat.relic.dataTreasure.Count(x => x.isBatch == true) :
+            TournamentWorker.data.GetTeam().treasure.Count();
+
         m_element.txtTreasureCount.text = $"선택한_보물: ({countBatchTreasure}/3)";
         if (countBatchTreasure > 0)
         {
@@ -241,7 +258,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         RebuildLayout();
     }
 
-    void RebuildLayout()
+    protected void RebuildLayout()
     {
         m_element.scroll.content.anchoredPosition = Vector2.zero;
 
@@ -258,7 +275,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         rtLayout.sizeDelta = sizeLayout;
     }
 
-    void OnButton_Item(TabType _tapType, HeroInfoData _heroInfoData)
+    protected void OnButton_Item(TabType _tapType, HeroInfoData _heroInfoData)
     {
         if (_tapType == TabType.Relic)
             SetTextTotalClass(_heroInfoData.classType);
@@ -274,10 +291,10 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
     public void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField]
-    ElementData m_element;
+    protected ElementData m_element;
 
     [Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public TextMeshProUGUI txtTreasureCount;
         public TextMeshProUGUI[] txtTotalClass;
@@ -314,7 +331,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
     }
 
     [Serializable]
-    struct HeroCountData
+    protected struct HeroCountData
     {
         public ButtonHelper btnOpen;
 

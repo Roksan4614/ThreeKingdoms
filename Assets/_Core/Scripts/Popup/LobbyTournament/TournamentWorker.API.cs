@@ -1,8 +1,6 @@
 using Cysharp.Threading.Tasks;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace Rev9.Tournament
@@ -15,35 +13,36 @@ namespace Rev9.Tournament
 
             m_data.battleUserList = new RankerUserData[4];
 
+            m_dbRankUserInfoData.Clear();
+
             // todo
             var randomNickname = Utils.GetRandomNicknameArray(4);
             var heroes = TableManager.hero.GetHeroList().Where(x => x.regionType == RegionType.SHU).ToList();
             for (int i = 0; i < 4; i++)
             {
+                int uid = DataManager.userInfo.uid + i;
+                long power = (await API_LoadUserInfoData(uid)).totalPower;
                 m_data.battleUserList[i] = new()
                 {
-                    uid = i,
+                    uid = uid,
                     nickname = randomNickname[i],
-                    power = UnityEngine.Random.Range(1500, 2000),
+                    power = power,
                     point = UnityEngine.Random.Range(500, 1000) * (i + 1),
-                    skin = heroes.RandomFirst().key
+                    skin = heroes.RandomFirst().key,
                 };
             }
 
             m_data.battleUserList = m_data.battleUserList.SortByDescending(x => x.point);
 
             SaveData();
-
-            m_dbRankUserInfoData.Clear();
         }
 
         Dictionary<int, TournamentBatchData> m_dbRankUserInfoData = new();
+
         public async UniTask<TournamentBatchData> API_LoadUserInfoData(int _uid)
         {
             if (m_dbRankUserInfoData.ContainsKey(_uid))
                 return m_dbRankUserInfoData[_uid];
-
-            await UniTask.NextFrame();
 
             TournamentBatchData result = new() { uid = _uid };
             result.Default();
@@ -56,13 +55,11 @@ namespace Rev9.Tournament
             var countMiddle = 4 - countChampion - countBack;
 
             int idxFront = 0, idxMiddle = 0, idxBack = 0;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < heroes.Count; i++)
             {
-                result.heroes[i] = new HeroInfoData(heroes[i].key,
+                var heroInfo = new HeroInfoData(heroes[i].key,
                     GradeType.Normal + UnityEngine.Random.Range(0, (int)GradeType.MAX),
                     _skin: heroes[i].key, _enchantLevel: UnityEngine.Random.Range(1, 17), _isMine: false);
-
-                var heroInfo = result.heroes[i];
 
                 if (heroes[i].classType == HeroClassType.Champion)
                 {
@@ -101,13 +98,20 @@ namespace Rev9.Tournament
                     idxMiddle++;
                 }
 
-                result.heroes[i] = heroInfo;
-
-                if (i < result.treasure.Count)
-                    result.treasure[i] = "Treasure_" + (i + 1);
+                result.heroes.Add(heroInfo);
             }
 
+            result.treasure = TableManager.treasure.list.Where(x => x.isActive).ToList().Shuffle().Take(3)
+                .Select(x => new Data_Stat_Relic.TreasureBatchData()
+                {
+                    key = x.key,
+                    isBatch = true,
+                    tickBatch = System.DateTime.UtcNow.Ticks
+                }).ToList();
+
             m_dbRankUserInfoData.Add(_uid, result);
+
+            await UniTask.NextFrame();
 
             return result;
         }

@@ -1,4 +1,6 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Tournament;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,15 +19,22 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
 
         m_element.tabRelic.onClick.AddListener(() => OnButton_Tab(TabType.Relic));
         m_element.tabHero.onClick.AddListener(() => OnButton_Tab(TabType.Hero));
+
+        m_element.btnBatch.onClick.AddListener(Close);
+        m_element.btnAuto.onClick.AddListener(m_element.panelHero.StartAutoBatch);
     }
 
     public async UniTask<bool> OpenAsync()
     {
-        m_isCloseStart = false;
         gameObject.SetActive(true);
-        Utils.SetActivePunch(m_element.panel, true);
+        m_element.panel.localScale = Vector3.one;
+        m_element.panel.gameObject.SetActive(true);
+
+        m_isCloseStart = false;
+        Utils.SetActivePunch(m_element.panelHero.parentList, true);
 
         OnButton_Tab(TabType.Hero);
+        m_element.panelHero.OnButtonAsync_Type(true, true).Forget();
 
         await UniTask.WaitUntil(() => m_isCloseStart == true, cancellationToken: destroyCancellationToken);
 
@@ -62,12 +71,16 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
             m_element.panelHero.CloseAsync(() =>
             {
                 m_isCloseStart = true;
-                Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
+                Utils.SetActivePunch(m_element.panelHero.parentList, false, _callback: () => gameObject.SetActive(false));
             }).Forget();
         else
         {
             m_isCloseStart = true;
-            Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
+            Utils.SetActivePunch(m_element.panel, false, _callback: () =>
+            {
+                m_element.panelRelic.gameObject.SetActive(false);
+                gameObject.SetActive(false);
+            });
         }
     }
 

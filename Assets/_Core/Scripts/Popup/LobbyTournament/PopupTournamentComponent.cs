@@ -80,7 +80,9 @@ public class PopupTournamentComponent : BasePopupComponent
 
         Utils.SetActivePunch(m_element.panel, true);
 
-        await m_element.panelBatch.SetBatchDataAsync(TournamentWorker.instance.GetBatchData(true));
+        var batchData = TournamentWorker.instance.GetBatchData(true);
+        m_element.txtPower.text = batchData.totalPower.AmountKMBT(_isMBT: true);
+        await m_element.panelBatch.SetBatchDataAsync(batchData);
     }
 
     void SetPlayCount()
@@ -222,7 +224,11 @@ public class PopupTournamentComponent : BasePopupComponent
                 {
                     // 열었는데 공격 배치가 바뀌었어? 그럼 업데이트 해줘야지
                     if (await m_element.popupBatch.OpenAsync())
-                        await m_element.panelBatch.SetBatchDataAsync(TournamentWorker.instance.GetBatchData(true));
+                    {
+                        var batchData = TournamentWorker.instance.GetBatchData(true);
+                        m_element.txtPower.text = batchData.totalPower.AmountKMBT(_isMBT: true);
+                        await m_element.panelBatch.SetBatchDataAsync(batchData);
+                    }
                 }
                 break;
             case TournamentPopupType.Reward:

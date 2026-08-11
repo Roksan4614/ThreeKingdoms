@@ -3,6 +3,7 @@ using DG.Tweening;
 using Rev9.Tournament;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -11,6 +12,8 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 {
     bool m_isAttackType;
     public bool isUpdated { get; private set; }
+
+    public Transform parentList => m_element.scroll.transform.parent;
 
     struct ButtonActionData
     {
@@ -85,7 +88,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             //if (m_isNeedUpdateLayout)
             //    TournamentWorker.instance.UpdateHero();
 
-            OnButtonAsync_Type(true, m_isNeedUpdateLayout).Forget();
+            OnButtonAsync_Type(TournamentWorker.instance.isAttackType, m_isNeedUpdateLayout).Forget();
         }
 
         isUpdated = false;
@@ -95,10 +98,93 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
     {
         if (isUpdated == true)
             await TournamentWorker.instance.API_UpdateTeamData(m_isAttackType, m_batchData);
+
         _callback();
+
+        if (m_isAttackType == false)
+        {
+            await UniTask.WaitForSeconds(.1f);
+            m_elementTournament.panelBatch.SetBatchDataAsync(TournamentWorker.data.teamAttack).Forget();
+        }
     }
 
-    async UniTask OnButtonAsync_Type(bool _isAttackType, bool _isForce = false)
+    public void StartAutoBatch()
+    {
+        m_batchData.heroes.Clear();
+        m_batchData.heroes.AddRange(DataManager.userInfo.myHero
+            .SortByDescending(x => x.power).Take(4).ToList());
+
+        // 책사랑 궁수는 뒤로 보낼거야.
+        var backHeroes = m_batchData.heroes
+            .FindAll(x => x.classType == HeroClassType.Archer || x.classType == HeroClassType.Strategist)
+            .SortByDescending(x => x.power);
+        int idxHero = -1;
+
+        UnityAction<string, int> actionUpdateData = (_key, _sortIdx) =>
+        {
+            idxHero = m_batchData.heroes.FindIndex(x => x.key == _key);
+            var heroData = m_batchData.heroes[idxHero];
+            heroData.sortIdx = _sortIdx;
+            heroData.isBatch = true;
+            m_batchData.heroes[idxHero] = heroData;
+        };
+
+        // 맨 앞에 장수 구할거야.
+        if (backHeroes.Count < m_batchData.heroes.Count)
+        {
+            var champions = m_batchData.heroes.FindAll(x => x.classType == HeroClassType.Champion);
+            HeroInfoData frontHero;
+            if (champions.Count > 0)
+                frontHero = champions.SortByDescending(x => x.resultStat.healthMax)[0];
+            else
+            {
+                champions = m_batchData.heroes.FindAll(x => backHeroes.Any(y => y.key == x.key) == false).ToList();
+                frontHero = champions.SortByDescending(x => x.resultStat.healthMax)[0];
+            }
+            actionUpdateData(frontHero.key, 1);
+        }
+        //맨 뒤에 구하자
+        if (backHeroes.Count == 0)
+        {
+            var backHero = m_batchData.heroes.SortBy(x => x.resultStat.healthMax)[0];
+            actionUpdateData(backHero.key, 7);
+        }
+        if (backHeroes.Count == 1)
+        {
+            var backHero = backHeroes[0];
+            actionUpdateData(backHero.key, 7);
+        }
+        else if (backHeroes.Count == 2)
+        {
+            for (int i = 0; i < backHeroes.Count; i++)
+                actionUpdateData(backHeroes[i].key, i == 0 ? 6 : 8);
+        }
+        else
+        {
+            int i = 0;
+            for (; i < backHeroes.Count; i++)
+                actionUpdateData(backHeroes[i].key, i == 0 ? 6 : i == 1 ? 7 : i == 2 ? 8 : 4);
+        }
+
+        var middleHeroes = m_batchData.heroes.FindAll(x => x.sortIdx == 0);
+        if (middleHeroes.Count == 1)
+            actionUpdateData(middleHeroes[0].key, 4);
+        else
+        {
+            for (int i = 0; i < middleHeroes.Count; i++)
+                actionUpdateData(middleHeroes[i].key, i == 0 ? 3 : 5);
+        }
+
+        m_batchData.heroes = m_batchData.heroes.SortBy(x => x.sortIdx);
+
+        m_elementTournament.panelBatch.SetBatchDataAsync(m_batchData).Forget();
+        m_elementTournament.txtPower.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+
+        SetLayout_List();
+        isUpdated = true;
+    }
+
+    public async UniTask OnButtonAsync_Type(bool _isAttackType, bool _isForce = false)
     {
         if (m_isAttackType == _isAttackType && _isForce == false)
             return;
@@ -120,6 +206,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         m_myHero.AddRange(m_batchData.heroes);
 
         m_elementTournament.panelBatch.SetBatchDataAsync(m_batchData).Forget();
+        m_elementTournament.txtPower.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
 
         SetLayout_List();
     }
@@ -158,6 +245,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             return;
         }
 
+        hero.anim.Play("Pick");
         var shadow = hero.element.panel.Find("Shadow");
         shadow.localPosition += Vector3.down * .3f;
 
@@ -187,15 +275,19 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
             SetLayout_List();
 
-            if (m_isAttackType == true)
-                isUpdated = true;
+            isUpdated = true;
         }
 
         hero.transform.DOLocalMove(Vector3.zero, 0.05f).Forget();
         shadow.DOLocalMove(Vector3.zero, 0.05f).Forget();
+        hero.anim.Play(CharacterAnimType.Idle);
 
         if (Configure.isPC == false)
+        {
+            var prev = m_actionData.idxEnter;
             Action_Exit(m_actionData.idxEnter);
+            m_actionData.idxEnter = prev;
+        }
     }
     #endregion ACTION_DATA
 
@@ -203,8 +295,6 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
     protected override void OnRightClick_List(HeroIconComponent _item)
     {
-        var teamData = m_isAttackType ? TournamentWorker.data.teamAttack : TournamentWorker.data.teamDefence;
-
         ResetActiveButton_List();
         var itemData = _item.data;
 
@@ -240,7 +330,10 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         }
 
         m_batchData.heroes = m_batchData.heroes.SortBy(x => x.sortIdx);
+
         m_elementTournament.panelBatch.SetBatchDataAsync(m_batchData).Forget();
+        m_elementTournament.txtPower.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+
         SetLayout_List();
         isUpdated = true;
         return;
@@ -313,6 +406,8 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
     [System.Serializable]
     struct ElementData_Tournament
     {
+        public TextMeshProUGUI txtPower;
+
         public ButtonHelper btnAttack;
         public ButtonHelper btnDefence;
 
@@ -324,6 +419,8 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             btnDefence = _transform.GetComponent<ButtonHelper>("Tab_Type/btn_defence");
 
             panelBatch = _transform.GetComponent<PopupTournament_Batch_Panel>("Batch");
+
+            txtPower = _transform.GetComponent<TextMeshProUGUI>("Power/Text");
         }
     }
 }

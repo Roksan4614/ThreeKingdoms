@@ -1,8 +1,10 @@
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using static Data_Stat_Relic;
 
 namespace Rev9.Tournament
 {
@@ -87,7 +89,7 @@ namespace Rev9.Tournament
             SaveData();
         }
 
-        public TournamentBatchData GetBatchData(bool _isAttack)
+        public TournamentBatchData GetBatchData(bool _isAttack, bool _isOrinData = false)
         {
             var team = _isAttack ? m_data.teamAttack : m_data.teamDefence;
             if (team.isActive == false)
@@ -97,7 +99,7 @@ namespace Rev9.Tournament
                 if (_isAttack == true)
                 {
                     team.heroes.AddRange(TeamManager.instance.members.Select(x => x.Value.info).ToList());
-                    team.treasure.AddRange(DataManager.stat.relic.dataTreasure.Where(x => x.isBatch == true).Select(x => x.key).ToList());
+                    team.treasure.AddRange(DataManager.stat.relic.dataTreasure.Where(x => x.isBatch == true).ToList());
 
                     foreach (var member in TeamManager.instance.members)
                     {
@@ -137,6 +139,9 @@ namespace Rev9.Tournament
                 SaveData();
             }
 
+            if (_isOrinData)
+                return team;
+
             TournamentBatchData result = new();
             result.Default();
 
@@ -146,10 +151,8 @@ namespace Rev9.Tournament
             return result;
         }
 
-        void SaveData()
-        {
-            PPWorker.Set(PlayerPrefsType.TOURNAMENT, m_data);
-        }
+        public void SaveData()
+            => PPWorker.Set(PlayerPrefsType.TOURNAMENT, m_data);
 
         void SlotDayChange()
         {
@@ -295,13 +298,37 @@ namespace Rev9.Tournament
             }
         }
 
-        public void AddTreasure(string _key)
+        public void SetTreasureStatus(string _key, bool _isBatch)
         {
+            var batchData = GetBatchData(isAttackType, true);
+            var idxTreasure = batchData.treasure.FindIndex(x => x.key == _key);
 
-        }
-        public void DeleteTreasure(string _key)
-        {
+            if (_isBatch)
+            {
+                var treasureData = idxTreasure == -1 ? new TreasureBatchData() : batchData.treasure[idxTreasure];
+                treasureData.isBatch = true;
+                treasureData.tickBatch = Utils.GetUTC().Ticks;
 
+                if (idxTreasure == -1)
+                {
+                    treasureData.key = _key;
+                    batchData.treasure.Add(treasureData);
+                }
+                else
+                {
+                    batchData.treasure[idxTreasure] = treasureData;
+                }
+            }
+            else if (idxTreasure >= 0)
+            {
+                batchData.treasure.RemoveAt(idxTreasure);
+            }
+
+            batchData.treasure = batchData.treasure.SortBy(x => x.tickBatch);
+
+            SaveData();
+
+            batchData.ResetBonusTreasureBonus();
         }
     }
 
@@ -340,22 +367,61 @@ namespace Rev9.Tournament
 
         public TournamentBatchData GetTeam(bool _isAttackType)
             => _isAttackType ? teamAttack : teamDefence;
+
+        public TournamentBatchData GetTeam()
+            => TournamentWorker.instance.isAttackType ? teamAttack : teamDefence;
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public struct TournamentBatchData
     {
-        public int uid;
+        [JsonProperty] public int uid;
 
-        public List<HeroInfoData> heroes;
-        public List<string> treasure;
+        [JsonProperty] public List<HeroInfoData> heroes;
+        [JsonProperty] public List<TreasureBatchData> treasure;
 
         public bool isActive => heroes != null;
+
+        Dictionary<BattleStatType, BattleStatData> m_bonusTreasureBonus;
+        public IReadOnlyDictionary<BattleStatType, BattleStatData> bonusTreasureBonus
+        {
+            get
+            {
+                if (m_bonusTreasureBonus == null)
+                {
+                    m_bonusTreasureBonus = new();
+
+                    foreach (var t in treasure)
+                    {
+                        var treasureData = TableManager.treasure.Get(t.key);
+
+                        foreach (var d in treasureData.dbEffect)
+                        {
+                            if (m_bonusTreasureBonus.ContainsKey(d.Key) == false)
+                            {
+                                m_bonusTreasureBonus.Add(d.Key, new() { statType = d.Key });
+                                m_bonusTreasureBonus = m_bonusTreasureBonus.OrderBy(x => x.Value.statType).ToDictionary(x => x.Value.statType, x => x.Value);
+                            }
+
+                            var prev = m_bonusTreasureBonus[d.Key];
+                            prev.value += d.Value.value;
+                            m_bonusTreasureBonus[d.Key] = prev;
+                        }
+                    }
+                }
+                return m_bonusTreasureBonus;
+            }
+        }
+
+        public void ResetBonusTreasureBonus() => m_bonusTreasureBonus = null;
 
         public void Default()
         {
             heroes = new();
             treasure = new();
         }
+
+        public long totalPower => heroes.Sum(x => x.power);
     }
 
     public struct TournamentHistoryData

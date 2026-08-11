@@ -41,12 +41,14 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
         m_curIndex = 0;
         m_countItem = _count;
 
+        // content size 세팅
         var sizeDelta = m_element.scroll.content.sizeDelta;
         sizeDelta.y = m_element.layout.padding.top + m_element.layout.padding.bottom
             + (_count * m_element.rtBaseItem.rect.height)
             + ((_count - 1) * m_element.layout.spacing);
         m_element.scroll.content.sizeDelta = sizeDelta;
 
+        // 오브젝트 위치 조정
         float itemChunkHeight = m_element.rtBaseItem.sizeDelta.y + m_element.layout.spacing;
         for (int i = 0; i < m_element.scroll.content.childCount; i++)
         {

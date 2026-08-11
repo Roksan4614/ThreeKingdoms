@@ -371,14 +371,15 @@ public struct RankerData
     public RankerUserData my;
 }
 
+[JsonObject(MemberSerialization.OptIn)]
 public struct RankerUserData
 {
-    public int rank;
-    public int prevRank;
-    public int indexProfile;
-    public string skin;
-    public string nickname;
-    public int uid;
-    public long point;
-    public int power;
+    [JsonProperty] public int rank;
+    [JsonProperty] public int prevRank;
+    [JsonProperty] public int indexProfile;
+    [JsonProperty] public string skin;
+    [JsonProperty] public string nickname;
+    [JsonProperty] public int uid;
+    [JsonProperty] public long point;
+    [JsonProperty] public long power;
 }

@@ -33,15 +33,21 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         m_batchData = await TournamentWorker.instance.API_LoadUserInfoData(_rankerData.uid);
         await m_element.panelBatch.SetBatchDataAsync(m_batchData);
 
-        SetTreasure();
+        SetTreasureAsync().Forget();
         SetInfo();
 
         await UniTask.WaitUntil(() => gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
     }
 
-    void SetTreasure()
+    async UniTask SetTreasureAsync()
     {
+        var batchData = await TournamentWorker.instance.API_LoadUserInfoData(m_batchData.uid);
 
+        for (int i = 0; i < batchData.treasure.Count; i++)
+        {
+            var t = batchData.treasure[i];
+            m_element.treasure.GetChild(i).GetComponent<TreasureIconComponent>().SetTreasureDataAsync(t.key).Forget();
+        }
     }
 
     void SetInfo()
