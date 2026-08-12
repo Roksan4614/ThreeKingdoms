@@ -20,17 +20,18 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         m_element.panel.GetComponent<TextMeshProUGUI>("Batch/Text").text = "상대조합_";
 
         PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO);
-        m_element.toggleInfo.isOn = PPWorker.GetInt(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO, false) == 1;
         m_element.toggleInfo.onClick.AddListener(() => { m_element.toggleInfo.OnButtonToggle(); SetInfo(); });
     }
 
-    public async UniTask OpenAsync(RankerUserData _rankerData)
+    public async UniTask OpenAsync(int _uid)
     {
         gameObject.SetActive(true);
         Utils.SetActivePunch(m_element.panel, true);
 
+        m_element.toggleInfo.isOn = PPWorker.GetInt(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO, false) == 1;
+
         // batch;
-        m_batchData = await TournamentWorker.instance.API_LoadUserInfoData(_rankerData.uid);
+        m_batchData = await TournamentWorker.instance.API_LoadUserInfoData(_uid);
         await m_element.panelBatch.SetBatchDataAsync(m_batchData);
 
         SetTreasureAsync().Forget();
@@ -93,7 +94,7 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
 
 
     bool m_isOpenInfo = false;
-    public async UniTask OpenHeroInfoAsync(HeroInfoData _heroinfoData)
+    async UniTask OpenHeroInfoAsync(HeroInfoData _heroinfoData)
     {
         if (m_isOpenInfo == true)
             return;
@@ -105,6 +106,9 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
 
     public bool CloseEscape()
     {
+        if (PopupManager.instance.IsOpenPopup(PopupType.Hero_HeroInfo))
+            return false;
+
         if (gameObject.activeSelf == true)
         {
             Close();

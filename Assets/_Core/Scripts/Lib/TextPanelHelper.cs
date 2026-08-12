@@ -10,6 +10,8 @@ public class TextPanelHelper : MonoBehaviour, IValidatable
 
     CancellationTokenSource m_cts;
 
+    public RectTransform rt => (RectTransform)transform;
+
     public string text
     {
         get => m_element.txt.text;

@@ -52,7 +52,7 @@ public class PopupTournamentComponent : BasePopupComponent
                 m_element.popupUserInfo.CloseEscape() &&
                 m_element.popupRewardInfo.CloseEscape())
             {
-                if (PopupManager.instance.IsOpenPopup(PopupType.LobbyTournament_History) == false)
+                if (m_popupHistory == null ||  m_popupHistory.CloseEscape() == true)
                     Close();
             }
         });
@@ -85,7 +85,7 @@ public class PopupTournamentComponent : BasePopupComponent
         await m_element.panelBatch.SetBatchDataAsync(batchData);
     }
 
-    void SetPlayCount()
+    public void SetPlayCount()
     {
         m_element.txtPlayCount.text = $"일일_입장_가능_횟수: {TournamentWorker.data.countPlay}";
         m_element.buttons[(int)TournamentPopupType.AD].text = $"{TournamentWorker.data.countAD}/3";
@@ -117,7 +117,7 @@ public class PopupTournamentComponent : BasePopupComponent
         for (int i = 0; i < m_element.slots.Length; i++)
             m_element.slots[i].SetUserData(user[i],
                 _rankerData => OnButtonAsync_Start(_rankerData).Forget(),
-                _rankerData => m_element.popupUserInfo.OpenAsync(_rankerData).Forget()
+                _rankerData => m_element.popupUserInfo.OpenAsync(_rankerData.uid).Forget()
                 );
     }
 
@@ -153,27 +153,22 @@ public class PopupTournamentComponent : BasePopupComponent
         if (m_isEnter == true)
             return;
 
+        m_isEnter = true;
         if (TournamentWorker.data.countPlay <= 0)
         {
             if (TournamentWorker.data.countAD <= 0)
                 PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
-            else
-            {
-                var result = await PopupManager.instance.OpenModalAsync("광고보기??_");
+            else if (await TournamentWorker.instance.ShowAdsAsync())
+                SetPlayCount();
 
-                if (result == StatusType.Success && await TournamentWorker.instance.ShowAdsAsync() == false)
-                    PopupManager.instance.AlertShow("입장할_수_없습니다.");
-                else
-                    SetPlayCount();
-            }
-
+            m_isEnter = false;
             return;
         }
 
-        m_isEnter = true;
-        TournamentWorker.instance.EnterBattleAsync().Forget();
+        TournamentWorker.instance.EnterBattleAsync(_rankerData.uid).Forget();
 
-        IngameLog.Add("Enter: " + _rankerData.nickname);
+        //test
+        SetPlayCount();
     }
 
     async UniTask OnButtonAsync_Refresh()
@@ -204,12 +199,21 @@ public class PopupTournamentComponent : BasePopupComponent
         SetRefreshCount();
     }
 
+    PopupTournamentHistoryComponent m_popupHistory;
     async UniTask OpenPopupAsync(TournamentPopupType _popupType)
     {
         switch (_popupType)
         {
             case TournamentPopupType.History:
-                PopupManager.instance.OpenPopup(PopupType.LobbyTournament_History);
+                {
+                    if (m_popupHistory == null)
+                    {
+                        m_popupHistory = await PopupManager.instance.OpenPopupAsync<PopupTournamentHistoryComponent>(PopupType.LobbyTournament_History);
+                        m_popupHistory.transform.SetParent(m_element.popupBatch.transform.parent);
+                    }
+                    else
+                        m_popupHistory.OpenPopup_Rebirth();
+                }
                 break;
             case TournamentPopupType.Ranking:
                 await m_element.popupRanking.OpenPopupAsync();

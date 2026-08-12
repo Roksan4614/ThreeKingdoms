@@ -210,5 +210,60 @@ namespace Rev9.Tournament
 
             _callback?.Invoke();
         }
+
+        public async UniTask<List<TournamentHistoryData>> API_LoadHistoryData()
+        {
+            await UniTask.NextFrame();
+
+            string key = "PP_TOURNAMENT_HISTORY";
+
+            //PPWorker.DeleteKey(key);
+            m_history = PPWorker.Get<List<TournamentHistoryData>>(key);
+
+            if (m_history == null)
+            {
+                m_history = new();
+
+                var nicknames = Utils.GetRandomNicknameArray(20);
+                for (int i = 0; i < nicknames.Length; i++)
+                {
+                    var historyData = new TournamentHistoryData()
+                    {
+                        uid = DataManager.userInfo.uid + i + 100,
+                        nickname = nicknames[i],
+                        skin = TableManager.hero.GetHeroList().RandomFirst().key,
+                        isWin = UnityEngine.Random.value > 0.5f,
+                        isAttack = UnityEngine.Random.value > 0.5f
+                    };
+
+                    await API_LoadUserInfoData(historyData.uid);
+
+                    var batchData = m_dbRankUserInfoData[historyData.uid];
+                    historyData.batchData = batchData;
+
+                    // 방어에 실패한 경우, 복수 준비하자
+                    if (historyData.isWin == false && historyData.isAttack == false)
+                    {
+                        historyData.revengePoint = 100 + (int)(batchData.totalPower / (float)m_data.teamAttack.totalPower * 100);
+                        historyData.revengePoint += (int)(historyData.revengePoint * 0.5f);
+                    }
+
+                    //포인트 계산
+                    if (historyData.isWin)
+                        historyData.rewardPoint = 100 + (int)(batchData.totalPower / (float)m_data.teamAttack.totalPower * 100);
+                    else
+                    {
+                        historyData.rewardPoint = 100 + (int)((float)m_data.teamAttack.totalPower / batchData.totalPower * 100);
+                        historyData.rewardPoint *= -1;
+                    }
+
+                    m_history.Add(historyData);
+                }
+
+                PPWorker.Set(key, m_history);
+            }
+
+            return m_history;
+        }
     }
 }

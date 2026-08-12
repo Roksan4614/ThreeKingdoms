@@ -29,7 +29,6 @@ public class Scene_Boot : MonoBehaviour, IValidatable
 
         List<UniTask> tasks = new();
 
-        var timeStart = Time.realtimeSinceStartup;
         tasks.Add(AddressableManager.instance.InitializeAsync());
         tasks.Add(TableManager.instance.InitializeAsync());
 
@@ -48,6 +47,7 @@ public class Scene_Boot : MonoBehaviour, IValidatable
 #endif
 
         await m_element.logo.DOFade(1, 0.5f).AsyncWaitForCompletion();
+        var timeStart = Time.realtimeSinceStartup;
 
         // 사이에 세팅할것들
 #if SERVICE_DEV && !UNITY_EDITOR 

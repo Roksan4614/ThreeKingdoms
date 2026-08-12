@@ -146,6 +146,18 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         return false;
     }
 
+    public T GetPopup<T>(PopupType _popupType) where T : BasePopupComponent
+    {
+        for (int i = 0; i < m_element.pPopup.childCount; i++)
+        {
+            var popup = m_element.pPopup.GetChild(i).GetComponent<T>();
+            if (popup != null)
+                return popup;
+        }
+
+        return null;
+    }
+
     public bool isOpenModal => m_element.pModal.childCount > 0;
     public PopupModalComponent lastPopupModal => isOpenModal ?
         m_element.pModal.GetChild(m_element.pModal.childCount - 1).GetComponent<PopupModalComponent>() : null;

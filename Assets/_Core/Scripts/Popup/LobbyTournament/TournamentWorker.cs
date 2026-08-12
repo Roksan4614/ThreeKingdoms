@@ -20,6 +20,9 @@ namespace Rev9.Tournament
         TournamentData m_data;
         public static TournamentData data => instance.m_data;
 
+        List<TournamentHistoryData> m_history;
+        public List<TournamentHistoryData> history => m_history;
+
         public bool isAttackType { get; set; }
 
 
@@ -35,7 +38,7 @@ namespace Rev9.Tournament
         {
             if (m_data.isActive == false)
             {
-                PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT);
+                //PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT);
                 m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
             }
 
@@ -164,27 +167,48 @@ namespace Rev9.Tournament
             m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
         }
 
-        public async UniTask<bool> ShowAdsAsync()
-        {
-            if (m_data.countAD > 0 && await AdsManager.instance.ShowAsync())
-            {
-                m_data.countPlay++;
-                m_data.countAD--;
-                SaveData();
-                return true;
-            }
-            return false;
-        }
-
-        public async UniTask EnterBattleAsync()
+        public async UniTask EnterBattleAsync(int _uid)
         {
             if (m_data.countPlay == 0)
                 return;
 
+            IngameLog.Add("Enter: " + _uid);
+
+            //todo
+            await ExitAsync();
+
+            //await UniTask.NextFrame();
+        }
+
+        public async UniTask ExitAsync()
+        {
             m_data.countPlay--;
             SaveData();
-
             await UniTask.NextFrame();
+
+        }
+
+        public async UniTask<bool> ShowAdsAsync()
+        {
+            if (m_data.countAD > 0)
+            {
+                var result = await PopupManager.instance.OpenModalAsync("광고보기??_");
+
+                if (result == StatusType.Success)
+                {
+                    if (await AdsManager.instance.ShowAsync())
+                    {
+                        m_data.countPlay++;
+                        m_data.countAD--;
+                        SaveData();
+                        return true;
+                    }
+                    else
+                        PopupManager.instance.AlertShow("입장할_수_없습니다.");
+                }
+            }
+
+            return false;
         }
 
         public async UniTask RefreshListAsync()
@@ -338,8 +362,6 @@ namespace Rev9.Tournament
         public int rank;
         public int point;
 
-        public List<TournamentHistoryData> history;
-
         public TournamentBatchData teamAttack;
         public TournamentBatchData teamDefence;
 
@@ -424,14 +446,19 @@ namespace Rev9.Tournament
         public long totalPower => heroes.Sum(x => x.power);
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public struct TournamentHistoryData
     {
-        public string nickname;
-        public int power;
-        public int indexProfile;
-        public string skin;
-        public bool isWin;
-        public int rewardPoint;
-        public bool isAttack;
+        [JsonProperty] public int uid;
+        [JsonProperty] public string nickname;
+        [JsonProperty] public int indexProfile;
+        [JsonProperty] public string skin;
+        [JsonProperty] public bool isWin;
+        [JsonProperty] public int rewardPoint;
+        [JsonProperty] public int revengePoint;
+        [JsonProperty] public bool isAttack;
+        [JsonProperty] public TournamentBatchData batchData;
+
+        public bool isAvailRevenge => isAttack == false && isWin == false && revengePoint > 0;
     }
 }

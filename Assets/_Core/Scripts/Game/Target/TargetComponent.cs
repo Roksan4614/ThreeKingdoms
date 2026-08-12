@@ -32,7 +32,7 @@ public class TargetComponent : MonoBehaviour, IValidatable
         if ((m_prevPosY != transform.position.y && isSwitchSorting == true) || _isForce == true)
         {
             m_prevPosY = transform.position.y;
-            m_sortingGroup.sortingOrder = (int)(transform.position.y * -10f);
+            m_sortingGroup.sortingOrder = (int)(transform.position.y * -100f);
             if (m_canvas != null)
                 m_canvas.sortingOrder = m_sortingGroup.sortingOrder + 1;
         }
