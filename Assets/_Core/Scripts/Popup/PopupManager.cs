@@ -88,7 +88,10 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     }
 
     public void OpenPopup(PopupType _popupType, params object[] _data)
-        => OpenPopupAsync<BasePopupComponent>(_popupType, _data).Forget();
+        => OpenPopupAsync(_popupType, _data).Forget();
+
+    public async UniTask OpenPopupAsync(PopupType _popupType, params object[] _data)
+        => await OpenPopupAsync<BasePopupComponent>(_popupType, _data);
 
     public async UniTask<T> OpenPopupAsync<T>(PopupType _popupType, params object[] _data) where T : BasePopupComponent
     {

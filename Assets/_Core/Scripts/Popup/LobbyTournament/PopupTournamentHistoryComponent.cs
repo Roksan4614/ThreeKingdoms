@@ -1,11 +1,33 @@
 using Cysharp.Threading.Tasks;
 using Rev9.Tournament;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PopupTournamentHistoryComponent : BasePopupComponent
 {
     PopupTournamentHistoryComponent() : base(PopupType.LobbyTournament_History) { }
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        var btnRevenge = transform.GetComponent<ButtonHelper>("Panel/btn_add_revenge");
+#if SERVICE_DEV
+        btnRevenge.onClick.AddListener(() =>
+        {
+            var userData = TournamentWorker.data.battleUserList.RandomFirst();
+            TournamentWorker.instance.API_AddHistoryData(false, false, userData).Forget();
+
+            var historyData = TournamentWorker.instance.history;
+
+            m_element.scroll.Initialize<PopupTournamentHistory_Slot>(historyData.Count,
+                (_slot, _idx) => _slot.SetHistoryData(historyData[historyData.Count - _idx - 1], OnButton_Revenge));
+        });
+#else
+        Destroy(btnRevenge.gameObject);
+#endif
+    }
 
     private void Start() => StartAsync().Forget();
 
@@ -19,8 +41,9 @@ public class PopupTournamentHistoryComponent : BasePopupComponent
 
         Utils.SetActivePunch(m_element.panel, true);
 
+        m_element.scroll.empty.GetComponent<TextMeshProUGUI>("Text").text = "전투_기록이_없습니다.";
         m_element.scroll.Initialize<PopupTournamentHistory_Slot>(historyData.Count,
-            (_slot, _idx) => _slot.SetHistoryData(historyData[_idx], OnButton_Revenge));
+            (_slot, _idx) => _slot.SetHistoryData(historyData[historyData.Count - _idx - 1], OnButton_Revenge));
 
         transform.GetComponent<Button>("Dimm").onClick.AddListener(Close);
         var btnConfirm = transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
@@ -52,10 +75,10 @@ public class PopupTournamentHistoryComponent : BasePopupComponent
 
     void OnButton_Revenge(TournamentHistoryData _historyData)
     {
-        if (_historyData.isAvailRevenge)
+        if (_historyData.isOpenRevenge)
             m_element.popupRevenge.OpenAsync(_historyData).Forget();
         else
-            m_element.popupUserInfo.OpenAsync(_historyData.uid).Forget();
+            m_element.popupUserInfo.OpenAsync(_historyData.uid, _historyData.batchData).Forget();
     }
 
     public override void Close()

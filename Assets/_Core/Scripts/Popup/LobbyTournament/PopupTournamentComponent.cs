@@ -52,7 +52,7 @@ public class PopupTournamentComponent : BasePopupComponent
                 m_element.popupUserInfo.CloseEscape() &&
                 m_element.popupRewardInfo.CloseEscape())
             {
-                if (m_popupHistory == null ||  m_popupHistory.CloseEscape() == true)
+                if (m_popupHistory == null || m_popupHistory.CloseEscape() == true)
                     Close();
             }
         });
@@ -116,8 +116,8 @@ public class PopupTournamentComponent : BasePopupComponent
         var user = TournamentWorker.data.battleUserList;
         for (int i = 0; i < m_element.slots.Length; i++)
             m_element.slots[i].SetUserData(user[i],
-                _rankerData => OnButtonAsync_Start(_rankerData).Forget(),
-                _rankerData => m_element.popupUserInfo.OpenAsync(_rankerData.uid).Forget()
+                null, //_userData => OnButtonAsync_Start(_userData.info).Forget(),
+                _userData => m_element.popupUserInfo.OpenAsync(_userData.info.uid, _userData.batchData).Forget()
                 );
     }
 
@@ -147,29 +147,32 @@ public class PopupTournamentComponent : BasePopupComponent
         SetRefreshCount();
     }
 
-    bool m_isEnter = false;
-    async UniTask OnButtonAsync_Start(RankerUserData _rankerData)
-    {
-        if (m_isEnter == true)
-            return;
+    //bool m_isEnter = false;
+    //async UniTask OnButtonAsync_Start(RankerUserData _rankerData)
+    //{
+    //    if (m_isEnter == true)
+    //        return;
 
-        m_isEnter = true;
-        if (TournamentWorker.data.countPlay <= 0)
-        {
-            if (TournamentWorker.data.countAD <= 0)
-                PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
-            else if (await TournamentWorker.instance.ShowAdsAsync())
-                SetPlayCount();
+    //    m_isEnter = true;
+    //    if (TournamentWorker.data.countPlay <= 0)
+    //    {
+    //        if (TournamentWorker.data.countAD <= 0)
+    //            PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
+    //        else if (await TournamentWorker.instance.ShowAdsAsync())
+    //            SetPlayCount();
 
-            m_isEnter = false;
-            return;
-        }
+    //        m_isEnter = false;
+    //        return;
+    //    }
 
-        TournamentWorker.instance.EnterBattleAsync(_rankerData.uid).Forget();
+    //    var result = await PopupManager.instance.OpenModalAsync("도전_하시겠습니까?");
 
-        //test
-        SetPlayCount();
-    }
+    //    if (result == StatusType.Success)
+    //    {
+    //        TournamentWorker.instance.EnterBattleAsync(_rankerData.uid).Forget();
+    //    }
+    //    m_isEnter = false;
+    //}
 
     async UniTask OnButtonAsync_Refresh()
     {
@@ -229,6 +232,7 @@ public class PopupTournamentComponent : BasePopupComponent
                     // 열었는데 공격 배치가 바뀌었어? 그럼 업데이트 해줘야지
                     if (await m_element.popupBatch.OpenAsync())
                     {
+                        //IngameLog.Add("배치팝업 이후 업데이트");
                         var batchData = TournamentWorker.instance.GetBatchData(true);
                         m_element.txtPower.text = batchData.totalPower.AmountKMBT(_isMBT: true);
                         await m_element.panelBatch.SetBatchDataAsync(batchData);

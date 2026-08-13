@@ -315,8 +315,10 @@ GameObject:
   - component: {fileID: 4550735867614104560}
   - component: {fileID: 2538123159865922622}
   - component: {fileID: 8652157782449601616}
+  - component: {fileID: 3660564392291624885}
+  - component: {fileID: 3929282121878957736}
   m_Layer: 5
-  m_Name: Revenge
+  m_Name: btn_revenge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -340,7 +342,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 862.14, y: 51}
-  m_SizeDelta: {x: 0, y: 65}
+  m_SizeDelta: {x: 0, y: 70}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &7825974388904620460
 CanvasRenderer:
@@ -435,6 +437,73 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 2
   m_VerticalFit: 0
+--- !u!114 &3660564392291624885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930917354100996145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08be4068aba223343ac6976ab55a83fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHelper
+  m_element:
+    rt: {fileID: 1762347828407281020}
+    localScale: {x: 1, y: 1, z: 1}
+    button: {fileID: 3929282121878957736}
+    image: {fileID: 2288804253463670678}
+    txtName: {fileID: 7667478721808635116}
+    collider: {fileID: 0}
+    objCheck: {fileID: 0}
+  m_prevColorData:
+    button: {r: 0, g: 0, b: 0, a: 0}
+    text: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &3929282121878957736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 930917354100996145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+  m_Navigation:
+    m_Mode: 0
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 0
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 2288804253463670678}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1231029749473097968
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,7 +569,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uBCF5\uC218<size=80%><color=#eeeeee> (+140p)"
+  m_text: "\uBCF5\uC218\uD608\uC804<size=90%> (00:00s)</size>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2998ed1f59a9fb548a0056a5b7846534, type: 2}
   m_sharedMaterial: {fileID: -8230767721390268291, guid: 2998ed1f59a9fb548a0056a5b7846534, type: 2}
@@ -1651,15 +1720,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopupTournamentHistory_Slot
   m_element:
     imgPanel: {fileID: 3089404537135444004}
+    button: {fileID: 254149661314695110}
     objAttack: {fileID: 7780911395521551681}
     objDefence: {fileID: 5731198903868456352}
     txtType: {fileID: 8844993452130224555}
     txtResult: {fileID: 7507605316841726137}
     profile: {fileID: 2245162507820001387}
     txtNickname: {fileID: 5839246908985429688}
-    txtRevenge: {fileID: 7667478721808635116}
-    popupUserInfo: {fileID: 0}
-    popupRevenge: {fileID: 0}
+    btnRevenge: {fileID: 3660564392291624885}
 --- !u!222 &5652767852659661178
 CanvasRenderer:
   m_ObjectHideFlags: 0

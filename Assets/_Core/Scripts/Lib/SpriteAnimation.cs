@@ -36,6 +36,11 @@ public class SpriteAnimaion : MonoBehaviour, IValidatable
             gameObject.SetActive(false);
     }
 
+    private void OnDestroy()
+    {
+        m_cts = m_cts.ReleaseCTS();
+    }
+
     public void Play(Action _onCompleted = null)
     {
         m_onCompleted = _onCompleted;

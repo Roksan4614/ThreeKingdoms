@@ -30,6 +30,8 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
         m_element.panel.localScale = Vector3.one;
         m_element.panel.gameObject.SetActive(true);
 
+        m_element.panelHero.isNeedUpdateClose = m_element.panelRelic.isNeedUpdateClose = false;
+
         m_isCloseStart = false;
         Utils.SetActivePunch(m_element.panelHero.parentList, true);
 
@@ -38,7 +40,7 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
 
         await UniTask.WaitUntil(() => m_isCloseStart == true, cancellationToken: destroyCancellationToken);
 
-        return m_element.panelHero.isUpdated;
+        return m_element.panelHero.isNeedUpdateClose || m_element.panelRelic.isNeedUpdateClose;
     }
 
     void OnButton_Tab(TabType _tabType)

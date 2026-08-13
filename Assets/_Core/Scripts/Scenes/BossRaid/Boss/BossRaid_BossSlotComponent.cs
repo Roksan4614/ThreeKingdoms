@@ -34,7 +34,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
     }
 
     private void Start()
-        => ArrowNaviComponent.instance.SetParent(boss.element.parentCanvas);
+        => ArrowNaviComponent.instance?.SetParent(boss.element.parentCanvas);
 
     private void OnDestroy()
         => m_cts = m_cts.ReleaseCTS();

@@ -80,6 +80,7 @@ public class Data_BossRaid
         var dtEnd = m_data.dtNextRound.AddMinutes(c_timerRunning);
         var tickEndRound = dtEnd.AddSeconds(-Configure.instance.timeGapFromServer).Ticks;
 
+        m_data.tickSecondPhase = 0;
         m_data.tickEndRound = dtEnd.Ticks;
         m_data.nowGrade = (GradeType)UnityEngine.Random.Range((int)m_data.gradeMin, (int)m_data.gradeMax + 1);
         SaveData();

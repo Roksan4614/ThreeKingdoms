@@ -53,7 +53,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         UnityAction action = () =>
         {
             var scale = m_element.imgSort.rectTransform.localScale;
-            scale.y = DataManager.userInfo.sortData.isDescending ? -1 : 1;
+            scale.y = DataManager.userInfo.sortData.isDescending ? 1 : -1;
             m_element.imgSort.rectTransform.localScale = scale;
         };
         action();
@@ -181,6 +181,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             SetLayout_List();
         }
 
+        m_element.scroll.content.anchoredPosition = Vector2.zero;
         m_teamPosition = DataManager.option.mainTeamPosition;
     }
 
@@ -338,9 +339,15 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         ResetActiveButton_List();
 
         if (m_popupHeroInfo.isNeedUpdate)
-            OnEnable();
+            UpdateHeroes();
         //SetLayout_List(DataManager.userInfo.GetHeroInfoData(_data.key));
     }
+
+    protected virtual void UpdateHeroes()
+    {
+        OnEnable();
+    }
+
 
     #region BATCH
     void SetLayout_Batch()

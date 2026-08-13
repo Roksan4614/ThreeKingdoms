@@ -9,6 +9,8 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
 {
     TournamentBatchData m_batchData;
 
+    [SerializeField] bool isOpenPunch = true;
+
     private void Awake()
     {
         transform.GetComponent<Button>("Panel/btn_close").onClick.AddListener(Close);
@@ -23,21 +25,51 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         m_element.toggleInfo.onClick.AddListener(() => { m_element.toggleInfo.OnButtonToggle(); SetInfo(); });
     }
 
-    public async UniTask OpenAsync(int _uid)
+    public async UniTask OpenAsync(int _uid, TournamentBatchData _batchData = default)
     {
         gameObject.SetActive(true);
-        Utils.SetActivePunch(m_element.panel, true);
+
+        if (isOpenPunch)
+            Utils.SetActivePunch(m_element.panel, true);
 
         m_element.toggleInfo.isOn = PPWorker.GetInt(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO, false) == 1;
 
-        // batch;
-        m_batchData = await TournamentWorker.instance.API_LoadUserInfoData(_uid);
+        m_batchData = _batchData.isActive ? _batchData : await TournamentWorker.instance.API_LoadUserInfoData(_uid);
         await m_element.panelBatch.SetBatchDataAsync(m_batchData);
 
         SetTreasureAsync().Forget();
         SetInfo();
 
+        if (m_element.btnStart != null)
+        {
+            m_element.btnStart.onClick.RemoveAllListeners();
+            m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Start(_uid).Forget());
+        }
+
         await UniTask.WaitUntil(() => gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+    }
+
+    bool m_isEnter = false;
+    async UniTask OnButtonAsync_Start(int _uid)
+    {
+        if (m_isEnter == true)
+            return;
+
+        m_isEnter = true;
+        if (TournamentWorker.data.countPlay <= 0)
+        {
+            if (TournamentWorker.data.countAD <= 0)
+                PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
+            else if (await TournamentWorker.instance.ShowAdsAsync())
+                PopupManager.instance.GetPopup<PopupTournamentComponent>(PopupType.LobbyTournament).SetPlayCount();
+
+            m_isEnter = false;
+            return;
+        }
+
+        TournamentWorker.instance.EnterBattleAsync(_uid).Forget();
+
+        m_isEnter = false;
     }
 
     async UniTask SetTreasureAsync()
@@ -119,7 +151,12 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
     }
 
     void Close()
-        => Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
+    {
+        if (isOpenPunch)
+            Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
+        else
+            gameObject.SetActive(false);
+    }
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
@@ -138,6 +175,8 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         public ToggleHelper toggleInfo;
         public GameObject baseInfoSlot;
 
+        public ButtonHelper btnStart;
+
         public void Initialize(Transform _transform)
         {
             txtTotalPower = _transform.GetComponent<TextMeshProUGUI>("Panel/Batch/Power/Text");
@@ -147,6 +186,8 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
 
             toggleInfo = _transform.GetComponent<ToggleHelper>("Panel/Toggle");
             baseInfoSlot = _transform.Find("Panel/Batch/Info/Slot").gameObject;
+
+            btnStart = _transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
         }
 
         public Transform panel => toggleInfo.transform.parent;

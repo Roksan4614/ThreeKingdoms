@@ -191,7 +191,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         txt.text = $"{TableManager.stringHero.GetString("CLASSTYPE_" + _classType.ToString().ToUpper())}_<color=#BA0700>+{amount.AmountKMBT()}%";
     }
 
-    protected virtual void UpdateTreasure_TotalStat()
+    protected virtual void UpdateTreasure_TotalStat(bool _isOnClick = false)
     {
         var scroll = m_element.scroll;
 
@@ -282,7 +282,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         else
         {
             m_element.scroll.content.anchoredPosition = Vector2.zero;
-            UpdateTreasure_TotalStat();
+            UpdateTreasure_TotalStat(true);
             SetTextTotalTreasure();
         }
     }

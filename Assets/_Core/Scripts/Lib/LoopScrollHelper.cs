@@ -9,6 +9,7 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     int m_countItem;
 
     public RectTransform content => m_element.scroll.content;
+    public Transform empty => m_element.empty;
 
     private void Awake()
     {
@@ -74,6 +75,8 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
                 _onUpdate(m_element.scroll.content.GetChild(_indexChild).GetComponent<T>(), _indexData);
             });
         });
+
+        m_element.empty?.gameObject.SetActive(_count == 0);
     }
 
     int m_curIndex = 0;
@@ -148,8 +151,6 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
         else
             content.anchoredPosition = pos;
     }
-
-    public Transform empty => m_element.empty;
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

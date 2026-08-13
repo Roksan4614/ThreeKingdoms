@@ -11,7 +11,7 @@ namespace Rev9.Tournament
         {
             await UniTask.NextFrame();
 
-            m_data.battleUserList = new RankerUserData[4];
+            m_data.battleUserList = new TournamentRankerUserData[4];
 
             m_dbRankUserInfoData.Clear();
 
@@ -21,18 +21,22 @@ namespace Rev9.Tournament
             for (int i = 0; i < 4; i++)
             {
                 int uid = DataManager.userInfo.uid + i;
-                long power = (await API_LoadUserInfoData(uid)).totalPower;
+                var batchData = await API_LoadUserInfoData(uid);
                 m_data.battleUserList[i] = new()
                 {
-                    uid = uid,
-                    nickname = randomNickname[i],
-                    power = power,
-                    point = UnityEngine.Random.Range(500, 1000) * (i + 1),
-                    skin = heroes.RandomFirst().key,
+                    info = new RankerUserData()
+                    {
+                        uid = uid,
+                        nickname = randomNickname[i],
+                        power = batchData.totalPower,
+                        point = UnityEngine.Random.Range(500, 1000) * (i + 1),
+                        skin = heroes.RandomFirst().key,
+                    },
+                    batchData = batchData
                 };
             }
 
-            m_data.battleUserList = m_data.battleUserList.SortByDescending(x => x.point);
+            m_data.battleUserList = m_data.battleUserList.SortByDescending(x => x.info.point);
 
             SaveData();
         }
@@ -202,6 +206,10 @@ namespace Rev9.Tournament
         {
             await UniTask.NextFrame();
 
+#if SERVICE_DEV
+            //var msg = Newtonsoft.Json.JsonConvert.SerializeObject(_batchData.heroes.Select(x => x.key).ToList());
+            //IngameLog.Add($"API_UpdateTeamData: {(_isAttackType ? "ATTACK" : "DEFENCE")}: {msg}");
+#endif
             var team = m_data.GetTeam(_isAttackType);
 
             team.heroes.Clear();
@@ -211,56 +219,112 @@ namespace Rev9.Tournament
             _callback?.Invoke();
         }
 
+
+        string c_keyHistory = "PP_TOURNAMENT_HISTORY";
+        public async UniTask API_AddHistoryData(bool _isAttackType, bool _isWin, TournamentRankerUserData _userData, int _idxRevenge = -1)
+        {
+            if (m_history == null)
+                m_history = new();
+
+            TournamentHistoryData historyData = new()
+            {
+                index = m_history.Count == 0 ? 1 : m_history[m_history.Count - 1].index + 1,
+                uid = _userData.info.uid,
+                nickname = _userData.info.nickname,
+                batchData = _userData.batchData,
+                indexProfile = _userData.info.indexProfile,
+                skin = _userData.info.skin,
+                isAttack = _isAttackType,
+                isWin = _isWin,
+                tick = Utils.GetUTC().Ticks
+            };
+
+            var userBatchData = m_data.GetTeam(_isAttackType);
+
+            // 방어에 실패한 경우, 복수 준비하자
+            if (historyData.isWin == false && historyData.isAttack == false)
+            {
+                historyData.revengePoint = 100 + (int)(_userData.batchData.totalPower / (float)userBatchData.totalPower * 100);
+                historyData.revengePoint += (int)(historyData.revengePoint * 0.5f);
+            }
+
+            //포인트 계산
+            if (historyData.isWin)
+                historyData.rewardPoint = 100 + (int)(_userData.batchData.totalPower / (float)userBatchData.totalPower * 100);
+            else
+            {
+                historyData.rewardPoint = 100 + (int)((float)userBatchData.totalPower / _userData.batchData.totalPower * 100);
+                historyData.rewardPoint *= -1;
+            }
+
+            m_history.Add(historyData);
+
+            if (_idxRevenge > -1)
+            {
+                var idx = m_history.FindIndex(x => x.index == _idxRevenge);
+                if (idx > -1)
+                {
+                    var h = m_history[idx];
+                    h.revengePoint = 0;
+                    m_history[idx] = h;
+                }
+            }
+
+            while (m_history.Count > 100)
+                m_history.RemoveAt(0);
+
+            PPWorker.Set(c_keyHistory, m_history);
+
+            await UniTask.NextFrame();
+        }
+
         public async UniTask<List<TournamentHistoryData>> API_LoadHistoryData()
         {
             await UniTask.NextFrame();
 
-            string key = "PP_TOURNAMENT_HISTORY";
-
-            //PPWorker.DeleteKey(key);
-            m_history = PPWorker.Get<List<TournamentHistoryData>>(key);
+            m_history = PPWorker.Get<List<TournamentHistoryData>>(c_keyHistory);
 
             if (m_history == null)
             {
                 m_history = new();
 
-                var nicknames = Utils.GetRandomNicknameArray(20);
-                for (int i = 0; i < nicknames.Length; i++)
-                {
-                    var historyData = new TournamentHistoryData()
-                    {
-                        uid = DataManager.userInfo.uid + i + 100,
-                        nickname = nicknames[i],
-                        skin = TableManager.hero.GetHeroList().RandomFirst().key,
-                        isWin = UnityEngine.Random.value > 0.5f,
-                        isAttack = UnityEngine.Random.value > 0.5f
-                    };
+                //var nicknames = Utils.GetRandomNicknameArray(20);
+                //for (int i = 0; i < nicknames.Length; i++)
+                //{
+                //    var historyData = new TournamentHistoryData()
+                //    {
+                //        uid = DataManager.userInfo.uid + i + 100,
+                //        nickname = nicknames[i],
+                //        skin = TableManager.hero.GetHeroList().RandomFirst().key,
+                //        isWin = UnityEngine.Random.value > 0.5f,
+                //        isAttack = UnityEngine.Random.value > 0.5f
+                //    };
 
-                    await API_LoadUserInfoData(historyData.uid);
+                //    await API_LoadUserInfoData(historyData.uid);
 
-                    var batchData = m_dbRankUserInfoData[historyData.uid];
-                    historyData.batchData = batchData;
+                //    var batchData = m_dbRankUserInfoData[historyData.uid];
+                //    historyData.batchData = batchData;
 
-                    // 방어에 실패한 경우, 복수 준비하자
-                    if (historyData.isWin == false && historyData.isAttack == false)
-                    {
-                        historyData.revengePoint = 100 + (int)(batchData.totalPower / (float)m_data.teamAttack.totalPower * 100);
-                        historyData.revengePoint += (int)(historyData.revengePoint * 0.5f);
-                    }
+                //    // 방어에 실패한 경우, 복수 준비하자
+                //    if (historyData.isWin == false && historyData.isAttack == false)
+                //    {
+                //        historyData.revengePoint = 100 + (int)(batchData.totalPower / (float)m_data.teamAttack.totalPower * 100);
+                //        historyData.revengePoint += (int)(historyData.revengePoint * 0.5f);
+                //    }
 
-                    //포인트 계산
-                    if (historyData.isWin)
-                        historyData.rewardPoint = 100 + (int)(batchData.totalPower / (float)m_data.teamAttack.totalPower * 100);
-                    else
-                    {
-                        historyData.rewardPoint = 100 + (int)((float)m_data.teamAttack.totalPower / batchData.totalPower * 100);
-                        historyData.rewardPoint *= -1;
-                    }
+                //    //포인트 계산
+                //    if (historyData.isWin)
+                //        historyData.rewardPoint = 100 + (int)(batchData.totalPower / (float)m_data.teamAttack.totalPower * 100);
+                //    else
+                //    {
+                //        historyData.rewardPoint = 100 + (int)((float)m_data.teamAttack.totalPower / batchData.totalPower * 100);
+                //        historyData.rewardPoint *= -1;
+                //    }
 
-                    m_history.Add(historyData);
-                }
+                //    m_history.Add(historyData);
+                //}
 
-                PPWorker.Set(key, m_history);
+                PPWorker.Set(c_keyHistory, m_history);
             }
 
             return m_history;

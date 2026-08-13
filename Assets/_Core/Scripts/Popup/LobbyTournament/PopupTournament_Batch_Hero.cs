@@ -11,7 +11,20 @@ using UnityEngine.UI;
 public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 {
     bool m_isAttackType;
-    public bool isUpdated { get; private set; }
+
+    bool m_isUpdated;
+    bool isUpdated
+    {
+        get => m_isUpdated;
+        set
+        {
+            if (value == true && m_isAttackType == true)
+                isNeedUpdateClose = true;
+            m_isUpdated = value;
+        }
+    }
+
+    public bool isNeedUpdateClose { get; set; }
 
     public Transform parentList => m_element.scroll.transform.parent;
 
@@ -85,24 +98,45 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
     {
         if (m_isStarted == true)
         {
+            m_element.scroll.content.anchoredPosition = Vector2.zero;
             //if (m_isNeedUpdateLayout)
             //    TournamentWorker.instance.UpdateHero();
 
-            OnButtonAsync_Type(TournamentWorker.instance.isAttackType, m_isNeedUpdateLayout).Forget();
+            //OnButtonAsync_Type(m_isAttackType, m_isNeedUpdateLayout).Forget();
         }
 
-        isUpdated = false;
+        //isUpdated = false;
+    }
+
+    protected override void UpdateHeroes()
+    {
+        for (int i = 0; i < m_batchData.heroes.Count; i++)
+        {
+            var data = m_batchData.heroes[i];
+
+            var newData = DataManager.userInfo.GetHeroInfoData(data.key);
+            data.grade = newData.grade;
+            data.enchantLevel = newData.enchantLevel;
+            m_batchData.heroes[i] = data;
+        }
+
+        m_elementTournament.txtPower.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+        SetLayout_List();
     }
 
     public async UniTask CloseAsync(UnityAction _callback)
     {
         if (isUpdated == true)
+        {
             await TournamentWorker.instance.API_UpdateTeamData(m_isAttackType, m_batchData);
+            isUpdated = false;
+        }
 
         _callback();
 
         if (m_isAttackType == false)
         {
+            m_isAttackType = TournamentWorker.instance.isAttackType = true;
             await UniTask.WaitForSeconds(.1f);
             m_elementTournament.panelBatch.SetBatchDataAsync(TournamentWorker.data.teamAttack).Forget();
         }
@@ -238,7 +272,10 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             return;
 
         if (Configure.isPC == false)
+        {
+            m_actionData.idxEnter = _idx;
             Action_Enter(m_actionData.idxEnter);
+        }
         else if (ControllerManager.instance.isRightClick)
         {
             OnRightClick_List(m_itemList.Find(x => hero.info.skin == x.data.skin));
@@ -274,7 +311,6 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             m_batchData = TournamentWorker.instance.ChangePosition(m_batchData, _idx, m_actionData.idxEnter); ;
 
             SetLayout_List();
-
             isUpdated = true;
         }
 
@@ -307,9 +343,6 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
                 return;
             }
 
-            itemData.isBatch = false;
-            _item.UpdateHeroInfo(itemData);
-
             var idx = m_batchData.heroes.FindIndex(x => x.skin == _item.data.skin);
             m_batchData.heroes.RemoveAt(idx);
         }
@@ -324,7 +357,6 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
             itemData.isBatch = true;
             itemData.sortIdx = TournamentWorker.instance.GetPositionByClass(m_batchData, itemData.classType);
-            _item.UpdateHeroInfo(itemData);
 
             m_batchData.heroes.Add(itemData);
         }
@@ -344,30 +376,9 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         if (m_isStarted == false)
             return;
 
-        // 업데이트 정보가 필요하다면
-        if (_updateInfoData.isActive)
-        {
-            var indexList = m_itemList.FindIndex(x => x.data.key == _updateInfoData.key);
-            if (indexList > -1)
-                m_itemList[indexList].UpdateHeroInfo(_updateInfoData);
-        }
         List<HeroInfoData> lstHero = new();
         lstHero.AddRange(m_batchData.heroes);
         lstHero.AddRange(DataManager.userInfo.myHero.Where(my => m_batchData.heroes.Any(x => x.skin == my.skin) == false).ToList());
-
-        // myHero batch 한거 false로 바꿔주자
-        for (int i = m_batchData.heroes.Count; i < lstHero.Count; i++)
-        {
-            var hero = lstHero[i];
-            if (hero.isBatch == true)
-            {
-                int idx = m_itemList.FindIndex(x => x.data.key == hero.key);
-                hero.isBatch = false;
-                lstHero[i] = hero;
-
-                m_itemList[idx].UpdateHeroInfo(hero);
-            }
-        }
 
         var sortData = DataManager.userInfo.GetHeroSortData(lstHero);
 
@@ -378,8 +389,12 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             if (idx == -1)
                 continue;
 
-            if (i < m_batchData.heroes.Count)
-                m_itemList[idx].UpdateHeroInfo(m_batchData.heroes[i]);
+            var data = sortData[i];
+
+            if (m_batchData.heroes.FindIndex(x => x.key == sortData[i].key) == -1)
+                data.isBatch = false;
+
+            m_itemList[idx].UpdateHeroInfo(data);
 
             m_itemList[idx].transform.SetSiblingIndex(i);
             m_itemList[idx].element.panel.gameObject.SetActive(true);

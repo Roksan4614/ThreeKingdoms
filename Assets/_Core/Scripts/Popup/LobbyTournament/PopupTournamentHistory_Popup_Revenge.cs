@@ -42,7 +42,7 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
         Utils.SetActivePunch(m_element.panel, true);
 
         m_element.slot.SetHistoryData(_historyData, null);
-        m_element.userInfo.OpenAsync(_historyData.uid).Forget();
+        m_element.userInfo.OpenAsync(_historyData.uid, _historyData.batchData).Forget();
 
         m_element.txtPointWin.text = $"승리_시_<size=120%>+{_historyData.revengePoint}p</size>";
         m_element.txtPointLose.text = $"패배_시_<size=120%>{_historyData.rewardPoint}p</size>";
@@ -54,6 +54,7 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
 
     void Close()
     {
+        //gameObject.SetActive(false);
         Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
     }
 
@@ -75,10 +76,16 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
             return;
         }
 
-        TournamentWorker.instance.EnterBattleAsync(m_historyData.uid).Forget();
+        var result = await PopupManager.instance.OpenModalAsync("도전_하시겠습니까?");
 
-        //test
-        SetPlayCount();
+        if (result == StatusType.Success)
+        {
+            TournamentWorker.instance.EnterBattleAsync(m_historyData.uid).Forget();
+
+            //test
+            SetPlayCount();
+        }
+        m_isDoing = false;
     }
 
     async UniTask OnButtonAsync_AD()

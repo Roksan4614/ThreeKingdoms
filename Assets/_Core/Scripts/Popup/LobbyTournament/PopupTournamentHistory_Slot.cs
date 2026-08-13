@@ -1,5 +1,8 @@
 using Cysharp.Threading.Tasks;
 using Rev9.Tournament;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,9 +10,22 @@ using UnityEngine.UI;
 
 public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
 {
+    CancellationTokenSource m_cts;
+
+    Color m_clrPrevRevenge;
+    private void Awake()
+    {
+        m_clrPrevRevenge = m_element.btnRevenge.image.color;
+    }
+
+    private void OnDestroy()
+    {
+        m_cts = m_cts.ReleaseCTS();
+    }
+
     public void SetHistoryData(TournamentHistoryData _historyData, UnityAction<TournamentHistoryData> _callback)
     {
-        bool isRevenge = _historyData.isAvailRevenge;
+        bool isRevenge = _historyData.isRevenge;
 
         m_element.objAttack.SetActive(_historyData.isAttack);
         m_element.objDefence.SetActive(_historyData.isAttack == false);
@@ -28,12 +44,86 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
 
         if (isRevenge == true)
         {
-            m_element.txtRevenge.text = $"복수 <color=#eeeeee><size=80%> (+{_historyData.revengePoint}p)</size></color>";
-            m_element.objRevenge.transform.ForceRebuildLayout();
+            if (_historyData.revengePoint == 0)
+            {
+                m_element.btnRevenge.text = $"복수성공";
+                m_element.objRevenge.transform.ForceRebuildLayout();
+                m_element.btnRevenge.image.color = m_clrPrevRevenge;
+                m_element.btnRevenge.interactable = false;
+            }
+            else
+                TimerRevengeAsync(_historyData.dtEndRevenge).Forget();
         }
+        else
+            m_cts = m_cts.ReleaseCTS();
 
         m_element.button.onClick.RemoveAllListeners();
         m_element.button.onClick.AddListener(() => _callback?.Invoke(_historyData));
+
+        m_element.btnRevenge.onClick.RemoveAllListeners();
+        m_element.btnRevenge.onClick.AddListener(() =>
+        {
+            var batchData = _historyData.batchData;
+            List<HeroInfoData> heroes = new(batchData.heroes);
+
+            List<int> ranidx = new() { 1, 2, 3, 4, 5, 6, 7, 8, 0 };
+            ranidx = ranidx.Shuffle();
+            for (int i = 0; i < heroes.Count; i++)
+            {
+                var h = heroes[i];
+                h.sortIdx = ranidx[i];
+                heroes[i] = h;
+            }
+
+            if (_historyData.teamDefence == null)
+            {
+                _historyData.teamDefence = heroes;
+
+                var historyData = _historyData;
+                batchData.heroes = heroes;
+                historyData.batchData = batchData;
+
+                _callback?.Invoke(historyData);
+            }
+            else
+            {
+                var historyData = _historyData;
+                historyData.batchData.heroes = historyData.teamDefence;
+                _callback?.Invoke(historyData);
+            }
+        });
+    }
+
+    async UniTask TimerRevengeAsync(System.DateTime _dtEnd)
+    {
+        m_cts = m_cts.ReleaseCTS(true);
+        var token = m_cts.Token;
+
+        TimeSpan ts = _dtEnd - Utils.GetUTC();
+        m_element.btnRevenge.text = $"복수_<size=90%>({ts.ToRemainTime(25)})</size>";
+        m_element.objRevenge.transform.ForceRebuildLayout();
+        m_element.btnRevenge.image.color = m_clrPrevRevenge;
+        m_element.btnRevenge.interactable = true;
+
+        int prev = (int)ts.TotalSeconds;
+        while (ts.TotalSeconds > 0)
+        {
+            ts = _dtEnd - Utils.GetUTC();
+            var sec = (int)ts.TotalSeconds;
+            if (sec != prev)
+            {
+                prev = sec;
+
+                m_element.btnRevenge.text = $"복수_<size=90%>({ts.ToRemainTime(25)})</size>";
+                m_element.objRevenge.transform.ForceRebuildLayout();
+            }
+
+            await UniTask.NextFrame(token);
+        }
+
+        m_element.btnRevenge.text = $"<color=#555555>시간초과</color>";
+        m_element.btnRevenge.image.color = Color.white;
+        m_element.btnRevenge.interactable = false;
     }
 
     #region VALIDATE
@@ -56,7 +146,8 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtResult;
         public ProfileIconCompoent profile;
         public TextPanelHelper txtNickname;
-        public TextMeshProUGUI txtRevenge;
+
+        public ButtonHelper btnRevenge;
 
         public void Initialize(Transform _transform)
         {
@@ -69,12 +160,13 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
             txtType = _transform.GetComponent<TextMeshProUGUI>("Panel/Type/Text");
             txtResult = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_result");
             txtNickname = _transform.GetComponent<TextPanelHelper>("Panel/txt_nickname");
-            txtRevenge = _transform.GetComponent<TextMeshProUGUI>("Panel/Revenge/Text");
 
             profile = _transform.GetComponent<ProfileIconCompoent>("Panel/Slot_Profile");
+
+            btnRevenge = _transform.GetComponent<ButtonHelper>("Panel/btn_revenge");
         }
 
-        public GameObject objRevenge => txtRevenge.transform.parent.gameObject;
+        public GameObject objRevenge => btnRevenge.gameObject;
     }
     #endregion VALIDATE
 

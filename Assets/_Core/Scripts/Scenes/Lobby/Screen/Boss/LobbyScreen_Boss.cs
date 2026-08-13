@@ -18,12 +18,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         m_element.btnAD.onClick.AddListener(() => ShowAdsAsync().Forget());
 
         SetCountText();
-        // Tab 持失馬切
-        SetTab();
-
-        var data = TableManager.dailyDungeonBoss.Get(m_curWeekday);
-        m_curWeekday--;
-        OnButton_Tab(data);
+        SlotDayChange();
 
         Signal.instance.DayChange.connect = SlotDayChange;
     }
@@ -154,11 +149,15 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
     void SlotDayChange()
     {
-        SetTab();
-        OnButton_Tab(TableManager.dailyDungeonBoss.Get((WeekdayType)Utils.GetUTC().DayOfWeek));
+        var weekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
+        if (weekday == WeekdayType.Sunday)
+            weekday = WeekdayType.Monday;
+
+        SetTab(weekday);
+        OnButton_Tab(TableManager.dailyDungeonBoss.Get(weekday), true);
     }
 
-    void SetTab()
+    void SetTab(WeekdayType _weekday)
     {
         if (gameObject.activeInHierarchy == false)
             return;

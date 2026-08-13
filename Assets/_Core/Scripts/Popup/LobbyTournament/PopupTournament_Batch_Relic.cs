@@ -10,6 +10,8 @@ public class PopupTournament_Batch_Relic : LobbyScreen_Hero_Relic
 
     bool m_isAttackType;
 
+    public bool isNeedUpdateClose { get; set; }
+
     protected override void Awake()
     {
         m_isScreenHeroMode = false;
@@ -42,8 +44,11 @@ public class PopupTournament_Batch_Relic : LobbyScreen_Hero_Relic
         m_btnAttack.transform.parent.gameObject.SetActive(_tabType == TabType.Treasure);
     }
 
-    protected override void UpdateTreasure_TotalStat()
+    protected override void UpdateTreasure_TotalStat(bool _isOnClick = false)
     {
+        if (_isOnClick && TournamentWorker.instance.isAttackType == true)
+            isNeedUpdateClose = true;
+
         var scroll = m_element.scroll;
 
         m_isAttackType = TournamentWorker.instance.isAttackType;

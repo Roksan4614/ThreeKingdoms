@@ -7,9 +7,9 @@ using UnityEngine.UI;
 
 public class PopupTournament_Slot : MonoBehaviour, IValidatable
 {
-    UnityAction<RankerUserData> m_onStart;
-    UnityAction<RankerUserData> m_onOpenInfo;
-    RankerUserData m_rankerUserData;
+    UnityAction<TournamentRankerUserData> m_onStart;
+    UnityAction<TournamentRankerUserData> m_onOpenInfo;
+    TournamentRankerUserData m_rankerUserData;
 
     private void Awake()
     {
@@ -28,18 +28,18 @@ public class PopupTournament_Slot : MonoBehaviour, IValidatable
         m_element.txtPoint.text = "";
     }
 
-    public void SetUserData(RankerUserData _rankerUserData, UnityAction<RankerUserData> _onStart, UnityAction<RankerUserData> _onOpenInfo)
+    public void SetUserData(TournamentRankerUserData _rankerUserData, UnityAction<TournamentRankerUserData> _onStart, UnityAction<TournamentRankerUserData> _onOpenInfo)
     {
         m_onStart = _onStart;
         m_onOpenInfo = _onOpenInfo;
         m_rankerUserData = _rankerUserData;
 
-        m_element.txtNickname.text = _rankerUserData.nickname;
-        m_element.txtPower.text = _rankerUserData.power.AmountKMBT(_isMBT:true);
-        m_element.txtPoint.text = _rankerUserData.point.AmountKMBT(_isMBT: true);
+        m_element.txtNickname.text = _rankerUserData.info.nickname;
+        m_element.txtPower.text = _rankerUserData.info.power.AmountKMBT(_isMBT:true);
+        m_element.txtPoint.text = _rankerUserData.info.point.AmountKMBT(_isMBT: true);
 
         m_element.profile.SetActivePanel(true);
-        m_element.profile.SetProfileData(_rankerUserData.indexProfile, _rankerUserData.skin);
+        m_element.profile.SetProfileData(_rankerUserData.info.indexProfile, _rankerUserData.info.skin);
     }
 
     #region VALIDATE

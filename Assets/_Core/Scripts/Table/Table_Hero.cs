@@ -152,7 +152,7 @@ public struct HeroInfoData
     public string gradeClass => $"{gradeName} {className}";
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
 
-    public int sortIdx { get; set; }
+    [JsonProperty] public int sortIdx { get; set; }
 
     public Dictionary<CoreStatType, int> resultCoreStat
     {

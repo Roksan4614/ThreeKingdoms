@@ -38,6 +38,7 @@ namespace Rev9.Tournament
         {
             if (m_data.isActive == false)
             {
+                //PPWorker.DeleteKey(c_keyHistory);
                 //PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT);
                 m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
             }
@@ -77,15 +78,17 @@ namespace Rev9.Tournament
                 {
                     var newData = DataManager.userInfo.GetHeroInfoData(m_data.teamAttack.heroes[i].key);
                     var data = m_data.teamAttack.heroes[i];
-                    newData.sortIdx = data.sortIdx;
-                    m_data.teamAttack.heroes[i] = newData;
+                    data.grade = newData.grade;
+                    data.enchantLevel = newData.enchantLevel;
+                    m_data.teamAttack.heroes[i] = data;
                 }
                 if (m_data.teamDefence.heroes != null && i < m_data.teamDefence.heroes.Count)
                 {
                     var newData = DataManager.userInfo.GetHeroInfoData(m_data.teamDefence.heroes[i].key);
                     var data = m_data.teamDefence.heroes[i];
-                    newData.sortIdx = data.sortIdx;
-                    m_data.teamDefence.heroes[i] = newData;
+                    data.grade = newData.grade;
+                    data.enchantLevel = newData.enchantLevel;
+                    m_data.teamDefence.heroes[i] = data;
                 }
             }
 
@@ -172,20 +175,38 @@ namespace Rev9.Tournament
             if (m_data.countPlay == 0)
                 return;
 
+            await PopupManager.instance.ShowDimmAsync(true);
+
+            PopupManager.instance.CloseAll();
+
             IngameLog.Add("Enter: " + _uid);
 
             //todo
-            await ExitAsync();
+            await ExitAsync(_uid);
 
             //await UniTask.NextFrame();
         }
 
-        public async UniTask ExitAsync()
+        public async UniTask ExitAsync(int _uid)
         {
+            foreach (var user in m_data.battleUserList)
+            {
+                if (user.info.uid == _uid)
+                {
+                    ;
+                    bool isWin = user.batchData.totalPower < m_data.teamAttack.totalPower * 1.2f;
+                    await API_AddHistoryData(true, isWin, user);
+                    break;
+                }
+            }
+
             m_data.countPlay--;
             SaveData();
-            await UniTask.NextFrame();
 
+            await API_LoadBattleListAsync();
+
+            PopupManager.instance.OpenPopup(PopupType.LobbyTournament);
+            PopupManager.instance.ShowDimm(false);
         }
 
         public async UniTask<bool> ShowAdsAsync()
@@ -372,7 +393,7 @@ namespace Rev9.Tournament
         public long tick;
         public long tickRefresh;
 
-        public RankerUserData[] battleUserList;
+        public TournamentRankerUserData[] battleUserList;
 
         public void SetChangeDate()
         {
@@ -392,6 +413,12 @@ namespace Rev9.Tournament
 
         public TournamentBatchData GetTeam()
             => TournamentWorker.instance.isAttackType ? teamAttack : teamDefence;
+    }
+
+    public struct TournamentRankerUserData
+    {
+        public RankerUserData info;
+        public TournamentBatchData batchData;
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -449,6 +476,7 @@ namespace Rev9.Tournament
     [JsonObject(MemberSerialization.OptIn)]
     public struct TournamentHistoryData
     {
+        [JsonProperty] public int index;
         [JsonProperty] public int uid;
         [JsonProperty] public string nickname;
         [JsonProperty] public int indexProfile;
@@ -457,8 +485,13 @@ namespace Rev9.Tournament
         [JsonProperty] public int rewardPoint;
         [JsonProperty] public int revengePoint;
         [JsonProperty] public bool isAttack;
+        [JsonProperty] public long tick;
         [JsonProperty] public TournamentBatchData batchData;
 
-        public bool isAvailRevenge => isAttack == false && isWin == false && revengePoint > 0;
+        public bool isRevenge => isAttack == false && isWin == false ;
+        public bool isOpenRevenge => teamDefence != null;
+        public List<HeroInfoData> teamDefence;
+
+        public System.DateTime dtEndRevenge => new System.DateTime(tick, System.DateTimeKind.Utc).AddHours(12);
     }
 }
