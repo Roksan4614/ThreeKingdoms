@@ -89,7 +89,7 @@ public class Data_DailyDungeon
 
         await UniTask.NextFrame();
 
-        AddressableManager.instance.LoadScene("04_DailyDungeon");
+        AddressableManager.instance.LoadScene("03_DailyDungeon");
         return true;
     }
 

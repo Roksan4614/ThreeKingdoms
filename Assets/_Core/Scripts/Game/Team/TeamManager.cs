@@ -312,7 +312,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             {
                 var hero = m_member[key];
 
-                if (hero.isMain == false)
+                if (hero.isMain == false && hero.attack.isUseSkill == false)
                 {
                     result.Add(hero);
                     hero.target.SetTarget(null);

@@ -43,33 +43,10 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         if (m_element.btnStart != null)
         {
             m_element.btnStart.onClick.RemoveAllListeners();
-            m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Start(_uid).Forget());
+            m_element.btnStart.onClick.AddListener(() => TournamentWorker.instance.EnterBattleAsync(_uid).Forget());
         }
 
         await UniTask.WaitUntil(() => gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
-    }
-
-    bool m_isEnter = false;
-    async UniTask OnButtonAsync_Start(int _uid)
-    {
-        if (m_isEnter == true)
-            return;
-
-        m_isEnter = true;
-        if (TournamentWorker.data.countPlay <= 0)
-        {
-            if (TournamentWorker.data.countAD <= 0)
-                PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
-            else if (await TournamentWorker.instance.ShowAdsAsync())
-                PopupManager.instance.GetPopup<PopupTournamentComponent>(PopupType.LobbyTournament).SetPlayCount();
-
-            m_isEnter = false;
-            return;
-        }
-
-        TournamentWorker.instance.EnterBattleAsync(_uid).Forget();
-
-        m_isEnter = false;
     }
 
     async UniTask SetTreasureAsync()

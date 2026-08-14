@@ -242,20 +242,11 @@ namespace Rev9.Tournament
             var userBatchData = m_data.GetTeam(_isAttackType);
 
             // 방어에 실패한 경우, 복수 준비하자
-            if (historyData.isWin == false && historyData.isAttack == false)
-            {
-                historyData.revengePoint = 100 + (int)(_userData.batchData.totalPower / (float)userBatchData.totalPower * 100);
-                historyData.revengePoint += (int)(historyData.revengePoint * 0.5f);
-            }
 
             //포인트 계산
-            if (historyData.isWin)
-                historyData.rewardPoint = 100 + (int)(_userData.batchData.totalPower / (float)userBatchData.totalPower * 100);
-            else
-            {
-                historyData.rewardPoint = 100 + (int)((float)userBatchData.totalPower / _userData.batchData.totalPower * 100);
-                historyData.rewardPoint *= -1;
-            }
+            historyData.resultPoint = 100 * UnityEngine.Random.Range(1, 4);
+            if (historyData.isWin == false)
+                historyData.resultPoint = (int)(historyData.resultPoint * UnityEngine.Random.Range(-0.4f, -0.8f));
 
             m_history.Add(historyData);
 
@@ -265,7 +256,7 @@ namespace Rev9.Tournament
                 if (idx > -1)
                 {
                     var h = m_history[idx];
-                    h.revengePoint = 0;
+                    h.tick = 0;
                     m_history[idx] = h;
                 }
             }

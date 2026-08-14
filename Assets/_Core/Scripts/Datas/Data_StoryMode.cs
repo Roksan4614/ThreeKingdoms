@@ -45,7 +45,7 @@ public class Data_StoryMode
 
         await UniTask.NextFrame();
 
-        AddressableManager.instance.LoadScene("04_StoryMode");
+        AddressableManager.instance.LoadScene("03_StoryMode");
     }
 
     public string nodeKeyNewClear { get; set; }

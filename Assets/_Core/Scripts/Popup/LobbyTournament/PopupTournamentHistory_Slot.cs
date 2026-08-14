@@ -13,6 +13,9 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
     CancellationTokenSource m_cts;
 
     Color m_clrPrevRevenge;
+
+    public bool isTimeourRevenge => m_cts == null;
+
     private void Awake()
     {
         m_clrPrevRevenge = m_element.btnRevenge.image.color;
@@ -31,7 +34,7 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
         m_element.objDefence.SetActive(_historyData.isAttack == false);
         m_element.txtType.text = _historyData.isAttack ? "_공격_" : "_방어_";
 
-        m_element.txtResult.text = $"{(_historyData.isWin ? "WIN" : "LOSE")}\n<color=#555555><size=80%>({(_historyData.isWin ? "+" : "")}{_historyData.rewardPoint}p)</size></color>";
+        m_element.txtResult.text = $"{(_historyData.isWin ? "WIN" : "LOSE")}\n<color=#555555><size=80%>({(_historyData.isWin ? "+" : "")}{_historyData.resultPoint}p)</size></color>";
         if (ColorUtility.TryParseHtmlString($"#{(_historyData.isWin ? Palette.htmlString_Up : Palette.htmlString_Down)}", out Color clr))
             m_element.txtResult.color = clr;
 
@@ -42,20 +45,20 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
         m_element.txtNickname.text = _historyData.nickname;
         m_element.txtNickname.rt.SetAnchoredPositionY(isRevenge ? 33 : 0);
 
+        m_cts = m_cts.ReleaseCTS();
         if (isRevenge == true)
         {
-            if (_historyData.revengePoint == 0)
+            if (_historyData.tick == 0)
             {
                 m_element.btnRevenge.text = $"복수성공";
                 m_element.objRevenge.transform.ForceRebuildLayout();
-                m_element.btnRevenge.image.color = m_clrPrevRevenge;
+                if (ColorUtility.TryParseHtmlString("#05009C", out Color clrSuccess))
+                    m_element.btnRevenge.image.color = clrSuccess;
                 m_element.btnRevenge.interactable = false;
             }
             else
                 TimerRevengeAsync(_historyData.dtEndRevenge).Forget();
         }
-        else
-            m_cts = m_cts.ReleaseCTS();
 
         m_element.button.onClick.RemoveAllListeners();
         m_element.button.onClick.AddListener(() => _callback?.Invoke(_historyData));
@@ -64,19 +67,22 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
         m_element.btnRevenge.onClick.AddListener(() =>
         {
             var batchData = _historyData.batchData;
-            List<HeroInfoData> heroes = new(batchData.heroes);
-
-            List<int> ranidx = new() { 1, 2, 3, 4, 5, 6, 7, 8, 0 };
-            ranidx = ranidx.Shuffle();
-            for (int i = 0; i < heroes.Count; i++)
-            {
-                var h = heroes[i];
-                h.sortIdx = ranidx[i];
-                heroes[i] = h;
-            }
 
             if (_historyData.teamDefence == null)
             {
+                List<HeroInfoData> heroes = new();
+                heroes.AddRange(batchData.heroes);
+                for (int i = 0; i < (int)(heroes.Count * .5f); i++)
+                {
+                    var h = heroes[i];
+                    var h_last = heroes[heroes.Count - i - 1];
+
+                    var temp = h.sortIdx;
+
+                    (h.sortIdx, h_last.sortIdx) = (h_last.sortIdx, temp);
+                    (heroes[i], heroes[heroes.Count - i - 1]) = (h, h_last);
+                }
+
                 _historyData.teamDefence = heroes;
 
                 var historyData = _historyData;

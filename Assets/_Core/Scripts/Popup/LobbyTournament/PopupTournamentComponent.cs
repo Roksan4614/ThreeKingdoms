@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class PopupTournamentComponent : BasePopupComponent
 {
-    enum TournamentPopupType
+    public enum TournamentPopupType
     {
         None = -1,
 
@@ -117,7 +117,7 @@ public class PopupTournamentComponent : BasePopupComponent
         for (int i = 0; i < m_element.slots.Length; i++)
             m_element.slots[i].SetUserData(user[i],
                 null, //_userData => OnButtonAsync_Start(_userData.info).Forget(),
-                _userData => m_element.popupUserInfo.OpenAsync(_userData.info.uid, _userData.batchData).Forget()
+                _userData => OnButtonAsync_OpenUserInfo(_userData).Forget()
                 );
     }
 
@@ -147,32 +147,29 @@ public class PopupTournamentComponent : BasePopupComponent
         SetRefreshCount();
     }
 
-    //bool m_isEnter = false;
-    //async UniTask OnButtonAsync_Start(RankerUserData _rankerData)
-    //{
-    //    if (m_isEnter == true)
-    //        return;
+    bool m_isEnter;
+    async UniTask OnButtonAsync_OpenUserInfo(TournamentRankerUserData _userData)
+    {
+        if (m_isEnter == true)
+            return;
 
-    //    m_isEnter = true;
-    //    if (TournamentWorker.data.countPlay <= 0)
-    //    {
-    //        if (TournamentWorker.data.countAD <= 0)
-    //            PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
-    //        else if (await TournamentWorker.instance.ShowAdsAsync())
-    //            SetPlayCount();
+        m_isEnter = true;
+        if (TournamentWorker.data.countPlay <= 0)
+        {
+            PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
+            
+            //if (TournamentWorker.data.countAD <= 0)
+            //    PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
+            //else if (await TournamentWorker.instance.ShowAdsAsync())
+            //    PopupManager.instance.GetPopup<PopupTournamentComponent>(PopupType.LobbyTournament).SetPlayCount();
 
-    //        m_isEnter = false;
-    //        return;
-    //    }
+            m_isEnter = false;
+            return;
+        }
 
-    //    var result = await PopupManager.instance.OpenModalAsync("도전_하시겠습니까?");
-
-    //    if (result == StatusType.Success)
-    //    {
-    //        TournamentWorker.instance.EnterBattleAsync(_rankerData.uid).Forget();
-    //    }
-    //    m_isEnter = false;
-    //}
+        await m_element.popupUserInfo.OpenAsync(_userData.info.uid, _userData.batchData);
+        m_isEnter = false;
+    }
 
     async UniTask OnButtonAsync_Refresh()
     {
@@ -203,7 +200,7 @@ public class PopupTournamentComponent : BasePopupComponent
     }
 
     PopupTournamentHistoryComponent m_popupHistory;
-    async UniTask OpenPopupAsync(TournamentPopupType _popupType)
+    public async UniTask OpenPopupAsync(TournamentPopupType _popupType)
     {
         switch (_popupType)
         {

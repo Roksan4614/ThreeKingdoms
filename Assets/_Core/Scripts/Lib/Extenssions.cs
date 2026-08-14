@@ -252,7 +252,7 @@ public static class Extenssions
                 if (_isDigitS == true)
                     result += "s";
             }
-            else if (_isStartMinute)
+            else if (_isStartMinute || _ts.TotalHours < 1)
                 result = $"{Mathf.FloorToInt((float)_ts.TotalMinutes):00}:{_ts.ToString(@"ss")}";
             else
                 result = $"{Mathf.FloorToInt((float)_ts.TotalHours):00}:{_ts.ToString(@"mm\:ss")}";

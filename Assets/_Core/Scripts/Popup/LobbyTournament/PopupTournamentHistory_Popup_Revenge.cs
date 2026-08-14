@@ -44,8 +44,8 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
         m_element.slot.SetHistoryData(_historyData, null);
         m_element.userInfo.OpenAsync(_historyData.uid, _historyData.batchData).Forget();
 
-        m_element.txtPointWin.text = $"승리_시_<size=120%>+{_historyData.revengePoint}p</size>";
-        m_element.txtPointLose.text = $"패배_시_<size=120%>{_historyData.rewardPoint}p</size>";
+        m_element.txtPointWin.text = $"승리_시_<size=120%>+{_historyData.resultPoint * -1}p</size>";
+        m_element.txtPointLose.text = $"패배_시_<size=120%>{(int)(_historyData.resultPoint * UnityEngine.Random.Range(0.5f, 0.9f))}p</size>";
 
         SetPlayCount();
 
@@ -61,30 +61,26 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
     bool m_isDoing;
     async UniTask OnButtonAsync_Start()
     {
+        if (m_element.slot.isTimeourRevenge == true)
+        {
+            PopupManager.instance.AlertShow("시간이_초과_되었습니다.");
+            return;
+        }
+
         if (m_isDoing == true)
             return;
 
         m_isDoing = true;
         if (TournamentWorker.data.countPlay <= 0)
         {
-            if (TournamentWorker.data.countAD <= 0)
-                PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
-            else if (await TournamentWorker.instance.ShowAdsAsync())
-                SetPlayCount();
+            PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
 
             m_isDoing = false;
             return;
         }
 
-        var result = await PopupManager.instance.OpenModalAsync("도전_하시겠습니까?");
+        TournamentWorker.instance.EnterBattleAsync(m_historyData.uid, m_historyData.index).Forget();
 
-        if (result == StatusType.Success)
-        {
-            TournamentWorker.instance.EnterBattleAsync(m_historyData.uid).Forget();
-
-            //test
-            SetPlayCount();
-        }
         m_isDoing = false;
     }
 
@@ -136,8 +132,8 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
             slot = _transform.GetComponent<PopupTournamentHistory_Slot>("Panel/Slot");
             userInfo = _transform.GetComponent<PopupTournament_UserInfo>("Panel/UserInfo");
 
-            txtPointWin = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_point_win");
-            txtPointLose = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_point_lose");
+            txtPointWin = _transform.GetComponent<TextMeshProUGUI>("Panel/Result/txt_point_win");
+            txtPointLose = _transform.GetComponent<TextMeshProUGUI>("Panel/Result/txt_point_lose");
             txtPlayCount = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_count");
 
             btnAD = _transform.GetComponent<ButtonHelper>("Panel/Button/btn_ad");

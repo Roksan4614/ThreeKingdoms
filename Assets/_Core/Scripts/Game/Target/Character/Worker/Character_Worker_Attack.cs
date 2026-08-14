@@ -85,7 +85,7 @@ public class Character_Worker_Attack : Character_Worker
                 if (isCritical == false || m_timeAttack == -1)
                     ShowSlashEffect(true);
 
-                m_weapon.Attack(isCritical);
+                m_owner.anim.Play(CharacterAnimType.Attack_Move, 1);
                 isAttackPush = true;
 
                 m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;

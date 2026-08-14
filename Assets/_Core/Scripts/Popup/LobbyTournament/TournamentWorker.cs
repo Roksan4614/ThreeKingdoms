@@ -41,7 +41,10 @@ namespace Rev9.Tournament
                 //PPWorker.DeleteKey(c_keyHistory);
                 //PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT);
                 m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
+
+                m_data.countAD = 3;
             }
+
 
             // 날짜 확인
             var dtBattle = Utils.GetDateTime(m_data.tick);
@@ -170,7 +173,7 @@ namespace Rev9.Tournament
             m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
         }
 
-        public async UniTask EnterBattleAsync(int _uid)
+        public async UniTask EnterBattleAsync(int _uid, int _idxRevenge = -1)
         {
             if (m_data.countPlay == 0)
                 return;
@@ -182,21 +185,41 @@ namespace Rev9.Tournament
             IngameLog.Add("Enter: " + _uid);
 
             //todo
-            await ExitAsync(_uid);
+            await ExitAsync(_uid, _idxRevenge);
 
             //await UniTask.NextFrame();
         }
 
-        public async UniTask ExitAsync(int _uid)
+        public async UniTask ExitAsync(int _uid, int _idxRevenge = -1)
         {
-            foreach (var user in m_data.battleUserList)
+            var historyData = m_history.Find(x => x.uid == _uid);
+
+            if (historyData.isActive == true)
             {
-                if (user.info.uid == _uid)
+                bool isWin = historyData.batchData.totalPower < m_data.teamAttack.totalPower * 1.2f;
+                await API_AddHistoryData(true, isWin, new()
                 {
-                    ;
-                    bool isWin = user.batchData.totalPower < m_data.teamAttack.totalPower * 1.2f;
-                    await API_AddHistoryData(true, isWin, user);
-                    break;
+                    batchData = historyData.batchData,
+                    info = new()
+                    {
+                        uid = historyData.uid,
+                        indexProfile = historyData.indexProfile,
+                        skin = historyData.skin,
+                        nickname = historyData.nickname,
+                        power = historyData.batchData.totalPower,
+                    }
+                }, _idxRevenge);
+            }
+            else
+            {
+                foreach (var user in m_data.battleUserList)
+                {
+                    if (user.info.uid == _uid)
+                    {
+                        bool isWin = user.batchData.totalPower < m_data.teamAttack.totalPower * 1.2f;
+                        await API_AddHistoryData(true, isWin, user, _idxRevenge);
+                        break;
+                    }
                 }
             }
 
@@ -205,7 +228,10 @@ namespace Rev9.Tournament
 
             await API_LoadBattleListAsync();
 
-            PopupManager.instance.OpenPopup(PopupType.LobbyTournament);
+            var tourament = await PopupManager.instance.OpenPopupAsync<PopupTournamentComponent>(PopupType.LobbyTournament);
+            if (_idxRevenge > -1)
+                tourament.OpenPopupAsync(PopupTournamentComponent.TournamentPopupType.History).Forget();
+
             PopupManager.instance.ShowDimm(false);
         }
 
@@ -213,7 +239,7 @@ namespace Rev9.Tournament
         {
             if (m_data.countAD > 0)
             {
-                var result = await PopupManager.instance.OpenModalAsync("광고보기??_");
+                var result = await PopupManager.instance.OpenModalAsync("광고보러_가기");
 
                 if (result == StatusType.Success)
                 {
@@ -224,8 +250,6 @@ namespace Rev9.Tournament
                         SaveData();
                         return true;
                     }
-                    else
-                        PopupManager.instance.AlertShow("입장할_수_없습니다.");
                 }
             }
 
@@ -482,16 +506,21 @@ namespace Rev9.Tournament
         [JsonProperty] public int indexProfile;
         [JsonProperty] public string skin;
         [JsonProperty] public bool isWin;
-        [JsonProperty] public int rewardPoint;
-        [JsonProperty] public int revengePoint;
+        [JsonProperty] public int resultPoint;
+        //[JsonProperty] public int revengePoint;
         [JsonProperty] public bool isAttack;
-        [JsonProperty] public long tick;
+        [JsonProperty] public long tick; // 방어에 패배했음에도 0이면 복수를 성공한걸로 간주하자
         [JsonProperty] public TournamentBatchData batchData;
 
-        public bool isRevenge => isAttack == false && isWin == false ;
+        public bool isActive => nickname.IsActive();
+        public bool isRevenge => isAttack == false && isWin == false;
         public bool isOpenRevenge => teamDefence != null;
         public List<HeroInfoData> teamDefence;
 
+#if SERVICE_DEV
+        public System.DateTime dtEndRevenge => new System.DateTime(tick, System.DateTimeKind.Utc).AddMinutes(2);
+#else
         public System.DateTime dtEndRevenge => new System.DateTime(tick, System.DateTimeKind.Utc).AddHours(12);
+#endif
     }
 }

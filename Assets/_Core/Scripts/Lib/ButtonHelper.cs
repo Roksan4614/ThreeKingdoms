@@ -31,7 +31,7 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
     public bool interactable
     {
         get => m_element.button.interactable;
-        set => m_element.button.interactable = value;
+        set => m_element.button.enabled = m_element.button.interactable = value;
     }
 
     public TextMeshProUGUI TMPText => m_element.txtName;
@@ -42,7 +42,7 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
     public UnityAction funcExit { get; set; }
     public UnityAction<int> funcDown { get; set; }
     public UnityAction<int> funcUp { get; set; }
-    
+
     public Image image => m_element.image;
 
     private void OnTriggerEnter2D(Collider2D _collision)
