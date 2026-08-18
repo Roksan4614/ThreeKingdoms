@@ -52,7 +52,8 @@ public class Character_Worker_Attack : Character_Worker
     }
 
     CancellationTokenSource m_ctsAttackPush;
-    public bool isAttackPush { get; private set; }
+    //public bool isAttackPush { get; private set; }
+    public bool isAttackPush => m_ctsAttackPush != null;
 
     public async UniTask ControlAttackAsync(UnityAction _onAttack, bool _isPushButton)
     {
@@ -85,14 +86,14 @@ public class Character_Worker_Attack : Character_Worker
                 if (isCritical == false || m_timeAttack == -1)
                     ShowSlashEffect(true);
 
-                m_owner.anim.Play(CharacterAnimType.Attack_Move, 1);
-                isAttackPush = true;
+                m_owner.anim.PlayAttack();
+                //isAttackPush = true;
 
                 m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
             }
             _isPushButton = false;
             await UniTask.NextFrame(token, true);
-            isAttackPush = false;
+            //isAttackPush = false;
         }
 
         m_ctsAttackPush = null;

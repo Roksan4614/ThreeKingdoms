@@ -155,12 +155,27 @@ public static class Utils
 
         StringBuilder sb = new StringBuilder(_msgAmount.Length * 2);
 
+        bool isPrevDigit = false;
         foreach (char c in _msgAmount)
         {
-            if (char.IsDigit(c)) // '0' <= c && c <= '9'
-                sb.Append("<mspace=").Append(_mspace).Append(">").Append(c).Append("</mspace>");
-            else
+            if (char.IsDigit(c))
+            {
+                if (isPrevDigit == false)
+                {
+                    isPrevDigit = true;
+                    sb.Append("<mspace=").Append(_mspace).Append(">");
+                }
                 sb.Append(c);
+            }
+            else
+            {
+                if (isPrevDigit == true)
+                {
+                    isPrevDigit = false;
+                    sb.Append("</mspace>");
+                }
+                sb.Append(c);
+            }
         }
 
         return sb.ToString();

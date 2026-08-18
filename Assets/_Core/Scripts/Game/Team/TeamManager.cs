@@ -204,7 +204,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
                 heroInfo.StopRespawn(member);
 
             member.Respawn();
-            heroInfo.UpdateHP(member);
+            heroInfo.UpdateHP((member, null, 0));
         }
     }
 
@@ -338,21 +338,16 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         CharacterComponent result = null;
         float minDist = float.MaxValue;
 
-        for (var key = TeamPositionType.NONE + 1; key < TeamPositionType.MAX; key++)
+        foreach (var hero in m_member.Values)
         {
-            if (m_member.ContainsKey(key))
+            if (hero.isLive == false)
+                continue;
+
+            float sqrDist = (hero.transform.position - _position).sqrMagnitude;
+            if (sqrDist < minDist)
             {
-                var hero = m_member[key];
-
-                if (hero.isLive == false)
-                    continue;
-
-                float sqrDist = (hero.transform.position - _position).sqrMagnitude;
-                if (sqrDist < minDist)
-                {
-                    minDist = sqrDist;
-                    result = hero;
-                }
+                minDist = sqrDist;
+                result = hero;
             }
         }
 
@@ -364,21 +359,16 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         CharacterComponent result = null;
         float maxDist = -float.MaxValue;
 
-        for (var key = TeamPositionType.NONE + 1; key < TeamPositionType.MAX; key++)
+        foreach (var hero in m_member.Values)
         {
-            if (m_member.ContainsKey(key))
+            if (hero.isLive == false)
+                continue;
+
+            float sqrDist = (hero.transform.position - _position).sqrMagnitude;
+            if (sqrDist > maxDist)
             {
-                var hero = m_member[key];
-
-                if (hero.isLive == false)
-                    continue;
-
-                float sqrDist = (hero.transform.position - _position).sqrMagnitude;
-                if (sqrDist > maxDist)
-                {
-                    maxDist = sqrDist;
-                    result = hero;
-                }
+                maxDist = sqrDist;
+                result = hero;
             }
         }
 
@@ -393,6 +383,13 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
             db = db.FindAll(x => x.isLive);
 
         return db.Count == 0 ? null : db.RandomFirst();
+    }
+
+    public void SetHeroes(params CharacterComponent[] _heroes)
+    {
+        m_member.Clear();
+        for (int i = 0; i < _heroes.Length; i++)
+            m_member.Add(TeamPositionType.NONE + i, _heroes[i]);
     }
 
     public bool IsAllDead(bool _isJustCheck)
@@ -461,7 +458,7 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         public void Initialize(Transform _transform)
         {
             startPos = _transform.childCount == 0 ? Vector3.zero : _transform.GetChild(0).position;
-            heroInfo = GameObject.Find("Canvas/HeroInfo").transform;
+            heroInfo = GameObject.Find("Canvas/HeroInfo")?.transform;
         }
     }
 }

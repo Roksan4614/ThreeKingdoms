@@ -127,8 +127,12 @@ public partial class InfoStage_Boss
 
         if (_target < m_elementBossRiad.rtUsers.anchoredPosition.x)
             m_tweenMoveUsers = m_elementBossRiad.rtUsers.DOAnchorPosX(_target, 0.5f);
+    }
 
-        if (Time.time - m_timeFxDamage < 0.1f)
+    void ShowFxDamage()
+    {
+        if (m_elementBossRiad.psDamageEffect == null
+            || Time.time - m_timeFxDamage < 0.1f)
             return;
 
         m_timeFxDamage = Time.time;

@@ -276,10 +276,10 @@ public class Signal
     public SignalObject CloseLobbyScreenFinished = new();
 
     public SignalObject<CharacterComponent> ConnectMainHero = new();
-    public SignalObject<CharacterComponent> UpdateHP = new();
+    public SignalObject<(CharacterComponent owenr, CharacterComponent attacker, float _damage)> UpdateHP = new();
     public SignalObject UpdateTeamPosition = new();
-    public SignalObject<float> UpdageBossHP = new(); //percent
-    public SignalObject<(bool _isTween, ItemType _itemType)> UpdateAsset = new();
+    public SignalObject<(float percent, float hpMax)> UpdageBossHP = new();
+    public SignalObject<(bool isTween, ItemType itemType)> UpdateAsset = new();
 
     public SignalObject<StageManager.LoadData_Stage> StartStage = new();
     public SignalObject<int> StartPhase = new(); // Phase index
@@ -308,5 +308,7 @@ public class Signal
     public SignalObject<GradeType> DailyDungeonNextStep = new();
 
     public SignalObject Update_StoryMode_PlayingMode = new();
+
+    public SignalObject<Rev9.Tournament.TournamentStatusType> TournamentStatus = new();
     #endregion
 }

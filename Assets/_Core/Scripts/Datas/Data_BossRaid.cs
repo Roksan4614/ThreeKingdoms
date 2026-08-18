@@ -383,4 +383,6 @@ public struct RankerUserData
     [JsonProperty] public int uid;
     [JsonProperty] public long point;
     [JsonProperty] public long power;
+
+    public bool isActive => nickname.IsActive();
 }

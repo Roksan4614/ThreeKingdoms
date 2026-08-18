@@ -20,6 +20,8 @@ namespace Rev9.Tournament
         TournamentData m_data;
         public static TournamentData data => instance.m_data;
 
+        public RankerUserData rankData => m_dbRankData[PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Point].my;
+
         List<TournamentHistoryData> m_history;
         public List<TournamentHistoryData> history => m_history;
 
@@ -45,7 +47,6 @@ namespace Rev9.Tournament
                 m_data.countAD = 3;
             }
 
-
             // 날짜 확인
             var dtBattle = Utils.GetDateTime(m_data.tick);
             if (dtBattle.Date < Utils.GetUTC().Date)
@@ -53,6 +54,8 @@ namespace Rev9.Tournament
                 SlotDayChange();
                 await API_LoadBattleListAsync();
             }
+
+            await API_LoadRankerData(PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Point);
 
             // 갱신 업데이트
             var dtRefresh = Utils.GetDateTime(m_data.tickRefresh);
@@ -171,68 +174,6 @@ namespace Rev9.Tournament
 
             m_dbRankData.Clear();
             m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
-        }
-
-        public async UniTask EnterBattleAsync(int _uid, int _idxRevenge = -1)
-        {
-            if (m_data.countPlay == 0)
-                return;
-
-            await PopupManager.instance.ShowDimmAsync(true);
-
-            PopupManager.instance.CloseAll();
-
-            IngameLog.Add("Enter: " + _uid);
-
-            //todo
-            await ExitAsync(_uid, _idxRevenge);
-
-            //await UniTask.NextFrame();
-        }
-
-        public async UniTask ExitAsync(int _uid, int _idxRevenge = -1)
-        {
-            var historyData = m_history.Find(x => x.uid == _uid);
-
-            if (historyData.isActive == true)
-            {
-                bool isWin = historyData.batchData.totalPower < m_data.teamAttack.totalPower * 1.2f;
-                await API_AddHistoryData(true, isWin, new()
-                {
-                    batchData = historyData.batchData,
-                    info = new()
-                    {
-                        uid = historyData.uid,
-                        indexProfile = historyData.indexProfile,
-                        skin = historyData.skin,
-                        nickname = historyData.nickname,
-                        power = historyData.batchData.totalPower,
-                    }
-                }, _idxRevenge);
-            }
-            else
-            {
-                foreach (var user in m_data.battleUserList)
-                {
-                    if (user.info.uid == _uid)
-                    {
-                        bool isWin = user.batchData.totalPower < m_data.teamAttack.totalPower * 1.2f;
-                        await API_AddHistoryData(true, isWin, user, _idxRevenge);
-                        break;
-                    }
-                }
-            }
-
-            m_data.countPlay--;
-            SaveData();
-
-            await API_LoadBattleListAsync();
-
-            var tourament = await PopupManager.instance.OpenPopupAsync<PopupTournamentComponent>(PopupType.LobbyTournament);
-            if (_idxRevenge > -1)
-                tourament.OpenPopupAsync(PopupTournamentComponent.TournamentPopupType.History).Forget();
-
-            PopupManager.instance.ShowDimm(false);
         }
 
         public async UniTask<bool> ShowAdsAsync()
@@ -404,8 +345,8 @@ namespace Rev9.Tournament
     public struct TournamentData
     {
         public GradeType grade;
-        public int rank;
-        public int point;
+
+        public RankerUserData rankData;
 
         public TournamentBatchData teamAttack;
         public TournamentBatchData teamDefence;
@@ -437,12 +378,25 @@ namespace Rev9.Tournament
 
         public TournamentBatchData GetTeam()
             => TournamentWorker.instance.isAttackType ? teamAttack : teamDefence;
+
+        public TournamentRankerUserData GetUserData(int _uid)
+        {
+            foreach (var b in battleUserList)
+            {
+                if (b.info.uid == _uid)
+                    return b;
+            }
+            return default;
+        }
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public struct TournamentRankerUserData
     {
-        public RankerUserData info;
-        public TournamentBatchData batchData;
+        [JsonProperty] public RankerUserData info;
+        [JsonProperty] public TournamentBatchData batchData;
+
+        public bool isActive => info.isActive;
     }
 
     [JsonObject(MemberSerialization.OptIn)]

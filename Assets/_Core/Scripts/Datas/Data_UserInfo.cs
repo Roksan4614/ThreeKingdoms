@@ -14,6 +14,8 @@ public class Data_UserInfo
     public string nickname => m_element.nickname;
     public RegionType region => m_element.region;
     public IReadOnlyList<HeroInfoData> myHero => m_element.myHero;
+    public int profileIdx => m_element.profileIdx;
+    public string profileSkin => m_element.profileSkin;
 
     public long gold => m_element.gold;
     public long rice => m_element.rice;
@@ -280,6 +282,7 @@ public class Data_UserInfo
     public void SetRegion(RegionType _region)
     {
         m_element.region = _region;
+        m_element.profileSkin = TableManager.region.Get(_region).master;
         SaveData();
     }
 
@@ -425,6 +428,9 @@ public class Data_UserInfo
         public RegionType region;
         public List<HeroInfoData> myHero;
 
+        public int profileIdx;
+        public string profileSkin;
+
         public long gold;
         public long rice;
 
@@ -433,6 +439,8 @@ public class Data_UserInfo
             region = RegionType.SHU;
             nickname = "·Ï»ê";
             myHero = new();
+
+            profileSkin = "LiuBei";
         }
     }
 

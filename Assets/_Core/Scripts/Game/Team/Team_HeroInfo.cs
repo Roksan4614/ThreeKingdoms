@@ -114,10 +114,10 @@ public class Team_HeroInfo
             m_lstHeroInfo[i].StartStage();
     }
 
-    public void UpdateHP(CharacterComponent _hero)
+    public void UpdateHP((CharacterComponent hero, CharacterComponent attacker, float damage) _data)
     {
-        if (_hero.teamPosition > TeamPositionType.NONE)
-            m_lstHeroInfo.Find(x => x.key == _hero.info.key)?.UpdateHP();
+        if (_data.hero.teamPosition > TeamPositionType.NONE)
+            m_lstHeroInfo.Find(x => x.key == _data.hero.info.key)?.UpdateHP();
     }
 
     public void StopRespawn(CharacterComponent _hero)

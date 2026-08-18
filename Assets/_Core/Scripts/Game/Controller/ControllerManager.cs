@@ -30,7 +30,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     public void SetSwitch(bool _isSwitch)
         => m_isSwitch = _isSwitch;
 
-    public bool isDoing => m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
+    public bool isDoing => instance == null ? false : m_element.pad.gameObject.activeSelf || m_isKeyboardMoving;
     public bool isKeyboardMode => m_isKeyboardMode;
 
     protected override void OnAwake()

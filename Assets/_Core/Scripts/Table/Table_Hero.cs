@@ -114,6 +114,7 @@ public struct HeroInfoData
     [JsonProperty] public bool isBatch;
     [JsonProperty] public bool isMain;
     [JsonProperty] public bool isMine;
+    [JsonProperty] public TableStatData? statData;
 
     [JsonProperty] HeroClassType m_classType;
     [JsonProperty] RegionType m_regionType;
@@ -121,7 +122,7 @@ public struct HeroInfoData
     public RegionType regionType => m_regionType;
 
     public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, HeroPositionType _heroPositionType = HeroPositionType.NONE, string _skin = null,
-        int _soulCount = 0, int _enchantLevel = 0, int _relicLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true, int _sortIdx = 0)
+        int _soulCount = 0, int _enchantLevel = 0, int _relicLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true, int _sortIdx = 0, TableStatData? _statData = null)
     {
         key = _key;
         grade = _grade;
@@ -134,6 +135,7 @@ public struct HeroInfoData
         isMain = _isMain;
         isMine = _isMine;
         sortIdx = _sortIdx;
+        statData = _statData;
 
         var db = TableManager.hero.Get(_key);
 
@@ -177,7 +179,7 @@ public struct HeroInfoData
         {
             long result = 0;
 
-            var stat = DataManager.stat.GetResultStat(this);
+            var stat = resultStat;
 
             int attackPoint = (int)(stat.attackPower * stat.attackSpeed);
             attackPoint = attackPoint + (int)(attackPoint * (stat.criticalRate + stat.cooldownRate + stat.lifeSteel));
@@ -192,5 +194,5 @@ public struct HeroInfoData
     }
 
     public TableStatData resultStat
-        => DataManager.stat.GetResultStat(this);
+        => statData == null ? DataManager.stat.GetResultStat(this) : statData.Value;
 }

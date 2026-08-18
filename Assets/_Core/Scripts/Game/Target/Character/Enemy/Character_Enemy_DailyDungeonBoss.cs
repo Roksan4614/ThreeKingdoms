@@ -37,7 +37,7 @@ public class Character_Enemy_DailyDungeonBoss : Character_Enemy_Boss
 
             SetBossData(m_stat.key);
 
-            Signal.instance.UpdageBossHP.Emit(1);
+            Signal.instance.UpdageBossHP.Emit((1, m_stat.healthMax));
             Signal.instance.DailyDungeonNextStep.Emit(DataManager.dailyDungeon.curGradeType);
         }
 

@@ -146,7 +146,11 @@ namespace Rev9.Tournament
                 userData.skin = TableManager.hero.GetHeroList().RandomFirst().key;
 
                 if (isMine)
+                {
+                    userData.indexProfile = DataManager.userInfo.profileIdx;
+                    userData.skin = DataManager.userInfo.profileSkin;
                     result.my = userData;
+                }
 
                 result.ranker.Add(userData);
             }
@@ -162,6 +166,8 @@ namespace Rev9.Tournament
                 if (data.uid == result.my.uid)
                     result.my.rank = data.rank;
             }
+
+            m_data.rankData = result.my;
 
             m_dbRankData.Add(_tabType, result);
             return result;

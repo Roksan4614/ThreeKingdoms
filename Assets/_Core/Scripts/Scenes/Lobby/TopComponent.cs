@@ -26,13 +26,13 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
         Signal.instance.UpdateAsset.connectLambda = new(this,
             _data =>
             {
-                if (_data._itemType == ItemType.NONE)
+                if (_data.itemType == ItemType.NONE)
                 {
                     for (int i = 0; i < m_element.assets.Count; i++)
-                        UpdateAsset(m_element.assets[i].type, -1, _data._isTween);
+                        UpdateAsset(m_element.assets[i].type, -1, _data.isTween);
                 }
                 else
-                    UpdateAsset(_data._itemType, -1, _data._isTween);
+                    UpdateAsset(_data.itemType, -1, _data.isTween);
             });
     }
 

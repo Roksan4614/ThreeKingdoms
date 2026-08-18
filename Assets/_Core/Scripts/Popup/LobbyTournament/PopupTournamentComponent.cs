@@ -70,9 +70,9 @@ public class PopupTournamentComponent : BasePopupComponent
 
         m_element.txtTier.text = $"[{TableManager.stringTable.GetGradeRankType(TournamentWorker.data.grade)}]";
         m_element.txtRank.text = "_현재순위\n<size=150%>";
-        m_element.txtRank.text += TournamentWorker.data.rank == 0 ? "- 위" : $"{TournamentWorker.data.rank:#,0}_위";
+        m_element.txtRank.text += TournamentWorker.data.rankData.rank == 0 ? "- 위" : $"{TournamentWorker.data.rankData.rank:#,0}_위";
         m_element.txtPoint.text = "_점수\n<size=150%>";
-        m_element.txtPoint.text += $"{TournamentWorker.data.point:#,0}";
+        m_element.txtPoint.text += $"{TournamentWorker.data.rankData.point:#,0}";
 
         SetPlayCount();
         SetRefreshCount();
@@ -81,7 +81,7 @@ public class PopupTournamentComponent : BasePopupComponent
         Utils.SetActivePunch(m_element.panel, true);
 
         var batchData = TournamentWorker.instance.GetBatchData(true);
-        m_element.txtPower.text = batchData.totalPower.AmountKMBT(_isMBT: true);
+        m_element.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
         await m_element.panelBatch.SetBatchDataAsync(batchData);
     }
 
@@ -231,7 +231,7 @@ public class PopupTournamentComponent : BasePopupComponent
                     {
                         //IngameLog.Add("배치팝업 이후 업데이트");
                         var batchData = TournamentWorker.instance.GetBatchData(true);
-                        m_element.txtPower.text = batchData.totalPower.AmountKMBT(_isMBT: true);
+                        m_element.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
                         await m_element.panelBatch.SetBatchDataAsync(batchData);
                     }
                 }
@@ -259,7 +259,7 @@ public class PopupTournamentComponent : BasePopupComponent
         public TextMeshProUGUI txtTier;
         public TextMeshProUGUI txtRank;
         public TextMeshProUGUI txtPoint;
-        public TextMeshProUGUI txtPower;
+        public UIPowerHelper power;
 
         public TextMeshProUGUI txtPlayCount;
 
@@ -285,7 +285,7 @@ public class PopupTournamentComponent : BasePopupComponent
             txtTier = _transform.GetComponent<TextMeshProUGUI>("Panel/TierInfo/txt_tier");
             txtRank = _transform.GetComponent<TextMeshProUGUI>("Panel/TierInfo/txt_rank");
             txtPoint = _transform.GetComponent<TextMeshProUGUI>("Panel/TierInfo/txt_point");
-            txtPower = _transform.GetComponent<TextMeshProUGUI>("Panel/Power/Text");
+            power = _transform.GetComponent<UIPowerHelper>("Panel/Power");
             txtPlayCount = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_play_count");
 
             panelBatch = _transform.GetComponent<PopupTournament_Batch_Panel>("Panel/Batch");

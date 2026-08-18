@@ -88,6 +88,17 @@ public class CharacterComponent : TargetComponent
         SetTalkboxName();
     }
 
+    public void SetHeroData_TournamentOther(HeroInfoData _heroInfo)
+    {
+        m_info = _heroInfo;
+        m_stat = _heroInfo.resultStat;
+        attack.ResetFX();
+
+        SetTalkboxName();
+
+        SetFaction(FactionType.Enemy);
+    }
+
     public void SetInfo(HeroInfoData _heroInfoData)
     {
         m_info = _heroInfoData;
@@ -210,6 +221,9 @@ public class CharacterComponent : TargetComponent
 
     public virtual bool OnDamage(CharacterComponent _attacker, float _damage, bool _isCritical = false)
     {
+        if (isLive == false)
+            return true;
+
         if (_attacker != null &&
             target.target == null &&
             isLive == true &&
@@ -254,6 +268,8 @@ public class CharacterComponent : TargetComponent
 
             if (m_stat.health <= 0)
             {
+                _damage += m_stat.health;
+
                 if (buff.IsActive(BuffType.BUFF_NO_DIE))
                     m_stat.health = 1;
                 else
@@ -279,7 +295,7 @@ public class CharacterComponent : TargetComponent
                 }
             }
 
-            Signal.instance.UpdateHP.Emit(this);
+            Signal.instance.UpdateHP.Emit((this, _attacker, _damage));
         }
 
         return m_stat.health == 0;

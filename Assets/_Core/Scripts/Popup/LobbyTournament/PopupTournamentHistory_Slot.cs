@@ -116,7 +116,7 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
         {
             ts = _dtEnd - Utils.GetUTC();
             var sec = (int)ts.TotalSeconds;
-            if (sec != prev)
+            if (sec != prev || sec <= 10)
             {
                 prev = sec;
 

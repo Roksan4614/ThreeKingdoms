@@ -67,7 +67,11 @@ public class Character_Worker_Anim : Character_Worker
 
     public void PlayAttack(bool _isShowFx = false, bool _isShake = false)
     {
-        Play(CharacterAnimType.Attack);
+        if (m_owner.rig.linearVelocity == Vector2.zero)
+            Play(CharacterAnimType.Attack);
+        else
+            Play(CharacterAnimType.Attack_Move, 1);
+
         if (_isShowFx)
         {
             m_owner.attack.ResetFX();

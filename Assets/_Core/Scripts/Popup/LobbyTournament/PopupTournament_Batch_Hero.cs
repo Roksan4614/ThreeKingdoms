@@ -120,7 +120,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             m_batchData.heroes[i] = data;
         }
 
-        m_elementTournament.txtPower.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+        m_elementTournament.power.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
         SetLayout_List();
     }
 
@@ -212,7 +212,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         m_batchData.heroes = m_batchData.heroes.SortBy(x => x.sortIdx);
 
         m_elementTournament.panelBatch.SetBatchDataAsync(m_batchData).Forget();
-        m_elementTournament.txtPower.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+        m_elementTournament.power.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
 
         SetLayout_List();
         isUpdated = true;
@@ -240,7 +240,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         m_myHero.AddRange(m_batchData.heroes);
 
         m_elementTournament.panelBatch.SetBatchDataAsync(m_batchData).Forget();
-        m_elementTournament.txtPower.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+        m_elementTournament.power.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
 
         SetLayout_List();
     }
@@ -364,7 +364,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         m_batchData.heroes = m_batchData.heroes.SortBy(x => x.sortIdx);
 
         m_elementTournament.panelBatch.SetBatchDataAsync(m_batchData).Forget();
-        m_elementTournament.txtPower.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+        m_elementTournament.power.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
 
         SetLayout_List();
         isUpdated = true;
@@ -421,7 +421,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
     [System.Serializable]
     struct ElementData_Tournament
     {
-        public TextMeshProUGUI txtPower;
+        public UIPowerHelper power;
 
         public ButtonHelper btnAttack;
         public ButtonHelper btnDefence;
@@ -435,7 +435,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
             panelBatch = _transform.GetComponent<PopupTournament_Batch_Panel>("Batch");
 
-            txtPower = _transform.GetComponent<TextMeshProUGUI>("Power/Text");
+            power = _transform.GetComponent<UIPowerHelper>("Power");
         }
     }
 }

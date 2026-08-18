@@ -35,10 +35,10 @@ public class CharacterState_Battle : CharacterState
             await UniTask.WaitUntil(() => m_owner.target.target != target || target == null || target.isLive == false, cancellationToken: token);
 
             // 공격 모션이면 기다려주자
-            await UniTask.WaitUntil(() => m_owner.anim.IsType(CharacterAnimType.Attack) == false, cancellationToken: token);
+            //await UniTask.WaitUntil(() => m_owner.anim.IsType(CharacterAnimType.Attack) == false, cancellationToken: token);
 
             // 대기 모션이 아니면 대기로 해주기.
-            if (m_owner.anim.IsType(CharacterAnimType.Idle) == false)
+            if (m_owner.attack.isAttackPush == false && m_owner.anim.IsType(CharacterAnimType.Idle) == false)
                 m_owner.anim.Play(CharacterAnimType.Idle);
 
             target = GetNearestHero();

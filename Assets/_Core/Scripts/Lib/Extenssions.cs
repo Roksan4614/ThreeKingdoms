@@ -245,7 +245,7 @@ public static class Extenssions
         }
         else
         {
-            if (_ts.TotalMinutes < 1)
+            if (_ts.TotalMinutes <= 1)
             {
                 result = _ts.Seconds >= 10 ? _ts.Seconds.ToString() : _ts.TotalSeconds.ToString("0.00");
 

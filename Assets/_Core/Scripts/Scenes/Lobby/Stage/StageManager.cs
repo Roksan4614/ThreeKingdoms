@@ -16,7 +16,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
     LoadData_Stage m_loadData;
     public LoadData_Stage data => m_loadData;
-    List<Character_Enemy> m_enemyList = new();
+    List<CharacterComponent> m_enemyList = new();
 
     StageComponent m_stage;
 
@@ -413,7 +413,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
     {
         foreach (var enemy in m_enemyList)
         {
-            if (enemy.isBoss == false)
+            if ((enemy as Character_Enemy).isBoss == false)
                 enemy.OnDamage(null, enemy.stat.healthMax);
         }
     }
@@ -428,8 +428,8 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
         return true;
     }
 
-    public void AddEnemyList(Character_Enemy _enemy)
-        => m_enemyList.Add(_enemy);
+    public void AddEnemyList(params CharacterComponent[] _enemy)
+        => m_enemyList.AddRange(_enemy);
     public void ClearEnemyList()
         => m_enemyList.Clear();
 

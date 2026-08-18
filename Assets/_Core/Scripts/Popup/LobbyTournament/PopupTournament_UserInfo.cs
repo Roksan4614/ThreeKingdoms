@@ -96,7 +96,7 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
                 parentInfo.GetChild(i).gameObject.SetActive(false);
         }
 
-        m_element.txtTotalPower.text = totalPower.AmountKMBT(_isMBT: true);
+        m_element.power.text = totalPower.AmountKMBT(_isMBT: true);
 
         PPWorker.Set(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO, isOn ? 1 : 0, false);
     }
@@ -144,7 +144,7 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
     [System.Serializable]
     struct ElementData
     {
-        public TextMeshProUGUI txtTotalPower;
+        public UIPowerHelper power;
         public Transform treasure;
 
         public PopupTournament_Batch_Panel panelBatch;
@@ -156,7 +156,7 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
 
         public void Initialize(Transform _transform)
         {
-            txtTotalPower = _transform.GetComponent<TextMeshProUGUI>("Panel/Batch/Power/Text");
+            power = _transform.GetComponent<UIPowerHelper>("Panel/Batch/Power");
             treasure = _transform.Find("Panel/Treasure/Layout");
 
             panelBatch = _transform.GetComponent<PopupTournament_Batch_Panel>("Panel/Batch/Batch");

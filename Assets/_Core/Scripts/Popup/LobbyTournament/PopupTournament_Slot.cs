@@ -24,8 +24,8 @@ public class PopupTournament_Slot : MonoBehaviour, IValidatable
         m_element.profile.SetActivePanel(false);
 
         m_element.txtNickname.text = "";
-        m_element.txtPower.text = "";
-        m_element.txtPoint.text = "";
+        m_element.power.text = "";
+        m_element.tierPoint.text = "";
     }
 
     public void SetUserData(TournamentRankerUserData _rankerUserData, UnityAction<TournamentRankerUserData> _onStart, UnityAction<TournamentRankerUserData> _onOpenInfo)
@@ -35,8 +35,8 @@ public class PopupTournament_Slot : MonoBehaviour, IValidatable
         m_rankerUserData = _rankerUserData;
 
         m_element.txtNickname.text = _rankerUserData.info.nickname;
-        m_element.txtPower.text = _rankerUserData.info.power.AmountKMBT(_isMBT:true);
-        m_element.txtPoint.text = _rankerUserData.info.point.AmountKMBT(_isMBT: true);
+        m_element.power.text = _rankerUserData.info.power.AmountKMBT(_isMBT:true);
+        m_element.tierPoint.text = _rankerUserData.info.point.AmountKMBT(_isMBT: true);
 
         m_element.profile.SetActivePanel(true);
         m_element.profile.SetProfileData(_rankerUserData.info.indexProfile, _rankerUserData.info.skin);
@@ -54,16 +54,16 @@ public class PopupTournament_Slot : MonoBehaviour, IValidatable
         public ProfileIconCompoent profile;
 
         public TextMeshProUGUI txtNickname;
-        public TextMeshProUGUI txtPoint;
-        public TextMeshProUGUI txtPower;
+        public UITierPointHelper tierPoint;
+        public UIPowerHelper power;
 
         public void Initialize(Transform _transform)
         {
             profile = _transform.GetComponent<ProfileIconCompoent>("Panel/Slot_Profile");
 
             txtNickname = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_nickname");
-            txtPoint = _transform.GetComponent<TextMeshProUGUI>("Panel/TierPoint/Text");
-            txtPower = _transform.GetComponent<TextMeshProUGUI>("Panel/Power/Text");
+            tierPoint = _transform.GetComponent<UITierPointHelper>("Panel/TierPoint");
+            power = _transform.GetComponent<UIPowerHelper>("Panel/Power");
         }
     }
     #endregion VALIDATE

@@ -16,9 +16,9 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
             return;
 #endif
 
-        if( BossRaidWorker.instance.isRunning == true)
+        if (BossRaidWorker.instance.isRunning == true)
             Awake_BossRaid();
-        else if( DataManager.dailyDungeon.isRunning == true)
+        else if (DataManager.dailyDungeon.isRunning == true)
             Awake_DailyDungeon();
     }
 
@@ -48,21 +48,26 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
         m_element.rtBar.anchoredPosition = Vector2.zero;
     }
 
-    void SlotUpdateBossHP(float _percent)
+    public void SlotUpdateBossHP((float percent, float hpMax) _data)
     {
         var width = m_element.rtBar.rect.width;
         //m_element.txtPercent.text = _percent == 0 ? "" : $"{_percent * 100:0.#0}%";
         m_element.rtBar.DOKill();
-        var target = width * -(1 - _percent);
+        var target = width * -(1 - _data.percent);
         m_element.rtBar.DOAnchorPosX(target, 0.2f)
             .OnUpdate(() =>
             {
                 var p = 1 + (m_element.rtBar.anchoredPosition.x / width);
                 m_element.txtPercent.text = $"{p * 100:0.#0}%";
+
+                //if (m_element.txtHp != null)
+                //    m_element.txtHp.text = (_data.hpMax * p).ToString("#,0");
             });
 
         if (BossRaidWorker.instance.isRunning == true)
             SlotUpdateBossHP_BossRaid(target);
+
+        ShowFxDamage();
     }
 
     public void OnManualValidate()
@@ -81,11 +86,13 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
         public RectTransform rtBar;
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtPercent;
+        //public TextMeshProUGUI txtHp;
 
         public void Initialize(Transform _transform)
         {
             rtBar = _transform.GetComponent<RectTransform>("Bar");
             txtPercent = rtBar.GetComponent<TextMeshProUGUI>("txt_percent");
+            //txtHp = rtBar.GetComponent<TextMeshProUGUI>("txt_hp");
             txtName = _transform.GetComponent<TextMeshProUGUI>("txt_name");
         }
     }
