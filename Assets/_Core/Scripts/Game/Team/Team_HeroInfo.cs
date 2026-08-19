@@ -114,7 +114,7 @@ public class Team_HeroInfo
             m_lstHeroInfo[i].StartStage();
     }
 
-    public void UpdateHP((CharacterComponent hero, CharacterComponent attacker, float damage) _data)
+    public void UpdateHP((CharacterComponent hero, CharacterComponent attacker, long damage) _data)
     {
         if (_data.hero.teamPosition > TeamPositionType.NONE)
             m_lstHeroInfo.Find(x => x.key == _data.hero.info.key)?.UpdateHP();

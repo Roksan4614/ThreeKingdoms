@@ -50,7 +50,7 @@ public struct TableStatData
     [JsonProperty, SerializeField] float defence;
     [JsonProperty, SerializeField] float critical_damage;
     [JsonProperty, SerializeField] float critical_rate;
-    [JsonProperty, SerializeField] float health_max;
+    [JsonProperty, SerializeField] long health_max;
     [JsonProperty, SerializeField] float move_speed;
     [JsonProperty, SerializeField] float attack_speed;
     [JsonProperty, SerializeField] float cooldown_rate;
@@ -60,7 +60,7 @@ public struct TableStatData
     public bool isActive => key.IsActive();
     public float dashCooldown { get; set; }
     public float dashCooldownRate { get; set; }
-    public float health { get; set; }
+    public long health { get; set; }
 
     public IReadOnlyList<BattleStatData> battleStat
     {
@@ -110,7 +110,7 @@ public struct TableStatData
             case BattleStatType.defence: defence = _value; break;
             case BattleStatType.critical_damage: critical_damage = _value; break;
             case BattleStatType.critical_rate: critical_rate = _value; break;
-            case BattleStatType.health_max: health_max = _value; break;
+            case BattleStatType.health_max: health_max = (long)_value; break;
             case BattleStatType.move_speed: move_speed = _value; break;
             case BattleStatType.attack_speed: attack_speed = _value; break;
             case BattleStatType.cooldown_rate: cooldown_rate = _value; break;
@@ -139,7 +139,7 @@ public struct TableStatData
     {
         attack_power *= _percent;
         defence *= _percent;
-        health = health_max = health_max * _percent;
+        health = health_max = (long)(health_max * _percent);
     }
 
     // 어디서 가져다 쓰는지 확인하기 위해
@@ -161,9 +161,9 @@ public struct TableStatData
         set => attack_speed = value;
     }
 
-    public float healthMax
+    public long healthMax
     {
-        get => health_max;
+        get => (long)health_max;
         set => health_max = value;
     }
 
@@ -193,4 +193,6 @@ public struct TableStatData
         get => life_steal;
         set => life_steal = value;
     }
+
+    public float percentHP => (float)(health / (double)healthMax);
 }

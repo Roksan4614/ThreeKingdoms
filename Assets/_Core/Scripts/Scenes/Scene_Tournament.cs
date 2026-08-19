@@ -121,21 +121,10 @@ namespace Rev9.Tournament
 
             // 카메라 확대 작업
             var value = Mathf.Clamp((left - right).sqrMagnitude, 180, 400);
-            m_camera.fieldOfView = Mathf.Lerp(110, 130, Mathf.InverseLerp(180, 400, value));
+            m_camera.fieldOfView = Mathf.Lerp(110, 140, Mathf.InverseLerp(180, 400, value));
 
             var sqrX = (left - right).sqrMagnitude;
             ScreenLogWorker.Add("sqr X", sqrX);
-
-#if UNITY_EDITOR
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                m_heroesMe[0].OnDamage(null, 100);
-            }
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                m_heroesOther[1].OnDamage(null, 100);
-            }
-#endif
         }
 
         void SlotTournamentStatus(TournamentStatusType _status)
@@ -147,7 +136,10 @@ namespace Rev9.Tournament
                         m_cts = m_cts.ReleaseCTS();
 
                         foreach (var hero in m_heroes)
-                            hero.SetState(CharacterStateType.None);
+                            if (hero.isLive)
+                                hero.SetState(CharacterStateType.None);
+
+                        TournamentHeroInfoManager.instance.SetResult();
                     }
                     break;
             }
@@ -156,6 +148,8 @@ namespace Rev9.Tournament
         CancellationTokenSource m_cts;
         async UniTask TimerAsync()
         {
+            TournamentHeroInfoManager.instance.StartBattle();
+
             //StageManager.instance.SetState(CharacterStateType.Battle);
             TeamManager.instance.SetState(CharacterStateType.Battle);
 

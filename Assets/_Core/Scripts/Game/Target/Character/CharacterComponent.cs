@@ -42,6 +42,8 @@ public class CharacterComponent : TargetComponent
     public TeamPositionType teamPosition { get; private set; } = TeamPositionType.NONE;
     public Vector3 position { get => transform.position; set => transform.position = value; }
     public Transform cameraPos => m_element.cameraPos;
+    public RectTransform rtBar_Cooltime => m_element.rtCooldown;
+
 
     public virtual void Awake()
     {
@@ -219,6 +221,18 @@ public class CharacterComponent : TargetComponent
         m_stateType = _stateType;
     }
 
+    public void StateStop()
+    {
+        if (m_state != null)
+        {
+            m_state.Stop();
+            m_state = null;
+
+
+        }
+    }
+
+
     public virtual bool OnDamage(CharacterComponent _attacker, float _damage, bool _isCritical = false)
     {
         if (isLive == false)
@@ -239,6 +253,8 @@ public class CharacterComponent : TargetComponent
             //move.MoveTarget(_attacker, true);
         }
 
+        var damage = (long)_damage;
+
         if (_attacker != null)
         {
             if (m_faction == FactionType.Alliance)
@@ -248,7 +264,7 @@ public class CharacterComponent : TargetComponent
             {
                 attacker = _attacker.transform,
                 target = this,
-                value = -_damage,
+                value = -damage,
                 isCritical = _isCritical,
                 isAlliance = factionType == FactionType.Alliance
             });
@@ -259,16 +275,15 @@ public class CharacterComponent : TargetComponent
             // 레이드 진행중이고
             // 공격자가 내 장수들ㅇ라면, 
             if (BossRaidWorker.instance.isRunning == true && _attacker?.factionType == FactionType.Alliance)
-                DataManager.bossRaid.SendDamageBossAsync((long)_damage);//.Forget();
+                DataManager.bossRaid.SendDamageBossAsync(damage);//.Forget();
 
-            m_stat.health -= _damage;
+            m_stat.health -= damage;
 
-            float percent = m_stat.health / m_stat.healthMax;
-            m_element.rtHP.SetAnchoredPositionX(m_element.rtHP.rect.width * percent - m_element.rtHP.rect.width);
+            m_element.rtHP.SetAnchoredPositionX(m_element.rtHP.rect.width * m_stat.percentHP - m_element.rtHP.rect.width);
 
             if (m_stat.health <= 0)
             {
-                _damage += m_stat.health;
+                damage += m_stat.health;
 
                 if (buff.IsActive(BuffType.BUFF_NO_DIE))
                     m_stat.health = 1;
@@ -287,15 +302,18 @@ public class CharacterComponent : TargetComponent
 
                     m_element.collider.enabled = false;
 
-                    if (m_info.isMain == true)
-                        ControllerManager.instance.SetDie_SkillTimer();
+                    if (Rev9.Tournament.TournamentWorker.instance.isRunning == false)
+                    {
+                        if (m_info.isMain == true)
+                            ControllerManager.instance.SetDie_SkillTimer();
 
-                    if (m_faction == FactionType.Enemy)
-                        TutorialManager.instance.Action_EnemyKill();
+                        if (m_faction == FactionType.Enemy)
+                            TutorialManager.instance.Action_EnemyKill();
+                    }
                 }
             }
 
-            Signal.instance.UpdateHP.Emit((this, _attacker, _damage));
+            Signal.instance.UpdateHP.Emit((this, _attacker, damage));
         }
 
         return m_stat.health == 0;
@@ -395,6 +413,7 @@ public class CharacterComponent : TargetComponent
         [SerializeField] Collider2D m_collider;
         [SerializeField] TextMeshProUGUI m_txtTalk;
         [SerializeField] RectTransform m_rtHP;
+        [SerializeField] RectTransform m_rtCooldown;
 
         public SpriteRenderer[] partsRenders;
         public Color[] colorParts;
@@ -411,6 +430,7 @@ public class CharacterComponent : TargetComponent
         public Collider2D collider => m_collider;
         public TextMeshProUGUI txtTalk => m_txtTalk;
         public RectTransform rtHP => m_rtHP;
+        public RectTransform rtCooldown => m_rtCooldown;
         public GameObject objHP => rtHP.parent.gameObject;
 
         public Transform mount;
@@ -431,6 +451,7 @@ public class CharacterComponent : TargetComponent
             m_txtTalk = _transform.GetComponent<TextMeshProUGUI>("Character/Canvas/Talkbox/txt_talk");
             m_collider = panel.parent.GetComponent<Collider2D>();
             m_rtHP = _transform.GetComponent<RectTransform>("Character/Canvas/HP/Bar");
+            m_rtCooldown = _transform.GetComponent<RectTransform>("Character/Canvas/Cooldown/Bar");
 
             partsRenders = m_animator.transform.GetComponentsInChildren<SpriteRenderer>(true);
             colorParts = partsRenders.Select(x => x.color).ToArray();

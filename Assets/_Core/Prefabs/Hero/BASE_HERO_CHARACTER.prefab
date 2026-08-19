@@ -177,6 +177,7 @@ MonoBehaviour:
     m_collider: {fileID: 2583712055831059175}
     m_txtTalk: {fileID: 1598581584509638917}
     m_rtHP: {fileID: 4486394175086506329}
+    m_rtCooldown: {fileID: 8425051243785154598}
     partsRenders:
     - {fileID: 7398102947898759184}
     - {fileID: 3041877439384677050}
@@ -540,6 +541,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.88
       objectReference: {fileID: 0}
+    - target: {fileID: 6203440793760675325, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6462632440588988270, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -809,5 +814,10 @@ Transform:
 --- !u!223 &7649764152374576818 stripped
 Canvas:
   m_CorrespondingSourceObject: {fileID: 1851086561491895142, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
+  m_PrefabInstance: {fileID: 8329700655089616340}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &8425051243785154598 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 536704521203774962, guid: de04fd1bf18088e438140df5f91d2ca3, type: 3}
   m_PrefabInstance: {fileID: 8329700655089616340}
   m_PrefabAsset: {fileID: 0}

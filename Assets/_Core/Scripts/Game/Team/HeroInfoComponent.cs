@@ -139,8 +139,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         var stat = m_hero.stat;
 
         var bar = m_element.rtBar_HP;
-        float progress = stat.health / (float)stat.healthMax;
-        var targetX = bar.rect.width * progress - bar.rect.width;
+        var targetX = bar.rect.width * stat.percentHP - bar.rect.width;
 
         m_tweenHP?.Kill();
 

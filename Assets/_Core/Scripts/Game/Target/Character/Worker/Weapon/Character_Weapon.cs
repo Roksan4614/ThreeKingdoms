@@ -108,9 +108,9 @@ public class Character_Weapon : MonoBehaviour, IValidatable
 
         var damage = _owner.stat.attackPower;
         if (m_isCritial == true)
-            damage = (int)(damage * _owner.stat.criticalDamage);
+            damage *= _owner.stat.criticalDamage;
 
-        if (target.OnDamage(_owner, damage, m_isCritial))
+        if (target.OnDamage(_owner, (long)damage, m_isCritial))
             _owner.target.SetTarget(null);
     }
 

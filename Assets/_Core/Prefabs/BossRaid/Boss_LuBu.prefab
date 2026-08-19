@@ -839,6 +839,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7582744665890217402, guid: 8416abcb33476d844828f918b626b368, type: 3}
   m_PrefabInstance: {fileID: 3190955297788444067}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &5048272223681925853 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7658261459807039358, guid: 8416abcb33476d844828f918b626b368, type: 3}
+  m_PrefabInstance: {fileID: 3190955297788444067}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5269824731055210392 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7307830657882358331, guid: 8416abcb33476d844828f918b626b368, type: 3}
@@ -931,6 +936,7 @@ MonoBehaviour:
     m_collider: {fileID: 1242971284656814108}
     m_txtTalk: {fileID: 2651378675251100670}
     m_rtHP: {fileID: 911420491789964194}
+    m_rtCooldown: {fileID: 5048272223681925853}
     partsRenders:
     - {fileID: 7760240824381862021}
     - {fileID: 6075229246975392491}
@@ -1587,6 +1593,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1181514950070572608}
     - target: {fileID: 4619361193749972912, guid: fcfd06460a5357f4b971323f9e7f1a8e, type: 3}
+      propertyPath: m_element.m_rtCooldown
+      value: 
+      objectReference: {fileID: 2237479523849539380}
+    - target: {fileID: 4619361193749972912, guid: fcfd06460a5357f4b971323f9e7f1a8e, type: 3}
       propertyPath: m_animationClipData.dash
       value: 
       objectReference: {fileID: 7400000, guid: 421dc2b7efc7cc945a4795c70eb45d67, type: 2}
@@ -1680,6 +1690,11 @@ GameObject:
 --- !u!4 &2049650084747951600 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7193583745409506950, guid: fcfd06460a5357f4b971323f9e7f1a8e, type: 3}
+  m_PrefabInstance: {fileID: 9197880589379199862}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &2237479523849539380 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6964940434282605634, guid: fcfd06460a5357f4b971323f9e7f1a8e, type: 3}
   m_PrefabInstance: {fileID: 9197880589379199862}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &3123079358728305129 stripped

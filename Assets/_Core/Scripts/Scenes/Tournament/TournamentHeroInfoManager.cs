@@ -19,11 +19,25 @@ namespace Rev9.Tournament {
             m_element.other.Initialize(TournamentWorker.instance.enterUserData, false);
         }
 
-        void SlotUpdateHp((CharacterComponent hero, CharacterComponent attacker, float damage) _data)
+        public void StartBattle()
         {
-            var slot = _data.hero.factionType == FactionType.Alliance ? m_element.me : m_element.other;
+            m_element.me.StartBattle();
+            m_element.other.StartBattle();
+        }
 
-            slot.TakenDamage(_data.damage);
+        void SlotUpdateHp((CharacterComponent hero, CharacterComponent attacker, long damage) _data)
+        {
+            var defenceSlot = _data.hero.factionType == FactionType.Alliance ? m_element.me : m_element.other;
+            defenceSlot.TakenDamage(_data.damage);
+
+            var attackSlot = _data.attacker.factionType == FactionType.Alliance ? m_element.me : m_element.other;
+            attackSlot.SetRankData(_data.attacker, _data.damage);
+        }
+
+        public void SetResult()
+        {
+            m_element.me.SetResult(m_element.other.totalDamage);
+            m_element.other.SetResult(m_element.me.totalDamage);
         }
 
         #region VALIDATE

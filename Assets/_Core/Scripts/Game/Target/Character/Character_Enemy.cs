@@ -56,7 +56,7 @@ public class Character_Enemy : CharacterComponent
         if (_isAttackPower)
             m_stat.attackPower *= _percent;
         if (_isHealth)
-            m_stat.health = m_stat.healthMax = m_stat.healthMax * _percent;
+            m_stat.health = m_stat.healthMax = (long)(m_stat.healthMax * _percent);
         if (_isDefence)
             m_stat.defenceValue *= _percent;
     }

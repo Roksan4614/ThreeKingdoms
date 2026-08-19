@@ -36,7 +36,7 @@ public class Character_Enemy_RaidBoss : Character_Enemy
             return true;
 
         var result = base.OnDamage(_attacker, _damage, _isCritical);
-        Signal.instance.UpdageBossHP.Emit((isLive ? m_stat.health / (float)m_stat.healthMax : 0, m_stat.healthMax));
+        Signal.instance.UpdageBossHP.Emit((isLive ? m_stat.percentHP : 0, m_stat.healthMax));
 
         // todo
         if (isLive == false)

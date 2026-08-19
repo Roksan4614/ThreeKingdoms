@@ -276,7 +276,7 @@ public class Signal
     public SignalObject CloseLobbyScreenFinished = new();
 
     public SignalObject<CharacterComponent> ConnectMainHero = new();
-    public SignalObject<(CharacterComponent owenr, CharacterComponent attacker, float _damage)> UpdateHP = new();
+    public SignalObject<(CharacterComponent owenr, CharacterComponent attacker, long _damage)> UpdateHP = new();
     public SignalObject UpdateTeamPosition = new();
     public SignalObject<(float percent, float hpMax)> UpdageBossHP = new();
     public SignalObject<(bool isTween, ItemType itemType)> UpdateAsset = new();
