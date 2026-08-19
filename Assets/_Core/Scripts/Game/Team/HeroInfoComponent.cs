@@ -231,7 +231,7 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
         m_cooltime_Skill.startTime = Time.time;
         m_cooltime_Skill.endTime = m_dbHero.skillCooltime * (1 - stat.cooldownRate) + m_cooltime_Skill.startTime;
 
-        var addTime = m_dbHero.percetnStartCooldown * m_dbHero.skillCooltime;
+        var addTime = m_dbHero.percentStartCooldown * m_dbHero.skillCooltime;
         var bar = m_element.rtBar_Cooltime;
         bar.gameObject.SetActive(true);
         var width = bar.rect.width;

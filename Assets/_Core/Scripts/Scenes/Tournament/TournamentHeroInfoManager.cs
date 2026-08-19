@@ -1,6 +1,7 @@
 using UnityEngine;
 
-namespace Rev9.Tournament {
+namespace Rev9.Tournament
+{
     public class TournamentHeroInfoManager : Singleton<TournamentHeroInfoManager>, IValidatable
     {
         private void Start()
@@ -27,6 +28,9 @@ namespace Rev9.Tournament {
 
         void SlotUpdateHp((CharacterComponent hero, CharacterComponent attacker, long damage) _data)
         {
+            if (TournamentWorker.instance.statusType == TournamentStatusType.Finished)
+                return;
+
             var defenceSlot = _data.hero.factionType == FactionType.Alliance ? m_element.me : m_element.other;
             defenceSlot.TakenDamage(_data.damage);
 
@@ -38,6 +42,11 @@ namespace Rev9.Tournament {
         {
             m_element.me.SetResult(m_element.other.totalDamage);
             m_element.other.SetResult(m_element.me.totalDamage);
+        }
+
+        public bool IsWin()
+        {
+            return m_element.me.percentHP > m_element.other.percentHP;
         }
 
         #region VALIDATE

@@ -158,6 +158,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         {
             idxHero = m_batchData.heroes.FindIndex(x => x.key == _key);
             var heroData = m_batchData.heroes[idxHero];
+            heroData.isMain = false;
             heroData.sortIdx = _sortIdx;
             heroData.isBatch = true;
             m_batchData.heroes[idxHero] = heroData;
@@ -355,6 +356,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
                 return;
             }
 
+            itemData.isMain = false;
             itemData.isBatch = true;
             itemData.sortIdx = TournamentWorker.instance.GetPositionByClass(m_batchData, itemData.classType);
 

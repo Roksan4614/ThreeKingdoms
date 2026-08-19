@@ -34,8 +34,8 @@ public enum PopupType
     UpgradeGuide,
 
     BossRaidResult,
-
     DailyDungeonResult,
+    TournamentResult,
 
     Modal_Start,
     Modal,

@@ -57,7 +57,7 @@ public partial class InfoStage_Boss : MonoBehaviour, IValidatable
         m_element.rtBar.DOAnchorPosX(target, 0.2f)
             .OnUpdate(() =>
             {
-                var p = 1 + (m_element.rtBar.anchoredPosition.x / width);
+                var p = Mathf.Max(0, 1 + (m_element.rtBar.anchoredPosition.x / width));
                 m_element.txtPercent.text = $"{p * 100:0.#0}%";
 
                 //if (m_element.txtHp != null)

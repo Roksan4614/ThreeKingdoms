@@ -157,7 +157,10 @@ public class PopupTournamentComponent : BasePopupComponent
         if (TournamentWorker.data.countPlay <= 0)
         {
             PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
-            
+
+            if (await TournamentWorker.instance.ShowAdsAsync())
+                PopupManager.instance.GetPopup<PopupTournamentComponent>(PopupType.LobbyTournament).SetPlayCount();
+
             //if (TournamentWorker.data.countAD <= 0)
             //    PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
             //else if (await TournamentWorker.instance.ShowAdsAsync())

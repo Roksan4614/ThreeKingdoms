@@ -51,6 +51,8 @@ public enum ItemType
     Normal_Gatcha_Ticket,               // ÀÏ¹Ý °¡Ã­ Æ¼ÄÏ
     Rare_Gatcha_Ticket,                 // Èñ±Í °¡Ã­ Æ¼ÄÏ
 
+    Tournament_Point,
+
     MAX
 }
 

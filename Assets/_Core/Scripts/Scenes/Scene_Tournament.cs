@@ -169,7 +169,7 @@ namespace Rev9.Tournament
             }
 
             m_txtTimer.text = "";
-            Signal.instance.TournamentStatus.Emit(TournamentStatusType.Finished);
+            TournamentWorker.instance.Finished();
         }
     }
 }

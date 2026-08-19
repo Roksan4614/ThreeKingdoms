@@ -42,4 +42,7 @@ public class Palette
 
     public static string htmlString_Up => instance.m_data.GetHexadecimal(PaletteColorType.txt_up);
     public static string htmlString_Down => instance.m_data.GetHexadecimal(PaletteColorType.txt_down);
+
+    public static Color color_Up => Get(PaletteColorType.txt_up);
+    public static Color color_Down => Get(PaletteColorType.txt_down);
 }

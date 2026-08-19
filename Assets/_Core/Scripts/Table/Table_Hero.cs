@@ -93,7 +93,7 @@ public struct TableHeroData
     }
 
     public bool isActive => key.IsActive();
-    public float percetnStartCooldown => percent_start_cooldown;
+    public float percentStartCooldown => percent_start_cooldown;
     public float skillCooltime => skill_cooltime;
 
     public string regionKey => $"{regionType}_{key}".ToUpper();
@@ -153,6 +153,7 @@ public struct HeroInfoData
     public string className => TableManager.stringHero.GetString($"CLASSTYPE_" + m_classType.ToString().ToUpper());
     public string gradeClass => $"{gradeName} {className}";
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
+    public string fullNameGradeLevel => $"[{gradeName}] {name}{(enchantLevel == 0 ? "" : $"+{enchantLevel}")}";
 
     [JsonProperty] public int sortIdx { get; set; }
 

@@ -18,6 +18,8 @@ namespace Rev9.Tournament
         List<float> m_slotPosY = new();
         public long totalDamage => m_hpMax - m_hp;
 
+        public float percentHP => (float)(m_hp / (double)m_hpMax);
+
         public void Initialize(TournamentRankerUserData _userData, bool _isMe)
         {
             m_isMe = _isMe;
@@ -56,7 +58,7 @@ namespace Rev9.Tournament
             if (m_hp <= 0)
             {
                 m_hp = 0;
-                Signal.instance.TournamentStatus.Emit(TournamentStatusType.Finished);
+                TournamentWorker.instance.Finished();
             }
 
             m_element.gauge.SlotUpdateBossHP((Mathf.Max(0, m_hp / (float)m_hpMax), m_hpMax));
@@ -90,7 +92,7 @@ namespace Rev9.Tournament
         public void SetResult(long _teamTotalDamage)
         {
             foreach (var slot in m_slot)
-                slot.SetResult(_teamTotalDamage);
+                slot.SetResult();
         }
 
         #region VALIDATE

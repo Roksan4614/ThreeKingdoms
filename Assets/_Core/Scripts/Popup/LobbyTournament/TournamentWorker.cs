@@ -134,6 +134,7 @@ namespace Rev9.Tournament
 
                         var idxHeroInfo = team.heroes.FindIndex(x => x.skin == member.Value.info.skin);
                         var heroInfo = team.heroes[idxHeroInfo];
+                        heroInfo.isMain = false;
                         heroInfo.sortIdx = idxPosition;
                         team.heroes[idxHeroInfo] = heroInfo;
                     }
@@ -381,12 +382,17 @@ namespace Rev9.Tournament
 
         public TournamentRankerUserData GetUserData(int _uid)
         {
+            TournamentRankerUserData result = default;
+
             foreach (var b in battleUserList)
             {
                 if (b.info.uid == _uid)
-                    return b;
+                {
+                    result = b;
+                    break;
+                }
             }
-            return default;
+            return result;
         }
     }
 

@@ -19,10 +19,11 @@ namespace Rev9.Tournament
         public CharacterComponent SetHeroData(HeroInfoData _heroData, bool _isMe)
         {
             m_characeter = (Scene_Tournament.instance as Scene_Tournament).GetCharacter(_heroData.key, _isMe);
+            m_characeter.SetActive_HP(false);
 
             m_element.icon.SetProfileData(0, _heroData.skin);
 
-            m_name = _heroData.name;
+            m_name = _heroData.fullNameGradeLevel;
             totalDamage = 0;
             AddDealInfo(0, false);
             rank = transform.GetSiblingIndex();
@@ -32,7 +33,13 @@ namespace Rev9.Tournament
 
         public void StartBattle()
         {
+            m_characeter.SetActive_HP(true);
             SkillCooldownAsync().Forget();
+        }
+
+        public void SetResult()
+        {
+            m_ctsCooldown = m_ctsCooldown.ReleaseCTS();
         }
 
         CancellationTokenSource m_ctsCooldown;
@@ -43,8 +50,11 @@ namespace Rev9.Tournament
 
             var stat = m_characeter.stat;
 
+            var dbHero = TableManager.hero.Get(stat.key);
+
             var startTime = Time.time;
-            var endTime = TableManager.hero.Get(stat.key).skillCooltime * (1 - stat.cooldownRate) + startTime;
+            var endTime = dbHero.skillCooltime * (1 - stat.cooldownRate) + startTime;
+            var addTime = dbHero.percentStartCooldown * dbHero.skillCooltime;
 
             var bar = m_characeter.rtBar_Cooltime;
             bar.parent.gameObject.SetActive(true);
@@ -53,7 +63,7 @@ namespace Rev9.Tournament
             while (m_characeter.isLive == true)
             {
                 float duration = endTime - startTime;
-                float progress = Mathf.Min(1, (Time.time - startTime) / duration);
+                float progress = Mathf.Min(1, (Time.time - startTime + addTime) / duration);
 
                 var pos = bar.anchoredPosition;
                 pos.x = width * progress;
@@ -65,6 +75,7 @@ namespace Rev9.Tournament
 
                     await m_characeter.attack.UseSkillAsync();
 
+                    addTime = 0;
                     startTime = Time.time;
                     endTime = TableManager.hero.Get(stat.key).skillCooltime * (1 - stat.cooldownRate) + startTime;
                 }
@@ -107,13 +118,6 @@ namespace Rev9.Tournament
             {
                 m_element.txtInfo.text = $"{m_name}\n<color=#000000><size=150%>{totalDamage.ToString("#,0")}";
             }
-        }
-
-        public void SetResult(long _teamTotalDamage)
-        {
-            m_ctsCooldown = m_ctsCooldown.ReleaseCTS();
-            m_tween.Kill();
-            m_element.txtInfo.text = $"{m_name} ({totalDamage / (double)_teamTotalDamage * 100: 0.#0}%)\n<color=#000000><size=150%>{totalDamage.ToString("#,0")}";
         }
 
         #region VALIDATE

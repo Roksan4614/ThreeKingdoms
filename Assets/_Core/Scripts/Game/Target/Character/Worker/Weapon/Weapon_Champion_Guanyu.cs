@@ -95,6 +95,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         var token = m_ctsUseSkill.Token;
 
         // 그냥 스킬을 쓴거라면, 가장 가까운 적에게 날라가자.
+        Vector3 lookAt = Vector3.zero;
         if (m_isUseSkillControll == false)
         {
             var enemy = StageManager.instance.GetNearestEnemy(m_owner.position);
@@ -102,7 +103,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
             if (enemy == null)
                 return;
 
-            //var lookAt = m_owner.position - enemy.position;
+            lookAt = (m_owner.position - enemy.position).normalized * 1.5f;
 
             m_skillRange.position = enemy.transform.position;// + lookAt.normalized * 1.5f;
         }
@@ -124,7 +125,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
 
         m_owner.element.collider.enabled = false;
 
-        var m_tweenSkillMove = DOTween.To(() => m_owner.position, _pos => m_owner.rig.MovePosition(_pos), targetPos, 0.2f).SetUpdate(UpdateType.Fixed)
+        var m_tweenSkillMove = DOTween.To(() => m_owner.position, _pos => m_owner.rig.MovePosition(_pos), targetPos + lookAt, 0.2f).SetUpdate(UpdateType.Fixed)
             .OnUpdate(() =>
             {
                 UpdateEnemyStatus();
@@ -150,7 +151,9 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         {
             var target = enemyList[i];
 
-            if (target.isLive == true && (target.transform.position - targetPos).sqrMagnitude < c_maxSqrMagnitudeRange)
+            if (m_owner.isLive == true
+                && target.isLive == true
+                && (target.transform.position - targetPos).sqrMagnitude < c_maxSqrMagnitudeRange)
             {
                 isTargetting = true;
                 target.OnDamage(m_owner, damage, true);
@@ -168,7 +171,7 @@ public class Weapon_Champion_Guanyu : Weapon_Champion
         await UniTask.WaitUntil(
             () => m_owner.attack.isRunningAttack == false && m_owner.attack.isRunningSlash == false, cancellationToken: token);
 
-        if (isTargetting == true)
+        if (m_owner.isLive == true && isTargetting == true)
             m_owner.move.MoveTarget(StageManager.instance.GetNearestEnemy(targetPos), true);
 
         m_isUseSkillControll = false;

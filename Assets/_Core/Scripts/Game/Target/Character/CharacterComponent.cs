@@ -1,7 +1,9 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -302,7 +304,11 @@ public class CharacterComponent : TargetComponent
 
                     m_element.collider.enabled = false;
 
-                    if (Rev9.Tournament.TournamentWorker.instance.isRunning == false)
+                    if (Rev9.Tournament.TournamentWorker.instance.isRunning == true)
+                    {
+                        rtBar_Cooltime.parent.gameObject.SetActive(false);
+                    }
+                    else
                     {
                         if (m_info.isMain == true)
                             ControllerManager.instance.SetDie_SkillTimer();

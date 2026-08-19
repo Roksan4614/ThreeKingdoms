@@ -12,10 +12,11 @@ namespace Rev9.Tournament
 
     public partial class TournamentWorker
     {
-        public TournamentStatusType statusType;
+        public TournamentStatusType statusType { get; private set; }
 
         public TournamentRankerUserData enterUserData { get; private set; }
         public bool isRunning => enterUserData.isActive;
+        int m_idxRevenge;
 
         public async UniTask EnterBattleAsync(int _uid, int _idxRevenge = -1)
         {
@@ -24,6 +25,7 @@ namespace Rev9.Tournament
 
             await PopupManager.instance.ShowDimmAsync(true);
 
+            m_idxRevenge = _idxRevenge;
             statusType = TournamentStatusType.Wait;
 
             StageManager.instance.SetState(CharacterStateType.None);
@@ -39,50 +41,60 @@ namespace Rev9.Tournament
             AddressableManager.instance.LoadScene("03_Tournament");
         }
 
-        public async UniTask ExitAsync(int _uid, int _idxRevenge = -1)
+        public void Finished()
         {
-            var historyData = m_history.Find(x => x.uid == _uid);
+            if (statusType == TournamentStatusType.Finished)
+                return;
 
-            if (historyData.isActive == true)
-            {
-                bool isWin = historyData.batchData.totalPower < m_data.teamAttack.totalPower * 1.2f;
-                await API_AddHistoryData(true, isWin, new()
-                {
-                    batchData = historyData.batchData,
-                    info = new()
-                    {
-                        uid = historyData.uid,
-                        indexProfile = historyData.indexProfile,
-                        skin = historyData.skin,
-                        nickname = historyData.nickname,
-                        power = historyData.batchData.totalPower,
-                    }
-                }, _idxRevenge);
-            }
-            else
-            {
-                foreach (var user in m_data.battleUserList)
-                {
-                    if (user.info.uid == _uid)
-                    {
-                        bool isWin = user.batchData.totalPower < m_data.teamAttack.totalPower * 1.2f;
-                        await API_AddHistoryData(true, isWin, user, _idxRevenge);
-                        break;
-                    }
-                }
-            }
+            statusType = TournamentStatusType.Finished;
 
-            enterUserData = default;
+            SaveHistoryAsync().Forget();
+            PopupManager.instance.OpenPopup(PopupType.TournamentResult);
+            Signal.instance.TournamentStatus.Emit(TournamentStatusType.Finished);
+        }
+
+        public async UniTask SaveHistoryAsync()
+        {
+            bool isWin = TournamentHeroInfoManager.instance.IsWin();
+
+            await API_AddHistoryData(true, isWin, enterUserData, m_idxRevenge);
+
             m_data.countPlay--;
-            SaveData();
 
             await API_LoadBattleListAsync();
+            SaveData();
+        }
+
+        public async UniTask ExitAsync()
+        {
+            await AddressableManager.instance.LoadSceneAsync("02_Lobby");
 
             var tourament = await PopupManager.instance.OpenPopupAsync<PopupTournamentComponent>(PopupType.LobbyTournament);
-            if (_idxRevenge > -1)
+            if (m_idxRevenge > -1)
                 tourament.OpenPopupAsync(PopupTournamentComponent.TournamentPopupType.History).Forget();
 
+            enterUserData = default;
             PopupManager.instance.ShowDimm(false);
+        }
+
+        public int GetResultPoint(bool _isWin)
+        {
+            int point = 0;
+            for (int i = 0; i < m_data.battleUserList.Length; i++)
+            {
+                if (enterUserData.info.uid == m_data.battleUserList[i].info.uid)
+                    point = i == 0 ? 30 : i == 1 ? 20 : i == 2 ? 15 : 5;
+            }
+
+            if (_isWin == false)
+                point = point - 35;
+
+            return point;
+        }
+
+        public int GetResultRewardCount(bool _isWin)
+        {
+            return _isWin ? 100 : 30;
         }
 
     }
