@@ -128,7 +128,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
                     icon.AutoResizeParent().name = _data.skin;
             }
             else
-                m_element.SetActiveName(true);
+                SetActiveName(true);
         }
     }
 
@@ -154,6 +154,9 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
             m_element.objActionChange.SetActive(_isChange);
         }
     }
+
+    public void SetActiveName(bool _isActive)
+        => m_element.txtName.gameObject.SetActive(_isActive);
 
     public void IsValide(string _keyHero)
         => data.key.Equals(_keyHero);
@@ -245,9 +248,6 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
             badge = panel.Find("Badge")?.gameObject;
         }
-
-        public void SetActiveName(bool _isActive)
-            => txtName.gameObject.SetActive(_isActive);
 
         public Transform panel => badge.transform.parent;
     }

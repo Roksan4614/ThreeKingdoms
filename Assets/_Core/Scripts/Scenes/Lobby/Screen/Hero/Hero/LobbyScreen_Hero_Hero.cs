@@ -125,6 +125,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
             m_itemList[i].name = dbHero[i].key;
             m_itemList[i].SetHeroData(heroInfo, OnButton_ListHero, OnButton_ListHeroRemove);
+            m_itemList[i].SetActiveName(true);
         }
 
         if (i < 20)
@@ -599,7 +600,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         //if (_item.data.isMain && StageManager.instance.isClearFirstStage == false)
         //    PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
 
-        if (countBatch > 1 || m_itemBatch.Count > 0 &&  m_itemBatch[0].data.key != _item.data.key)
+        if (countBatch > 1 || m_itemBatch.Count > 0 && m_itemBatch[0].data.key != _item.data.key)
         {
             for (int i = 0; i < m_itemBatch.Count; i++)
             {

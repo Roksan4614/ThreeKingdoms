@@ -245,13 +245,13 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
             m_guide.talkbox.rt.pivot = new Vector2(0, .3f);
             m_guide.talkbox.rt.SetAnchoredPosition(0, 190);
 
-            m_guide.anim.Play("Talk");
+            m_guide.anim.Play("Talk", 1);
             m_guide.talkbox.Start_AutoClose(destroyCancellationToken, _message);
 
             await UniTask.WaitUntil(() => m_guide.talkbox.isTyping == true);
             await UniTask.WaitUntil(() => m_guide.talkbox.isTyping == false);
 
-            m_guide.anim.Play(CharacterAnimType.Idle);
+            m_guide.anim.Play("NONE", 1);
         }
     }
 

@@ -94,7 +94,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
 
             var hero = slot.GetComponent<HeroIconComponent>();
             hero.SetHeroData(data, null, null);
-            hero.element.SetActiveName(true);
+            hero.SetActiveName(true);
         }
         if (isForceRebuild)
             parent.ForceRebuildLayout();
