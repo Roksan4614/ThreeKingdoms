@@ -15,6 +15,21 @@ public class Table_Region : BaseTable<RegionType, TableRegionData>
 
         SetDictionary(x => x.regionType);
     }
+
+    public string GetMaster(RegionType _regionType)
+    {
+        string key = Get(_regionType).master;
+
+        if (_regionType == RegionType.WU)
+        {
+            if (DataManager.userInfo.GetHeroInfoData(CharacterName.SunQuan).isActive == true)
+                return CharacterName.SunQuan.ToString();
+            else if(DataManager.userInfo.GetHeroInfoData(CharacterName.SunCe).isActive == true)
+                return CharacterName.SunCe.ToString();
+        }
+
+        return key;
+    }
 }
 
 public struct TableRegionData

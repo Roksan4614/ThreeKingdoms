@@ -29,6 +29,7 @@ public class Character_Worker_Talkbox : Character_Worker
     }
 
     RectTransform m_rtTalkbox;
+    public RectTransform rt { get => m_rtTalkbox; set => m_rtTalkbox = value; }
     TextMeshProUGUI m_txtTalk;
     HorizontalLayoutGroup m_layout;
     ContentSizeFitter m_fitter;
@@ -95,10 +96,11 @@ public class Character_Worker_Talkbox : Character_Worker
     public void Start_AutoClose(CancellationToken _token, params string[] _talks)
         => StartAsync_AutoClose(_token, _talks).Forget();
 
+    public float durationAutoClose { get; set; } = 3f;
     public async UniTask StartAsync_AutoClose(CancellationToken _token, params string[] _talks)
     {
         await StartAsync(_token, _talks);
-        await UniTask.WaitForSeconds(3f, cancellationToken: _token);
+        await UniTask.WaitForSeconds(durationAutoClose, cancellationToken: _token);
         SetActive(false);
     }
 

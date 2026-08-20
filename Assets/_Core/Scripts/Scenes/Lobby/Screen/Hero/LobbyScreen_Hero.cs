@@ -32,6 +32,8 @@ public class LobbyScreen_Hero : LobbyScreen_Base
         }
 
         SetActiveTab(m_tabType);
+
+        PopupManager.instance.LoadAsset(PopupType.Hero_Filter).Forget();
     }
 
     protected override void OnEnable()

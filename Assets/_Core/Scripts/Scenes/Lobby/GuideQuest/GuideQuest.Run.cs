@@ -84,7 +84,6 @@ public partial class GuideQuestComponent
         {
             if (BannerComponent.instance.story.isActive == false)
             {
-                TeamManager.instance.mainHero.talkbox.Start(destroyCancellationToken, "스토리_모드_해금!");
                 Signal.instance.UnlockStoryMode.Emit();
             }
 

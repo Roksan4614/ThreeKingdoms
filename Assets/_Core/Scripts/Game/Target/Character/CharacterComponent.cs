@@ -109,7 +109,7 @@ public class CharacterComponent : TargetComponent
         m_stat = DataManager.stat.GetResultStat(m_info);
     }
 
-    public void SetTalkboxName(string _name = null)
+    public void SetTalkboxName(string _name = null, bool _isActive = true)
     {
         var txtName = m_element.txtTalk?.transform.parent.GetComponent<TextMeshProUGUI>("Name/Text");
 
@@ -123,7 +123,7 @@ public class CharacterComponent : TargetComponent
             if (TableManager.stringHero.Exists(key))
             {
                 txtName.text = m_info.name;
-                txtName.transform.parent.gameObject.SetActive(true);
+                txtName.transform.parent.gameObject.SetActive(_isActive);
             }
             else
                 txtName.transform.parent.gameObject.SetActive(false);
@@ -131,7 +131,7 @@ public class CharacterComponent : TargetComponent
         else
         {
             txtName.text = _name;
-            txtName.transform.parent.gameObject.SetActive(true);
+            txtName.transform.parent.gameObject.SetActive(_isActive);
         }
     }
 
@@ -358,6 +358,22 @@ public class CharacterComponent : TargetComponent
     {
         StopAllCoroutines();
         Destroy(gameObject);
+    }
+
+    public void SetHostMode()
+    {
+        Destroy(m_element.effect_renderer.gameObject);
+        Destroy(m_element.mount.gameObject);
+        Destroy(m_element.cameraPos.gameObject);
+        Destroy(transform.Find("Character/Panel/AttackRange").gameObject);
+        Destroy(transform.Find("Character/Panel/BodyRange").gameObject);
+        Destroy(transform.Find("Character/Panel/FxAttack").gameObject);
+        Destroy(transform.Find("Character/Panel/FX").gameObject);
+        attack.SetActive_Weapon(false);
+
+        Destroy(m_element.rtCooldown.gameObject);
+        Destroy(m_element.rtHP.gameObject);
+        Destroy(m_element.effect_canvas_damage.parent.gameObject);
     }
 
     public void SetColorParts(Color _color, float _duration = 0, bool _isSetPrev = true)

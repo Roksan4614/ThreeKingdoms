@@ -10,6 +10,8 @@ public class TargetComponent : MonoBehaviour, IValidatable
     [SerializeField, HideInInspector]
     protected Canvas m_canvas;
 
+    public Canvas canvas => m_canvas;
+
     protected bool isSwitchSorting { get; set; } = true;
 
     public virtual void OnManualValidate()

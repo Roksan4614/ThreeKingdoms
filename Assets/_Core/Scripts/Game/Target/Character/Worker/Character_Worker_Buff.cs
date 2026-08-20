@@ -76,8 +76,8 @@ public class Character_Worker_Buff : Character_Worker
                     {
                         if (buff[i].hash == _hash)
                         {
-                            if (m_owner.isMain)
-                                IngameLog.Add("BUFF REMOVE: " + _buffType + ": " + _hash);
+                            //if (m_owner.isMain)
+                            //    IngameLog.Add("BUFF REMOVE: " + _buffType + ": " + _hash);
                             m_dbBuff[_buffType].RemoveAt(i);
                             break;
                         }

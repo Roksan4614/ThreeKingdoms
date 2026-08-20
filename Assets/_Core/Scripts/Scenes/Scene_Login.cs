@@ -29,10 +29,6 @@ public class Scene_Login : SceneBase
         List<UniTask> tasks = new();
 
         tasks.Add(DataManager.instance.InitializeAsync());
-        var keys = TableManager.hero.list.Select(x => x.key).ToArray();
-        tasks.Add(AddressableManager.instance.Load_HeroIconAsync(keys));
-        tasks.Add(AddressableManager.instance.Load_HeroCharacterAsync(keys));
-        tasks.Add(AddressableManager.instance.Load_ItemIconAsync(TableManager.item.list.Select(x => x.key.ToString()).ToArray()));
 
         await UniTask.WhenAll(tasks);
 

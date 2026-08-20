@@ -67,14 +67,26 @@ public class PopupTournamentResultComponent : BasePopupComponent
         await m_element.reward.transform.DOPunchScale(Vector3.one * .1f, .1f);
 
         //승급 업인지 체크할거야.
+        if (m_isTierUp == true)
+        {
+
+        }
 
         TimerAsync().Forget();
     }
 
+    bool m_isTierUp;
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
+            m_isTierUp = false;
+            m_cts = m_cts.ReleaseCTS();
+            StartAsync().Forget();
+        }
+        else if (Input.GetKeyDown(KeyCode.W))
+        {
+            m_isTierUp = true;
             m_cts = m_cts.ReleaseCTS();
             StartAsync().Forget();
         }

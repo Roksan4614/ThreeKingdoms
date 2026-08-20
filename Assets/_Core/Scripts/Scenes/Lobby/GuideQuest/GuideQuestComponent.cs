@@ -9,14 +9,20 @@ using UnityEngine.UI;
 public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IValidatable
 {
     float m_startPosY;
+    CharacterComponent m_guide;
 
     protected override void OnAwake()
     {
         m_startPosY = m_element.rt.anchoredPosition.y;
+
+        m_guide = transform.GetComponent<CharacterComponent>("Talkbox/Host/Guide");
     }
 
     private void Start()
     {
+        m_guide?.gameObject.SetActive(false);
+        m_element.img_circle.gameObject.SetActive(false);
+
         m_element.button.onClick.AddListener(OnButton_Quest);
 
         if (TutorialManager.instance.IsCompleteGuide(GuideQuestType.DASH_USE))
@@ -68,6 +74,9 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         bool isComplete = TutorialManager.data.isComplete;
         m_element.textTitle.alpha = isComplete ? 1 : .9f;
         m_element.complete.SetActive(isComplete);
+
+        if (isComplete == true)
+            HostOutAsync().Forget();
     }
 
     public async UniTask RunAsync()
@@ -105,6 +114,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                     ControllerManager.instance.SetActive_GuideQuestArrow(false, guideType);
                     break;
                 case GuideQuestType.STORYMODE_PLAY:
+
                     await StoryModePlayAsync();
                     break;
                 case GuideQuestType.CHARACTER_DEPLOY:
@@ -164,39 +174,34 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                 {
                     case GuideQuestType.MOVE:
                         {
-                            if (talkbox.isActive == false)
-                                talkbox.Start_AutoClose(destroyCancellationToken,
-                                    Configure.isPC ? "[W,A,S,D]를_눌러\n이동해보자." : "화면을_터치해_이동해보자.");
+                            HostTalkboxStart(Configure.isPC ?
+                                "[W,A,S,D]를_눌러\n이동해보자." :
+                                "화면을_터치해_이동해보자.");
                         }
                         break;
                     case GuideQuestType.NORMAL_ATTACK:
                         {
-                            if (talkbox.isActive == false)
-                                talkbox.Start_AutoClose(destroyCancellationToken,
-                                    Configure.isPC ?
+                            HostTalkboxStart(Configure.isPC ?
                                     "[X]키를_눌러_공격해보자.\n화면을_터치해도_가능해." :
                                     "공격_버튼을_눌러보자.");
                         }
                         break;
                     case GuideQuestType.MAIN_SKILL_USE:
                         {
-                            if (talkbox.isActive == false)
-                                talkbox.Start_AutoClose(destroyCancellationToken,
-                                    Configure.isPC ?
+                            HostTalkboxStart(Configure.isPC ?
                                     "[C]키를_누른_후_좌클릭해봐.\n버튼을_눌러서도_가능해." :
                                     "스킬_버튼을_눌러보자.");
                         }
                         break;
                     case GuideQuestType.DASH_USE:
                         {
-                            if (talkbox.isActive == false)
-                                talkbox.Start_AutoClose(destroyCancellationToken,
-                                    Configure.isPC ?
-                                    "[SpaceBar]키를_눌러보자.\n버튼을_눌러서도_가능해." :
-                                    "대쉬_버튼을_눌러보자.");
+                            HostTalkboxStart(Configure.isPC ?
+                                "[SpaceBar]키를_눌러보자.\n버튼을_눌러서도_가능해." :
+                                "대쉬_버튼을_눌러보자.");
                         }
                         break;
                     case GuideQuestType.STORYMODE_PLAY:
+                        HostTalkboxStart("스토리_모드_해금!");
                         BannerComponent.instance.story.OnButtonAsync_OpenPopup().Forget();
                         break;
                     case GuideQuestType.CHARACTER_DEPLOY:
@@ -208,6 +213,64 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                 }
             }
         }
+    }
+
+    void HostTalkboxStart(string _message)
+        => HostTalkboxStartAsync(_message).Forget();
+    async UniTask HostTalkboxStartAsync(string _message)
+    {
+        if (m_guide.gameObject.activeSelf == false)
+        {
+            m_element.img_circle.gameObject.SetActive(true);
+            var targetAlpha = m_element.img_circle.color.a;
+            m_element.img_circle.Alpha(0);
+            Utils.AfterSecond(() => m_element.img_circle.DOFade(targetAlpha, 0.2f).Forget(), 0.1f);
+
+            m_guide.gameObject.SetActive(true);
+
+            m_guide.transform.localPosition = new Vector3(-5f, 0);
+
+            m_guide.move.SetFlip(true);
+            m_guide.anim.Play(CharacterAnimType.Dash);
+            await m_guide.transform.DOLocalMoveX(0, 0.2f);
+            m_guide.anim.Play(CharacterAnimType.Idle);
+
+            m_element.img_circle.transform.DORotate(new Vector3(0f, 0f, 360f), 20f, RotateMode.FastBeyond360)
+                .SetLoops(-1, LoopType.Restart)
+                .SetEase(Ease.Linear).Forget();
+        }
+
+        if (m_guide.talkbox.isActive == false)
+        {
+            m_guide.talkbox.rt.pivot = new Vector2(0, .3f);
+            m_guide.talkbox.rt.SetAnchoredPosition(0, 190);
+
+            m_guide.anim.Play("Talk");
+            m_guide.talkbox.Start_AutoClose(destroyCancellationToken, _message);
+
+            await UniTask.WaitUntil(() => m_guide.talkbox.isTyping == true);
+            await UniTask.WaitUntil(() => m_guide.talkbox.isTyping == false);
+
+            m_guide.anim.Play(CharacterAnimType.Idle);
+        }
+    }
+
+    async UniTask HostOutAsync()
+    {
+        if (m_guide.gameObject.activeSelf == false)
+            return;
+
+        m_element.img_circle.transform.DOKill();
+        m_element.img_circle.transform.rotation = Quaternion.Euler(Vector3.zero);
+        m_element.img_circle.gameObject.SetActive(false);
+
+        m_guide.talkbox.SetActive(false);
+        m_guide.move.SetFlip(false);
+        m_guide.anim.Play(CharacterAnimType.Dash);
+        EffectWorker.instance.Dash(m_guide, false);
+        await m_guide.transform.DOLocalMoveX(-5f, 0.2f);
+
+        m_guide.gameObject.SetActive(false);
     }
 
     async UniTask RewardStartAsync()
@@ -243,6 +306,8 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         public Button button;
         public GameObject complete;
 
+        public Image img_circle;
+
         public void Initialize(Transform _transform)
         {
             rt = (RectTransform)_transform;
@@ -252,6 +317,8 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
             reward = panel.Find("Reward").GetChild(0).GetComponent<ItemComponent>();
             textTitle = panel.GetComponent<TextMeshProUGUI>("Text");
             textStatus = panel.GetComponent<TextMeshProUGUI>("txt_status");
+
+            img_circle = _transform.GetComponent<Image>("Talkbox/img_bg");
         }
         public Transform panel => button.transform;
     }

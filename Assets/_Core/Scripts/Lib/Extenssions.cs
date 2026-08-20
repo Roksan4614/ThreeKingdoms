@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -381,4 +380,10 @@ public static class Extenssions
     public static void Forget(this Tween _tween, CancellationToken _cancellationToken = default)
         => _tween?.ToUniTask(TweenCancelBehaviour.Kill, _cancellationToken).Forget();
 
+    public static void Alpha(this Image _image, float _alpha)
+    {
+        Color color = _image.color;
+        color.a = _alpha;
+        _image.color = color;
+    }
 }

@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         var timeStart = Time.realtimeSinceStartup;
 
         // 사이에 세팅할것들
-#if SERVICE_DEV && !UNITY_EDITOR 
+#if SERVICE_DEV && !UNITY_EDITOR
         {
             // 개발 도중 구조가 바뀌는것땜에 에러가 나는 경우가 있어서. 그거 대응
             var assetBuild = Resources.Load<TextAsset>("EditorData/BuildData");
@@ -92,15 +93,22 @@ public class Scene_Boot : MonoBehaviour, IValidatable
             }
         }
 #endif
-
         await UniTask.WhenAll(tasks);
 #if !UNITY_EDITOR
         IngameLog.Add($"Boot: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
 #endif
 
+        var keys = TableManager.hero.list.Select(x => x.key).ToArray();
+        AddressableManager.instance.Load_HeroIconAsync(keys).Forget();
+        AddressableManager.instance.Load_HeroCharacterAsync(keys).Forget();
+        AddressableManager.instance.Load_ItemIconAsync(TableManager.item.list.Select(x => x.key.ToString()).ToArray()).Forget();
+        AddressableManager.instance.Load_ItemIconAsync(TableManager.treasure.list.Select(x => $"Treasure_{x.key}").ToArray()).Forget();
+
         var time = Time.realtimeSinceStartup - timeStart;
         if (time < 1)
             await UniTask.WaitForSeconds(1 - time);
+
+        IngameLog.Add($"BOOTS: {time:0.##0}s");
 
         await m_element.logo.DOFade(0, 0.5f).AsyncWaitForCompletion();
 
