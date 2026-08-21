@@ -54,6 +54,9 @@ public class Scene_Lobby : SceneBase
 #endif
         }
 
+        await UniTask.WaitUntil(() => PopupManager.instance.isDimm == false);
+        GuideQuestComponent.instance.RunAsync().Forget();
+
         // TEST
         //TutorialManager.instance.Complete(GuideQuestType.CASTLE_FINISHED);
     }

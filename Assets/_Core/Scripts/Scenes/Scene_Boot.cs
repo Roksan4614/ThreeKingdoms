@@ -98,17 +98,13 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         IngameLog.Add($"Boot: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
 #endif
 
-        var keys = TableManager.hero.list.Select(x => x.key).ToArray();
-        AddressableManager.instance.Load_HeroIconAsync(keys).Forget();
-        AddressableManager.instance.Load_HeroCharacterAsync(keys).Forget();
-        AddressableManager.instance.Load_ItemIconAsync(TableManager.item.list.Select(x => x.key.ToString()).ToArray()).Forget();
-        AddressableManager.instance.Load_ItemIconAsync(TableManager.treasure.list.Select(x => $"Treasure_{x.key}").ToArray()).Forget();
-
         var time = Time.realtimeSinceStartup - timeStart;
         if (time < 1)
             await UniTask.WaitForSeconds(1 - time);
 
+#if !UNITY_EDITOR
         IngameLog.Add($"BOOTS: {time:0.##0}s");
+#endif
 
         await m_element.logo.DOFade(0, 0.5f).AsyncWaitForCompletion();
 

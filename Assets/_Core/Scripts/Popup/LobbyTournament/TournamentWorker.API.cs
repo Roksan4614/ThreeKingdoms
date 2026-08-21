@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Rev9.Tournament
@@ -230,7 +231,7 @@ namespace Rev9.Tournament
         public async UniTask API_AddHistoryData(bool _isAttackType, bool _isWin, TournamentRankerUserData _userData, int _idxRevenge = -1)
         {
             if (m_history == null)
-                m_history = new();
+                await API_LoadHistoryData();
 
             TournamentHistoryData historyData = new()
             {
@@ -279,52 +280,32 @@ namespace Rev9.Tournament
         {
             await UniTask.NextFrame();
 
-            m_history = PPWorker.Get<List<TournamentHistoryData>>(c_keyHistory);
-
             if (m_history == null)
             {
-                m_history = new();
+                m_history = PPWorker.Get<List<TournamentHistoryData>>(c_keyHistory);
 
-                //var nicknames = Utils.GetRandomNicknameArray(20);
-                //for (int i = 0; i < nicknames.Length; i++)
-                //{
-                //    var historyData = new TournamentHistoryData()
-                //    {
-                //        uid = DataManager.userInfo.uid + i + 100,
-                //        nickname = nicknames[i],
-                //        skin = TableManager.hero.GetHeroList().RandomFirst().key,
-                //        isWin = UnityEngine.Random.value > 0.5f,
-                //        isAttack = UnityEngine.Random.value > 0.5f
-                //    };
-
-                //    await API_LoadUserInfoData(historyData.uid);
-
-                //    var batchData = m_dbRankUserInfoData[historyData.uid];
-                //    historyData.batchData = batchData;
-
-                //    // 방어에 실패한 경우, 복수 준비하자
-                //    if (historyData.isWin == false && historyData.isAttack == false)
-                //    {
-                //        historyData.revengePoint = 100 + (int)(batchData.totalPower / (float)m_data.teamAttack.totalPower * 100);
-                //        historyData.revengePoint += (int)(historyData.revengePoint * 0.5f);
-                //    }
-
-                //    //포인트 계산
-                //    if (historyData.isWin)
-                //        historyData.rewardPoint = 100 + (int)(batchData.totalPower / (float)m_data.teamAttack.totalPower * 100);
-                //    else
-                //    {
-                //        historyData.rewardPoint = 100 + (int)((float)m_data.teamAttack.totalPower / batchData.totalPower * 100);
-                //        historyData.rewardPoint *= -1;
-                //    }
-
-                //    m_history.Add(historyData);
-                //}
-
-                PPWorker.Set(c_keyHistory, m_history);
+                if (m_history == null)
+                {
+                    m_history = new();
+                    PPWorker.Set(c_keyHistory, m_history);
+                }
             }
 
             return m_history;
+        }
+
+        public async UniTask<RankerUserData> API_Result()
+        {
+            bool isWin = TournamentHeroInfoManager.instance.IsWin();
+
+            RankerUserData result = m_data.rankData;
+
+            result.rank += Mathf.Max(1, (isWin ? 1 : -1) * UnityEngine.Random.Range(3, 10));
+            result.point += GetResultPoint(isWin);
+
+            await UniTask.NextFrame();
+
+            return result;
         }
     }
 }

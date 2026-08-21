@@ -383,6 +383,10 @@ public struct RankerUserData
     [JsonProperty] public int uid;
     [JsonProperty] public long point;
     [JsonProperty] public long power;
+    [JsonProperty] int? tier;
 
     public bool isActive => nickname.IsActive();
+    public int tierTournament => tier ?? 8;
+
+    public void SetTier(int _tier) => tier = _tier;
 }

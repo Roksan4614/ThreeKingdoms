@@ -103,18 +103,18 @@ public static class Utils
         return mg;
     }
 
-    public static string FileSize(long _size)
+    public static string FileSize(long _byte)
     {
         List<string> strFileSize = new() { "B", "KB", "MB", "GB" };
 
         int count = 0;
-        while (_size >= 1024 && count < strFileSize.Count - 1)
+        while (_byte >= 1024 && count < strFileSize.Count - 1)
         {
-            _size /= 1024;
+            _byte /= 1024;
             count++;
         }
 
-        return $"{_size:0.##} {strFileSize[count]}";
+        return $"{_byte:0.##} {strFileSize[count]}";
     }
 
     public static void WaitEscape(MonoBehaviour _mono, UnityAction _onEscape, bool _isForceBreak = false, CancellationToken _token = default)

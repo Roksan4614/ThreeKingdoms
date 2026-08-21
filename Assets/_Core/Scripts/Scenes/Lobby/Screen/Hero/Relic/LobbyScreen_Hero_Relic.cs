@@ -156,17 +156,18 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             _ => "_√÷¥Î_"
         };
 
+    List<HeroInfoData> m_sortHeroData;
     void UpdateRelic_TotalClass()
     {
-        var myHero = DataManager.userInfo.GetHeroSortData(_isWithNotMine: false).ToArray();
+        m_sortHeroData = DataManager.userInfo.GetHeroSortData(_isWithNotMine: false);
 
-        m_element.scroll.Initialize<LobbyScreen_Hero_Relic_Item>(myHero.Length,
+        m_element.scroll.Initialize<LobbyScreen_Hero_Relic_Item>(m_sortHeroData.Count,
             (_item, _idxData) =>
             {
-                _item.SetRelicData(myHero[_idxData], false
+                _item.SetRelicData(m_sortHeroData[_idxData], false
                     , _heroInfo => OnButton_Item(_heroInfo.key.IsActive() ? TabType.Relic : TabType.Treasure, _heroInfo));
 #if UNITY_EDITOR
-                _item.name = myHero[_idxData].key;
+                _item.name = m_sortHeroData[_idxData].key;
 #endif
             });
 
@@ -278,7 +279,10 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
     protected void OnButton_Item(TabType _tapType, HeroInfoData _heroInfoData)
     {
         if (_tapType == TabType.Relic)
+        {
+            m_sortHeroData = DataManager.userInfo.GetHeroSortData(_isWithNotMine: false);
             SetTextTotalClass(_heroInfoData.classType);
+        }
         else
         {
             m_element.scroll.content.anchoredPosition = Vector2.zero;

@@ -52,7 +52,7 @@ public class TableManager
 
     public async UniTask InitializeAsync()
     {
-        await AddressableManager.instance.LoadAssetAsync<TextAsset>(_result =>
+        await AddressableManager.instance.LoadAssetAsync<TextAsset>(true, _result =>
         {
             hero = new(LoadList<TableHeroData>(_result, "HeroData"));
             statHero = new(LoadList<TableStatData>(_result, "HeroStatData"));

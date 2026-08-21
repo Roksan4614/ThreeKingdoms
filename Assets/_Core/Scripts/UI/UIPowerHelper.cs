@@ -13,7 +13,7 @@ public class UIPowerHelper : MonoBehaviour, IValidatable
 
 
     #region VALIDATE
-    public void OnManualValidate() => m_element.Initialize(transform);
+    public virtual void OnManualValidate() => m_element.Initialize(transform);
 
     [SerializeField, HideInInspector]
     //[SerializeField]

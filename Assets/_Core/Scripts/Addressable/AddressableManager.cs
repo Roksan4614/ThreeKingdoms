@@ -15,9 +15,12 @@ using UnityEngine.U2D;
 public enum AddressableLabelType
 {
     L_Core,
+    L_Start,
     L_SpriteAtlas,
-    L_HeroIcon,
+    L_Hero,
+    L_Icon,
     L_TableData,
+    L_Popup,
 
     MAX
 }
@@ -47,7 +50,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     {
         Addressables.InternalIdTransformFunc = CustomTransform;
 
-        await DoDownloadAsync(null, AddressableLabelType.L_Core, AddressableLabelType.L_SpriteAtlas);
+        await DownloadAsync(true, null, AddressableLabelType.L_Core, AddressableLabelType.L_SpriteAtlas);
 
         SpriteAtlasManager.atlasRequested += (string _tag, Action<SpriteAtlas> _callback) =>
         {
@@ -67,7 +70,6 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
                         m_loadedAtlas.Add(_tag, s.Value);
                     _callback?.Invoke(s.Value.Result);
                 }
-
 
             }, null, key).Forget();
 
@@ -89,16 +91,16 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         return internalId;
     }
 
-    public async UniTask DoDownloadAsync(IProgress<float> _onProgress, params AddressableLabelType[] _labels)
+    public async UniTask DownloadAsync(bool _isIntersection, IProgress<float> _onProgress, params AddressableLabelType[] _labels)
     {
-        await DoDownloadAsync(_onProgress, _labels.Select(_x => _x.ToString()).ToArray());
+        await DownloadAsync(_isIntersection, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
     }
 
-    public async UniTask DoDownloadAsync(IProgress<float> _onProgress, params string[] _keys)
+    public async UniTask DownloadAsync(bool _isIntersection, IProgress<float> _onProgress, params string[] _keys)
     {
         string logKey = string.Join(",", _keys);
 
-        var handle = Addressables.DownloadDependenciesAsync(_keys, m_mergeMode);
+        var handle = Addressables.DownloadDependenciesAsync(_keys, _isIntersection ? Addressables.MergeMode.Intersection : Addressables.MergeMode.Union);
         try
         {
             await handle.ToUniTask(progress: _onProgress);
@@ -111,95 +113,47 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
     public async UniTask<bool> HasData(string _key)
     {
-        var location = await Addressables.LoadResourceLocationsAsync(_key, m_mergeMode).ToUniTask();
+        var location = await Addressables.LoadResourceLocationsAsync(_key, Addressables.MergeMode.Union).ToUniTask();
 
         return location != null && location.Count > 0;
     }
 
-    public async UniTask<long> GetDownloadSizeAsync(params AddressableLabelType[] _keys)
+    public async UniTask<long> GetDownloadSizeAsync(bool _isUnion, params AddressableLabelType[] _keys)
     {
-        var result = await GetDownloadSizeAsync(_keys.Select(_x => _x.ToString()).ToArray());
+        var result = await GetDownloadSizeAsync(_isUnion, _keys.Select(_x => _x.ToString()).ToArray());
         return result;
     }
 
-    public async UniTask<long> GetDownloadSizeAsync(params string[] _keys)
+    public async UniTask<long> GetDownloadSizeAsync(bool _isUnion, params string[] _keys)
     {
-        long totalSize = 0;
-
-        var handle = Addressables.LoadResourceLocationsAsync(_keys, m_mergeMode);
+        var handleLocation = Addressables.LoadResourceLocationsAsync(_keys, _isUnion ? Addressables.MergeMode.Union : Addressables.MergeMode.Intersection);
         try
         {
-            var locations = await handle.ToUniTask();
+            var locations = await handleLocation.ToUniTask();
 
             if (locations == null)
                 IngameLog.Add("Addressable: GetDownloadSize: Failed: " + string.Join(", ", _keys));
             else if (locations.Count > 0)
             {
-                var tasks = new UniTask<long>[locations.Count];
+                var handleSize = Addressables.GetDownloadSizeAsync(locations);
 
-                for (var i = 0; i < tasks.Length; i++)
-                    tasks[i] = Addressables.GetDownloadSizeAsync(locations[i]).ToUniTask();
-
-                long[] sizes = await UniTask.WhenAll(tasks);
-
-                foreach (var size in sizes)
-                    totalSize += size;
+                try
+                {
+                    return await handleSize.ToUniTask();
+                }
+                finally
+                {
+                    handleSize.Release();
+                }
             }
         }
         finally
         {
-            handle.Release();
+            handleLocation.Release();
         }
 
-        return totalSize;
+        return 0;
     }
-
-    //public IEnumerator DoDownload(UnityAction<float> _onPercent, params AddressableLabelType[] _labels)
-    //{
-    //    yield return DoDownload(_onPercent, _labels.Select(_x => _x.ToString()).ToArray());
-    //}
-
-    //public IEnumerator DoDownload(UnityAction<float> _onPercent, params string[] _keys)
-    //{
-    //    string logKey = string.Join(",", _keys);
-    //    IngameLog.Add("DoDownload_Scene: Start: " + logKey);
-    //    var handle = Addressables.DownloadDependenciesAsync(_keys, true);
-
-    //    while (handle.IsDone == false)
-    //    {
-    //        _onPercent?.Invoke(handle.PercentComplete);
-    //        yield return null;
-    //    }
-
-    //    IngameLog.Add("DoDownload_Scene: Finished: " + logKey);
-    //}
-
-    //public IEnumerator DoLoad_DownloadSize(UnityAction<long> _onComplete, params AddressableLabelType[] _labels)
-    //{
-    //    yield return DoLoad_DownloadSize(_onComplete, _labels.Select(_x => _x.ToString()).ToArray());
-    //}
-
-    //public IEnumerator DoLoad_DownloadSize(UnityAction<long> _onComplete, params string[] _keys)
-    //{
-    //    long totalSize = 0;
-
-    //    var handle = Addressables.LoadResourceLocationsAsync(_keys, Addressables.MergeMode.Intersection);
-    //    yield return handle;
-
-    //    if (handle.Result == null)
-    //        IngameLog.Add("Addressable: GetDownloadSize: Failed: " + string.Join(", ", _keys));
-    //    else
-    //    {
-    //        foreach (var result in handle.Result)
-    //        {
-    //            if (result.PrimaryKey != _keys[0].ToString())
-    //                totalSize += Addressables.GetDownloadSizeAsync(result).Result;
-    //        }
-    //    }
-
-    //    handle.Release();
-    //    _onComplete(totalSize);
-    //}
 
     //이 함수는 동시에 하면 좃됨.. 하나의 라벨
     public async UniTask LoadAssetIntersectionAsync<T>(
@@ -207,26 +161,34 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         IProgress<float> _onProgress,
         params AddressableLabelType[] _labels)
     {
-        m_mergeMode = Addressables.MergeMode.Intersection;
-        await LoadAssetAsync<T>(_onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
+        await LoadAssetAsync<T>(false, _onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
     }
 
-    public async UniTask LoadAssetAsync<T>(
+    public async UniTask LoadAssetAsync<T>(bool _isUnion,
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         IProgress<float> _onProgress,
         params AddressableLabelType[] _labels)
     {
-        await LoadAssetAsync<T>(_onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
+        await LoadAssetAsync<T>(_isUnion, _onComplete, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());
+    }
+    public async UniTask LoadAssetAsync<T>(
+        UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
+        IProgress<float> _onProgress,
+        params string[] _key)
+    {
+        await LoadAssetAsync<T>(true, _onComplete, _onProgress, _key);
     }
 
     bool m_isLogSwitch;
     public void OnLogSwitch() => m_isLogSwitch = true;
-    Addressables.MergeMode m_mergeMode = Addressables.MergeMode.Union; // 포함한거 전체
-    public async UniTask LoadAssetAsync<T>(
+    //Addressables.MergeMode m_mergeMode = Addressables.MergeMode.Union; // 포함한거 전체
+    public async UniTask LoadAssetAsync<T>(bool _isUnion,
         UnityAction<Dictionary<string, AsyncOperationHandle<T>>> _onComplete,
         IProgress<float> _onProgress,
         params string[] _keys)
     {
+        await UniTask.NextFrame();
+
         bool isLogSwitch = m_isLogSwitch;
         m_isLogSwitch = false;
 
@@ -244,7 +206,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         //if (isLogSwitch)
         //    IngameLog.Add("Addressable: totalFileSize: " + downloadData.totalFileSize);
 
-        var handle = Addressables.LoadResourceLocationsAsync(_keys.Select(x => x.ToString()).ToList(), m_mergeMode);
+        var handle = Addressables.LoadResourceLocationsAsync(_keys.Select(x => x.ToString()).ToList(), _isUnion ? Addressables.MergeMode.Union: Addressables.MergeMode.Intersection);
 
         if (isLogSwitch)
             IngameLog.Add("Addressable: LoadAsset: HANDLE CHECK: " + handle.IsValid());
@@ -287,6 +249,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
             async UniTask LoadAssetParallel(IResourceLocation _location)
             {
+                await UniTask.NextFrame();
                 downloadData.fileSize = await Addressables.GetDownloadSizeAsync(_location).ToUniTask();
 
                 var h = Addressables.LoadAssetAsync<T>(_location.PrimaryKey);

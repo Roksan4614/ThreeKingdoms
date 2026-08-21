@@ -28,7 +28,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         if (TutorialManager.instance.IsCompleteGuide(GuideQuestType.DASH_USE))
             ControllerManager.instance.SetActive_GuideQuestArrow(false, GuideQuestType.DASH_USE);
 
-        StartGuideQuest();
+        StartGuideQuest(true);
     }
 
     Tween m_tweenMovePanel;
@@ -39,7 +39,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         m_tweenMovePanel = m_element.rt.DOAnchorPosY(target, _duration);
     }
 
-    public void StartGuideQuest()
+    public void StartGuideQuest(bool _isInitialized = false)
     {
         var tableData = TutorialManager.data.tableData;
 
@@ -64,7 +64,8 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
             });
         }
 
-        RunAsync().Forget();
+        if (_isInitialized == false)
+            RunAsync().Forget();
     }
 
     public void UpdateStatus()
@@ -238,6 +239,8 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
             m_element.img_circle.transform.DORotate(new Vector3(0f, 0f, 360f), 20f, RotateMode.FastBeyond360)
                 .SetLoops(-1, LoopType.Restart)
                 .SetEase(Ease.Linear).Forget();
+
+            await UniTask.WaitForSeconds(.5f);
         }
 
         if (m_guide.talkbox.isActive == false)

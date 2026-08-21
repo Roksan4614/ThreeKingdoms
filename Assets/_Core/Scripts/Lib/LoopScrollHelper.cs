@@ -76,7 +76,8 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
             });
         });
 
-        m_element.empty?.gameObject.SetActive(_count == 0);
+        if(m_element.empty == true)
+            m_element.empty.gameObject.SetActive(_count == 0);
     }
 
     int m_curIndex = 0;

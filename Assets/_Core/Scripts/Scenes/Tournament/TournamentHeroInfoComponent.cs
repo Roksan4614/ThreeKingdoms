@@ -27,7 +27,7 @@ namespace Rev9.Tournament
             m_element.profile.SetProfileData(_userData.info.indexProfile, _userData.info.skin);
             m_element.txtNickname.text = _userData.info.nickname;
 
-            m_element.tierPoint.text = _userData.info.point.AmountKMBT(_isMBT: true);
+            m_element.tierPoint.SetRankInfo(_userData.info);
             m_element.power.text = _userData.batchData.totalPower.AmountKMBT(_isMBT: true);
 
             var board = transform.Find("Board");

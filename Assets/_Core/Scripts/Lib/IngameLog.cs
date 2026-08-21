@@ -3,6 +3,13 @@ using UnityEngine;
 
 public static class IngameLog
 {
+    public static void AddBuild(params object[] _log)
+    {
+#if !UNITY_EDITOR
+        Add(_log);
+#endif
+    }
+
     public static void Add(params object[] _log)
     {
         var time = DateTime.Now.ToString("ss:ffff");

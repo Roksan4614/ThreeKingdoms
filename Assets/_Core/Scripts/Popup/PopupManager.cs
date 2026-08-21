@@ -170,6 +170,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         ShowDimmAsync(_isShow, _isFade, _isOpercity, _duration, _durationWait).Forget();
     }
 
+    public bool isDimm => m_element.cgMaxDimm.gameObject.activeSelf == true;
     public bool isTweenDimm => m_tweenDimm != null && m_tweenDimm.IsPlaying();
     Tween m_tweenDimm;
     CancellationTokenSource m_ctsDimm;

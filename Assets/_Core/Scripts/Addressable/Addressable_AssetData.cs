@@ -92,6 +92,14 @@ public partial class AddressableManager
     }
     #endregion HERO_ICON
 
+    public async UniTask Load_AllIcon()
+    {
+        await LoadAssetAsync<GameObject>(true, _result =>
+        {
+
+        }, null, AddressableLabelType.L_Icon);
+    }
+
     #region ITEM_ICON
     public async UniTask Load_ItemIconAsync(params string[] _key)
     {

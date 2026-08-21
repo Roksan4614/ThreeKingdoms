@@ -11,6 +11,14 @@ public class PopupTournamentResultComponent : BasePopupComponent
 {
     PopupTournamentResultComponent() : base(PopupType.TournamentResult) { }
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        for (int i = 0; i < m_element.popup.childCount; i++)
+            m_element.popup.GetChild(i).gameObject.SetActive(false);
+    }
+
     private void Start()
     {
         m_element.btnExit.onClick.AddListener(() => OnButtonAsync_Exit().Forget());
@@ -22,6 +30,9 @@ public class PopupTournamentResultComponent : BasePopupComponent
     {
         bool isWin = TournamentHeroInfoManager.instance.IsWin();
 
+        var prevRankerData = TournamentWorker.instance.rankData;
+        var rankerData = await TournamentWorker.instance.API_Result();
+
         m_element.title.gameObject.SetActive(false);
         m_element.panel.gameObject.SetActive(false);
         m_element.btnExit.gameObject.SetActive(false);
@@ -32,12 +43,7 @@ public class PopupTournamentResultComponent : BasePopupComponent
         m_element.title.gameObject.SetActive(true);
         await UniTask.WaitForSeconds(.5f);
 
-        long prevPoint = TournamentWorker.instance.rankData.point;
-        int rewardPoint = TournamentWorker.instance.GetResultPoint(isWin);
-        int resultRank = 13543;
-        int prevRank = (isWin ? -1 : 1) * UnityEngine.Random.Range(3, 10) + resultRank;
-
-        m_element.tierPoint.text = prevPoint.AmountKMBT(_isMBT: true);
+        m_element.tierPoint.SetRankInfo(TournamentWorker.instance.rankData);
         m_element.txtRank.text = "";
         m_element.txtResult.text = "";
         m_element.reward.SetCountText(1);
@@ -47,20 +53,18 @@ public class PopupTournamentResultComponent : BasePopupComponent
 
         m_element.txtResult.color = isWin ? Palette.color_Up : Palette.color_Down;
 
-        var targetPoint = prevPoint + rewardPoint;
-        DOTween.To(() => prevPoint,
+        DOTween.To(() => prevRankerData.point,
             _result =>
             {
-                var point = _result - prevPoint;
+                var point = _result - prevRankerData.point;
                 m_element.txtResult.text = $"({(point > 0 ? "+" : "")}{point})";
                 m_element.tierPoint.text = _result.AmountKMBT(_isMBT: true);
             },
-            targetPoint,
-            0.2f).Forget();
+            rankerData.point, 0.2f).Forget();
 
-        var targetRank = resultRank - prevRank;
+        var targetRank = rankerData.rank - prevRankerData.rank;
         string msgRankDesc = targetRank == 0 ? "-" : $"{(targetRank > 0 ? "+" : "")}{targetRank}";
-        m_element.txtRank.text = $"{resultRank:#,0}_위 <color=#{(isWin ? Palette.htmlString_Up : Palette.htmlString_Down)}><size=90%>({msgRankDesc})";
+        m_element.txtRank.text = $"{rankerData.rank:#,0}_위 <color=#{(isWin ? Palette.htmlString_Up : Palette.htmlString_Down)}><size=90%>({msgRankDesc})";
         //m_element.txtRank.transform.DOPunchScale(Vector3.one * .1f, .1f).Forget();
 
         m_element.reward.SetCountText(TournamentWorker.instance.GetResultRewardCount(isWin));
@@ -69,7 +73,12 @@ public class PopupTournamentResultComponent : BasePopupComponent
         //승급 업인지 체크할거야.
         if (m_isTierUp == true)
         {
+            await UniTask.WaitForSeconds(.5f);
 
+            rankerData.SetTier(7);
+            await m_element.popupTierUP.OpenAsync(rankerData);
+
+            m_element.tierPoint.SetTierIconAsync(rankerData.tierTournament).Forget();
         }
 
         TimerAsync().Forget();
@@ -80,12 +89,14 @@ public class PopupTournamentResultComponent : BasePopupComponent
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
+            m_element.popupTierUP.Close();
             m_isTierUp = false;
             m_cts = m_cts.ReleaseCTS();
             StartAsync().Forget();
         }
         else if (Input.GetKeyDown(KeyCode.W))
         {
+            m_element.popupTierUP.Close();
             m_isTierUp = true;
             m_cts = m_cts.ReleaseCTS();
             StartAsync().Forget();
@@ -98,7 +109,7 @@ public class PopupTournamentResultComponent : BasePopupComponent
         m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 
-        var dtEnd = DateTime.Now.AddSeconds(335);
+        var dtEnd = DateTime.Now.AddSeconds(10);
         //var dtEnd = DateTime.Now.AddSeconds(5);
 
         m_element.btnExit.gameObject.SetActive(true);
@@ -151,6 +162,8 @@ public class PopupTournamentResultComponent : BasePopupComponent
         public TextMeshProUGUI txtTimer;
         public ButtonHelper btnExit;
 
+        public PopupTournamentResult_Popup_TierUp popupTierUP;
+
         public void Initialize(Transform _transform)
         {
             txtTitle = _transform.GetComponent<TextMeshProUGUI>("Title/Text");
@@ -163,10 +176,13 @@ public class PopupTournamentResultComponent : BasePopupComponent
 
             txtTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_timer");
             btnExit = _transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
+
+            popupTierUP = _transform.GetComponent<PopupTournamentResult_Popup_TierUp>("Popup/TierUp");
         }
 
         public Transform title => txtTitle.transform.parent;
         public Transform panel => tierPoint.transform.parent;
+        public Transform popup => popupTierUP.transform.parent;
     }
     #endregion VALIDATE
 

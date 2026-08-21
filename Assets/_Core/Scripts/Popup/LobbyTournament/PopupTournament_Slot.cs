@@ -36,7 +36,7 @@ public class PopupTournament_Slot : MonoBehaviour, IValidatable
 
         m_element.txtNickname.text = _rankerUserData.info.nickname;
         m_element.power.text = _rankerUserData.info.power.AmountKMBT(_isMBT:true);
-        m_element.tierPoint.text = _rankerUserData.info.point.AmountKMBT(_isMBT: true);
+        m_element.tierPoint.SetRankInfo(_rankerUserData.info);
 
         m_element.profile.SetActivePanel(true);
         m_element.profile.SetProfileData(_rankerUserData.info.indexProfile, _rankerUserData.info.skin);
