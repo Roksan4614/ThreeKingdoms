@@ -50,7 +50,8 @@ public class PopupTournamentComponent : BasePopupComponent
             if (m_element.popupRanking.CloseEscape() &&
                 m_element.popupBatch.CloseEscape() &&
                 m_element.popupUserInfo.CloseEscape() &&
-                m_element.popupRewardInfo.CloseEscape())
+                m_element.popupRewardInfo.CloseEscape() &&
+                PopupManager.instance.IsOpenPopup(PopupType.ContentMarket) == false)
             {
                 if (m_popupHistory == null || m_popupHistory.CloseEscape() == true)
                     Close();
@@ -241,6 +242,9 @@ public class PopupTournamentComponent : BasePopupComponent
                 break;
             case TournamentPopupType.Reward:
                 await m_element.popupRewardInfo.OpenAsync();
+                break;
+            case TournamentPopupType.Shop:
+                PopupManager.instance.OpenPopup(PopupType.ContentMarket, ContentMarketTabType.Tournament);
                 break;
         }
     }

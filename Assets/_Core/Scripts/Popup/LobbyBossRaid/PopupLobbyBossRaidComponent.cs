@@ -29,22 +29,24 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         m_element.btnRanking.onClick.AddListener(() => OnButtonAsync_Ranking().Forget());
         m_element.btnHero.onClick.AddListener(OnButton_Hero);
         m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Start().Forget());
+        m_element.btnShop.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.ContentMarket, ContentMarketTabType.Raid));
     }
 
     private void Start()
-	{
-		Utils.SetActivePunch(m_element.panel, true);
+    {
+        Utils.SetActivePunch(m_element.panel, true);
 
-		var dataRaid = DataManager.bossRaid.data;
-		m_element.txtDifficult.text = $"[{TableManager.stringTable.GetGradeType(dataRaid.gradeMin)}~{TableManager.stringTable.GetGradeType(dataRaid.gradeMax)}]";
+        var dataRaid = DataManager.bossRaid.data;
+        m_element.txtDifficult.text = $"[{TableManager.stringTable.GetGradeType(dataRaid.gradeMin)}~{TableManager.stringTable.GetGradeType(dataRaid.gradeMax)}]";
 
-		DoLoadBossCharacter().Forget();
-		TimerAsync_Round().Forget();
-		OnUpdateSeasonTimerAsync().Forget();
+        DoLoadBossCharacter().Forget();
+        TimerAsync_Round().Forget();
+        OnUpdateSeasonTimerAsync().Forget();
 
-		Utils.WaitEscape(this, () =>
+        Utils.WaitEscape(this, () =>
         {
-            if (m_element.popupRanking.CloseEscape() == false)
+            if (m_element.popupRanking.CloseEscape() == false ||
+                PopupManager.instance.IsOpenPopup(PopupType.ContentMarket) == true)
                 return;
 
             Close();
@@ -90,20 +92,20 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
             m_element.txtInfoPrevRound.text = "이전_라운드_정보_없음";
         else
             m_element.txtInfoPrevRound.text = $"이전_라운드_ :_[{TableManager.stringTable.GetGradeType(raidData.prevGrade)}]\n{raidData.dtPrevRound.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")}";
-	}
+    }
 
-	async UniTask OnButtonAsync_Start()
-	{
-		m_element.btnStart.interactable = false;
-		m_characterBoss.anim.Play(CharacterAnimType.Skill, 0, 0.4f);
-		m_characterBoss.anim.SetSpeed(1.2f);
+    async UniTask OnButtonAsync_Start()
+    {
+        m_element.btnStart.interactable = false;
+        m_characterBoss.anim.Play(CharacterAnimType.Skill, 0, 0.4f);
+        m_characterBoss.anim.SetSpeed(1.2f);
 
-		await UniTask.WaitForSeconds(1f);
+        await UniTask.WaitForSeconds(1f);
 
-		BossRaidWorker.instance.InitializeAsync(BossRaidWorker.BossRaidType.LuBu).Forget();
-	}
+        BossRaidWorker.instance.InitializeAsync(BossRaidWorker.BossRaidType.LuBu).Forget();
+    }
 
-	async UniTask OnUpdateSeasonTimerAsync()
+    async UniTask OnUpdateSeasonTimerAsync()
     {
         var dtEnd = DataManager.bossRaid.data.dtEndSeason;
 

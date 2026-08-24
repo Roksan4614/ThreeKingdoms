@@ -345,7 +345,7 @@ public class Data_BossRaid
             prevGrade = GradeType.Normal;
             tickPrevRound = System.DateTime.UtcNow.AddHours(-3).Ticks;
             tickNextRound = System.DateTime.UtcNow.AddSeconds(10).Ticks;
-            tickEndSeason = System.DateTime.UtcNow.AddDays(20).Ticks;
+            tickEndSeason = Utils.GetNextMonthMidnight(1).Ticks;
 
             gradeMin = GradeType.Normal;
             gradeMax = GradeType.Normal;

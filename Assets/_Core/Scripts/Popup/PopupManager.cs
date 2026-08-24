@@ -32,6 +32,7 @@ public enum PopupType
     UserInfo,
 
     UpgradeGuide,
+    ContentMarket,
 
     BossRaidResult,
     DailyDungeonResult,

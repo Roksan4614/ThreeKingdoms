@@ -251,8 +251,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
             m_guide.anim.Play("Talk", 1);
             m_guide.talkbox.Start_AutoClose(destroyCancellationToken, _message);
 
-            await UniTask.WaitUntil(() => m_guide.talkbox.isTyping == true);
-            await UniTask.WaitUntil(() => m_guide.talkbox.isTyping == false);
+            await m_guide.talkbox.WaitFinishTyping();
 
             m_guide.anim.Play("NONE", 1);
         }

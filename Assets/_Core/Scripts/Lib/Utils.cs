@@ -330,4 +330,28 @@ public static class Utils
         }
         return result;
     }
+
+    public static DateTime GetNextMidnight(DayOfWeek _targetWeek)
+    {
+        DateTime utcNow = GetUTC();
+
+        int daysUntilTarget = ((int)_targetWeek - (int)utcNow.DayOfWeek + 7) % 7;
+
+        if (daysUntilTarget == 0)
+            daysUntilTarget = 7;
+
+        return utcNow.Date.AddDays(daysUntilTarget);
+    }
+
+    public static DateTime GetNextMonthMidnight(int _targetDay)
+    {
+        DateTime today = GetUTC().Date;
+
+        DateTime targetDate = new DateTime(today.Year, today.Month, _targetDay);
+
+        if (targetDate <= today)
+            targetDate = targetDate.AddMonths(1);
+
+        return targetDate;
+    }
 }

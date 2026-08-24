@@ -147,7 +147,7 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
     async UniTask OpenPopup_Merchant()
     {
-        await UniTask.Yield();
+        await PopupManager.instance.OpenPopupAndWait(PopupType.ContentMarket, ContentMarketTabType.Daily);
     }
     async UniTask OpenPopup_Office()
     {

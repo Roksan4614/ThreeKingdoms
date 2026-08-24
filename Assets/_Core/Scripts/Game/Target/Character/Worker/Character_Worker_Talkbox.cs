@@ -9,6 +9,9 @@ public class Character_Worker_Talkbox : Character_Worker
     Transform m_trnsLT;
     Transform m_trnsRB;
 
+    int m_maxWidth = 1300;
+    public void SetMaxWidth(int _maxWidth) => m_maxWidth = _maxWidth;
+
     public Character_Worker_Talkbox(CharacterComponent _owner) : base(_owner)
     {
         m_txtTalk = m_owner.element.txtTalk;
@@ -39,7 +42,7 @@ public class Character_Worker_Talkbox : Character_Worker
     public bool isTyping { get; private set; } = false;
     //public async UniTask WaitTyping() => await UniTask.WaitUntil(() => isTyping == false, cancellationToken:m_cts.Token);
 
-    void Init(params string[] _talks)
+    public void Init(params string[] _talks)
     {
         SetActive(true);
         SetFlip(m_owner.move.isFlip);
@@ -50,12 +53,12 @@ public class Character_Worker_Talkbox : Character_Worker
         m_fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         m_rtTalkbox.ForceRebuildLayout();
 
-        if (m_rtTalkbox.rect.width > 1300)
+        if (m_rtTalkbox.rect.width > m_maxWidth)
         {
             m_fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             var size = m_rtTalkbox.sizeDelta;
-            size.x = 1300;
+            size.x = m_maxWidth;
             m_rtTalkbox.sizeDelta = size;
 
             m_rtTalkbox.ForceRebuildLayout();
@@ -104,6 +107,13 @@ public class Character_Worker_Talkbox : Character_Worker
         SetActive(false);
     }
 
+    public void SetTyping(bool _isTyping) => isTyping = _isTyping;
+
+    public async UniTask WaitFinishTyping()
+    {
+        await UniTask.WaitUntil(() => isTyping == true);
+        await UniTask.WaitUntil(() => isTyping == false);
+    }
 
     public void Start(CancellationToken _token, params string[] _talks)
         => StartAsync(_token, _talks).Forget();
@@ -121,7 +131,7 @@ public class Character_Worker_Talkbox : Character_Worker
         if (isTyping == true)
         {
             m_isCancel = true;
-            await UniTask.WaitUntil(() => isTyping == false);
+            await UniTask.WaitUntil(() => isTyping == false, cancellationToken: _token);
             m_isCancel = false;
         }
         isTyping = true;
