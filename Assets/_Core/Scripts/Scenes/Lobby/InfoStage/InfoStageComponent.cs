@@ -31,7 +31,7 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
 
     public void SetBossRaid(bool _isStart)
     {
-        bool isBossWait = StageManager.instance.data.isBossWait;
+        bool isBossWait = StageManager.instance.data?.isBossWait ?? false;
 
         bool _isDisableStart = _isStart == false;
         m_element.txtLevel?.gameObject.SetActive(_isDisableStart);

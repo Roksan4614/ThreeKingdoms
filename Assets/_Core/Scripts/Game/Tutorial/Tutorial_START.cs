@@ -340,7 +340,7 @@ public class Tutorial_START : TutorialBase
 
     async UniTask Request_Summon(string _hostKey)
     {
-        List<TableItemData> result = new();
+        List<ItemData> result = new();
 
         #region 영웅 불러오기
         {
@@ -377,9 +377,11 @@ public class Tutorial_START : TutorialBase
 
             for (; i < 10; i++)
             {
-                TableItemData itemData = TableManager.item.Get(UnityEngine.Random.value > 0.5f ? ItemType.Gold : ItemType.Rice);
+                ItemData itemData = TableManager.item.GetItemData(
+                    UnityEngine.Random.value > 0.5f ? ItemType.Gold : ItemType.Rice,
+                    UnityEngine.Random.Range(1, 10) * 10
+                    );
                 itemData.value = itemData.key.ToString();
-                itemData.count = UnityEngine.Random.Range(1, 10) * 10;
                 result.Add(itemData);
             }
         }
@@ -391,7 +393,7 @@ public class Tutorial_START : TutorialBase
         await AddressableManager.instance.Load_HeroIconAsync(keyHero);
         SetItemDataAsync(result).Forget();
     }
-    async UniTask SetItemDataAsync(List<TableItemData> _result)
+    async UniTask SetItemDataAsync(List<ItemData> _result)
     {
         long totalGold = 0, totalRice = 0;
 

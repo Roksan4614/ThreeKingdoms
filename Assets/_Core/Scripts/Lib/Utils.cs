@@ -178,6 +178,12 @@ public static class Utils
             }
         }
 
+        if (isPrevDigit == true)
+        {
+            isPrevDigit = false;
+            sb.Append("</mspace>");
+        }
+
         return sb.ToString();
         //List<char> ignores = new string[]
         //{ ",", ".", "%", ":", "(", ")" }

@@ -42,7 +42,7 @@ public class Table_CastleMission_Reward : BaseTable<string, TableCastleMissionRe
 
 }
 
-public struct TableCastleMissionRewardData
+public class TableCastleMissionRewardData
 {
     public string key;
     public GradeType grade;
@@ -53,7 +53,6 @@ public struct TableCastleMissionRewardData
     public int reward_max;
     public float drop_rate;
 
-    public bool isActive => key.IsActive();
     string m_keyProper;
     public string keyProper
     {
@@ -65,12 +64,12 @@ public struct TableCastleMissionRewardData
         }
     }
 
-    TableItemData m_itemData;
-    public TableItemData itemData
+    ItemData m_itemData;
+    public ItemData itemData
     {
         get
         {
-            if (m_itemData.isActive == false)
+            if (m_itemData == null)
                 m_itemData = new()
                 {
                     key = reward_key,

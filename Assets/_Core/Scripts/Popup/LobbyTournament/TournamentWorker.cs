@@ -38,11 +38,14 @@ namespace Rev9.Tournament
 
         public async UniTask InitailizeAsync()
         {
-            if (m_data.isActive == false)
+            if (m_data.IsActive() == false)
             {
                 //PPWorker.DeleteKey(c_keyHistory);
                 //PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT);
                 m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
+
+                if (m_data == null)
+                    m_data = new();
 
                 m_data.countAD = 3;
             }
@@ -75,12 +78,15 @@ namespace Rev9.Tournament
         // 승급이나 강화했을 때 
         public void UpdateHero()
         {
-            if (m_data.isActive == false)
+            if (m_data.IsActive() == false)
                 m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
+
+            if (m_data == null)
+                m_data = new();
 
             for (int i = 0; i < 4; i++)
             {
-                if (m_data.teamAttack.heroes != null && i < m_data.teamAttack.heroes.Count)
+                if (m_data.teamAttack?.heroes != null && i < m_data.teamAttack.heroes.Count)
                 {
                     var newData = DataManager.userInfo.GetHeroInfoData(m_data.teamAttack.heroes[i].key);
                     var data = m_data.teamAttack.heroes[i];
@@ -88,7 +94,7 @@ namespace Rev9.Tournament
                     data.enchantLevel = newData.enchantLevel;
                     m_data.teamAttack.heroes[i] = data;
                 }
-                if (m_data.teamDefence.heroes != null && i < m_data.teamDefence.heroes.Count)
+                if (m_data.teamDefence?.heroes != null && i < m_data.teamDefence.heroes.Count)
                 {
                     var newData = DataManager.userInfo.GetHeroInfoData(m_data.teamDefence.heroes[i].key);
                     var data = m_data.teamDefence.heroes[i];
@@ -104,12 +110,14 @@ namespace Rev9.Tournament
         public TournamentBatchData GetBatchData(bool _isAttack, bool _isOrinData = false)
         {
             var team = _isAttack ? m_data.teamAttack : m_data.teamDefence;
-            if (team.isActive == false)
+            if (team.IsActive() == false)
             {
-                team.Default();
-
                 if (_isAttack == true)
                 {
+                    m_data.teamAttack = new();
+                    m_data.teamAttack.Default();
+                    team = m_data.teamAttack;
+
                     team.heroes.AddRange(TeamManager.instance.members.Select(x => x.Value.info).ToList());
                     team.treasure.AddRange(DataManager.stat.relic.dataTreasure.Where(x => x.isBatch == true).ToList());
 
@@ -143,6 +151,9 @@ namespace Rev9.Tournament
                 }
                 else
                 {
+                    team = new();
+                    team.Default();
+
                     team.heroes.AddRange(m_data.teamAttack.heroes);
                     team.treasure.AddRange(m_data.teamAttack.treasure);
 
@@ -155,13 +166,7 @@ namespace Rev9.Tournament
             if (_isOrinData)
                 return team;
 
-            TournamentBatchData result = new();
-            result.Default();
-
-            result.heroes.AddRange(team.heroes);
-            result.treasure.AddRange(team.treasure);
-
-            return result;
+            return team.DeepClone();
         }
 
         public void SaveData()
@@ -343,7 +348,7 @@ namespace Rev9.Tournament
         }
     }
 
-    public struct TournamentData
+    public class TournamentData
     {
         public GradeType grade;
 
@@ -371,7 +376,6 @@ namespace Rev9.Tournament
             tickRefresh = 0;
         }
 
-        public bool isActive => tick > 0;
         public bool isFreeRefresh => countRefresh > 0;
 
         public TournamentBatchData GetTeam(bool _isAttackType)
@@ -397,23 +401,19 @@ namespace Rev9.Tournament
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public struct TournamentRankerUserData
+    public class TournamentRankerUserData
     {
         [JsonProperty] public RankerUserData info;
         [JsonProperty] public TournamentBatchData batchData;
-
-        public bool isActive => info.isActive;
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public struct TournamentBatchData
+    public class TournamentBatchData
     {
         [JsonProperty] public int uid;
 
         [JsonProperty] public List<HeroInfoData> heroes;
         [JsonProperty] public List<TreasureBatchData> treasure;
-
-        public bool isActive => heroes != null;
 
         Dictionary<BattleStatType, BattleStatData> m_bonusTreasureBonus;
         public IReadOnlyDictionary<BattleStatType, BattleStatData> bonusTreasureBonus
@@ -458,7 +458,7 @@ namespace Rev9.Tournament
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public struct TournamentHistoryData
+    public class TournamentHistoryData
     {
         [JsonProperty] public int index;
         [JsonProperty] public int uid;
@@ -472,7 +472,6 @@ namespace Rev9.Tournament
         [JsonProperty] public long tick; // 방어에 패배했음에도 0이면 복수를 성공한걸로 간주하자
         [JsonProperty] public TournamentBatchData batchData;
 
-        public bool isActive => nickname.IsActive();
         public bool isRevenge => isAttack == false && isWin == false;
         public bool isOpenRevenge => teamDefence != null;
         public List<HeroInfoData> teamDefence;

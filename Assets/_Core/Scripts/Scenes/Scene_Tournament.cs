@@ -40,7 +40,7 @@ namespace Rev9.Tournament
             tasks.Add(BatchHeroesAsync(TournamentWorker.data.teamAttack, transform.Find("Map/Heroes/Team"), true));
             tasks.Add(BatchHeroesAsync(TournamentWorker.instance.enterUserData.batchData, transform.Find("Map/Heroes/Enemy"), false));
 
-            await UniTask.WhenAll(tasks);
+            await UniTask.WhenAll(tasks.ToArray());
             await UniTask.NextFrame();
 
             m_heroes.AddRange(m_heroesMe);

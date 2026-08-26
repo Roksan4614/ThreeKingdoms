@@ -50,6 +50,7 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T
         //if (transform.parent != null)
         //    transform.SetParent(null);
 
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
         transform.SetSiblingIndex(1);

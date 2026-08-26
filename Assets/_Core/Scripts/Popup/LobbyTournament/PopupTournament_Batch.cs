@@ -14,13 +14,13 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
 
     private void Awake()
     {
-        transform.GetComponent<Button>("Panel/Top/btn_back").onClick.AddListener(Close);
+        transform.GetComponent<Button>("Panel/Top/btn_back").onClick.AddListener(() => Close(false));
         transform.GetComponent<TextMeshProUGUI>("Panel/Top/txt_title").text = "장수_편성";
 
         m_element.tabRelic.onClick.AddListener(() => OnButton_Tab(TabType.Relic));
         m_element.tabHero.onClick.AddListener(() => OnButton_Tab(TabType.Hero));
 
-        m_element.btnBatch.onClick.AddListener(Close);
+        m_element.btnBatch.onClick.AddListener(() => Close(true));
         m_element.btnAuto.onClick.AddListener(m_element.panelHero.StartAutoBatch);
     }
 
@@ -36,7 +36,7 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
         Utils.SetActivePunch(m_element.panelHero.parentList, true);
 
         OnButton_Tab(TabType.Hero);
-        m_element.panelHero.OnButtonAsync_Type(true, true).Forget();
+        m_element.panelHero.OnButton_Type(true, true);
 
         await UniTask.WaitUntil(() => m_isCloseStart == true, cancellationToken: destroyCancellationToken);
 
@@ -59,7 +59,7 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
             if (PopupManager.instance.IsOpenPopup(PopupType.Hero_HeroInfo) == true)
                 return false;
 
-            Close();
+            Close(false);
             return false;
         }
 
@@ -67,10 +67,10 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
     }
 
     bool m_isCloseStart;
-    void Close()
+    void Close(bool _isSaveData)
     {
         if (m_element.panelHero.gameObject.activeSelf == true)
-            m_element.panelHero.CloseAsync(() =>
+            m_element.panelHero.CloseAsync(_isSaveData, () =>
             {
                 m_isCloseStart = true;
                 Utils.SetActivePunch(m_element.panelHero.parentList, false, _callback: () => gameObject.SetActive(false));

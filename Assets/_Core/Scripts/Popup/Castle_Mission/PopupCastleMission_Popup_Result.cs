@@ -14,6 +14,7 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
 
     protected override void Awake()
     {
+        transform.GetComponent<Button>("Dimm")?.onClick.AddListener(Close);
         transform.GetComponent<Button>("Panel/btn_close")?.onClick.AddListener(Close);
         m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Confirm().Forget());
     }
@@ -85,6 +86,16 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
 
             m_element.reward.SetReward_ResultFixed(dbFixed.ToArray());
         }
+        // 가능 모든 보상
+        {
+            List<TableCastleMissionRewardData> dbFixed = new();
+
+            for (int i = 0; i < _missionDatas.Length; i++)
+                dbFixed.AddRange(TableManager.castleMissonReward.GetReward(_missionDatas[i]).Where(x => x.unlock_pct > 0 && x.unlock_pct <= _missionDatas[i].percentStat).ToList());
+            dbFixed = dbFixed.SortByDescending(x => x.unlock_pct);
+
+            m_element.reward.SetReward_ResultRandom(dbFixed.ToArray());
+        }
 
         await UniTask.WaitUntil(() => resultType != StatusType.Wait);
 
@@ -93,57 +104,37 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
         gameObject.SetActive(false);
     }
 
-    void ActionReward(params Data_Castle_Mission.CastleMissionData[] _missionDatas)
-    {
-        // 보상 연출 해주자
-        //Dictionary<ItemType, TableItemData> dbRewards = new();
-        var rewards = new List<RewardWorker.RewardItemData>();
-        foreach (var m in _missionDatas)
-        {
-            var reward = TableManager.castleMissonReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
-            foreach (var r in reward)
-            {
-                rewards.Add(new()
-                {
-                    itemType = r.reward_key,
-                    count = UnityEngine.Random.Range(r.reward_min, r.reward_max + 1)
-                });
-                //if (dbRewards.ContainsKey(r.reward_key))
-                //{
-                //    var db = dbRewards[r.reward_key];
-                //    db.count += UnityEngine.Random.Range(r.reward_min, r.reward_max + 1);
-                //}
-                //else
-                //{
-                //    dbRewards.Add(r.reward_key, new()
-                //    {
-                //        key = r.reward_key,
-                //        value = r.reward_value,
-                //        count = UnityEngine.Random.Range(r.reward_min, r.reward_max + 1)
-                //    });
-                //}
-            }
-        }
+    //void ActionReward(params Data_Castle_Mission.CastleMissionData[] _missionDatas)
+    //{
+    //    // 보상 연출 해주자
+    //    //Dictionary<ItemType, TableItemData> dbRewards = new();
+    //    var rewards = new List<RewardWorker.RewardItemData>();
+    //    foreach (var m in _missionDatas)
+    //    {
+    //        var reward = TableManager.castleMissonReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
+    //        foreach (var r in reward)
+    //            rewards.Add(new(r.reward_key, Random.Range(r.reward_min, r.reward_max + 1)));
+    //    }
 
-        //var rewards = dbRewards.Values.Select(x => new RewardWorker.RewardItemData(x.key, x.count)).ToList();
+    //    var totalGold = rewards.FindAll(x => x.itemType == ItemType.Gold).Sum(x => x.count);
+    //    var totalRice = rewards.FindAll(x => x.itemType == ItemType.Rice).Sum(x => x.count);
+    //    DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
 
-        var totalGold = rewards.FindAll(x => x.itemType == ItemType.Gold).Sum(x => x.count);
-        var totalRice = rewards.FindAll(x => x.itemType == ItemType.Rice).Sum(x => x.count);
-        DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
-
-        foreach (var r in rewards)
-            RewardWorker.instance.Run(CameraManager.posPointer, r.itemType, r.count, _isPopup: true, _durationWait: Random.Range(0.1f, .5f));
-    }
+    //    foreach (var r in rewards)
+    //        RewardWorker.instance.Run(CameraManager.posPointer, r.itemType, r.count, _isPopup: true, _durationWait: Random.Range(0.1f, .5f));
+    //}
 
     async UniTask OnButtonAsync_Confirm()
     {
-        await DataManager.castle.mission.CompleteMissionAsync((_result, _exp) =>
+        var rewards = await DataManager.castle.mission.CompleteMissionAsync((_result, _exp) =>
         {
             resultType = _result;
-
-            if (resultType == StatusType.Success)
-                ActionReward(m_missionDatas);
         }, m_missionDatas);
+
+        if (resultType == StatusType.Success)
+        {
+            RewardWorker.OpenRewardPopup(rewards.ToArray());
+        }
     }
 
     public override bool CloseEscape()

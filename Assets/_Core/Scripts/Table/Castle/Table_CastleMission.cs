@@ -8,15 +8,25 @@ public class Table_CastleMission : BaseTable<string, TableCastleMissionData>
     {
         SetDictionary(x => x.key);
     }
+
+    public TableCastleMissionData GetNewMission(params string[] _keys)
+    {
+        List<string> lstKey = new();
+        foreach (var k in _keys)
+            lstKey.Add(k);
+
+        var result = m_list.FindAll(x => lstKey.Contains(x.key) == false).RandomFirst();
+
+        return result.DeepClone();
+    }
 }
 
-public struct TableCastleMissionData
+public class TableCastleMissionData
 {
     public string key;
     [JsonProperty] CoreStatType req_stat_type;
     [JsonProperty] string relic_key;
 
-    public bool isActive => key.IsActive();
     public CoreStatType statType => req_stat_type;
     public string keyRelic => relic_key;
 }

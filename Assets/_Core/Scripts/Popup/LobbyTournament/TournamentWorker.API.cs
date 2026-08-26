@@ -179,7 +179,7 @@ namespace Rev9.Tournament
             int idxPrev = -1, idxNext = -1;
             for (int i = 0; i < _batchData.heroes.Count; i++)
             {
-                if (_batchData.heroes[i].isActive == false)
+                if (_batchData.heroes[i].IsActive() == false)
                     continue;
 
                 if (_batchData.heroes[i].sortIdx == _prev)

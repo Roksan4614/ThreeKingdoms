@@ -31,8 +31,9 @@ public enum PopupType
     LobbyTournament_History,
     UserInfo,
 
+    Reward,
     UpgradeGuide,
-    ContentMarket,
+    ContentsMarket,
 
     BossRaidResult,
     DailyDungeonResult,
@@ -284,7 +285,7 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     public bool isAlerting => m_element.alertData.isActive;
 
     [Serializable]
-    struct AlertData
+    class AlertData
     {
         [SerializeField] RectTransform m_rt;
         [SerializeField] HorizontalLayoutGroup m_layout;

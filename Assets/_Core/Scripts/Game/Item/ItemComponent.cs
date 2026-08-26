@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ItemComponent : MonoBehaviour, IValidatable
 {
-    public TableItemData data { get; private set; }
+    public ItemData data { get; private set; }
     public RectTransform rt => (RectTransform)transform;
 
     protected virtual void Awake()
@@ -16,15 +16,17 @@ public class ItemComponent : MonoBehaviour, IValidatable
         SetActiveRewardEffect(false);
     }
 
-    public void SetItemData(TableItemData _itemData)
+    public void SetItemData(ItemData _itemData)
     {
         data = _itemData;
 
         gameObject.SetActive(true);
 
-        m_element.icon.SetActive(_itemData.isActive);
-        m_element.empty.SetActive(_itemData.isActive == false);
-        if (_itemData.isActive == false)
+        bool isActive = _itemData != null;
+
+        m_element.icon.SetActive(isActive);
+        m_element.empty.SetActive(isActive == false);
+        if (isActive == false)
         {
             txtCount = "";
             return;
@@ -35,7 +37,16 @@ public class ItemComponent : MonoBehaviour, IValidatable
         if (_itemData.category == ItemCategoryType.Soul_Stone)
         {
             if (_itemData.key == ItemType.Dedicated_Soul_Stone)
-                SetIconAsync(_itemData.value, true).Forget();
+            {
+                SetIconAsync(_itemData.value, true, _iconHero =>
+                {
+                    SetIconAsync(_itemData.key.ToString(), false, _icon =>
+                    {
+                        _icon.SetParent(_iconHero);
+                        _iconHero.gameObject.SetActive(true);
+                    }).Forget();
+                }).Forget();
+            }
             else if (_itemData.key == ItemType.Class_Soul_Stone)
                 SetIconAsync($"{_itemData.key}_{_itemData.value}", false).Forget();
             else
@@ -47,7 +58,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         txtCount = _itemData.count > 0 ? $"x{_itemData.count.AmountKMBT()}" : "";
     }
 
-    async UniTask SetIconAsync(string _key, bool _isHero)
+    async UniTask SetIconAsync(string _key, bool _isHero, Action<Transform> _onComplete = null)
     {
         bool isFinded = false;
         for (int i = 0; i < m_element.iconPanel.childCount; i++)
@@ -66,8 +77,16 @@ public class ItemComponent : MonoBehaviour, IValidatable
                 return;
 
             var icon = Instantiate(result, m_element.iconPanel);
+            icon.transform.SetAsFirstSibling();
             icon.AutoResizeParent().name = _key;
+
+            _onComplete?.Invoke(icon.transform);
         }
+    }
+
+    public void SetIconAutoResize()
+    {
+
     }
 
     public void MoveFinished()

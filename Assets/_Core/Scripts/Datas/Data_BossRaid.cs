@@ -38,15 +38,16 @@ public class Data_BossRaid
 
         m_data = PPWorker.Get<BossRaidData>(c_key);
 
-        var key = m_data.keyBoss + "_BossRaid";
-        AddressableManager.instance.Load_HeroCharacterAsync(key).Forget();
-
-        // TEST
-        //if (m_data.isActive == false)
+        if( m_data == null)
         {
+            m_data = new();
             m_data.TestDefault();
             SaveData();
         }
+
+
+        var key = m_data.keyBoss + "_BossRaid";
+        AddressableManager.instance.Load_HeroCharacterAsync(key).Forget();
 
         TimerAsync().Forget();
     }
@@ -301,7 +302,7 @@ public class Data_BossRaid
         => PPWorker.Set(c_key, m_data);
 
     [JsonObject(MemberSerialization.OptIn)]
-    public struct BossRaidData
+    public class BossRaidData
     {
         [JsonProperty] public int round;
 
@@ -319,7 +320,6 @@ public class Data_BossRaid
         [JsonProperty] public long tickSecondPhase;
         [JsonProperty] public long tickEndRound;
 
-        public bool isActive => keyBoss.IsActive();
         public System.DateTime dtEndSeason => Utils.GetDateTime(tickEndSeason);
         public System.DateTime dtPrevRound => Utils.GetDateTime(tickPrevRound);
         public System.DateTime dtNextRound => Utils.GetDateTime(tickNextRound);
@@ -366,14 +366,14 @@ public class Data_BossRaid
     }
 }
 
-public struct RankerData
+public class RankerData
 {
     public List<RankerUserData> ranker;
     public RankerUserData my;
 }
 
 [JsonObject(MemberSerialization.OptIn)]
-public struct RankerUserData
+public class RankerUserData
 {
     [JsonProperty] public int rank;
     [JsonProperty] public int prevRank;
@@ -385,7 +385,6 @@ public struct RankerUserData
     [JsonProperty] public long power;
     [JsonProperty] int? tier;
 
-    public bool isActive => nickname.IsActive();
     public int tierTournament => tier ?? 8;
 
     public void SetTier(int _tier) => tier = _tier;

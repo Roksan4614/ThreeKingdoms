@@ -37,7 +37,7 @@ public class Table_CastleRise : BaseTable<string, TableCastleRiseData>
     }
 }
 
-public struct TableCastleRiseData
+public class TableCastleRiseData
 {
     public string key;
     public int level;
@@ -47,7 +47,6 @@ public struct TableCastleRiseData
     [JsonProperty] int upgrade_seconds;         // 업그레이드 소요 시간 (초)
 
     // CUSTOM
-    public bool isActive => key.IsActive();
     public CastleObjectType type;
     public void Initialize()
     {

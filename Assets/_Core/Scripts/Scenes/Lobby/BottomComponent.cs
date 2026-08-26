@@ -110,15 +110,13 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
     }
 
     [Serializable]
-    public struct ScreenData
+    public class ScreenData
     {
         public LobbyScreenType type;
         public Button button;
         public TextMeshProUGUI txtName;
         public RectTransform rt;
         public Transform icon;
-
-        public bool isActive => type > LobbyScreenType.None;
     }
     #endregion
 }

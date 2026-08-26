@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RewardWorker : Singleton<RewardWorker>, IValidatable
@@ -38,7 +39,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             Run(posFrom, ItemType.Rice, _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
     }
 
-    public async UniTask RunAsync(Vector3 _posFrom, bool _isPopup = true, bool _isStartPunch = false, params TableItemData[] _itemData)
+    public async UniTask RunAsync(Vector3 _posFrom, bool _isPopup = true, bool _isStartPunch = false, params ItemData[] _itemData)
     {
         List<UniTask> tasks = new();
 
@@ -51,7 +52,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             tasks.Add(RunAsync(_posFrom, _itemData[i].key, _itemData[i].count, _isPopup: _isPopup, _isStartPunch: _isStartPunch));
         }
 
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
     }
 
     /// <summary>
@@ -84,7 +85,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         rewardData.startPos = _posFrom;
         rewardData.rewards = new()
         {
-            new(){ itemType = _itemType,  count = _count }
+            new(_itemType, _count)
         };
 
         m_actionData.distInstantiateMAX = _distMax > 0 ? _distMax : m_actionData.distInstantiateMAX;
@@ -167,7 +168,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         List<UniTask> tasks = new();
         for (int i = 0; i < rewardComps.Count; i++)
             tasks.Add(rewardComps[i].ThrowStart(m_actionData.durationMove));
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
     }
 
     public Vector3 GetPositionStartPunch(Vector3 _startPos)
@@ -238,19 +239,17 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         }
     }
 
-    public struct RewardData
+    public class RewardData
     {
         public List<RewardItemData> rewards;
         public Vector3 startPos;
     }
 
-    public struct RewardItemData
+    public class RewardItemData
     {
         public ItemType itemType;
-        //public RewardSpawnType spawnType;
         public long count;
 
-        //public RewardItemData(ItemType _itemType, RewardSpawnType _spawnType, long _count = 1)
         public RewardItemData(ItemType _itemType, long _count = 1)
         {
             itemType = _itemType;
@@ -263,6 +262,10 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         public string name => TableManager.stringTable.GetString($"ITEM_NAME_{itemType.ToString().ToUpper()}");
     }
 
+    private void OnValidate()
+    {
+        
+    }
     #region VALIDATA
     public void OnManualValidate() => m_element.Initialize(transform);
 
@@ -280,4 +283,15 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         }
     }
     #endregion
+
+    public static void OpenRewardPopup(params ItemData[] _items)
+        => OpenRewardPopupAsync(_items).Forget();
+    public static async UniTask<PopupRewardComponent> OpenRewardPopupAsync(params ItemData[] _items)
+    {
+        List<ItemData> rewards = new();
+        foreach (var i in _items)
+            rewards.Add(i);
+
+        return await PopupManager.instance.OpenPopupAsync<PopupRewardComponent>(PopupType.Reward, rewards);
+    }
 }

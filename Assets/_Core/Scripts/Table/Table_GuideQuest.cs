@@ -16,7 +16,7 @@ public class Table_GuideQuest : BaseTable<string, Table_GuideQuest.TableGuideQue
     public TableGuideQuestData GetOpenStageData(int _chater, int _stage)
         => m_list.Find(x => x.startStage[0] == _chater && x.startStage[1] == _stage);
 
-    public struct TableGuideQuestData
+    public class TableGuideQuestData
     {
         public string key;
         [JsonProperty] int? target_value;
@@ -33,7 +33,6 @@ public class Table_GuideQuest : BaseTable<string, Table_GuideQuest.TableGuideQue
         public string open_guide_quest;
 
         //custom
-        public bool isActive => key.IsActive();
         public int targetValue => target_value ?? 1;
         public int[] startStage
         {

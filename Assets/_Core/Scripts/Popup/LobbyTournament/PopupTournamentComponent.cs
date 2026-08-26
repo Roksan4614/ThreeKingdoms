@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Rev9.ContentsMarket;
 using Rev9.Tournament;
 using System.Threading;
 using TMPro;
@@ -51,7 +52,7 @@ public class PopupTournamentComponent : BasePopupComponent
                 m_element.popupBatch.CloseEscape() &&
                 m_element.popupUserInfo.CloseEscape() &&
                 m_element.popupRewardInfo.CloseEscape() &&
-                PopupManager.instance.IsOpenPopup(PopupType.ContentMarket) == false)
+                PopupManager.instance.IsOpenPopup(PopupType.ContentsMarket) == false)
             {
                 if (m_popupHistory == null || m_popupHistory.CloseEscape() == true)
                     Close();
@@ -244,7 +245,7 @@ public class PopupTournamentComponent : BasePopupComponent
                 await m_element.popupRewardInfo.OpenAsync();
                 break;
             case TournamentPopupType.Shop:
-                PopupManager.instance.OpenPopup(PopupType.ContentMarket, ContentMarketTabType.Tournament);
+                PopupManager.instance.OpenPopup(PopupType.ContentsMarket, Rev9.ContentsMarket.ContentsMarketTabType.Tournament);
                 break;
         }
     }

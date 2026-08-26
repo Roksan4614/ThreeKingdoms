@@ -32,7 +32,7 @@ public class Data_Stat_FriendShip
             {
                 var heroInfoData = DataManager.userInfo.GetHeroInfoData(x);
 
-                var result = heroInfoData.isActive ? heroInfoData.grade : GradeType.NONE;
+                var result = heroInfoData != null ? heroInfoData.grade : GradeType.NONE;
                 if (db.minGrade > result)
                     db.minGrade = result;
 

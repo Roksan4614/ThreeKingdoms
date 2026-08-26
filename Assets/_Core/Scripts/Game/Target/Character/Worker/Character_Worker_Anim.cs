@@ -95,7 +95,7 @@ public class Character_Worker_Anim : Character_Worker
 }
 
 [Serializable]
-public struct CharacterAnimationClipData
+public class CharacterAnimationClipData
 {
     [SerializeField] AnimationClip idle;
     [SerializeField] AnimationClip attack;

@@ -149,7 +149,7 @@ public partial class Data_Castle
 
         UpdateCastleData(newData, false);
 
-        return GetCaslteData(_type);
+        return GetCaslteData(_type).DeepClone();
     }
 
     public void UpdateCastleAmountData(CastleData _data)
@@ -268,7 +268,9 @@ public partial class Data_Castle
         {
             var heroData = DataManager.userInfo.GetHeroInfoData(_data.heroes[i]);
 
-            totalStat += heroData.resultCoreStat[_coreStatType];
+            if (heroData.IsActive())
+                totalStat += heroData.resultCoreStat[_coreStatType];
+
         }
         return totalStat;
     }
@@ -321,7 +323,7 @@ public partial class Data_Castle
             var data = m_db[jobType];
             data.heroes.Remove(heroKey);
 
-            Signal.instance.UpdateCastleHeroBatch.Emit(data);
+            Signal.instance.UpdateCastleHeroBatch.Emit(data.DeepClone());
         }
 
         {
@@ -330,7 +332,7 @@ public partial class Data_Castle
             data.heroes.AddRange(_castleData.heroes);
             UpdateCastleData(data);
 
-            Signal.instance.UpdateCastleHeroBatch.Emit(data);
+            Signal.instance.UpdateCastleHeroBatch.Emit(data.DeepClone());
         }
 
         building.UpdateBuildingUpgrade(CastleObjectType.NONE);
@@ -369,7 +371,7 @@ public partial class Data_Castle
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public struct CastleData
+    public class CastleData
     {
         [JsonProperty] public CastleObjectType type;
         [JsonProperty] public List<string> heroes;

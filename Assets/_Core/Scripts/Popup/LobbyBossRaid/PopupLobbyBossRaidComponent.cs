@@ -29,7 +29,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         m_element.btnRanking.onClick.AddListener(() => OnButtonAsync_Ranking().Forget());
         m_element.btnHero.onClick.AddListener(OnButton_Hero);
         m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Start().Forget());
-        m_element.btnShop.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.ContentMarket, ContentMarketTabType.Raid));
+        m_element.btnShop.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.ContentsMarket, Rev9.ContentsMarket.ContentsMarketTabType.Raid));
     }
 
     private void Start()
@@ -46,7 +46,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         Utils.WaitEscape(this, () =>
         {
             if (m_element.popupRanking.CloseEscape() == false ||
-                PopupManager.instance.IsOpenPopup(PopupType.ContentMarket) == true)
+                PopupManager.instance.IsOpenPopup(PopupType.ContentsMarket) == true)
                 return;
 
             Close();

@@ -94,7 +94,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
         SetDungeonInfo(_bossData);
 
-        var gradeType = DataManager.dailyDungeon.GetRecordGradeType(m_curWeekday).gradeType;
+        var gradeType = DataManager.dailyDungeon.GetRecordGradeType(m_curWeekday)?.gradeType;
         if (gradeType > GradeType.Normal != m_element.btnSweep.gameObject.activeSelf)
             m_element.btnSweep.gameObject.SetActive(gradeType > GradeType.Normal);
 
@@ -115,7 +115,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
         var recordData = DataManager.dailyDungeon.GetRecordGradeType(_bossData.weekday);
 
-        bool isHasRecord = recordData.gradeType > GradeType.Normal || recordData.percent > 0;
+        bool isHasRecord = recordData ==null ? false : recordData.gradeType > GradeType.Normal || recordData.percent > 0;
         m_element.txtRecord.text = $"최고_기록: [{(isHasRecord ? TableManager.stringTable.GetGradeType(recordData.gradeType) : "없음_")}]";
         if (isHasRecord)
             m_element.txtRecord.text += $"<size=90%><color=#555555> ({(recordData.percent * 100):0.#0}%)</color></size>";
@@ -131,7 +131,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
     {
         var rewardData = TableManager.dailyDungeonGrade.list.SortByDescending(x => (int)x.dungeon_boss_grade)[0];
 
-        List<TableItemData> tableItem = rewardData.GetReward(_bossData.dungeon_boss_class, false);
+        List<ItemData> tableItem = rewardData.GetReward(_bossData.dungeon_boss_class, false);
 
         var parent = m_element.reward;
         int i = 0;

@@ -155,6 +155,7 @@ public class Character_Worker_Attack : Character_Worker
         => m_owner.isLive && m_weapon.IsValidUseSkill();
 
     public bool isUseSkill { get; private set; }
+    public void SetType_UseSkill(bool _isUseSkill) => isUseSkill = _isUseSkill;
 
     public async UniTask UseSkillAsync()
     {

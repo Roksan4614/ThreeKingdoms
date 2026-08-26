@@ -20,7 +20,7 @@ public class Scene_StoryMode : SceneBase
         List<UniTask> tasks = new();
         tasks.Add(StageManager.instance.InitializeAsync_StoryMode());
 
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
 
         isReady = true;
 

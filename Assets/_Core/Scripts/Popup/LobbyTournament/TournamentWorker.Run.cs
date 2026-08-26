@@ -15,7 +15,7 @@ namespace Rev9.Tournament
         public TournamentStatusType statusType { get; private set; }
 
         public TournamentRankerUserData enterUserData { get; private set; }
-        public bool isRunning => enterUserData.isActive;
+        public bool isRunning => enterUserData.IsActive();
         int m_idxRevenge;
 
         public async UniTask EnterBattleAsync(int _uid, int _idxRevenge = -1)

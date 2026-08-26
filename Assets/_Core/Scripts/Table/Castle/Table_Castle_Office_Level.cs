@@ -12,7 +12,7 @@ public class Table_Castle_Office_Level : BaseTable<int, TableCastleOfficeLevelDa
         => Get(_level);
 }
 
-public struct TableCastleOfficeLevelData
+public class TableCastleOfficeLevelData
 {
     public int level;
     public int req_xp;

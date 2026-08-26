@@ -454,7 +454,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
         }
     }
 
-    public struct LoadData_Stage
+    public class LoadData_Stage
     {
         public int level;
         public int chapterNumber;

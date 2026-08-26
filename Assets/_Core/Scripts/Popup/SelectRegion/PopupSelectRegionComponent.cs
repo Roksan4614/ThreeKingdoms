@@ -109,7 +109,7 @@ public class PopupSelectRegionComponent : BasePopupComponent
     }
 
     [Serializable]
-    public struct RegionData
+    public class RegionData
     {
         public RegionType region;
 

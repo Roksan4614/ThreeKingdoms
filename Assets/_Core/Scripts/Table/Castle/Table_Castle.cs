@@ -25,7 +25,7 @@ public class Table_Castle : BaseTable<string, TableCastleData>
         => m_db.ContainsKey(_objectType) ? m_db[_objectType] : default;
 }
 
-public struct TableCastleData
+public class TableCastleData
 {
     public string key;
 
@@ -33,8 +33,6 @@ public struct TableCastleData
     [JsonProperty] string stat_type_2;
 
     // CUSTOM
-    public bool isActive => key.IsActive();
-
     public void Initialize()
     {
         m_coreStat = new[] {

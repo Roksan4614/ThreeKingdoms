@@ -24,7 +24,7 @@ public class Scene_BossRaid : SceneBase
         tasks.Add(TeamManager.instance.SpawnUpdateAsync());
         tasks.Add(StageManager.instance.InitializeAsync_BossRaid());
 
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
 
         BossRaidWorker.instance.StartBossRaid();
 

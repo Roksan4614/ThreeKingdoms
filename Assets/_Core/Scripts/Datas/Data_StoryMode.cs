@@ -70,7 +70,7 @@ public class Data_StoryMode
             tasks.Add(AddressableManager.instance.Load_HeroCharacterAsync(storyNode.reward_character));
         }
 
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
 
         PopupManager.instance.CloseAll();
         await UniTask.NextFrame();
@@ -309,7 +309,7 @@ public class Data_StoryMode
             if (nodeData.hasIfStory == m_historyData[i].choiceIdx)
                 return nodeData;
         }
-        return default;
+        return null;
     }
 
     public struct StoryModeHistoryData

@@ -351,7 +351,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     {
         WaitClickDown().Forget();
 
-        if (m_isPointerDown == true || isSwitch == false)
+        if (m_isPointerDown == true || isSwitch == false || m_mainHero?.isLive == false)
         {
             _eventData.pointerDrag = null;
             return;

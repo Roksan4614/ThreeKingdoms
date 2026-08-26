@@ -19,6 +19,8 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
     public StatusType statusType { get; private set; }
 
+    int m_idx;
+
     int m_myTimeStone;      // 내 보유 시간석
     int m_secTimeStone;     // 궁성에 따른 시간석 하나가 감속할 초
     int m_minuteAD;            // 광고당 감속 초
@@ -79,15 +81,16 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
     public override void OpenPopup(params object[] _args)
     {
+        m_idx = _args.Length == 0 ? -1 : (int)_args[0];
         m_countTimeStone = -1;
 
         statusType = StatusType.Wait;
         Utils.SetActivePunch(m_element.panel, true);
     }
 
-    public void UpdateRemainTime(TimeSpan _ts)
+    public void UpdateRemainTime(TimeSpan _ts, int _idxMission = -1)
     {
-        if (statusType != StatusType.Wait)
+        if (statusType != StatusType.Wait || m_idx != _idxMission)
             return;
 
         m_element.txtTimer.text = _ts.ToRemainTime(65);

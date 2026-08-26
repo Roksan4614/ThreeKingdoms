@@ -1,11 +1,9 @@
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using CastleMissionData = Data_Castle_Mission.CastleMissionData;
 
 public class PopupCastleMission_Popup_Info : BasePopupComponent
@@ -30,21 +28,58 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         m_element.btnAdd.onClick.AddListener(() => OpenHeroListPopupAsync().Forget());
     }
 
-    public void Open(CastleMissionData _mission)
+    private void OnDisable()
+    {
+        m_ctsTimer = m_ctsTimer.ReleaseCTS();
+    }
+
+    CancellationTokenSource m_ctsTimer;
+    async UniTask TimerAsync()
+    {
+        m_ctsTimer = m_ctsTimer.ReleaseCTS(true);
+        var token = m_ctsTimer.Token;
+
+        var endTime = new DateTime(m_missionData.tickEnd, DateTimeKind.Utc);
+
+        TimeSpan ts = endTime - Utils.GetUTC();
+        int prev = -1;
+        while (ts.TotalSeconds > 0)
+        {
+            if (ts.TotalSeconds <= 10)
+            {
+                m_element.btnStart.text = ts.ToRemainTime(30);
+                m_popupTimeStone?.UpdateRemainTime(ts, m_missionData.idx);
+            }
+            else if (ts.Seconds != prev)
+            {
+                m_element.btnStart.text = ts.ToRemainTime(30);
+                prev = ts.Seconds;
+                m_popupTimeStone?.UpdateRemainTime(ts, m_missionData.idx);
+            }
+
+            await UniTask.NextFrame(token);
+
+            ts = endTime - Utils.GetUTC();
+        }
+
+        m_element.btnStart.text = "_확인_";
+    }
+
+    public void Open(CastleMissionData _mission, bool _isRunning)
     {
         m_missionData = _mission;
-        m_missionData.heroes = new();
 
-        gameObject.SetActive(true);
-        Utils.SetActivePunch(m_element.panel, true);
-        resultType = StatusType.Wait;
-
-        m_element.txtTitle.text = $"임무_:_[{TableManager.stringTable.GetGradeType(_mission.grade)}]";
-        m_element.txtName.text = _mission.missionNameStat;
-        m_element.gauge.textTitle = $"고유_능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.statType.ToString().ToUpper()}")})_요구치";
-
-        // 자동으로 추가해줘보자
+        if (_mission.isRunning == true)
         {
+            TimerAsync().Forget();
+            m_element.btnAdd.gameObject.SetActive(false);
+        }
+        else
+        {
+            m_element.btnStart.text = "_시작하기_";
+            m_element.btnAdd.gameObject.SetActive(true);
+            m_missionData.heroes = new();
+
             var coreStat = m_missionData.dbData.statType;
             int coreStatMax = m_missionData.coreStatMax;
 
@@ -67,6 +102,14 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
                     break;
             }
         }
+
+        gameObject.SetActive(true);
+        Utils.SetActivePunch(m_element.panel, true);
+        resultType = StatusType.Wait;
+
+        m_element.txtTitle.text = $"임무_:_[{TableManager.stringTable.GetGradeType(_mission.grade)}]";
+        m_element.txtName.text = _mission.missionNameStat;
+        m_element.gauge.textTitle = $"고유_능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.statType.ToString().ToUpper()}")})_요구치";
 
         //소요시간
         var now = DateTime.Now;
@@ -106,12 +149,12 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
         parent.ForceRebuildLayout();
 
-
         var percent = Mathf.Min(1f, totalCoreStat / (float)m_missionData.coreStatMax);
         m_element.gauge.fillAmount = percent;
         percent *= 100;
         m_element.gauge.textAmount = $"({percent:0.##}%) {totalCoreStat.AmountKMBT()}/{m_missionData.coreStatMax.AmountKMBT()}";
         m_element.btnAdd.text = $"({myHeroes.Count}/6)";
+
 
         m_missionData.percentStat = percent;
 
@@ -121,6 +164,9 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
     async UniTask OpenHeroInfoPopupAsync(HeroInfoData _data)
     {
+        if (m_missionData.isRunning == true)
+            return;
+
         Utils.SetActivePunch(m_element.panel, false);
 
         if (m_popupHeroInfo == null)
@@ -144,7 +190,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         Utils.SetActivePunch(m_element.panel, false);
 
         var popup = m_element.popupHeroList;
-        popup.Open(m_missionData);
+        popup.Open(m_missionData.DeepClone());
 
         await UniTask.WaitUntil(() => popup.statusType != StatusType.Wait, cancellationToken: destroyCancellationToken);
 
@@ -161,6 +207,19 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
     protected virtual void OnButton_Start()
     {
+        // 진행중인 미션일 경우
+        if (m_missionData.isRunning == true)
+        {
+            // 끝났으면 꺼주고
+            if (m_missionData.isFinished)
+                OpenResultAsync().Forget();
+            // 아직 안끝났으면 시간석 사용팝업 열어주자
+            else
+                OpenUseTimeStoneAsync().Forget();
+
+            return;
+        }
+
         if (m_missionData.percentStat < 10)
         {
             PopupManager.instance.AlertShow("요구_능력치를_10%이상_달성해줘!");
@@ -175,6 +234,30 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
                 Close();
             }
         }).Forget();
+    }
+
+    async UniTask OpenResultAsync()
+    {
+        Utils.SetActivePunch(m_element.panel, false);
+        await UniTask.WaitForSeconds(.1f);
+        await PopupManager.instance.GetPopup<PopupCastleMissionComponent>(PopupType.Castle_Mission)
+            .OpenResultAsync_FromInfoPopup(m_missionData);
+
+        resultType = StatusType.Cancel;
+        gameObject.SetActive(false);
+    }
+
+    PopupUseTimeStoneComponent m_popupTimeStone;
+    async UniTask OpenUseTimeStoneAsync()
+    {
+        bool isSuccessed = await PopupManager.instance.GetPopup<PopupCastleMissionComponent>(PopupType.Castle_Mission).OpenUseTimeStoneAsync(m_missionData, _popup => m_popupTimeStone = _popup);
+
+        m_popupTimeStone = null;
+        if (isSuccessed == true)
+        {
+            m_missionData = DataManager.castle.mission.GetMissionData(m_missionData.idx);
+            TimerAsync().Forget();
+        }
     }
 
     public virtual bool CloseEscape()

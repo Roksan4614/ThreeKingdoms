@@ -10,6 +10,9 @@ using UnityEngine.UI;
 public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IValidatable
 {
     public HeroInfoData data { get; private set; }
+    public string key => data?.key;
+    public bool isBatch => data?.isBatch ?? false;
+    public bool isMine => data?.isMine ?? false;
 
     public Button.ButtonClickedEvent onClick
         => m_element.btnHero?.onClick;
@@ -43,7 +46,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
         , bool _isForceUpdate = false
         )
     {
-        if (_data.skin.Equals(data.skin) && _isForceUpdate == false)
+        if (data.IsActive() == true && _data.skin.Equals(data.skin) && _isForceUpdate == false)
             return;
 
         if (_onClick != null)
@@ -145,7 +148,7 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void SetActiveButton(bool _isActive, bool _isChange = false)
     {
-        _isActive = _isActive && data.isActive;
+        _isActive = _isActive && data != null;
 
         m_element.btnAction.gameObject.SetActive(_isActive);
         if (_isActive == true)

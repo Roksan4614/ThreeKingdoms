@@ -5,7 +5,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using CastleData = Data_Castle.CastleData;
 
 public class PopupCastleHeroListComponent : BasePopupComponent
 {
@@ -13,7 +12,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
     PopupCastleHeroList_Item m_base;
 
-    CastleData m_castleData;
+    Data_Castle.CastleData m_castleData;
     int m_maxBatchSlot;
 
     public StatusType statusType { get; private set; }
@@ -52,7 +51,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         Utils.SetActivePunch(m_element.panel, true);
 
         statusType = resultType = StatusType.Wait;
-        m_castleData = (CastleData)_args[0];
+        m_castleData = (Data_Castle.CastleData)_args[0];
 
         var prev = m_castleData.heroes;
         m_castleData.heroes = new();

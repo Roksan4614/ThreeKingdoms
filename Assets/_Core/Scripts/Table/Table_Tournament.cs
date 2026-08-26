@@ -24,7 +24,7 @@ namespace Rev9.Tournament
         }
     }
 
-    public struct TableTournamentRewardData
+    public class TableTournamentRewardData
     {
         public int index;
 
@@ -34,8 +34,8 @@ namespace Rev9.Tournament
         public string reward_key;
         public string reward_count;
 
-        List<TableItemData> m_rewards;
-        public List<TableItemData> rewards
+        List<ItemData> m_rewards;
+        public List<ItemData> rewards
         {
             get
             {

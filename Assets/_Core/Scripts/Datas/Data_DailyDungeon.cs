@@ -33,6 +33,7 @@ public class Data_DailyDungeon
         if (m_recordData == null)
             m_recordData = new();
 
+        m_data = new();
         m_data.Default();
     }
 
@@ -159,7 +160,7 @@ public class Data_DailyDungeon
     {
         List<DailyDungeonRecordData> recordList = m_recordData.FindAll(x => x.weekday == _weekday);
         if (recordList.Count == 0)
-            return default;
+            return null;
 
         return recordList[0];
     }
@@ -200,7 +201,7 @@ public class Data_DailyDungeon
         Exit,
     }
 
-    public struct DailyDungeonData
+    public class DailyDungeonData
     {
         public int count;
         public int adCount;
@@ -219,7 +220,7 @@ public class Data_DailyDungeon
         //public int totalCount => count + adCount;
     }
 
-    public struct DailyDungeonRecordData
+    public class DailyDungeonRecordData
     {
         public WeekdayType weekday;
         public GradeType gradeType;

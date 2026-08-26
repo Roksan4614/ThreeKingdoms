@@ -253,7 +253,7 @@ public static class Extenssions
             }
             else if (_isStartMinute || _ts.TotalHours < 1)
                 result = $"{Mathf.FloorToInt((float)_ts.TotalMinutes):00}:{_ts.ToString(@"ss")}";
-            else if( _ts.TotalDays < 1)
+            else if( _ts.TotalDays <= 1)
                 result = $"{Mathf.FloorToInt((float)_ts.TotalHours):00}:{_ts.ToString(@"mm\:ss")}";
             else
                 result =  $"{Mathf.FloorToInt((float)_ts.TotalDays)}d {_ts.ToString(@"hh\:mm\:ss")}";
@@ -387,5 +387,16 @@ public static class Extenssions
         Color color = _image.color;
         color.a = _alpha;
         _image.color = color;
+    }
+    // null인지 체크
+    public static bool IsActive<T>(this T _class) where T : class
+    {
+        return _class is not null;
+    }
+    // null인지 체크
+    public static T DeepClone<T>(this T _class) where T : class
+    {
+        var json = Newtonsoft.Json.JsonConvert.SerializeObject(_class);
+        return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
     }
 }

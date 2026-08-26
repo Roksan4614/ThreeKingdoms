@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 5099676524062952763}
   - component: {fileID: 4856225347245864143}
   m_Layer: 5
-  m_Name: Result
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -897,7 +897,7 @@ GameObject:
   - component: {fileID: 214796589772526781}
   - component: {fileID: 3129376108669805837}
   m_Layer: 5
-  m_Name: Dimm_
+  m_Name: Dimm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1013,6 +1013,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1621041357978789477}
+  - component: {fileID: 4024198958556270257}
   - component: {fileID: 3859563863669999932}
   - component: {fileID: 7508799086034100437}
   - component: {fileID: 1041805209404793162}
@@ -1044,6 +1045,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4024198958556270257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8096813426847549376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fef8106a5da0e58439e874011a402a2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopupRewardComponent
 --- !u!223 &3859563863669999932
 Canvas:
   m_ObjectHideFlags: 0
@@ -1064,7 +1077,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 2043815377
+  m_SortingLayerID: -1738142153
   m_SortingOrder: 15
   m_TargetDisplay: 0
 --- !u!114 &7508799086034100437

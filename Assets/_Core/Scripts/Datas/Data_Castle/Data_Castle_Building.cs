@@ -57,7 +57,7 @@ public class Data_Castle_Building
                 DataManager.castle.UpdateCastleData(castleData);
             }
 
-            Signal.instance.StopCaslteBuildingUpgrade.Emit(castleData);
+            Signal.instance.StopCaslteBuildingUpgrade.Emit(castleData.DeepClone());
             return;
         }
         // 정지된 상태였다면 남은시간을 없애주자
@@ -101,7 +101,7 @@ public class Data_Castle_Building
 
         PopupManager.instance.AlertShow($"건물 업그레이드 완료: [{TableManager.stringTable.GetString($"CASTLE_OBJECT_{_objectType.ToString().ToUpper()}")}]");
 
-        castleData = CompleteUpgrade(_objectType);
+        castleData = CompleteUpgrade(_objectType).DeepClone();
         Signal.instance.CompleteCaslteBuildingUpgrade.Emit(castleData);
 
         DataManager.castle.OnUpdateClaim();

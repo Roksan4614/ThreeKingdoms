@@ -34,9 +34,11 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         m_regionData = _regionData;
         m_regionData.SetActiveName(false);
 
+        var addPos = _regionData.heroComponent.move.isFlip ? Vector3.zero : Vector3.one * 0.2f;
+
         m_prevPos = m_regionData.rt.position;
         //m_regionData.heroComponent.anim.Play(CharacterAnimType.Walk);
-        m_regionData.rt.DOMove(m_element.posCharacter.position, 0.2f).Forget();
+        m_regionData.rt.DOMove(m_element.posCharacter.position + addPos, 0.2f).Forget();
         m_regionData.rt.DOScale(Vector3.one, 0.2f).Forget();//.OnComplete(() => m_regionData.heroComponent.anim.Play(CharacterAnimType.Idle)).Forget();
 
         //await UniTask.WaitForSeconds(.1f);
@@ -44,15 +46,15 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         gameObject.SetActive(true);
         //Utils.SetActivePunch(m_element.panel, true);
 
-        var isFlipPrev = _regionData.heroComponent.move.isFlip;
-        _regionData.heroComponent.move.SetFlip(true);
+        //var isFlipPrev = ;
+        //_regionData.heroComponent.move.SetFlip(true);
 
         SetRegionData();
 
         await UniTask.WaitForSeconds(0.2f);
 
         await UniTask.WaitUntil(() => gameObject.activeSelf == false);
-        _regionData.heroComponent.move.SetFlip(isFlipPrev);
+        //_regionData.heroComponent.move.SetFlip(isFlipPrev);
         _regionData.SetActiveName(true);
 
         //await UniTask.WaitForSeconds(0.1f);

@@ -7,9 +7,9 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
 {
     public bool Open(Table_StoryMode_Node.TableStoryModeNodeData _nodeData)
     {
-        gameObject.SetActive(_nodeData.isActive);
+        gameObject.SetActive(_nodeData?.isActive ?? false);
 
-        if (_nodeData.isActive == false)
+        if (gameObject.activeSelf == false)
             return false;
 
         if (DataManager.storyMode.lastHistory.key == _nodeData.node_key)

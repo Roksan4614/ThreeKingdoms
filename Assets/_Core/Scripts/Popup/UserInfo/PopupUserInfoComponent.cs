@@ -92,7 +92,7 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
 
 }
 
-public struct UserInfoData
+public class UserInfoData
 {
     public int uid;
     public string nickname;

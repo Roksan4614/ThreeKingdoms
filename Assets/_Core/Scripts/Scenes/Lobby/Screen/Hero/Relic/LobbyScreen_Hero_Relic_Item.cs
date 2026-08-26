@@ -11,7 +11,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
 {
     protected HeroInfoData m_heroInfoData;
 
-    bool isRelicTab => m_heroInfoData.isActive;
+    bool isRelicTab => m_heroInfoData != null;
 
     async UniTask OnButtonAsync_Upgrade(UnityAction<HeroInfoData> _onCallback)
     {
@@ -50,8 +50,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
     {
         var myTreasureData = _dbBatchData.Where(x => x.key == _treasureData.key).FirstOrDefault();
 
-        m_heroInfoData = new();
-        m_heroInfoData.skin = _treasureData.key;
+        m_heroInfoData = new(_treasureData.key);
         m_element.btn_select.interactable = m_heroInfoData.isMine = _treasureData.key.IsActive();
         m_heroInfoData.isBatch = m_heroInfoData.isMine && myTreasureData.isBatch;
 

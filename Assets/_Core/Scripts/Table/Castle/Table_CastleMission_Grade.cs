@@ -10,7 +10,7 @@ public class Table_CastleMission_Grade : BaseTable<GradeType, TableCastleMission
     }
 }
 
-public struct TableCastleMissionGradeData
+public class TableCastleMissionGradeData
 {
     public GradeType key;
 
@@ -18,7 +18,6 @@ public struct TableCastleMissionGradeData
     [JsonProperty] int mission_xp;
     [JsonProperty] int req_stat_value;
 
-    public bool isActive => duration_seconds > 0;
     public int durationSeconds => duration_seconds;
     public int missionXp => mission_xp;
     public int reqStatValue => req_stat_value;

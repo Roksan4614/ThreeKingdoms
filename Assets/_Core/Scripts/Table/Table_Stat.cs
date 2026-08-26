@@ -21,14 +21,14 @@ public class Table_Stat : BaseTable<string, TableStatData>
     }
 
     public TableStatData GetStatData(HeroInfoData _data)
-        => GetStatData(_data.key, _data.grade, _data.enchantLevel);
+        => _data == null ? null : GetStatData(_data.key, _data.grade, _data.enchantLevel);
 
     public TableStatData GetStatData(string _key, GradeType _grade = GradeType.Normal, int _encahntLevel = 0)
     {
         if (Exists(_key) == false)
             return default;
 
-        var data = m_dictionary[_key];
+        var data = m_dictionary[_key].DeepClone();
 
         if (_grade > GradeType.Normal || _encahntLevel > 0)
         {
@@ -43,7 +43,7 @@ public class Table_Stat : BaseTable<string, TableStatData>
 }
 
 [Serializable]
-public struct TableStatData
+public class TableStatData
 {
     public string key;
     [JsonProperty, SerializeField] float attack_power;
@@ -57,7 +57,6 @@ public struct TableStatData
     [JsonProperty, SerializeField] float life_steal;
     [JsonProperty, SerializeField] float boss_damage;
 
-    public bool isActive => key.IsActive();
     public float dashCooldown { get; set; }
     public float dashCooldownRate { get; set; }
     public long health { get; set; }

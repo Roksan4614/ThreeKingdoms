@@ -20,11 +20,9 @@ public enum ScenarioStartType
     Start, End,
 }
 
-public struct TableScenarioData
+public class TableScenarioData
 {
     public string key;
     public string fromStage;
     public string nextScenario;
-
-    public bool isActive => key.IsActive();
 }

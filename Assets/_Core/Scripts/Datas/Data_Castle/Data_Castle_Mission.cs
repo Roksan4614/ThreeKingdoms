@@ -8,7 +8,7 @@ using UnityEngine.Events;
 public class Data_Castle_Mission
 {
     List<CastleMissionData> m_data;
-    public IReadOnlyList<CastleMissionData> data => m_data;
+    //public IReadOnlyList<CastleMissionData> data => m_data.DeepClone();
 
     const string c_key = "pp_casltle_mission";
 
@@ -66,12 +66,21 @@ public class Data_Castle_Mission
         }
     }
 
+    public CastleMissionData GetMissionData(int _idx)
+        => m_data.DeepClone().Find(x => x.idx == _idx);
+
+    public CastleMissionData[] GetMissions(bool _isRunning)
+        => m_data.DeepClone().Where(x => (x.tickStart == 0) == (_isRunning == false)).ToArray();
+
+    public CastleMissionData[] GetFinishedMissions()
+        => m_data.DeepClone().Where(x => x.tickEnd > 0 && x.tickEnd < Utils.GetUTC().Ticks).ToArray();
+
     public void RefreshMission()
     {
         while (true)
         {
             var m = m_data.Find(x => x.tickStart == 0);
-            if (m.isActive == false)
+            if (m == null)
                 break;
 
             m_data.Remove(m);
@@ -85,10 +94,7 @@ public class Data_Castle_Mission
 
     public void AddNewMission(bool _isAutoSave, int _prevNumber)
     {
-        var newMission = TableManager.castleMisson.list.Where(x => m_data.Any(x => x.key.Equals(x.key) == false)).ToList().SortBy(x => Random.value)[0];
-
-        if (newMission.isActive == false)
-            newMission = TableManager.castleMisson.list.RandomFirst();
+        var newMission = TableManager.castleMisson.GetNewMission(m_data.Select(x => x.key).ToArray());
 
         var grade = GradeType.NONE + 1 + Random.Range(0, 3) * 2;
         CastleMissionData newData = new()
@@ -136,7 +142,7 @@ public class Data_Castle_Mission
         _onComplete(StatusType.Success);
     }
 
-    public async UniTask CompleteMissionAsync(UnityAction<StatusType, int> _onComplete, params CastleMissionData[] _missionDatas)
+    public async UniTask<List<ItemData>> CompleteMissionAsync(UnityAction<StatusType, int> _onComplete, params CastleMissionData[] _missionDatas)
     {
         // 모두 받기
         if (_missionDatas.Length == 0)
@@ -146,6 +152,8 @@ public class Data_Castle_Mission
 
         for (int i = 0; i < _missionDatas.Length; i++)
         {
+            //보상받기
+
             m_levelInfo.nowExp += _missionDatas[i].dbGradeData.missionXp;
             RemoveMission(_missionDatas[i].idx, false);
         }
@@ -158,7 +166,23 @@ public class Data_Castle_Mission
 
         _onComplete(StatusType.Success, m_levelInfo.nowExp - prevExp);
 
-        await UniTask.Yield();
+        await UniTask.NextFrame();
+
+        List<ItemData> rewards = new();
+        foreach (var m in _missionDatas)
+        {
+            var reward = TableManager.castleMissonReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
+            foreach (var r in reward)
+            {
+                var item = TableManager.item.GetItemData(r.reward_key, Random.Range(r.reward_min, r.reward_max + 1));
+                item.value = r.reward_value;
+                item.isNew = true;
+
+                rewards.Add(item);
+            }
+        }
+
+        return rewards;
     }
 
     public async UniTask<StatusType> TimerBonusAsync(int _idx, float _bonusSeconds)
@@ -195,7 +219,7 @@ public class Data_Castle_Mission
     {
         var d = m_data.Find(x => x.heroes.Contains(_heroKey));
 
-        return d.isActive ? d.idx : -1;
+        return d == null ? -1 : d.idx;
     }
 
     public int GetTotalCoreStat(CastleMissionData _missionData)
@@ -206,7 +230,9 @@ public class Data_Castle_Mission
         for (int i = 0; i < _missionData.heroes.Count; i++)
         {
             var heroData = DataManager.userInfo.GetHeroInfoData(_missionData.heroes[i]);
-            totalStat += heroData.resultCoreStat[coreStat];
+
+            if (heroData.IsActive())
+                totalStat += heroData.resultCoreStat[coreStat];
         }
         return totalStat;
     }
@@ -232,7 +258,7 @@ public class Data_Castle_Mission
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public struct CastleMissionData
+    public class CastleMissionData
     {
         [JsonProperty] public int idx;
         [JsonProperty] public string key;
@@ -241,17 +267,19 @@ public class Data_Castle_Mission
         [JsonProperty] public long tickStart;
         [JsonProperty] public long tickEnd;
         [JsonProperty] public float percentStat;
+        [JsonProperty] public List<string> rewardKey;
+
+        public bool isRunning => tickStart > 0;
+        public bool isFinished => Utils.GetUTC().Ticks >= tickEnd;
 
         public TableCastleMissionData dbData
             => TableManager.castleMisson.Get(key);
-
         public TableCastleMissionGradeData dbGradeData
             => TableManager.castleMissonGrade.Get(grade);
 
         //public IReadOnlyList<TableCastleMissionRewardData> dbRewardData
         //    => TableManager.castleMissonReward.GetReward(this);
 
-        public bool isActive => key.IsActive();
         //TODO : stringtable 에서 가져와야 해.
         string missionName => TableManager.stringMission.GetString(key.ToUpper() + "_TITLE");
         public string missionNameStat => $"[{TableManager.stringTable.GetString($"CORESTAT_{dbData.statType.ToString().ToUpper()}")}] {missionName}";
@@ -262,7 +290,7 @@ public class Data_Castle_Mission
         public int durationSeconds => dbGradeData.durationSeconds;
     }
 
-    public struct CastleMissionLevelInfoData
+    public class CastleMissionLevelInfoData
     {
         public int level;
         public int nowExp;

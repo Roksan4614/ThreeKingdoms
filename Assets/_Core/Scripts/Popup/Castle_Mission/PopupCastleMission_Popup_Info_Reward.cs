@@ -18,7 +18,7 @@ public class PopupCastleMission_Popup_Info_Reward : MonoBehaviour, IValidatable
     public void SetTitleResult()
     {
         m_element.baseRewardItem.SetTitle(true, "확정_보상");
-        m_rewardRandom.SetTitle(false, "획득_보상");
+        m_rewardRandom.SetTitle(false, "획득_가능_보상");
     }
 
     public void SetRewardList(Data_Castle_Mission.CastleMissionData _missionData, float _percent)
@@ -26,18 +26,20 @@ public class PopupCastleMission_Popup_Info_Reward : MonoBehaviour, IValidatable
         var dbGroup = TableManager.castleMissonReward.GetReward(_missionData).GroupBy(x => x.unlock_pct == 0).ToDictionary(x => x.Key, x => x);
 
         // 확정 보상
-        m_rewardFixed.SetReward((int)_percent, dbGroup[true].ToArray());
+        m_rewardFixed.SetReward(100, dbGroup[true].ToArray());
 
         // 잠긴 보상
-        m_rewardRandom.SetReward((int)_percent,
+        m_rewardRandom.SetReward((int)_percent, 
             dbGroup[false].OrderByDescending(x => x.unlock_pct <= _percent).ThenByDescending(x => x.unlock_pct).ToArray());
     }
 
     public void SetReward_ResultFixed(params TableCastleMissionRewardData[] _rewardData)
         => m_rewardFixed.SetReward(100, _rewardData);
-    public void SetReward_ResultRandom(params TableItemData[] _rewardData)
-        => m_rewardFixed.SetReward_Result(_rewardData);
+    public void SetReward_ResultRandom(params TableCastleMissionRewardData[] _rewardData)
+        => m_rewardRandom.SetReward(100, _rewardData);
 
+    //public void SetReward_ResultRandom(params ItemData[] _rewardData)
+    //    => m_rewardFixed.SetReward_Result(_rewardData);
 
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);

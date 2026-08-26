@@ -55,7 +55,7 @@ public class Table_FriendShip : BaseTable<string, TableFriendShipOriginData>
     }
 }
 
-public struct TableFriendShipOriginData
+public class TableFriendShipOriginData
 {
     public string key;
     public string heroes;
@@ -63,7 +63,7 @@ public struct TableFriendShipOriginData
     public float value;
 }
 
-public struct TableFriendShipData
+public class TableFriendShipData
 {
     public string key;
     public string heroes;

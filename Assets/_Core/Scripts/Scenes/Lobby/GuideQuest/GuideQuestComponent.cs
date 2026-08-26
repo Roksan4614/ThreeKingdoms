@@ -279,7 +279,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
     {
         await UniTask.NextFrame();
 
-        List<TableItemData> rewards = new();
+        List<ItemData> rewards = new();
         var tableData = TutorialManager.data.tableData;
 
         rewards.Add(TableManager.item.GetItemData(tableData.reward_item, tableData.reward_count));

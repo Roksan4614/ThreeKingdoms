@@ -33,7 +33,7 @@ public class LobbyScreen_Hero_Collection_Item : MonoBehaviour, IValidatable
             var item = isNew ? Instantiate(m_baseIcon, parent) : parent.GetChild(i).GetComponent<HeroIconComponent>();
 
             HeroInfoData heroInfoData = new(_data.splitHero[i], _data.grade[i]);
-            heroInfoData.isMine = DataManager.userInfo.GetHeroInfoData(heroInfoData.key).isMine;
+            heroInfoData.isMine = DataManager.userInfo.GetHeroInfoData(heroInfoData.key)?.isMine ?? false;
 
             item.SetHeroData(heroInfoData, (_icon, _) => OnButtonAsync_Hero(_icon.data).Forget(), null, true);
             item.gameObject.SetActive(true);
@@ -63,9 +63,12 @@ public class LobbyScreen_Hero_Collection_Item : MonoBehaviour, IValidatable
     {
         var popup = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
 
-        _heroInfoData = DataManager.userInfo.GetHeroInfoData(_heroInfoData.key);
+        var userHeroData = DataManager.userInfo.GetHeroInfoData(_heroInfoData.key);
 
-        popup.SetHeroInfoDataAsync(_heroInfoData, _heroInfoData.isMine == false).Forget();
+        if (userHeroData.IsActive())
+            _heroInfoData = userHeroData;
+
+        popup.SetHeroInfoDataAsync(_heroInfoData, _heroInfoData == null ? true : _heroInfoData.isMine == false).Forget();
     }
 
     #region VALIDATE

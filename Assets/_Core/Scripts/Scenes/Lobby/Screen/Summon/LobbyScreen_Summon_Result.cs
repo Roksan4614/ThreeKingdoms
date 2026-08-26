@@ -90,7 +90,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
     async UniTask Request_Summon(RegionType _regionType, string _hostKey)
     {
-        List<TableItemData> result = new();
+        List<ItemData> result = new();
 
         #region 영웅 불러오기
         {
@@ -134,9 +134,9 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             {
                 // 호스트 넣기
                 {
-                    TableItemData itemData = TableManager.item.Get(ItemType.Dedicated_Soul_Stone);
+                    ItemData itemData = TableManager.item.GetItemData(ItemType.Dedicated_Soul_Stone,
+                        TableManager.hero.GetNeedSoul(GradeType.Normal)                        );
                     itemData.value = _hostKey;
-                    itemData.count = TableManager.hero.GetNeedSoul(GradeType.Normal);
                     itemData.category = ItemCategoryType.Soul_Stone;
                     result.Add(itemData);
                     i++;
@@ -148,7 +148,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     if (UnityEngine.Random.value > m_element.dbRate[i])
                         break;
 
-                    TableItemData itemData = TableManager.item.Get(ItemType.Dedicated_Soul_Stone);
+                    ItemData itemData = TableManager.item.GetItemData(ItemType.Dedicated_Soul_Stone);
 
                     var randomIdx = UnityEngine.Random.Range(0, dbHeroes.Count);
                     itemData.value = dbHeroes[randomIdx].key;
@@ -166,7 +166,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
             for (; i < 10; i++)
             {
-                TableItemData itemData = TableManager.item.Get(UnityEngine.Random.value > 0.5f ? ItemType.Gold : ItemType.Rice);
+                ItemData itemData = TableManager.item.GetItemData(UnityEngine.Random.value > 0.5f ? ItemType.Gold : ItemType.Rice);
                 itemData.value = itemData.key.ToString();
                 itemData.count = UnityEngine.Random.Range(1, 10) * 10;
                 result.Add(itemData);
@@ -180,7 +180,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             {
                 if (x.key == ItemType.Dedicated_Soul_Stone)
                     // 새 영웅일 경우 맨 뒤로
-                    return _hostKey.Equals(x.value) ? 1 : DataManager.userInfo.GetHeroInfoData(x.value).isMine ? 2 : 3;
+                    return _hostKey.Equals(x.value) ? 1 : DataManager.userInfo.GetHeroInfoData(x.value)?.isMine ?? false ? 2 : 3;
                 else
                     return 0;
             })
@@ -194,7 +194,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         await AddressableManager.instance.Load_HeroIconAsync(keyHero);
         SetItemDataAsync(result).Forget();
     }
-    async UniTask SetItemDataAsync(List<TableItemData> _result)
+    async UniTask SetItemDataAsync(List<ItemData> _result)
     {
         long totalGold = 0, totalRice = 0;
 
@@ -216,7 +216,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     resultSoul[data.value] += data.count;
                 else
                 {
-                    data.isNew = DataManager.userInfo.GetHeroInfoData(data.value).isMine == false;
+                    data.isNew = DataManager.userInfo.GetHeroInfoData(data.value) == null;
                     resultSoul.Add(data.value, data.count);
 
                     m_itemComps[i].SetActiveBadge(data.isNew);
@@ -276,7 +276,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                 var itemData = m_itemComps[idx].data;
                 if (itemData.key == ItemType.Dedicated_Soul_Stone)
                 {
-                    if (DataManager.userInfo.GetHeroInfoData(itemData.value).isActive == false)
+                    if (DataManager.userInfo.GetHeroInfoData(itemData.value).IsActive() == false)
                         m_itemComps[idx].SetSoulCount(0);
                 }
 
@@ -392,7 +392,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 
             var heroInfoData = DataManager.userInfo.GetHeroInfoData(itemComp.data.value);
 
-            if (heroInfoData.isActive == false)
+            if (heroInfoData.IsActive() == false)
                 heroInfoData = new(itemComp.data.value, grade);
 
             await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true, true);
@@ -468,7 +468,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         // 밖에서 호스트가 날라와서 칼질하는 시간을 벌자
         await UniTask.WaitForSeconds(.2f);
 
-        Dictionary<ItemType, TableItemData> result = new();
+        Dictionary<ItemType, ItemData> result = new();
         Dictionary<string, int> resultSoul = new();
 
         for (int i = 0; i < 10; i++)

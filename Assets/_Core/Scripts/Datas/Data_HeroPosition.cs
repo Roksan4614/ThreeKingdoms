@@ -107,7 +107,7 @@ public enum HeroPositionType
     MAX
 }
 
-public struct TableHeroPositionData
+public class TableHeroPositionData
 {
     public CategoryType_HeroPositon category;
     public HeroPositionType position;
@@ -117,7 +117,7 @@ public struct TableHeroPositionData
 
 
 [System.Serializable]
-public struct HeroPositionData
+public class HeroPositionData
 {
     public HeroPositionType key;
     public Dictionary<BattleStatType, float> bonusStat;

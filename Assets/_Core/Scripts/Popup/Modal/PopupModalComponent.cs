@@ -60,13 +60,19 @@ public class PopupModalComponent : BasePopupComponent
         var hw = m_element.rt.rect.width * 0.5f;
         var anchPos = m_element.rt.anchoredPosition;
 
-        if (anchPos.x < Screen.width * rateW * -0.5f + hw)
-            anchPos.x = Screen.width * rateW * -0.5f + hw;
-        else if (anchPos.x > Screen.width * rateW * 0.5f - hw)
-            anchPos.x = Screen.width * rateW * 0.5f - hw;
+        var posX = Screen.width * rateW * -0.5f + hw + 4;
+        if (anchPos.x < posX)
+            anchPos.x = posX;
+        else
+        {
+            posX = Screen.width * rateW * 0.5f - hw - 4;
+            if (anchPos.x > posX)
+                anchPos.x = posX;
+        }
 
-        if (anchPos.y > Screen.safeArea.height * rateH * 0.5f - m_element.rt.rect.height)
-            anchPos.y = Screen.safeArea.height * rateH * 0.5f - m_element.rt.rect.height;
+        var posY = Screen.safeArea.height * rateH * 0.5f - m_element.rt.rect.height - 25;
+        if (anchPos.y > posY)
+            anchPos.y = posY;
 
         m_element.rt.anchoredPosition = anchPos;
     }
@@ -111,7 +117,7 @@ public class PopupModalComponent : BasePopupComponent
     #endregion VALIDATA
 
 
-    public struct ModalPopupData
+    public class ModalPopupData
     {
         public string content;
         public string confirm;

@@ -57,7 +57,7 @@ public class Table_Hero : BaseTable<string, TableHeroData>
 }
 
 [Serializable]
-public struct TableHeroData
+public class TableHeroData
 {
     public string key;
 
@@ -92,7 +92,6 @@ public struct TableHeroData
         percent_start_cooldown = percent_start_cooldown == 0 ? .8f : percent_start_cooldown;
     }
 
-    public bool isActive => key.IsActive();
     public float percentStartCooldown => percent_start_cooldown;
     public float skillCooltime => skill_cooltime;
 
@@ -102,7 +101,7 @@ public struct TableHeroData
 }
 
 [JsonObject(MemberSerialization.OptIn)]
-public struct HeroInfoData
+public class HeroInfoData
 {
     [JsonProperty] public string key;
     [JsonProperty] public string skin;
@@ -114,13 +113,14 @@ public struct HeroInfoData
     [JsonProperty] public bool isBatch;
     [JsonProperty] public bool isMain;
     [JsonProperty] public bool isMine;
-    [JsonProperty] public TableStatData? statData;
+    [JsonProperty] public TableStatData statData;
 
     [JsonProperty] HeroClassType m_classType;
     [JsonProperty] RegionType m_regionType;
     public HeroClassType classType => m_classType;
     public RegionType regionType => m_regionType;
 
+    public HeroInfoData() { }
     public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, HeroPositionType _heroPositionType = HeroPositionType.NONE, string _skin = null,
         int _soulCount = 0, int _enchantLevel = 0, int _relicLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true, int _sortIdx = 0, TableStatData? _statData = null)
     {
@@ -139,14 +139,17 @@ public struct HeroInfoData
 
         var db = TableManager.hero.Get(_key);
 
-        if (db.isActive == false)
+        if (db == null)
+        {
             IngameLog.Add("HERO INFO DATA FAILED: " + _key);
-
-        m_classType = db.classType;
-        m_regionType = db.regionType;
+        }
+        else
+        {
+            m_classType = db.classType;
+            m_regionType = db.regionType;
+        }
     }
 
-    public bool isActive => key.IsActive();
     public string regionKey => $"{m_regionType}_{key}".ToUpper();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
     public string gradeName => TableManager.stringTable.GetGradeType(grade);
@@ -195,5 +198,5 @@ public struct HeroInfoData
     }
 
     public TableStatData resultStat
-        => statData == null ? DataManager.stat.GetResultStat(this) : statData.Value;
+        => statData ?? DataManager.stat.GetResultStat(this);
 }

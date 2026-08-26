@@ -50,7 +50,7 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
             SetCountText();
     }
 
-    List<TableItemData> m_rewards;
+    List<ItemData> m_rewards;
     void SetReward()
     {
         m_rewards = TableManager.dailyDungeonGrade.GetReward(
@@ -111,7 +111,7 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
         for (int i = 0; i < m_rewards.Count; i++)
             tasks.Add(RewardWorker.instance.RunAsync(m_element.pReward.GetChild(i).position, _itemData: m_rewards[i]));
 
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
 
         await Utils.SetActivePunchAsync(m_element.panel, false);
 

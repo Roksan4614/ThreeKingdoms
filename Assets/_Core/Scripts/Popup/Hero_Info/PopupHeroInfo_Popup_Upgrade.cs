@@ -96,8 +96,17 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         await UniTask.WaitForEndOfFrame();
 
         var alertMessage = KoreanHelper.AppendJosa(m_heroInfoData.name, KoreanHelper.JosaType.EulLeul, "[{0}]");
-        alertMessage += KoreanHelper.AppendJosa(m_heroInfoData.gradeName, KoreanHelper.JosaType.EuroroRo, " [{0}]");
-        alertMessage += "_승급합니다.";
+
+        bool isUpgradeType = m_element.parentUpgrade.gameObject.activeSelf;
+        if (isUpgradeType)
+        {
+            alertMessage += KoreanHelper.AppendJosa(m_heroInfoData.gradeName, KoreanHelper.JosaType.EuroroRo, " [{0}]");
+            alertMessage += "_승급합니다.";
+        }
+        else
+        {
+            alertMessage += $"+{m_heroInfoData.enchantLevel}로 강화합니다.";
+        }
 
         PopupManager.instance.AlertShow(alertMessage);
         DataManager.userInfo.UpdateUpgrade(m_heroInfoData);
@@ -120,7 +129,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
     /// </summary>
     /// <param name="_isUpgrade">Upgrade: true / Enchant: false</param>
     /// <returns></returns>
-    public async UniTask OpenAsyn(HeroInfoData _heroInfoData, bool _isUpgrade)
+    public async UniTask OpenAsync(HeroInfoData _heroInfoData, bool _isUpgrade)
     {
         m_prevHeroData = m_heroInfoData = _heroInfoData;
 

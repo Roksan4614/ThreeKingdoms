@@ -34,8 +34,6 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
     public void Open(Data_Castle_Mission.CastleMissionData _missionData)
     {
         m_missionData = _missionData;
-        m_missionData.heroes = new();
-        m_missionData.heroes.AddRange(_missionData.heroes);
 
         isUpdated = false;
         statusType = StatusType.Wait;

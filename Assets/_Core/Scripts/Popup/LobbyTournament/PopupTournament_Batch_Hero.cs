@@ -12,17 +12,38 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 {
     bool m_isAttackType;
 
-    bool m_isUpdated;
-    bool isUpdated
+    public struct BatchData
     {
-        get => m_isUpdated;
+        public TournamentBatchData batch;
+        public bool isUpdated;
+    }
+
+    BatchData m_batchData_Attack;
+    BatchData m_batchData_Defence;
+
+    TournamentBatchData batchData
+    {
+        get => m_isAttackType ? m_batchData_Attack.batch : m_batchData_Defence.batch;
         set
         {
-            if (value == true && m_isAttackType == true)
-                isNeedUpdateClose = true;
-            m_isUpdated = value;
+            if (m_isAttackType)
+                m_batchData_Attack.batch = value;
+            else
+                m_batchData_Defence.batch = value;
         }
     }
+
+    bool isUpdated
+    {
+        set
+        {
+            if (m_isAttackType)
+                m_batchData_Attack.isUpdated = value;
+            else
+                m_batchData_Defence.isUpdated = value;
+        }
+    }
+
 
     public bool isNeedUpdateClose { get; set; }
 
@@ -74,10 +95,10 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         m_isStarted = true;
 
         m_isAttackType = false;
-        OnButtonAsync_Type(true).Forget();
+        OnButton_Type(true);
 
-        m_elementTournament.btnAttack.onClick.AddListener(() => OnButtonAsync_Type(true).Forget());
-        m_elementTournament.btnDefence.onClick.AddListener(() => OnButtonAsync_Type(false).Forget());
+        m_elementTournament.btnAttack.onClick.AddListener(() => OnButton_Type(true));
+        m_elementTournament.btnDefence.onClick.AddListener(() => OnButton_Type(false));
 
         var parentBatchAction = m_batchAction[0].btnSlot.transform.parent;
         parentBatchAction.ForceRebuildLayout();
@@ -97,41 +118,51 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
     protected override void OnEnable()
     {
         if (m_isStarted == true)
-        {
             m_element.scroll.content.anchoredPosition = Vector2.zero;
-            //if (m_isNeedUpdateLayout)
-            //    TournamentWorker.instance.UpdateHero();
-
-            //OnButtonAsync_Type(m_isAttackType, m_isNeedUpdateLayout).Forget();
-        }
-
-        //isUpdated = false;
     }
 
     protected override void UpdateHeroes()
     {
-        for (int i = 0; i < m_batchData.heroes.Count; i++)
+        for (int i = 0; i < batchData.heroes.Count; i++)
         {
-            var data = m_batchData.heroes[i];
+            var data = batchData.heroes[i];
 
             var newData = DataManager.userInfo.GetHeroInfoData(data.key);
             data.grade = newData.grade;
             data.enchantLevel = newData.enchantLevel;
-            m_batchData.heroes[i] = data;
+            batchData.heroes[i] = data;
         }
 
-        m_elementTournament.power.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+        m_elementTournament.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
         SetLayout_List();
     }
 
-    public async UniTask CloseAsync(UnityAction _callback)
+    public async UniTask CloseAsync(bool _isSaveData, UnityAction _callback)
     {
-        if (isUpdated == true)
+        if (_isSaveData)
         {
-            await TournamentWorker.instance.API_UpdateTeamData(m_isAttackType, m_batchData);
-            isUpdated = false;
+            List<UniTask> tasks = new();
+            if (m_batchData_Attack.isUpdated == true)
+            {
+                tasks.Add(TournamentWorker.instance.API_UpdateTeamData(true, m_batchData_Attack.batch));
+                isNeedUpdateClose = true;
+            }
+            if (m_batchData_Defence.isUpdated == true)
+            {
+                tasks.Add(TournamentWorker.instance.API_UpdateTeamData(false, m_batchData_Defence.batch));
+                isNeedUpdateClose = true;
+            }
+
+            await UniTask.WhenAll(tasks.ToArray());
+        }
+        else if (m_batchData_Attack.isUpdated == true || m_batchData_Defence.isUpdated == true)
+        {
+            var status = await PopupManager.instance.OpenModalAsync("변경사항이_있습니다.\n닫겠습니까?");
+            if (status != StatusType.Success)
+                return;
         }
 
+        m_batchData_Attack.isUpdated = m_batchData_Defence.isUpdated = false;
         _callback();
 
         if (m_isAttackType == false)
@@ -144,36 +175,36 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
     public void StartAutoBatch()
     {
-        m_batchData.heroes.Clear();
-        m_batchData.heroes.AddRange(DataManager.userInfo.myHero
+        batchData.heroes.Clear();
+        batchData.heroes.AddRange(DataManager.userInfo.myHero
             .SortByDescending(x => x.power).Take(4).ToList());
 
         // 책사랑 궁수는 뒤로 보낼거야.
-        var backHeroes = m_batchData.heroes
+        var backHeroes = batchData.heroes
             .FindAll(x => x.classType == HeroClassType.Archer || x.classType == HeroClassType.Strategist)
             .SortByDescending(x => x.power);
         int idxHero = -1;
 
         UnityAction<string, int> actionUpdateData = (_key, _sortIdx) =>
         {
-            idxHero = m_batchData.heroes.FindIndex(x => x.key == _key);
-            var heroData = m_batchData.heroes[idxHero];
+            idxHero = batchData.heroes.FindIndex(x => x.key == _key);
+            var heroData = batchData.heroes[idxHero];
             heroData.isMain = false;
             heroData.sortIdx = _sortIdx;
             heroData.isBatch = true;
-            m_batchData.heroes[idxHero] = heroData;
+            batchData.heroes[idxHero] = heroData;
         };
 
         // 맨 앞에 장수 구할거야.
-        if (backHeroes.Count < m_batchData.heroes.Count)
+        if (backHeroes.Count < batchData.heroes.Count)
         {
-            var champions = m_batchData.heroes.FindAll(x => x.classType == HeroClassType.Champion);
+            var champions = batchData.heroes.FindAll(x => x.classType == HeroClassType.Champion);
             HeroInfoData frontHero;
             if (champions.Count > 0)
                 frontHero = champions.SortByDescending(x => x.resultStat.healthMax)[0];
             else
             {
-                champions = m_batchData.heroes.FindAll(x => backHeroes.Any(y => y.key == x.key) == false).ToList();
+                champions = batchData.heroes.FindAll(x => backHeroes.Any(y => y.key == x.key) == false).ToList();
                 frontHero = champions.SortByDescending(x => x.resultStat.healthMax)[0];
             }
             actionUpdateData(frontHero.key, 1);
@@ -181,7 +212,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         //맨 뒤에 구하자
         if (backHeroes.Count == 0)
         {
-            var backHero = m_batchData.heroes.SortBy(x => x.resultStat.healthMax)[0];
+            var backHero = batchData.heroes.SortBy(x => x.resultStat.healthMax)[0];
             actionUpdateData(backHero.key, 7);
         }
         if (backHeroes.Count == 1)
@@ -201,7 +232,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
                 actionUpdateData(backHeroes[i].key, i == 0 ? 6 : i == 1 ? 7 : i == 2 ? 8 : 4);
         }
 
-        var middleHeroes = m_batchData.heroes.FindAll(x => x.sortIdx == 0);
+        var middleHeroes = batchData.heroes.FindAll(x => x.sortIdx == 0);
         if (middleHeroes.Count == 1)
             actionUpdateData(middleHeroes[0].key, 4);
         else
@@ -210,38 +241,31 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
                 actionUpdateData(middleHeroes[i].key, i == 0 ? 3 : 5);
         }
 
-        m_batchData.heroes = m_batchData.heroes.SortBy(x => x.sortIdx);
+        batchData.heroes = batchData.heroes.SortBy(x => x.sortIdx);
 
-        m_elementTournament.panelBatch.SetBatchDataAsync(m_batchData).Forget();
-        m_elementTournament.power.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+        m_elementTournament.panelBatch.SetBatchDataAsync(batchData).Forget();
+        m_elementTournament.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
 
         SetLayout_List();
         isUpdated = true;
     }
 
-    public async UniTask OnButtonAsync_Type(bool _isAttackType, bool _isForce = false)
+    public void OnButton_Type(bool _isAttackType, bool _isForce = false)
     {
         if (m_isAttackType == _isAttackType && _isForce == false)
             return;
 
-        if (isUpdated == true)
-        {
-            isUpdated = false;
-            await TournamentWorker.instance.API_UpdateTeamData(m_isAttackType, m_batchData);
-        }
-
         m_isAttackType = TournamentWorker.instance.isAttackType = _isAttackType;
-
-        m_batchData = TournamentWorker.instance.GetBatchData(m_isAttackType);
+        batchData = TournamentWorker.instance.GetBatchData(m_isAttackType);
 
         m_elementTournament.btnAttack.SetDrawSelect(_isAttackType == true);
         m_elementTournament.btnDefence.SetDrawSelect(_isAttackType == false);
 
         m_myHero.Clear();
-        m_myHero.AddRange(m_batchData.heroes);
+        m_myHero.AddRange(batchData.heroes);
 
-        m_elementTournament.panelBatch.SetBatchDataAsync(m_batchData).Forget();
-        m_elementTournament.power.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+        m_elementTournament.panelBatch.SetBatchDataAsync(batchData).Forget();
+        m_elementTournament.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
 
         SetLayout_List();
     }
@@ -309,7 +333,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
             hero.transform.SetParent(m_elementTournament.panelBatch.GetSlot(m_actionData.idxEnter));
 
-            m_batchData = TournamentWorker.instance.ChangePosition(m_batchData, _idx, m_actionData.idxEnter); ;
+            batchData = TournamentWorker.instance.ChangePosition(batchData, _idx, m_actionData.idxEnter); ;
 
             SetLayout_List();
             isUpdated = true;
@@ -328,8 +352,6 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
     }
     #endregion ACTION_DATA
 
-    TournamentBatchData m_batchData;
-
     protected override void OnRightClick_List(HeroIconComponent _item)
     {
         ResetActiveButton_List();
@@ -338,19 +360,19 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         // 이미 출진 중이라면?
         if (itemData.isBatch == true)
         {
-            if (m_batchData.heroes.Count == 1)
+            if (batchData.heroes.Count == 1)
             {
                 PopupManager.instance.AlertShow("최소_1명은_배치해야_합니다.");
                 return;
             }
 
-            var idx = m_batchData.heroes.FindIndex(x => x.skin == _item.data.skin);
-            m_batchData.heroes.RemoveAt(idx);
+            var idx = batchData.heroes.FindIndex(x => x.skin == _item.data.skin);
+            batchData.heroes.RemoveAt(idx);
         }
         // 새로 출진하는 거라면
         else
         {
-            if (m_batchData.heroes.Count == 4)
+            if (batchData.heroes.Count == 4)
             {
                 PopupManager.instance.AlertShow("최대_4명까지_배치할_수_있습니다.");
                 return;
@@ -358,17 +380,18 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
             itemData.isMain = false;
             itemData.isBatch = true;
-            itemData.sortIdx = TournamentWorker.instance.GetPositionByClass(m_batchData, itemData.classType);
+            itemData.sortIdx = TournamentWorker.instance.GetPositionByClass(batchData, itemData.classType);
 
-            m_batchData.heroes.Add(itemData);
+            batchData.heroes.Add(itemData);
         }
 
-        m_batchData.heroes = m_batchData.heroes.SortBy(x => x.sortIdx);
+        batchData.heroes = batchData.heroes.SortBy(x => x.sortIdx);
 
-        m_elementTournament.panelBatch.SetBatchDataAsync(m_batchData).Forget();
-        m_elementTournament.power.text = m_batchData.totalPower.AmountKMBT(_isMBT: true);
+        m_elementTournament.panelBatch.SetBatchDataAsync(batchData).Forget();
+        m_elementTournament.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
 
         SetLayout_List();
+
         isUpdated = true;
         return;
     }
@@ -379,8 +402,8 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             return;
 
         List<HeroInfoData> lstHero = new();
-        lstHero.AddRange(m_batchData.heroes);
-        lstHero.AddRange(DataManager.userInfo.myHero.Where(my => m_batchData.heroes.Any(x => x.skin == my.skin) == false).ToList());
+        lstHero.AddRange(batchData.heroes);
+        lstHero.AddRange(DataManager.userInfo.myHero.Where(my => batchData.heroes.Any(x => x.skin == my.skin) == false).ToList());
 
         var sortData = DataManager.userInfo.GetHeroSortData(lstHero);
 
@@ -393,7 +416,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
             var data = sortData[i];
 
-            if (m_batchData.heroes.FindIndex(x => x.key == sortData[i].key) == -1)
+            if (batchData.heroes.FindIndex(x => x.key == sortData[i].key) == -1)
                 data.isBatch = false;
 
             m_itemList[idx].UpdateHeroInfo(data);
@@ -409,6 +432,12 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             if (idx == -1)
                 m_itemList[i].element.panel.gameObject.SetActive(false);
         }
+    }
+
+    protected override void OnButton_ListHeroRemove(HeroIconComponent _item)
+    {
+        OnRightClick_List(_item);
+        _item.SetActiveButton(false);
     }
 
     public override void OnManualValidate()

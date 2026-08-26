@@ -44,6 +44,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         TimeManager.instance.Release();
         AdsManager.instance.Release();
         TournamentWorker.instance.Release();
+        InventoryWorker.instance.Release();
     }
 
     public async UniTask InitializeAsync()
@@ -230,7 +231,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
                 for (var i = 0; i < tasks.Length; i++)
                     tasks[i] = Addressables.GetDownloadSizeAsync(locations[i]).ToUniTask();
 
-                long[] sizes = await UniTask.WhenAll(tasks);
+                long[] sizes = await UniTask.WhenAll(tasks.ToArray());
 
                 foreach (var size in sizes)
                     downloadData.totalFileSize += size;
@@ -244,7 +245,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
                 for (int i = 0; i < locations.Count; i++)
                     tasks.Add(LoadAssetParallel(locations[i]));
 
-                await UniTask.WhenAll(tasks);
+                await UniTask.WhenAll(tasks.ToArray());
             }
 
             async UniTask LoadAssetParallel(IResourceLocation _location)

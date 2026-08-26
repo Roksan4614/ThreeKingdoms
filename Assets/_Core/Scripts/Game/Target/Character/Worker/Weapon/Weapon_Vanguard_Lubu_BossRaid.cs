@@ -144,8 +144,9 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         m_skillType = BossRaidSkillType_LuBu.Jump;
 
-        m_owner.move.MoveStop();
+        m_owner.attack.SetType_UseSkill(true);
         var hashDebuff = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
+        m_owner.move.MoveStop();
 
         // 가운데로 대쉬함 하자
         {
@@ -263,6 +264,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         m_element.warning_Circle.SetActive(false);
 
+        m_owner.attack.SetType_UseSkill(false);
         m_owner.buff.Remove(hashDebuff);
 
         m_skillType = BossRaidSkillType_LuBu.NONE;
@@ -276,6 +278,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         var token = m_cts.Token;
         await UniTask.NextFrame(token);
 
+        m_owner.attack.SetType_UseSkill(true);
         m_owner.move.MoveStop();
         {
             Vector3 targetPos = m_owner.position;
@@ -350,6 +353,8 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         await UniTask.WaitForSeconds(.5f, cancellationToken: token);
 
+        m_owner.attack.SetType_UseSkill(false);
+
         // 말 내리기
         m_element.mount.SetMount(m_owner, false);
 
@@ -366,6 +371,8 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
         if (m_cts == null)
             return;
 
+        m_owner.attack.SetType_UseSkill(true);
+
         var token = m_cts.Token;
         while (m_owner.target.nearestEnemy == null)
         {
@@ -378,20 +385,23 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
         m_skillType = BossRaidSkillType_LuBu.Swing;
 
-        m_owner.move.MoveStop();
         var hashNoDie = m_owner.buff.Add(BuffType.BUFF_NO_DIE);
         var hashDebuff = m_owner.buff.Add(BuffType.DEBUFF_NO_MOVE);
+        m_owner.move.MoveStop();
+        IngameLog.Add("MoveStop Start");
 
         //기모으기는 1초
         m_element.warning_Circle.transform.position = m_owner.position;
         m_element.warning_Circle.transform.localScale = new Vector3(3.571428f, 3.571428f, 1);
         m_element.warning_Circle.ShowAsync(1, token).Forget();
         m_owner.anim.Play(CharacterAnimType.Skill);
+        IngameLog.Add("PLAY SKILL");
 
         await UniTask.NextFrame(token);
 
         await UniTask.WaitForSeconds(m_owner.anim.GetStateInfo().length, cancellationToken: token);
 
+        m_owner.attack.SetType_UseSkill(false);
         m_owner.buff.Remove(BuffType.DEBUFF_NO_MOVE, hashDebuff);
         m_owner.buff.Remove(BuffType.BUFF_NO_DIE, hashNoDie);
         m_skillType = BossRaidSkillType_LuBu.NONE;

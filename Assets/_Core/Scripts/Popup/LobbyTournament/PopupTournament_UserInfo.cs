@@ -34,7 +34,7 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
 
         m_element.toggleInfo.isOn = PPWorker.GetInt(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO, false) == 1;
 
-        m_batchData = _batchData.isActive ? _batchData : await TournamentWorker.instance.API_LoadUserInfoData(_uid);
+        m_batchData = _batchData == null ? await TournamentWorker.instance.API_LoadUserInfoData(_uid) : _batchData;
         await m_element.panelBatch.SetBatchDataAsync(m_batchData);
 
         SetTreasureAsync().Forget();

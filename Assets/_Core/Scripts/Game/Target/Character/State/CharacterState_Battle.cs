@@ -37,6 +37,8 @@ public class CharacterState_Battle : CharacterState
             // 공격 모션이면 기다려주자
             //await UniTask.WaitUntil(() => m_owner.anim.IsType(CharacterAnimType.Attack) == false, cancellationToken: token);
 
+            await UniTask.WaitUntil(() => m_owner.attack.isUseSkill == false, cancellationToken: token);
+
             // 대기 모션이 아니면 대기로 해주기.
             if (m_owner.attack.isAttackPush == false && m_owner.anim.IsType(CharacterAnimType.Idle) == false)
                 m_owner.anim.Play(CharacterAnimType.Idle);

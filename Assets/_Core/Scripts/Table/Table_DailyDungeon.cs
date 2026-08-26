@@ -9,9 +9,9 @@ public class Table_DailyDungeon_Grade : BaseTable<GradeType, TableDailyDungeonGr
         SetDictionary(x => x.dungeon_boss_grade);
     }
 
-    public List<TableItemData> GetReward(HeroClassType _heroCalssType, GradeType _gradeType, float _percent)
+    public List<ItemData> GetReward(HeroClassType _heroCalssType, GradeType _gradeType, float _percent)
     {
-        List<TableItemData> result = null;
+        List<ItemData> result = null;
 
         var grade = GradeType.NONE + 1;
         for (; grade <= _gradeType; grade++)
@@ -62,7 +62,7 @@ public class Table_DailyDungeon_Grade : BaseTable<GradeType, TableDailyDungeonGr
     }
 }
 
-public struct TableDailyDungeonGradeData
+public class TableDailyDungeonGradeData
 {
     public GradeType dungeon_boss_grade;
     public float hp_mul;
@@ -74,8 +74,8 @@ public struct TableDailyDungeonGradeData
     public int time_stone_count;
 
 
-    List<TableItemData> m_rewards;
-    public List<TableItemData> GetReward(HeroClassType _classType, bool _isWithCount)
+    List<ItemData> m_rewards;
+    public List<ItemData> GetReward(HeroClassType _classType, bool _isWithCount)
     {
         if (m_rewards == null)
         {
@@ -117,7 +117,7 @@ public class Table_DailyDungeon_Boss : BaseTable<WeekdayType, TableDailyDungeonB
     }
 }
 
-public struct TableDailyDungeonBossData
+public class TableDailyDungeonBossData
 {
     public WeekdayType weekday;
     public HeroClassType dungeon_boss_class;

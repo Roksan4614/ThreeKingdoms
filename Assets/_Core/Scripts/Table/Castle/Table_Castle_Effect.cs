@@ -18,7 +18,7 @@ public class Table_Castle_Effect : BaseTable<int, TableCastleEffectData>
         m_dictionary[_castleData.level].gold_storage_base ?? 0;
 }
 
-public struct TableCastleEffectData
+public class TableCastleEffectData
 {
     public int level;
 

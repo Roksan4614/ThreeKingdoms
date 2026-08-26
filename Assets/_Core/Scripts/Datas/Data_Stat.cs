@@ -13,12 +13,15 @@ public class Data_Stat
         tasks.Add(relic.InitializeAsync());
         tasks.Add(friendShip.InitializeAsync());
 
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
     }
 
     public TableStatData GetResultStat(HeroInfoData _heroInfoData)
     {
         var result = TableManager.statHero.GetStatData(_heroInfoData);
+
+        if (result == null)
+            result = new();
 
         // 내께 아니면 혹시 모르니 기본만..
         if (_heroInfoData.isMine == false)

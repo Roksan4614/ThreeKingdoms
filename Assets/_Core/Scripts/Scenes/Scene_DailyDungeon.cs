@@ -23,7 +23,7 @@ public class Scene_DailyDungeon : SceneBase
         tasks.Add(TeamManager.instance.SpawnUpdateAsync());
         tasks.Add(StageManager.instance.InitializeAsync_DailyDungeon());
 
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
 
         DataManager.dailyDungeon.Start();
 

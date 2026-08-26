@@ -39,7 +39,7 @@ public class CharacterComponent : TargetComponent
     public TableStatData stat => m_stat;
     public HeroInfoData info => m_info;
     public override bool isLive => gameObject != null && m_stat.health > 0;
-    public bool isMain => m_info.isMain;
+    public bool isMain => m_info != null && m_info.isMain;
     public FactionType factionType => m_faction;
     public TeamPositionType teamPosition { get; private set; } = TeamPositionType.NONE;
     public Vector3 position { get => transform.position; set => transform.position = value; }
@@ -140,7 +140,7 @@ public class CharacterComponent : TargetComponent
         m_info = new(_key, _isMain: true, _isMine: false);
         m_stat = DataManager.stat.GetResultStat(m_info);
 
-        if (m_stat.isActive == false)
+        if (m_stat == null)
             m_stat.SetDefault();
 
         SetFaction(_faction);
@@ -149,7 +149,7 @@ public class CharacterComponent : TargetComponent
 
     public void SlotUpdateHeroStat(string _key)
     {
-        if (_key.IsActive() == false || _key.Equals(m_info.key) == false)
+        if (m_info == null || _key.IsActive() == false || _key.Equals(m_info.key) == false)
             return;
 
         SetHeroData(_key);
@@ -310,7 +310,7 @@ public class CharacterComponent : TargetComponent
                     }
                     else
                     {
-                        if (m_info.isMain == true)
+                        if (m_info?.isMain == true)
                             ControllerManager.instance.SetDie_SkillTimer();
 
                         if (m_faction == FactionType.Enemy)

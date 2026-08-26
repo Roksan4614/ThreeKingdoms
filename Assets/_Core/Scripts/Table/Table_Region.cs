@@ -22,9 +22,9 @@ public class Table_Region : BaseTable<RegionType, TableRegionData>
 
         if (_regionType == RegionType.WU)
         {
-            if (DataManager.userInfo.GetHeroInfoData(CharacterName.SunQuan).isActive == true)
+            if (DataManager.userInfo.GetHeroInfoData(CharacterName.SunQuan).IsActive() == true)
                 return CharacterName.SunQuan.ToString();
-            else if(DataManager.userInfo.GetHeroInfoData(CharacterName.SunCe).isActive == true)
+            else if(DataManager.userInfo.GetHeroInfoData(CharacterName.SunCe).IsActive() == true)
                 return CharacterName.SunCe.ToString();
         }
 
@@ -32,7 +32,7 @@ public class Table_Region : BaseTable<RegionType, TableRegionData>
     }
 }
 
-public struct TableRegionData
+public class TableRegionData
 {
     public string key;
     public string master;

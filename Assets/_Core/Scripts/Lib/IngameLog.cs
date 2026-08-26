@@ -7,6 +7,8 @@ public static class IngameLog
     {
 #if !UNITY_EDITOR
         Add(_log);
+#else
+        //Add(_log);
 #endif
     }
 

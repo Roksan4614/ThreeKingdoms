@@ -14,12 +14,12 @@ public class Character_Enemy : CharacterComponent
         if (_key.IsActive())
             m_stat = TableManager.statEnemy.GetStatData(_key, _gradeType, _enchantLevel);
 
-        if (m_stat.isActive == false)
+        if (m_stat == null)
         {
             if (_key.IsActive())
                 m_stat = TableManager.statHero.GetStatData(_key, _gradeType, _enchantLevel);
 
-            if (m_stat.isActive == false)
+            if (m_stat == null)
                 m_stat = TableManager.statEnemy.GetStatData("Enemy", _gradeType, _enchantLevel);
         }
         SetFaction(FactionType.Enemy);
@@ -66,7 +66,7 @@ public class Character_Enemy : CharacterComponent
         if (_key.IsActive())
             m_stat = TableManager.statEnemy.GetStatData(_key);
 
-        if (m_stat.isActive == false)
+        if (m_stat == null)
             m_stat = TableManager.statEnemy.GetStatData("Enemy");
 
         SetBuffStat(2);

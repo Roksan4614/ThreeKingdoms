@@ -47,7 +47,7 @@ public class DataManager
         tasks.Add(dailyDungeon.InitializeAsync());
         tasks.Add(storyMode.InitializeAsync());
 
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
     }
 
     public static void Release()

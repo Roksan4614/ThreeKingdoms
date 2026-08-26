@@ -13,7 +13,7 @@ public class Data_UserInfo
     public int uid => m_element.uid;
     public string nickname => m_element.nickname;
     public RegionType region => m_element.region;
-    public IReadOnlyList<HeroInfoData> myHero => m_element.myHero;
+    public IReadOnlyList<HeroInfoData> myHero => m_element.myHero.DeepClone();
     public int profileIdx => m_element.profileIdx;
     public string profileSkin => m_element.profileSkin;
 
@@ -53,6 +53,7 @@ public class Data_UserInfo
             m_sortData = PPWorker.Get<HeroSortData>(PlayerPrefsType.HERO_SORTING_DATA);
         else
         {
+            m_sortData = new();
             m_sortData.Default();
             SaveData_SortingData();
         }
@@ -201,9 +202,9 @@ public class Data_UserInfo
         {
             var heroData = m_element.myHero[i];
             if (heroData.key.IsEquals(_key))
-                return heroData;
+                return heroData.DeepClone();
         }
-        return default;
+        return null;
     }
 
     public void Update(HeroInfoData _heroData)
@@ -253,7 +254,7 @@ public class Data_UserInfo
     {
         var heroData = GetHeroInfoData(_key);
 
-        if (heroData.isMine == true)
+        if (heroData?.isMine == true)
         {
             heroData.soulCount += _count;
             Update(heroData);
@@ -299,7 +300,7 @@ public class Data_UserInfo
         AddItem(_isUpdate, _isTween, _isAction, _actionPosition, TableManager.item.GetItemData(_itemType, _count));
     }
 
-    public void AddItem(bool _isUpdate = true, bool _isTween = true, bool _isAction = true, Vector3 _actionPosition = default, params TableItemData[] _itemData)
+    public void AddItem(bool _isUpdate = true, bool _isTween = true, bool _isAction = true, Vector3 _actionPosition = default, params ItemData[] _itemData)
     {
         if (_isAction)
             RewardWorker.instance.RunAsync(_actionPosition, _itemData: _itemData).Forget();
@@ -367,8 +368,8 @@ public class Data_UserInfo
     public int SortCompare(HeroInfoData x, HeroInfoData y, bool _isFirstMine)
     {
         if (ReferenceEquals(x, y)) return 0;
-        if (x.isActive == false) return -1;
-        if (y.isActive == false) return 1;
+        if (x == null) return -1;
+        if (y == null) return 1;
 
         int result = 0;
 
@@ -448,7 +449,7 @@ public class Data_UserInfo
         }
     }
 
-    public struct HeroSortData
+    public class HeroSortData
     {
         public HeroSortType sortType;
         public bool isDescending;

@@ -17,7 +17,7 @@ public class Character_Enemy_DailyDungeonBoss : Character_Enemy_Boss
     {
         m_stat = TableManager.statEnemy.GetStatData(_key);
 
-        if (m_stat.isActive == false)
+        if (m_stat == null)
             m_stat = TableManager.statEnemy.GetStatData("Enemy");
 
         if (DataManager.dailyDungeon.curGradeType > GradeType.Normal)

@@ -15,7 +15,7 @@ public class Table_Treasure : BaseTable<string, TableTreasureData>
         => stringTable = _stringTable;
 }
 
-public struct TableTreasureData
+public class TableTreasureData
 {
     public string key;
     public BattleStatType stat;
@@ -25,7 +25,7 @@ public struct TableTreasureData
     Dictionary<BattleStatType, BattleStatData> m_dbEffect;
 
     //custom
-    public bool isActive => key.IsActive() && effect.IsActive();
+    public bool isActive => effect.IsActive();
     public string name => TableManager.treasure.stringTable.GetString($"NAME_{key.ToUpper()}");
 
     public IReadOnlyDictionary<BattleStatType, BattleStatData> dbEffect
@@ -105,14 +105,7 @@ public struct BattleStatData
     public string stringPercent => $"+{value.AmountKMBT()}%";
     public string statName
         => TableManager.stringTable.GetBattleStat(statType);
-    //{
-    //    get
-    //    {
-    //        if (m_statName.IsActive() == false)
-    //            m_statName = TableManager.stringTable.GetString("BATTLESTAT_" + statType.ToString().ToUpper());
-    //        return m_statName;
-    //    }
-    //}
+    
     public string stringPoint
     {
         get

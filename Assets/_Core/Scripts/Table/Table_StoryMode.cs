@@ -65,7 +65,7 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
         return default;
     }
 
-    public struct TableStoryModeNodeData
+    public class TableStoryModeNodeData
     {
         public string node_key;
         public RegionType region_type;
@@ -106,13 +106,11 @@ public class Table_StoryMode_Unlock : BaseTable<string, Table_StoryMode_Unlock.T
     public TableStoryModeUnlockData[] GetSourceNodeKey(string _nodeKey)
         => m_group.ContainsKey(_nodeKey) ? m_group[_nodeKey].ToArray() : Array.Empty<TableStoryModeUnlockData>();
 
-    public struct TableStoryModeUnlockData
+    public class TableStoryModeUnlockData
     {
         public string node_key;
         public string source_node_key;
         public int required_choice_seq;
-
-        public bool isActive => node_key.IsActive();
     }
 }
 
@@ -129,12 +127,10 @@ public class Table_StoryMode_Choice : BaseTable<string, Table_StoryMode_Choice.T
     public TableStoryModeChoiceData[] GetChoices(string _nodeKey)
         => m_group.ContainsKey(_nodeKey) ? m_group[_nodeKey].ToArray() : Array.Empty<TableStoryModeChoiceData>();
 
-    public struct TableStoryModeChoiceData
+    public class TableStoryModeChoiceData
     {
         public string node_key;
         public int choice_seq;
-
-        public bool isActive => node_key.IsActive();
 
         public string stringChoice => TableManager.storyString.GetString($"{node_key.ToUpper()}_CHOICE_{choice_seq}");
     }

@@ -37,25 +37,22 @@ public class Scene_Login : SceneBase
 
         IngameLog.AddBuild("TOTAL SIZE: START LABEL: " + Utils.FileSize(totalSize));
 
-        //await AddressableManager.instance.LoadAssetAsync<GameObject>(true, null, null, AddressableLabelType.L_Start);
-
+        List<UniTask> tasks = new();
         var keys = TableManager.hero.list.Select(x => x.key).ToArray();
         IngameLog.AddBuild("Load_HeroIconAsync");
-        AddressableManager.instance.Load_HeroIconAsync(keys).Forget();
+        tasks.Add(AddressableManager.instance.Load_HeroIconAsync(keys));
         IngameLog.AddBuild("Load_HeroCharacterAsync");
-        AddressableManager.instance.Load_HeroCharacterAsync(keys).Forget();
+        tasks.Add(AddressableManager.instance.Load_HeroCharacterAsync(keys));
         IngameLog.AddBuild("Load_ItemIconAsync");
-        AddressableManager.instance.Load_ItemIconAsync(TableManager.item.list.Select(x => x.key.ToString()).ToArray()).Forget();
+        tasks.Add(AddressableManager.instance.Load_ItemIconAsync(TableManager.item.list.Select(x => x.key.ToString()).ToArray()));
         IngameLog.AddBuild("Load_TreasureIconAsync");
-        AddressableManager.instance.Load_ItemIconAsync(TableManager.treasure.list.Select(x => $"Treasure_{x.key}").ToArray()).Forget();
+        tasks.Add(AddressableManager.instance.Load_ItemIconAsync(TableManager.treasure.list.Select(x => $"Treasure_{x.key}").ToArray()));
         IngameLog.AddBuild("Load_TierCionAsync");
 
         string[] tierKey = new string[8];
         for (int i = 0; i < tierKey.Length; i++)
             tierKey[i] = $"Tier_{i + 1}";
-        AddressableManager.instance.Load_ItemIconAsync(tierKey).Forget();
-
-        //AddressableManager.instance.Load_AllIcon();
+        tasks.Add(AddressableManager.instance.Load_ItemIconAsync(tierKey));
 
         IngameLog.AddBuild("LOGIN START");
 
@@ -64,6 +61,8 @@ public class Scene_Login : SceneBase
         await DataManager.instance.InitializeAsync();
 
         TimeManager.instance.InitializeAsync().Forget();
+
+        await UniTask.WhenAll(tasks.ToArray());
 
         var time = Time.realtimeSinceStartup - timeStart;
         if (time < 1)

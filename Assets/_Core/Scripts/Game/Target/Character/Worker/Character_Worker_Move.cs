@@ -85,6 +85,11 @@ public class Character_Worker_Move : Character_Worker
         m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS(true);
         var token = m_ctsMoveTarget.Token;
 
+        if (m_owner.name == "LuBu")
+        {
+            IngameLog.Add("MoveTargetAsync Start");
+        }
+
         while (true)
         {
             var lookAt = _targetPos - m_owner.position;
@@ -112,6 +117,11 @@ public class Character_Worker_Move : Character_Worker
     {
         m_ctsMoveTarget = m_ctsMoveTarget.ReleaseCTS(true);
         var token = m_ctsMoveTarget.Token;
+
+        if(m_owner.name == "LuBu")
+        {
+            IngameLog.Add("MoveTargetAsync Start");
+        }
 
         if (m_owner.buff.IsActive(BuffType.DEBUFF_NO_MOVE))
             return;

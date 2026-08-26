@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,12 +9,19 @@ public class Table_Item : BaseTable<ItemType, TableItemData>
         SetDictionary(x => x.key);
     }
 
-    public TableItemData GetItemData(ItemType _itemType, int _count = 0)
+    public ItemData GetItemData(ItemType _itemType, int _count = 0)
     {
-        var result = Get(_itemType);
-        if (result.isActive == true)
-            result.count = _count;
+        var data = Get(_itemType);
 
+        if (data.IsActive() == false)
+            return null;
+
+        ItemData result = new() {
+            key = data.key,
+            value = data.value,
+            category = data.category,
+            count = _count
+        };
         return result;
     }
 }
@@ -52,18 +60,16 @@ public enum ItemType
     Rare_Gatcha_Ticket,                 // Èñ±Í °¡Ã­ Æ¼ÄÏ
 
     Tournament_Point,
+    Raid_Point,
 
     MAX
 }
 
-public struct TableItemData
+[JsonObject(MemberSerialization.OptIn)]
+public class TableItemData
 {
-    public ItemType key;
-    public string value;
-    public ItemCategoryType category;
-
-    //custom 
-    public bool isActive => key > ItemType.NONE;
-    public bool isNew;
-    public long count;
+    [JsonProperty] public ItemType key;
+    [JsonProperty] public string value;
+    [JsonProperty] public ItemCategoryType category;
 }
+

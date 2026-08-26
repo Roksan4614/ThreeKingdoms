@@ -66,7 +66,7 @@ public class PopupTournament_Batch_Relic : LobbyScreen_Hero_Relic
             (_item, _idxData) =>
             {
                 _item.SetTreasureDataAsync(batchData.treasure, dbTreasure[_idxData]
-                    , _heroInfo => OnButton_Item(_heroInfo.key.IsActive() ? TabType.Relic : TabType.Treasure, _heroInfo)).Forget();
+                    , _heroInfo => OnButton_Item(TabType.Treasure, _heroInfo)).Forget();
 #if UNITY_EDITOR
                 _item.name = dbTreasure[_idxData].key;
 #endif

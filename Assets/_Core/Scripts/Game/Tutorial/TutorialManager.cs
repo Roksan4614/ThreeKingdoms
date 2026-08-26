@@ -17,8 +17,9 @@ public partial class TutorialManager
         //PPWorker.DeleteKey(PlayerPrefsType.GUIDE_QUEST_DATA);
         m_data = PPWorker.Get<GuideQuestRepeatData>(PlayerPrefsType.GUIDE_QUEST_DATA);
 
-        if (m_data.isActive == false)
+        if (m_data == null)
         {
+            m_data = new();
             m_data.SetDefault();
             SaveData();
         }
@@ -66,7 +67,7 @@ public partial class TutorialManager
             else
             {
                 var next = TableManager.guideQuest.GetGuideData(m_data.guideType);
-                if (next.isActive == false)
+                if (next == null)
                 {
                     IngameLog.Add("guideGuest cant find: " + m_data.guideType);
                     m_data.guideType = GuideQuestType.NONE;
@@ -98,7 +99,7 @@ public partial class TutorialManager
                             //가이드중에 열리는 가이드가 있는지 확인해야 해.
                             var guide = TableManager.guideQuest.GetOpenStageData(m_data.chapterKey, m_data.stageKey);
 
-                            if (guide.isActive == true)
+                            if (guide != null)
                             {
                                 if (Enum.TryParse(guide.key, out m_data.guideType) == false)
                                     IngameLog.Add("guideGuest cant find: " + guide.key);
@@ -147,7 +148,7 @@ public partial class TutorialManager
         PPWorker.Set(PlayerPrefsType.GUIDE_QUEST_DATA, m_data);
     }
 
-    public struct GuideQuestRepeatData
+    public class GuideQuestRepeatData
     {
         public GuideQuestRepeatType repeatType;
 
@@ -166,7 +167,6 @@ public partial class TutorialManager
         }
 
         public GuideQuestRepeatType nowRepeatType => isGuide ? GuideQuestRepeatType.NONE : repeatType;
-        public bool isActive => historyGuide != null;
         public bool isGuide => guideType > GuideQuestType.NONE;
         public string name => TableManager.guideQuestString.Get(
             $"{(isGuide ? "GUIDE_" : "REPEAT_")}{(isGuide ? guideType : repeatType)}_TITLE"

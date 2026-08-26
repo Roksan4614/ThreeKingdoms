@@ -457,7 +457,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         else
         {
             m_popupHeroList.gameObject.SetActive(true);
-            m_popupHeroList.OpenPopup(m_castleData);
+            m_popupHeroList.OpenPopup(m_castleData.DeepClone());
         }
 
         List<string> prevheroes = new();

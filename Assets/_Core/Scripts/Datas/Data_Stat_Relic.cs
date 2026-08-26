@@ -58,7 +58,7 @@ public class Data_Stat_Relic
     public TreasureBatchData GetTreasureData(string _key)
         => m_dataTreasure.Find(x => x.key == _key);
     public int GetRelicLevel(string _key)
-        => DataManager.userInfo.GetHeroInfoData(_key).relicLevel;
+        => DataManager.userInfo.GetHeroInfoData(_key)?.relicLevel ?? 0;
 
     public void Upgrade_HeroRelic(HeroInfoData _heroInfoData)
     {

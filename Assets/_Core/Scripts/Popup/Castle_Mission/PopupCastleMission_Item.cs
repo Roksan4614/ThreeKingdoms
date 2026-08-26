@@ -14,27 +14,34 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
     CancellationTokenSource m_cts;
 
     public UnityAction<CastleMissionData> m_onClick;
-    public UnityAction<TimeSpan> m_onUpdateTimer;
+    public UnityAction<int, TimeSpan> m_onUpdateTimer;
 
     private void Awake()
     {
-        m_element.btn_batch.onClick.AddListener(()
-            => m_onClick(m_missionData));
+        m_element.btn_batch.onClick.AddListener(OnButton_Batch);
         transform.GetComponent<Button>().onClick.AddListener(()
             => m_onClick(m_missionData));
+    }
+
+    void OnButton_Batch()
+    {
+        if (m_missionData.isRunning && m_missionData.isFinished == false)
+            PopupManager.instance.GetPopup<PopupCastleMissionComponent>(PopupType.Castle_Mission).OpenUseTimeStoneAsync(m_missionData).Forget();
+        else
+            m_onClick(m_missionData);
     }
 
     private void OnDisable()
         => Release_CTS();
 
-    public void Initalize(UnityAction<CastleMissionData> _onClick, UnityAction<TimeSpan> _onUpdateTimer)
+    public void Initalize(UnityAction<CastleMissionData> _onClick, UnityAction<int, TimeSpan> _onUpdateTimer)
     {
         m_onClick = _onClick; m_onUpdateTimer = _onUpdateTimer;
     }
 
     public void SetMissionInfo(CastleMissionData _missionData)
     {
-        if (m_missionData.idx == _missionData.idx && m_missionData.tickEnd == _missionData.tickEnd)
+        if (m_missionData != null && m_missionData.idx == _missionData.idx && m_missionData.tickEnd == _missionData.tickEnd)
             return;
 
         m_missionData = _missionData;
@@ -106,13 +113,9 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
         m_element.parentRewardList.ForceRebuildLayout();
 
-        Release_CTS();
-        if (_missionData.tickStart > 0)
+        if (_missionData.tickStart == 0)
         {
-            TimerAsync().Forget();
-        }
-        else
-        {
+            Release_CTS();
             var size = m_element.btn_batch.rt.sizeDelta;
             size.y = 70;
             m_element.btn_batch.rt.sizeDelta = size;
@@ -129,40 +132,40 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         });
     }
 
-    async UniTask TimerAsync()
+    public async UniTask TimerAsync()
     {
         var size = m_element.btn_batch.rt.sizeDelta;
         size.y = 95;
         m_element.btn_batch.rt.sizeDelta = size;
 
-        m_element.btn_batch.interactable = false;
+        //m_element.btn_batch.interactable = false;
 
-        m_cts = new();
+        m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 
         var endTime = new DateTime(m_missionData.tickEnd, DateTimeKind.Utc);
-        var ts = endTime - Utils.GetUTC();
 
-        m_element.btn_batch.text = ts.ToRemainTime(21) + "\n<size=90%>시간단축";
-        m_onUpdateTimer(ts);
+        m_element.btn_batch.SetDrawSelect(false);
 
-        if (ts.TotalSeconds > 0)
+        TimeSpan ts = endTime - Utils.GetUTC();
+        int prev = -1;
+        while (ts.TotalSeconds > 0)
         {
-            m_element.btn_batch.SetDrawSelect(false);
-
-            var delay = ts.TotalSeconds - (int)ts.TotalSeconds;
-            string log = $"{delay}/{(float)delay}";
-
-            await UniTask.WaitForSeconds((float)delay, cancellationToken: token);
-
-            while (ts.TotalSeconds > 0)
+            if (ts.TotalSeconds <= 10)
             {
-                ts = endTime - Utils.GetUTC();
                 m_element.btn_batch.text = ts.ToRemainTime(21) + "\n<size=90%>시간단축";
-                m_onUpdateTimer(ts);
-
-                await UniTask.WaitForSeconds(1f, cancellationToken: token);
+                m_onUpdateTimer(m_missionData.idx, ts);
             }
+            else if (ts.Seconds != prev)
+            {
+                m_element.btn_batch.text = ts.ToRemainTime(21) + "\n<size=90%>시간단축";
+                m_onUpdateTimer(m_missionData.idx, ts);
+                prev = ts.Seconds;
+            }
+
+            await UniTask.NextFrame(token);
+
+            ts = endTime - Utils.GetUTC();
         }
 
         size.y = 70;

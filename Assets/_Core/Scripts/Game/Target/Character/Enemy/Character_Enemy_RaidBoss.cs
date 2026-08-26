@@ -13,11 +13,11 @@ public class Character_Enemy_RaidBoss : Character_Enemy
         if (_key.IsActive())
             m_stat = TableManager.statHero.GetStatData(_key);
 
-        if (m_stat.isActive == false)
+        if (m_stat == null)
         {
             m_stat = TableManager.statEnemy.GetStatData(_key);
 
-            if (m_stat.isActive == false)
+            if (m_stat == null)
                 m_stat = TableManager.statEnemy.GetStatData("Enemy");
         }
 

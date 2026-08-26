@@ -17,7 +17,7 @@ public class Table_String_Base : BaseTable<string, TableStringData>
 
         var db = Get(_key);
 
-        if (db.isActive == false)
+        if (db == null)
             return _key;
 
         return db.message;
@@ -32,14 +32,12 @@ public class Table_String_Base : BaseTable<string, TableStringData>
     }
 }
 
-public struct TableStringData
+public class TableStringData
 {
     public string key;
     public string kr;
     public string en;
     public string target;
-
-    public bool isActive => key.IsActive();
 
     public string message =>
         DataManager.option.language switch

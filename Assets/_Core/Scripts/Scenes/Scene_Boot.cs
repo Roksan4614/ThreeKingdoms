@@ -93,7 +93,7 @@ public class Scene_Boot : MonoBehaviour, IValidatable
             }
         }
 #endif
-        await UniTask.WhenAll(tasks);
+        await UniTask.WhenAll(tasks.ToArray());
 #if !UNITY_EDITOR
         IngameLog.Add($"Boot: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
 #endif

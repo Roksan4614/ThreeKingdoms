@@ -39,13 +39,14 @@ public class PopupCastleMission_Popup_Info_RewardItem : MonoBehaviour, IValidata
         for (; i < _rewardData.Length; i++)
         {
             var rewardData = _rewardData[i];
+
             var item = i == m_element.parent.childCount ?
                 Instantiate(m_element.baseItem, m_element.parent) :
                 m_element.parent.GetChild(i).GetComponent<ItemComponent>();
 
             item.gameObject.SetActive(true);
 
-            TableItemData itemData = new();
+            ItemData itemData = new();
             itemData.key = rewardData.reward_key;
             itemData.value = rewardData.reward_value;
             item.SetItemData(itemData);
@@ -66,7 +67,7 @@ public class PopupCastleMission_Popup_Info_RewardItem : MonoBehaviour, IValidata
         m_element.parent.ForceRebuildLayout();
     }
 
-    public void SetReward_Result(params TableItemData[] _rewardData)
+    public void SetReward_Result(params ItemData[] _rewardData)
     {
         int i = 0;
         for (; i < _rewardData.Length; i++)
@@ -78,10 +79,10 @@ public class PopupCastleMission_Popup_Info_RewardItem : MonoBehaviour, IValidata
 
             item.gameObject.SetActive(true);
 
-            item.SetItemData(_rewardData[i]);
+            item.SetItemData(rewardData);
 
             //min max 차이가 있으면 range로.. 없으면 걍 max로
-            //item.SetCountText(rewardData.reward_max, rewardData.reward_max - rewardData.reward_min > 0);
+            item.SetCountText(rewardData.count, true);
         }
 
         for (; i < m_element.parent.childCount; i++)

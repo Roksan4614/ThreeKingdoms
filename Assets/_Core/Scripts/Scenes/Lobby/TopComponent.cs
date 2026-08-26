@@ -59,7 +59,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
             return;
 
         var asset = m_element.assets.Find(x => x.type == _type);
-        if (asset.isActive == false)
+        if (asset == null)
             return;
 
         long amount = _amount == -1 ? DataManager.userInfo.GetAssetAmount(_type) : _amount;
@@ -121,14 +121,12 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
     }
 
     [Serializable]
-    public struct AssetData
+    public class AssetData
     {
         public ItemType type;
         public TextMeshProUGUI txtAmount;
         public Transform icon;
         public long amount;
-
-        public bool isActive => type > ItemType.NONE;
     }
     #endregion
 }

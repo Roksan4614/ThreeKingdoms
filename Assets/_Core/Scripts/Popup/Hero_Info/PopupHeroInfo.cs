@@ -117,10 +117,10 @@ public class PopupHeroInfo : BasePopupComponent
 
         gameObject.SetActive(true);
 
-        if (_data.key == m_heroInfoData.key)
+        if (m_heroInfoData.IsActive() == true && _data.key == m_heroInfoData.key)
             return;
 
-        m_heroInfoData = _data;
+        m_heroInfoData = _data.DeepClone();
 
         // FRONT PANEL
         var key = $"{_data.regionType}_{_data.key}".ToUpper();
@@ -183,7 +183,7 @@ public class PopupHeroInfo : BasePopupComponent
 
     async UniTask OnButtonAsync_Upgrade(bool _isUpgrade)
     {
-        var heroInfoData = m_heroInfoData;
+        var heroInfoData = m_heroInfoData.DeepClone();
         if (_isUpgrade)
         {
             heroInfoData.grade++;
@@ -214,7 +214,7 @@ public class PopupHeroInfo : BasePopupComponent
         //전투 능력치 비교
         m_element.statBattle.SetCompareData(heroInfoData);
 
-        await m_element.popupUpgrade.OpenAsyn(heroInfoData, _isUpgrade);
+        await m_element.popupUpgrade.OpenAsync(heroInfoData, _isUpgrade);
 
         if (m_element.popupUpgrade.isNeedUpdate)
         {
