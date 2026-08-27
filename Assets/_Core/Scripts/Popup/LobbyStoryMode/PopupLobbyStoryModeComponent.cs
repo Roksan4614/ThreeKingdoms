@@ -54,7 +54,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
     {
         var ifNodeData = DataManager.storyMode.GetOpenIFMode();
 
-        bool notIfMode = ifNodeData?.isActive == false;
+        bool notIfMode = ifNodeData == null ? true : ifNodeData.isActive == false;
 
         m_element.bg.SetActive(notIfMode);
         m_element.pTab.gameObject.SetActive(notIfMode);

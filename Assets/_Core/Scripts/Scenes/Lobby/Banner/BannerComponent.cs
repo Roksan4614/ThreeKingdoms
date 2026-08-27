@@ -34,6 +34,26 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     void SlotUnlockStoryMode()
         => m_element.story.UnlockStoryMode();
 
+    public void SetActive_GuideArrow(bool _isActive, GuideQuestType _guideQuestType = GuideQuestType.NONE)
+    {
+        if (_isActive == false)
+        {
+            m_element.guideArrow.gameObject.SetActive(false);
+            return;
+        }
+
+        m_element.guideArrow.gameObject.SetActive(true);
+        switch (_guideQuestType)
+        {
+            case GuideQuestType.STORYMODE_PLAY:
+                m_element.guideArrow.transform.position = m_element.story.transform.position;
+                break;
+            default:
+                m_element.guideArrow.gameObject.SetActive(false);
+                break;
+        }
+    }
+
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
@@ -47,15 +67,17 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
     {
         public ButtonHelper btnTutorialSkip;
         public ButtonHelper btnTournament;
-
         public Banner_Story story;
+        public Transform guideArrow;
 
         public void Initialize(Transform _transform)
         {
             btnTutorialSkip = _transform.parent.GetComponent<ButtonHelper>("btn_skip");
-            btnTournament = _transform.GetComponent<ButtonHelper>("Right/btn_tournament");
 
+            btnTournament = _transform.GetComponent<ButtonHelper>("Right/btn_tournament");
             story = _transform.GetComponent<Banner_Story>("Right/btn_story");
+
+            guideArrow = _transform.Find("GuideArrow");
         }
     }
     #endregion VALIDATA

@@ -19,10 +19,11 @@ public class Banner_Story : MonoBehaviour, IValidatable
                 (x.chapter_key < stageData.chapterNumber ||
                 (x.stage_key < stageData.stageNumber && x.chapter_key == stageData.chapterNumber))
                 && x.chapter_key > 0);
-
+#if !UNITY_EDITOR
         if (TutorialManager.instance.IsCompleteGuide(GuideQuestType.STORYMODE_PLAY - 1) == false)
             gameObject.SetActive(false);
         else
+#endif
         {
             var dbStory = TableManager.storyNode.list.ToList()
                 .FindAll(x =>

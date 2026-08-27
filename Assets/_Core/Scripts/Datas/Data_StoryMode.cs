@@ -57,18 +57,18 @@ public class Data_StoryMode
         SaveHistoryData(curNodeKey, _choiceIdx);
         lastHistory = m_historyData.Find(x => x.key == curNodeKey);
 
-        m_nextPlayOrderNumber = 0;
-        curNodeKey = null;
-
         List<UniTask> tasks = new();
         tasks.Add(PopupManager.instance.ShowDimmAsync(true, _duration: 0.2f));
 
-        var storyNode = TableManager.storyNode.GetNode(curNodeKey);
-        if (storyNode.reward_character.IsActive() == true)
-        {
-            tasks.Add(AddressableManager.instance.Load_HeroIconAsync(storyNode.reward_character));
-            tasks.Add(AddressableManager.instance.Load_HeroCharacterAsync(storyNode.reward_character));
-        }
+        //var storyNode = TableManager.storyNode.GetNode(curNodeKey);
+        //if (storyNode?.reward_character.IsActive() == true)
+        //{
+        //    tasks.Add(AddressableManager.instance.Load_HeroIconAsync(storyNode.reward_character));
+        //    tasks.Add(AddressableManager.instance.Load_HeroCharacterAsync(storyNode.reward_character));
+        //}
+
+        m_nextPlayOrderNumber = 0;
+        curNodeKey = null;
 
         await UniTask.WhenAll(tasks.ToArray());
 
@@ -307,7 +307,7 @@ public class Data_StoryMode
             var nodeData = TableManager.storyNode.GetNode(m_historyData[i].key);
 
             if (nodeData.hasIfStory == m_historyData[i].choiceIdx)
-                return nodeData;
+                return nodeData.DeepClone();
         }
         return null;
     }

@@ -115,10 +115,14 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                     ControllerManager.instance.SetActive_GuideQuestArrow(false, guideType);
                     break;
                 case GuideQuestType.STORYMODE_PLAY:
-
+                    BannerComponent.instance.SetActive_GuideArrow(true, guideType);
+                    HostTalkboxStart("스토리_모드를_진행해서\n동료를_얻자!", true);
                     await StoryModePlayAsync();
+                    BannerComponent.instance.SetActive_GuideArrow(false);
                     break;
                 case GuideQuestType.CHARACTER_DEPLOY:
+                    if (TeamManager.instance.members.Count == 1)
+                        HostTalkboxStart("얻은 장수를 ", true);
                     await CharacterDeployAsync();
                     break;
             }
@@ -202,7 +206,6 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                         }
                         break;
                     case GuideQuestType.STORYMODE_PLAY:
-                        HostTalkboxStart("스토리_모드_해금!");
                         BannerComponent.instance.story.OnButtonAsync_OpenPopup().Forget();
                         break;
                     case GuideQuestType.CHARACTER_DEPLOY:
@@ -216,9 +219,9 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         }
     }
 
-    void HostTalkboxStart(string _message)
-        => HostTalkboxStartAsync(_message).Forget();
-    async UniTask HostTalkboxStartAsync(string _message)
+    void HostTalkboxStart(string _message, bool _isLoop = false)
+        => HostTalkboxStartAsync(_message, _isLoop).Forget();
+    async UniTask HostTalkboxStartAsync(string _message, bool _isLoop = false)
     {
         if (m_guide.gameObject.activeSelf == false)
         {
@@ -249,7 +252,10 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
             m_guide.talkbox.rt.SetAnchoredPosition(0, 190);
 
             m_guide.anim.Play("Talk", 1);
-            m_guide.talkbox.Start_AutoClose(destroyCancellationToken, _message);
+            if (_isLoop == true)
+                m_guide.talkbox.Start(destroyCancellationToken, _message);
+            else
+                m_guide.talkbox.Start_AutoClose(destroyCancellationToken, _message);
 
             await m_guide.talkbox.WaitFinishTyping();
 

@@ -24,7 +24,7 @@ public class Table_String_Talk : Table_String_Base
                 return true;
             }));
 
-        return result;
+        return result.DeepClone();
     }
 
     public List<TableStringData> GetTalkAfterQuestion(string _key, int _index)
@@ -38,6 +38,6 @@ public class Table_String_Talk : Table_String_Base
                 if (split.Length > 1 && split[1] == _index.ToString())
                     return true;
                 return false;
-            });
+            }).DeepClone();
     }
 }

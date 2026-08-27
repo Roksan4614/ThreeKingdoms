@@ -152,7 +152,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
     {
         for (int i = 0; i < _count; i++)
         {
-            TableStringData talk = default;
+            TableStringData talk = new();
             while (talk.target == null && m_queTalk.Count > 0)
                 talk = m_queTalk.Dequeue();
 
@@ -187,7 +187,7 @@ public abstract class StoryModeBaseComponent : MonoBehaviour//, IValidatable
 
     protected async UniTask TalkAutoCloseAsync(float _duration = 3f, bool _isActiveMoveCamera = true)
     {
-        TableStringData talk = default;
+        TableStringData talk = new();
         while (talk.target == null && m_queTalk.Count > 0)
             talk = m_queTalk.Dequeue();
 
