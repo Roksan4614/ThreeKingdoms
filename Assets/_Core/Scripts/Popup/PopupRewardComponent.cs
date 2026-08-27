@@ -35,8 +35,8 @@ public class PopupRewardComponent : BasePopupComponent
 
 		pReward.ForceRebuildLayout(1);
 
-		//panel.GetComponent<ContentSizeFitter>().enabled = false;
-		//panel.GetComponent<VerticalLayoutGroup>().enabled = false;
+		panel.GetComponent<ContentSizeFitter>().enabled = false;
+		panel.GetComponent<VerticalLayoutGroup>().enabled = false;
 
 		pReward.GetComponent<ContentSizeFitter>().enabled = false;
 		pReward.GetComponent<GridLayoutGroup>().enabled = false;

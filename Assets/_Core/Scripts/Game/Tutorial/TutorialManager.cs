@@ -27,7 +27,7 @@ public partial class TutorialManager
 
     public void TestResetData()
     {
-        m_data = default;
+        m_data = new();
         m_data.SetDefault();
         SaveData();
 

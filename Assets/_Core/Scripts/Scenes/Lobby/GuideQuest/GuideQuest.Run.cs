@@ -1,8 +1,17 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEngine;
 
 public partial class GuideQuestComponent
 {
+    List<KeyCode> m_keycode = new();
+
+    void AddKeyCode(KeyCode _keyCode)
+    {
+        if (Input.GetKeyDown(_keyCode) && m_keycode.Contains(_keyCode) == false)
+            m_keycode.Add(_keyCode);
+    }
+
     async UniTask MoveAsync()
     {
         bool isComplete = false;
@@ -12,16 +21,33 @@ public partial class GuideQuestComponent
 
             await UniTask.WaitUntil(() => ControllerManager.instance.isDoing == true);
 
-            Vector3 prevPosition = main.position;
-
-            while (ControllerManager.instance.isDoing == true)
+            if (ControllerManager.instance.isKeyboardMode)
             {
-                if ((prevPosition - main.position).sqrMagnitude > 4)
+                while (m_keycode.Count < 4)
                 {
-                    isComplete = true;
-                    break;
+                    AddKeyCode(KeyCode.W);
+                    AddKeyCode(KeyCode.A);
+                    AddKeyCode(KeyCode.S);
+                    AddKeyCode(KeyCode.D);
+
+                    await UniTask.NextFrame(destroyCancellationToken);
                 }
-                await UniTask.NextFrame(destroyCancellationToken);
+                isComplete = true;
+            }
+            else
+            {
+
+                Vector3 prevPosition = main.position;
+
+                while (ControllerManager.instance.isDoing == true)
+                {
+                    if ((prevPosition - main.position).sqrMagnitude > 4)
+                    {
+                        isComplete = true;
+                        break;
+                    }
+                    await UniTask.NextFrame(destroyCancellationToken);
+                }
             }
 
             if (isComplete)
