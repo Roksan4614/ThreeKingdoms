@@ -99,8 +99,6 @@ public struct BattleStatData
     public BattleStatType statType;
     public float value;
 
-    //string m_statName;
-
     public float percent => value * 0.01f;
     public string stringPercent => $"+{value.AmountKMBT()}%";
     public string statName

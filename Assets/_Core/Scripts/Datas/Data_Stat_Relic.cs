@@ -28,7 +28,7 @@ public class Data_Stat_Relic
 
             var myHero = DataManager.userInfo.myHero;
             for (int i = 0; i < myHero.Count; i++)
-                m_bonusClassBonus[myHero[i].classType] += myHero[i].relicLevel * 0.1f;
+                m_bonusClassBonus[myHero[i].classType] += myHero[i].relicLevel;
         }
 
         m_dataTreasure = PPWorker.Get<List<TreasureBatchData>>(key_Treasure);
@@ -65,12 +65,13 @@ public class Data_Stat_Relic
         var heroData = DataManager.userInfo.GetHeroInfoData(_heroInfoData.key);
         var classType = _heroInfoData.classType;
 
-        m_bonusClassBonus[classType] -= heroData.relicLevel * 0.1f;
+        m_bonusClassBonus[classType] -= heroData.relicLevel;
 
         heroData.relicLevel++;
-        m_bonusClassBonus[classType] += heroData.relicLevel * 0.1f;
-
+        m_bonusClassBonus[classType] += heroData.relicLevel;
+        
         DataManager.userInfo.Update(heroData);
+        DataManager.userInfo.ResetResultStat();
     }
 
     public void SetTreasureStatus(string _key, bool _isBatch)
@@ -91,6 +92,7 @@ public class Data_Stat_Relic
 
             SetBonusTreasureBonus(_key, _isBatch);
         }
+        DataManager.userInfo.ResetResultStat();
     }
 
     void SetBonusTreasureBonus(string _key, bool _isAdd)

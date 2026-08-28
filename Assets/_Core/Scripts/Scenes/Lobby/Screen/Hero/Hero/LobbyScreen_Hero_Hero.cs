@@ -253,7 +253,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             for (int i = 0; i < heroList.Count; i++)
             {
                 var data = heroList[i];
-                data.isMain = data.key == m_itemBatch[0].data.key;
+                data.isMain = data.key == m_itemBatch[0].key;
                 heroList[i] = data;
             }
 
@@ -322,7 +322,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         else
             m_myHero[indexDB] = _data;
 
-        m_itemList.Find(x => x.data.key == _data.key).UpdateHeroInfo(_data);
+        m_itemList.Find(x => x.key == _data.key).UpdateHeroInfo(_data);
     }
 
     public async UniTask OpenHeroInfoPopupAsync(HeroInfoData _data)
@@ -341,13 +341,29 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         ResetActiveButton_List();
 
         if (m_popupHeroInfo.isNeedUpdate)
+        {
+            int idx = m_myHero.FindIndex(x => x.key == _data.key);
+            if (idx > -1)
+                m_myHero[idx] = m_popupHeroInfo.heroInfoData;
+
             UpdateHeroes();
+        }
         //SetLayout_List(DataManager.userInfo.GetHeroInfoData(_data.key));
     }
 
     protected virtual void UpdateHeroes()
     {
-        OnEnable();
+        for (int i = 0; i < m_myHero.Count; i++)
+        {
+            var itemBatch = m_itemBatch.Find(x => x.key == m_myHero[i].key);
+            itemBatch?.UpdateHeroInfo(m_myHero[i]);
+
+            var itemList = m_itemList.Find(x => x.key == m_myHero[i].key);
+            itemList.UpdateHeroInfo(m_myHero[i]);
+        }
+
+        SetLayout_Batch();
+        SetLayout_List();
     }
 
 
@@ -357,12 +373,18 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         var db = m_myHero.FindAll(x => x.isBatch).ToList();
 
         int i = 0;
+        long totalPower = 0;
         for (; i < db.Count; i++)
+        {
             m_itemBatch[i]
                 .SetHeroData(db[i], OnButton_BatchHero, OnButton_BatchHeroRemove);
+            totalPower += db[i].power;
+        }
 
         for (; i < m_itemBatch.Count; i++)
             m_itemBatch[i].Disable();
+
+        m_element.txtPower.text = $"cp {totalPower.AmountKMBT(_isMBT: true)}";
     }
 
     void OnButton_BatchHero(HeroIconComponent _item, bool _isRightClick)
@@ -436,7 +458,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
             //뒤에 있는배치 영웅을 뒤로 가게 해야 해
             List<HeroInfoData> last = new();
-            var indexDbPrev = m_myHero.FindIndex(x => x.key == _item.data.key);
+            var indexDbPrev = m_myHero.FindIndex(x => x.key == _item.key);
             for (int i = indexDbPrev + 1; i < m_myHero.Count; i++)
             {
                 if (m_myHero[i].isBatch == true)
@@ -467,11 +489,11 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
                 : m_itemBatch.FindIndex(x => x.key == m_itemList[m_curIndex_List].key);
 
             if (m_curIndex_Batch > -1 &&
-                m_itemBatch[m_curIndex_Batch].data.key != _item.data.key &&
+                m_itemBatch[m_curIndex_Batch].key != _item.key &&
                 (m_curIndex_Batch != idxBatchFromList || idxBatchFromList != -1))
             {
-                int prevIndex = m_myHero.FindIndex(x => x.key == m_itemBatch[m_curIndex_Batch].data.key);
-                int nowIndex = m_myHero.FindIndex(x => x.key == _item.data.key);
+                int prevIndex = m_myHero.FindIndex(x => x.key == m_itemBatch[m_curIndex_Batch].key);
+                int nowIndex = m_myHero.FindIndex(x => x.key == _item.key);
 
                 var temp = m_myHero[prevIndex];
                 m_myHero[prevIndex] = m_myHero[nowIndex];
@@ -516,7 +538,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         // 업데이트 정보가 필요하다면
         if (_updateInfoData.IsActive())
         {
-            var indexList = m_itemList.FindIndex(x => x.data.key == _updateInfoData.key);
+            var indexList = m_itemList.FindIndex(x => x.key == _updateInfoData.key);
             if (indexList > -1)
                 m_itemList[indexList].UpdateHeroInfo(_updateInfoData);
         }
@@ -533,7 +555,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         //int i = 0;
         for (int i = 0; i < sortData.Count; i++)
         {
-            int idx = m_itemList.FindIndex(x => x.data.key == sortData[i].key);
+            int idx = m_itemList.FindIndex(x => x.key == sortData[i].key);
             if (idx == -1)
                 continue;
 
@@ -544,7 +566,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         var parent = m_element.scroll.content;
         for (int i = 0; i < m_itemList.Count; i++)
         {
-            var idx = sortData.FindIndex(x => x.key == m_itemList[i].data.key);
+            var idx = sortData.FindIndex(x => x.key == m_itemList[i].key);
             if (idx == -1)
                 m_itemList[i].element.panel.gameObject.SetActive(false);
         }
@@ -575,7 +597,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         ResetActiveButton_Batch();
 
         //var index = _item.transform.GetSiblingIndex();
-        var index = m_itemList.FindIndex(x => x.data.key == _item.data.key);// _item.transform.GetSiblingIndex();
+        var index = m_itemList.FindIndex(x => x.key == _item.key);// _item.transform.GetSiblingIndex();
 
         if (m_curIndex_List != index && _item.data.isMine == true)
         {
@@ -601,11 +623,11 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         //if (_item.data.isMain && StageManager.instance.isClearFirstStage == false)
         //    PopupManager.instance.AlertShow("일반난이도를_클리어한_후\n주장_교체_가능합니다.");
 
-        if (countBatch > 1 || m_itemBatch.Count > 0 && m_itemBatch[0].key != _item.data.key)
+        if (countBatch > 1 || m_itemBatch.Count > 0 && m_itemBatch[0].key != _item.key)
         {
             for (int i = 0; i < m_itemBatch.Count; i++)
             {
-                bool isSelf = _item.data.key.Equals(m_itemBatch[i].data.key);
+                bool isSelf = _item.key.Equals(m_itemBatch[i].key);
                 m_itemBatch[i].SetActiveButton(m_curIndex_List > -1 && m_itemBatch[i].data.IsActive(),
                     isSelf == false);
 
@@ -684,6 +706,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         public Button btnMainPosition;
 
         public TextMeshProUGUI txtMainPosition;
+        public TextMeshProUGUI txtPower;
 
         public LayoutData batch;
         public LayoutData list;
@@ -698,6 +721,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             btnMainPosition = _transform.GetComponent<Button>("Batch/btn_position");
 
             txtMainPosition = btnMainPosition?.GetComponentInChildren<TextMeshProUGUI>();
+            txtPower = _transform.GetComponent<TextMeshProUGUI>("Batch/txt_power");
 
             batch.Initialize(_transform, "Batch");
             list.Initialize(_transform, "List");

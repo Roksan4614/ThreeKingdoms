@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using Rev9.Tournament;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,8 @@ public class PopupHeroInfo : BasePopupComponent
 
     HeroInfoData m_heroInfoData;
     CharacterComponent m_character;
+
+    public HeroInfoData heroInfoData => m_heroInfoData;
 
     public bool isDontDestroy { get; set; } = false;
 
@@ -66,6 +69,9 @@ public class PopupHeroInfo : BasePopupComponent
             m_element.popupUpgrade.btnUpgradeLeft.onClick.AddListener(() => OnButton_UpgradeArrow(true));
             m_element.popupUpgrade.btnUpgradeRight.onClick.AddListener(() => OnButton_UpgradeArrow(false));
         }
+
+        // Traits Reroll
+        m_element.statAttribute.onClickReroll.AddListener(() => OnButtonAsync_TraitsReroll().Forget());
     }
 
     private void OnEnable()
@@ -89,7 +95,7 @@ public class PopupHeroInfo : BasePopupComponent
             m_element.btnTap[(int)i].SetDrawSelect(i == _tabType);
 
         m_element.statBattle.SetActive(_tabType == TabType.stat);
-        m_element.statAttribute.SetActive(_tabType == TabType.attribute);
+        m_element.statAttribute.SetActive(_tabType == TabType.attribute, m_heroInfoData);
     }
 
     /// <summary>
@@ -135,6 +141,9 @@ public class PopupHeroInfo : BasePopupComponent
 
         // 전투 능력치
         m_element.statBattle.SetStatData(m_heroInfoData);
+
+        // 파워
+        m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
 
         // CHARACTER 
         {
@@ -184,6 +193,13 @@ public class PopupHeroInfo : BasePopupComponent
     async UniTask OnButtonAsync_Upgrade(bool _isUpgrade)
     {
         var heroInfoData = m_heroInfoData.DeepClone();
+
+        if (heroInfoData.key == CharacterName.SunJian.ToString())
+        {
+            PopupManager.instance.AlertShow("시스템에_의해_차단되었습니다.");
+            return;
+        }
+
         if (_isUpgrade)
         {
             heroInfoData.grade++;
@@ -221,6 +237,10 @@ public class PopupHeroInfo : BasePopupComponent
             TournamentWorker.instance.UpdateHero();
             m_heroInfoData = m_element.popupUpgrade.heroInfoData;
             isNeedUpdate = true;
+
+            m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
+            if (m_element.statAttribute.isActive)
+                m_element.statAttribute.SetActive(true, m_heroInfoData);
         }
 
         m_element.statBattle.SetStatData(m_heroInfoData);
@@ -248,6 +268,37 @@ public class PopupHeroInfo : BasePopupComponent
     {
         m_element.txtInfo.text = _gradeInfo;
         m_element.txtInfo.text += $"\n소속_:_{TableManager.stringTable.GetRegionType(m_heroInfoData.regionType, true)}";
+    }
+
+    async UniTask OnButtonAsync_TraitsReroll()
+    {
+        if (m_heroInfoData.countOpenTraits == 0)
+        {
+            PopupManager.instance.AlertShow("명장부터_특성_부여가_가능합니다.");
+            return;
+        }
+        else if (m_heroInfoData.traits != null && m_heroInfoData.traits.Count(x => x.isLock == false) == 0 && m_heroInfoData.countOpenTraits == m_heroInfoData.traits.Count)
+        {
+            PopupManager.instance.AlertShow("모두_잠겨서_진행이_불가합니다.");
+            return;
+        }
+
+        m_element.statAttribute.interactable = false;
+
+        m_heroInfoData = await DataManager.userInfo.API_ChangeTraits(m_heroInfoData.key);
+
+        // 고유 능력치
+        SetHeroInfo_CoreStat(m_heroInfoData);
+
+        // 전투 능력치
+        m_element.statBattle.SetStatData(m_heroInfoData);
+
+        // 파워
+        m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
+        isNeedUpdate = true;
+
+        m_element.statAttribute.SetActive(true, m_heroInfoData);
+        m_element.statAttribute.interactable = true;
     }
 
     public async UniTask AutoCloseAsync(float _duration)
@@ -333,6 +384,7 @@ public class PopupHeroInfo : BasePopupComponent
         public TextMeshProUGUI txtTimer_AutoClose;
 
         public ButtonHelper[] btnTap;
+        public TextMeshProUGUI txtPower;
 
         public List<EntryData> stat;
         public void Initialize(Transform _transform)
@@ -365,6 +417,7 @@ public class PopupHeroInfo : BasePopupComponent
                     content = item.GetComponent<TextMeshProUGUI>("txt_content"),
                 });
             }
+            txtPower = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_power");
 
             // BUTTON
             btnEnchant = panel.GetComponent<ButtonHelper>("Buttons/btn_enchant");

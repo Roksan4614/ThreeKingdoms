@@ -16,7 +16,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
     float m_startPosY;
     StatusType m_status = StatusType.Wait;
 
-    HeroInfoData m_prevHeroData;
+    GradeType m_prevGrade;
     HeroInfoData m_heroInfoData;
     public HeroInfoData heroInfoData => m_heroInfoData;
 
@@ -72,7 +72,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
 
             m_element.txtTitle.text = m_heroInfoData.gradeName;
 
-            m_element.btnArrowLeft.gameObject.SetActive(m_heroInfoData.grade > m_prevHeroData.grade);
+            m_element.btnArrowLeft.gameObject.SetActive(m_heroInfoData.grade > m_prevGrade);
             m_element.btnArrowRight.gameObject.SetActive(m_heroInfoData.grade < GradeType.MAX - 1);
         }
         else
@@ -111,6 +111,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         PopupManager.instance.AlertShow(alertMessage);
         DataManager.userInfo.UpdateUpgrade(m_heroInfoData);
         DataManager.stat.friendShip.Reload();
+        DataManager.userInfo.ResetResultStat();
         Signal.instance.UpdateHeroStat.Emit(m_heroInfoData.key);
 
         var caslteObject = DataManager.castle.GetHeroObjectType(m_heroInfoData.key);
@@ -131,7 +132,8 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
     /// <returns></returns>
     public async UniTask OpenAsync(HeroInfoData _heroInfoData, bool _isUpgrade)
     {
-        m_prevHeroData = m_heroInfoData = _heroInfoData;
+        m_heroInfoData = _heroInfoData;
+        m_prevGrade = m_heroInfoData.grade;
 
         m_element.scroll.content.anchoredPosition = Vector2.zero;
         m_element.scroll.enabled = true;

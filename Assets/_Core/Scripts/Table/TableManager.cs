@@ -23,6 +23,7 @@ public class TableManager
     public static Table_String_Hero stringHero { get; private set; }
     public static Table_String_Talk scenarioTalk { get; private set; }
     public static Table_String_Base stringMission { get; private set; }
+    public static Table_String_Base stringTraits { get; private set; }
 
     public static Table_Treasure treasure { get; private set; }
     public static Table_FriendShip friendShip { get; private set; }
@@ -48,6 +49,9 @@ public class TableManager
 
     public static Table_TournamentReward tournamentReward { get; private set; }
 
+    public static Table_Traits traits { get; private set; }
+    public static Table_TraitsValue traitsValue { get; private set; }
+
     public static Dictionary<CastleObjectType, Table_Castle_Effect> castleEffect { get; private set; } = new();
 
     public async UniTask InitializeAsync()
@@ -65,6 +69,7 @@ public class TableManager
             stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
             scenarioTalk = new(LoadList<TableStringData>(_result, "String_ScenarioTalk"));
             stringMission = new(LoadList<TableStringData>(_result, "String_Mission"));
+            stringTraits = new(LoadList<TableStringData>(_result, "String_Traits"));
 
             // TODO
             treasure = new(LoadList<TableTreasureData>(_result, "Treasure"));
@@ -93,6 +98,9 @@ public class TableManager
             guideQuestString = new(LoadList<TableStringData>(_result, "String_GuideQuest"));
 
             tournamentReward = new(new());
+
+            traits = new(LoadList<TableTraitsData>(_result, "Traits"));
+            traitsValue = new(LoadList<TableTraitsValueData>(_result, "Traits_Value"));
 
             foreach (var h in _result)
                 h.Value.Release();

@@ -205,7 +205,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             (_item, _idxData) =>
             {
                 _item.SetTreasureDataAsync(DataManager.stat.relic.dataTreasure.ToList(), dbTreasure[_idxData]
-                    , _heroInfo => OnButton_Item(_heroInfo.key.IsActive() ? TabType.Relic : TabType.Treasure, _heroInfo)).Forget();
+                    , _heroInfo => OnButton_Item(TabType.Treasure, _heroInfo)).Forget();
 #if UNITY_EDITOR
                 _item.name = dbTreasure[_idxData].key;
 #endif

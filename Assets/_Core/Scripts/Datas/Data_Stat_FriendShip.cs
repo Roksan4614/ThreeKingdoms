@@ -41,6 +41,7 @@ public class Data_Stat_FriendShip
             m_dbFriendShip[i] = db;
 
             var countNone = db.grade.Count(x => x == GradeType.NONE);
+            //영웅이 다 있다면
             if (countNone == 0)
             {
                 foreach (var d in db.statData)

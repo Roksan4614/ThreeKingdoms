@@ -91,7 +91,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         //능력치 +000.00%\n< size = 80 %> (지휘관 + 000.00 %)
         var statValue = _heroInfoData.relicLevel * 0.01f;
         m_element.txt_stat.text =
-            $"기본 능력치_+{(_heroInfoData.relicLevel * 10).AmountKMBT()}%\n<size=80%> ({_heroInfoData.className}_+{(_heroInfoData.relicLevel * 0.1f).AmountKMBT()}%)";
+            $"기본 능력치_+{(_heroInfoData.relicLevel * 10).AmountKMBT()}%\n<size=80%> ({_heroInfoData.className}_+{(_heroInfoData.relicLevel).AmountKMBT()}%)";
 
         m_element.txt_level.text = $"Lv.{_heroInfoData.relicLevel}";
         m_element.imgPanel.color = Color.white;

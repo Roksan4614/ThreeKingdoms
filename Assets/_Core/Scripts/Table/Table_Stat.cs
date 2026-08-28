@@ -109,13 +109,31 @@ public class TableStatData
             case BattleStatType.defence: defence = _value; break;
             case BattleStatType.critical_damage: critical_damage = _value; break;
             case BattleStatType.critical_rate: critical_rate = _value; break;
-            case BattleStatType.health_max: health_max = (long)_value; break;
+            case BattleStatType.health_max: health = health_max = (long)_value; break;
             case BattleStatType.move_speed: move_speed = _value; break;
             case BattleStatType.attack_speed: attack_speed = _value; break;
             case BattleStatType.cooldown_rate: cooldown_rate = _value; break;
             case BattleStatType.life_steal: life_steal = _value; break;
             case BattleStatType.boss_damage: boss_damage = _value; break;
         }
+    }
+
+    public float GetStatData(BattleStatType _battleStatType)
+    {
+        switch (_battleStatType)
+        {
+            case BattleStatType.attack_power: return attack_power;
+            case BattleStatType.defence: return defence;
+            case BattleStatType.critical_damage: return critical_damage;
+            case BattleStatType.critical_rate: return critical_rate;
+            case BattleStatType.health_max: return health_max;
+            case BattleStatType.move_speed: return move_speed;
+            case BattleStatType.attack_speed: return attack_speed;
+            case BattleStatType.cooldown_rate: return cooldown_rate;
+            case BattleStatType.life_steal: return life_steal;
+            case BattleStatType.boss_damage: return boss_damage;
+        }
+        return 0;
     }
 
     public void SetDefault()

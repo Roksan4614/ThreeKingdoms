@@ -114,6 +114,7 @@ public class HeroInfoData
     [JsonProperty] public bool isMain;
     [JsonProperty] public bool isMine;
     [JsonProperty] public TableStatData statData;
+    [JsonProperty] public List<HeroTraitsData> traits;
 
     [JsonProperty] HeroClassType m_classType;
     [JsonProperty] RegionType m_regionType;
@@ -173,6 +174,17 @@ public class HeroInfoData
                 result[statType] = heroData.coreStatPoint[i] + (int)(grade) * 10 + enchantLevel;
             }
 
+            if (traits != null)
+            {
+                foreach (var t in traits)
+                {
+                    var traitData = TableManager.traitsValue.GetCoreStatData(t.type, t.indexValue);
+
+                    if (result.ContainsKey(traitData.coreStat))
+                        result[traitData.coreStat] += traitData.value;
+                }
+            }
+
             return result;
         }
     }
@@ -197,6 +209,22 @@ public class HeroInfoData
         }
     }
 
+    TableStatData m_resultStat;
     public TableStatData resultStat
-        => statData ?? DataManager.stat.GetResultStat(this);
+    {
+        get
+        {
+            if (isMine == true)
+            {
+                if (m_resultStat == null)
+                    m_resultStat = DataManager.stat.GetResultStat(this);
+                return m_resultStat;
+            }
+            return statData;
+        }
+    }
+
+    public void ResetResultStat() => m_resultStat = null;
+
+    public int countOpenTraits => grade < GradeType.General ? 0 : 3 - (GradeType.Legend - grade);
 }

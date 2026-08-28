@@ -60,7 +60,7 @@ public class TableFriendShipOriginData
     public string key;
     public string heroes;
     public BattleStatType statType;
-    public float value;
+    public int value;
 }
 
 public class TableFriendShipData

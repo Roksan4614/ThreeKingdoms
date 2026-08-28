@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Data_UserInfo
+public partial class Data_UserInfo
 {
     ElementData m_element;
     HeroSortData m_sortData;
@@ -191,11 +191,8 @@ public class Data_UserInfo
         => HasHero(_name.ToString());
     public bool HasHero(string _key)
         => m_element.myHero.FindIndex(x => x.key == _key) > -1;
-
-
     public HeroInfoData GetHeroInfoData(CharacterName _characterName)
         => GetHeroInfoData(_characterName.ToString());
-
     public HeroInfoData GetHeroInfoData(string _key)
     {
         for (int i = 0; i < m_element.myHero.Count; i++)
@@ -216,11 +213,33 @@ public class Data_UserInfo
 
     public void UpdateUpgrade(HeroInfoData _heroData)
     {
-        var index = m_element.myHero.FindIndex(x => x.key.Equals(_heroData.key));
-        var data = m_element.myHero[index];
-        data.enchantLevel = _heroData.enchantLevel;
-        data.grade = _heroData.grade;
-        m_element.myHero[index] = data;
+        var hero = m_element.myHero.Find(x => x.key.Equals(_heroData.key));
+
+        if (hero != null)
+        {
+            hero.enchantLevel = _heroData.enchantLevel;
+            hero.grade = _heroData.grade;
+            SaveData();
+        }
+    }
+
+    public void ResetResultStat(params HeroInfoData[] _heroData)
+    {
+        if (_heroData.Length == 0)
+        {
+            foreach (var h in m_element.myHero)
+                h.ResetResultStat();
+
+            Signal.instance.UpdateHeroStat.Emit(null);
+        }
+        else
+        {
+            foreach (var h in _heroData)
+            {
+                h.ResetResultStat();
+                Signal.instance.UpdateHeroStat.Emit(h.key);
+            }
+        }
 
         SaveData();
     }
@@ -252,17 +271,17 @@ public class Data_UserInfo
 
     public void AddHeroSoul(string _key, int _count)
     {
-        var heroData = GetHeroInfoData(_key);
+        var heroData = m_element.myHero.Find(x => x.key.Equals(_key));
 
-        if (heroData?.isMine == true)
-        {
-            heroData.soulCount += _count;
-            Update(heroData);
-        }
-        else
+        if (heroData == null || heroData.isMine == false)
         {
             var grade = TableManager.hero.GetGradeFromSoulCount(_count);
             AddHero(_key, grade);
+        }
+        else
+        {
+            heroData.soulCount += _count;
+            SaveData();
         }
     }
 
@@ -425,6 +444,9 @@ public class Data_UserInfo
     private int CompareGrade(HeroInfoData x, HeroInfoData y) => x.grade.CompareTo(y.grade) * -1;
     private int CompareEnchantLevel(HeroInfoData x, HeroInfoData y) => x.enchantLevel.CompareTo(y.enchantLevel) * -1;
     #endregion SORT
+
+    #region TRAITS
+    #endregion
 
     struct ElementData
     {

@@ -27,16 +27,60 @@ public class Data_Stat
         if (_heroInfoData.isMine == false)
             return result;
 
-        // todo
-        //var statData = GetBonusStatData(_heroInfoData);
+        Dictionary<BattleStatType, float> bonusRate = new();
+
+        // 유물
+        {
+            var heroRelicBonus = _heroInfoData.relicLevel * 10;
+            var classBonus = relic.bonusClassBonus[_heroInfoData.classType];
+            var resultBonus = heroRelicBonus + classBonus;
+
+            bonusRate.Add(BattleStatType.attack_power, resultBonus);
+            bonusRate.Add(BattleStatType.defence, resultBonus);
+            bonusRate.Add(BattleStatType.health_max, resultBonus);
+        }
+
+        //특성
+        if(_heroInfoData.traits != null)
+        {
+            foreach (var trait in _heroInfoData.traits)
+            {
+                var sd = TableManager.traitsValue.GetStatData(trait.type, trait.indexValue);
+
+                if (bonusRate.ContainsKey(sd.statType))
+                    bonusRate[sd.statType] += sd.value;
+                else
+                    bonusRate.Add(sd.statType, sd.value);
+            }
+        }
+
+        // 보물
+        foreach (var bs in relic.bonusTreasureBonus)
+        {
+            if (bonusRate.ContainsKey(bs.Key))
+                bonusRate[bs.Key] += bs.Value.value;
+            else
+                bonusRate.Add(bs.Key, bs.Value.value);
+        }
+
+        // 인연
+        foreach (var bs in friendShip.bonusStatBonus)
+        {
+            if (bonusRate.ContainsKey(bs.Key))
+                bonusRate[bs.Key] += bs.Value.value;
+            else
+                bonusRate.Add(bs.Key, bs.Value.value);
+        }
+
+        // 최종합산
+        foreach (var br in bonusRate)
+        {
+            var stat = result.GetStatData(br.Key);
+            var resultStat = stat + stat * br.Value * 0.01f;
+            result.SetStatData(br.Key, resultStat);
+        }
 
         return result;
     }
 
-    TableStatData GetBonusStatData(HeroInfoData _heroInfoData)
-    {
-        var statData = new TableStatData();
-
-        return statData;
-    }
 }
