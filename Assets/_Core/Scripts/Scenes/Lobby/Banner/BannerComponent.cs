@@ -45,7 +45,7 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
         m_element.guideArrow.gameObject.SetActive(true);
         switch (_guideQuestType)
         {
-            case GuideQuestType.STORYMODE_PLAY:
+            case GuideQuestType.storymode_play:
                 m_element.guideArrow.transform.SetParent(m_element.story.transform);
                 m_element.guideArrow.transform.localPosition = Vector3.zero;
                 break;

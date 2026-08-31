@@ -279,7 +279,7 @@ public partial class Data_Castle
     {
         var palace = GetCaslteData(CastleObjectType.Palace);
         var effectData = TableManager.castleEffect[CastleObjectType.Palace].Get(palace.level);
-        _callback(effectData.time_stone_sec.Value, effectData.ad_reduce_min.Value);
+        _callback(effectData.save_time_time_stone.Value, effectData.save_time_ad.Value);
     }
 
     public void Release()

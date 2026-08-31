@@ -145,6 +145,9 @@ public class PopupHeroInfo : BasePopupComponent
         // 파워
         m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
 
+        // 내꺼 아니면 특성 감출까?
+        m_element.btnTap[1].gameObject.SetActive(m_heroInfoData.isMine);
+
         // CHARACTER 
         {
             var parent = m_element.panelHero;
@@ -285,7 +288,7 @@ public class PopupHeroInfo : BasePopupComponent
 
         m_element.statAttribute.interactable = false;
 
-        m_heroInfoData = await DataManager.userInfo.API_ChangeTraits(m_heroInfoData.key);
+        m_heroInfoData = await DataManager.userInfo.API_TraitsChange(m_heroInfoData.key);
 
         // 고유 능력치
         SetHeroInfo_CoreStat(m_heroInfoData);

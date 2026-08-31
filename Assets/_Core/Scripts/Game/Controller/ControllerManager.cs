@@ -468,15 +468,15 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
         Transform arrow = null;
         switch (_guideType)
         {
-            case GuideQuestType.NORMAL_ATTACK:
+            case GuideQuestType.normal_attack:
                 arrow = m_element.btnAttack.transform.Find("Arrow");
                 break;
-            case GuideQuestType.MAIN_SKILL_USE:
-                SetActive_GuideQuestArrow(false, GuideQuestType.NORMAL_ATTACK);
+            case GuideQuestType.main_skill_use:
+                SetActive_GuideQuestArrow(false, GuideQuestType.normal_attack);
                 arrow = m_element.skill.transform.Find("Arrow");
                 break;
-            case GuideQuestType.DASH_USE:
-                SetActive_GuideQuestArrow(false, GuideQuestType.MAIN_SKILL_USE);
+            case GuideQuestType.dash_use:
+                SetActive_GuideQuestArrow(false, GuideQuestType.main_skill_use);
                 arrow = m_element.btnDash.transform.Find("Arrow");
                 break;
         }

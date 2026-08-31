@@ -9,6 +9,19 @@ public class Table_Traits : BaseTable<TraitsType, TableTraitsData>
     {
         SetDictionary(x => x.type);
     }
+
+    public TableTraitsData GetTraitRandom(bool _isWithLegend)
+    {
+        var db = m_list.Shuffle();
+        for (int i = 0; i < db.Count; i++)
+        {
+            if (_isWithLegend == false && db[i].isLegend == true)
+                continue;
+
+            return db[i];
+        }
+        return null;
+    }
 }
 
 public class Table_TraitsValue : BaseTable<TraitsType, TableTraitsValueData>

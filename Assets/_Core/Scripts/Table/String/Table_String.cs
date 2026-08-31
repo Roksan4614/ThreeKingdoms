@@ -32,8 +32,8 @@ public class Table_String : Table_String_Base
     public string GetBattleStat(BattleStatType _statType)
         => GetString("BATTLESTAT_" + _statType.ToString().ToUpper());
 
-    public string GetHeroPositionType(HeroPositionType _positionType)
-        => _positionType.ToString().ToUpper().Split("_").Last(); //GetString("HERO_POSITION_" + _positionType.ToString().ToUpper());
+    public string GetHeroPositionType(string _positionType)
+        => TableManager.stringTable.GetString("CHARACTER_POSITION_" + _positionType.ToUpper());
 }
 
 public class Table_String_Hero : Table_String_Base

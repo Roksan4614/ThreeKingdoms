@@ -5,7 +5,7 @@ using UnityEngine;
 
 public partial class Data_UserInfo
 {
-    public async UniTask<HeroInfoData> API_ChangeTraits(string _keyHero)
+    public async UniTask<HeroInfoData> API_TraitsChange(string _keyHero)
     {
         var hero = m_element.myHero.Find(x => x.key == _keyHero);
 
@@ -20,7 +20,7 @@ public partial class Data_UserInfo
         // 새 특성 가져오기
         foreach (var td in unlockTraits)
         {
-            td.type = TableManager.traits.list.RandomFirst().type;
+            td.type = TableManager.traits.GetTraitRandom(td.index == 2).type;
             td.indexValue = TableManager.traitsValue.GetGroupRandomIndex(td.type);
             td.ResetTraitsValueData();
         }
@@ -29,7 +29,7 @@ public partial class Data_UserInfo
         {
             HeroTraitsData traitData = new();
             traitData.index = i;
-            traitData.type = TableManager.traits.list.RandomFirst().type;
+            traitData.type = TableManager.traits.GetTraitRandom(i == 2).type;
             traitData.indexValue = TableManager.traitsValue.GetGroupRandomIndex(traitData.type);
 
             hero.traits.Add(traitData);
@@ -41,4 +41,20 @@ public partial class Data_UserInfo
         return hero.DeepClone();
     }
 
+    public async UniTask<bool> API_TraitsLock(string _keyHero, int _index)
+    {
+        var trait = m_element.myHero.Find(x => x.key == _keyHero)?.traits.Find(x => x.index == _index);
+
+        if (trait == null)
+        {
+            PopupManager.instance.AlertShow("특성을_찾을_수_없습니다.");
+            return false;
+        }
+
+        trait.isLock = !trait.isLock;
+        SaveData();
+
+        await UniTask.NextFrame();
+        return true;
+    }
 }

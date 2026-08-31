@@ -97,9 +97,9 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         var probity = DataManager.castle.GetGateProbityRate();
 
         SetAddItem(i++, " 건물_레벨_상한선", $"{nowData.level_cap ?? -1}", $"{nextData.level_cap ?? -1}");
-        SetAddItem(i++, " 시간석_개당_단축", $"{(nowData.time_stone_sec * probity ?? -1):0.##}s",
-            $"{(nextData.time_stone_sec * probity ?? -1):0.##}s");
-        SetAddItem(i++, " 광고_회당_단축", $"{nowData.ad_reduce_min ?? -1}s", $"{nextData.ad_reduce_min ?? -1}s");
+        SetAddItem(i++, " 시간석_개당_단축", $"{(nowData.save_time_time_stone * probity ?? -1):0.##}s",
+            $"{(nextData.save_time_time_stone * probity ?? -1):0.##}s");
+        SetAddItem(i++, " 광고_회당_단축", $"{nowData.save_time_ad ?? -1}s", $"{nextData.save_time_ad ?? -1}s");
 
         return i;
     }
@@ -164,7 +164,7 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         // 궁성
         {
             var levelPalace = DataManager.castle.GetCaslteData(CastleObjectType.Palace).level;
-            var timeStoneSec = TableManager.castleEffect[CastleObjectType.Palace].Get(levelPalace).time_stone_sec ?? -1;
+            var timeStoneSec = TableManager.castleEffect[CastleObjectType.Palace].Get(levelPalace).save_time_time_stone ?? -1;
             SetAddItem(i++, " 시간석_개당_단축", $"{timeStoneSec}s", probity == 1 ? null : $"{(timeStoneSec * probity):0.##}s", false);
         }
         // 상점

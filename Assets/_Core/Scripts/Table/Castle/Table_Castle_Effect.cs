@@ -24,8 +24,8 @@ public class TableCastleEffectData
 
     // ±Ã¼º
     public int? level_cap;
-    public int? time_stone_sec;
-    public int? ad_reduce_min;
+    public int? save_time_time_stone;
+    public int? save_time_ad;
 
     // ³óÁö
     public float? rice_per_sec_base;

@@ -171,7 +171,8 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
     public ButtonHelper btnUpgradeLeft => m_element.btnArrowLeft;
     public ButtonHelper btnUpgradeRight => m_element.btnArrowRight;
 
-    [SerializeField, HideInInspector]
+    //[SerializeField, HideInInspector]
+    [SerializeField]
     ElementData m_element;
 
     [Serializable]

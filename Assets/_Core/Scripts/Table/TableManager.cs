@@ -12,12 +12,14 @@ public class TableManager
     public static TableManager instance { get; private set; } = new();
 
     public static Table_Hero hero { get; private set; }
+    public static Table_Hero_Position heroPosition { get; private set; }
+
     public static Table_Stat statHero { get; private set; }
     public static Table_Stat statEnemy { get; private set; }
 
     public static Table_Region region { get; private set; }
     public static Table_Item item { get; private set; }
-    public static Table_Scenario scenario { get; private set; }
+    //public static Table_Scenario scenario { get; private set; }
 
     public static Table_String stringTable { get; private set; }
     public static Table_String_Hero stringHero { get; private set; }
@@ -58,11 +60,16 @@ public class TableManager
     {
         await AddressableManager.instance.LoadAssetAsync<TextAsset>(true, _result =>
         {
-            hero = new(LoadList<TableHeroData>(_result, "HeroData"));
-            statHero = new(LoadList<TableStatData>(_result, "HeroStatData"));
-            statEnemy = new(LoadList<TableStatData>(_result, "EnemyStatData"));
+            hero = new(LoadList<TableHeroData>(_result, "s_character"));
+            heroPosition = new(LoadList<TableHeroPositionData>(_result, "s_position"));
+            statHero = new(LoadList<TableStatData>(_result, "s_character_stat_data"));
+            statEnemy = new(LoadList<TableStatData>(_result, "s_enemy_stat_data"));
+            traits = new(LoadList<TableTraitsData>(_result, "s_traits_pool"));
+            traitsValue = new(LoadList<TableTraitsValueData>(_result, "s_traits_value_pool"));
+
+
             item = new(LoadList<TableItemData>(_result, "ItemData"));
-            scenario = new(LoadList<TableScenarioData>(_result, "ScenarioData"));
+            //scenario = new(LoadList<TableScenarioData>(_result, "ScenarioData"));
             region = new(LoadList<TableRegionData>(_result, "RegionData"));
 
             stringTable = new(LoadList<TableStringData>(_result, "String"));
@@ -72,35 +79,32 @@ public class TableManager
             stringTraits = new(LoadList<TableStringData>(_result, "String_Traits"));
 
             // TODO
-            treasure = new(LoadList<TableTreasureData>(_result, "Treasure"));
+            treasure = new(LoadList<TableTreasureData>(_result, "s_treasure"));
             treasure.InitializeStringTable(new Table_String(LoadList<TableStringData>(_result, "String_Treasure")));
             friendShip = new(new());
 
-            castle = new(LoadList<TableCastleData>(_result, "Castle"));
-            castleRise = new(LoadList<TableCastleRiseData>(_result, "CastleRise"));
-            castleMisson = new(LoadList<TableCastleMissionData>(_result, "CastleMission"));
-            castleMissonGrade = new(LoadList<TableCastleMissionGradeData>(_result, "CastleMissionGrade"));
-            castleMissonReward = new(LoadList<TableCastleMissionRewardData>(_result, "CastleMissionReward"));
-            castleOfficeLevel = new(LoadList<TableCastleOfficeLevelData>(_result, "CastleOfficeLevel"));
+            castle = new(LoadList<TableCastleData>(_result, "s_building"));
+            castleRise = new(LoadList<TableCastleRiseData>(_result, "s_building_level"));
+            castleMisson = new(LoadList<TableCastleMissionData>(_result, "s_office_mission"));
+            castleMissonGrade = new(LoadList<TableCastleMissionGradeData>(_result, "s_office_mission_grade"));
+            castleMissonReward = new(LoadList<TableCastleMissionRewardData>(_result, "s_office_mission_reward_pool"));
+            castleOfficeLevel = new(LoadList<TableCastleOfficeLevelData>(_result, "s_office_level"));
             for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
-                castleEffect.Add(i, new(LoadList<TableCastleEffectData>(_result, "Castle" + i)));
+                castleEffect.Add(i, new(LoadList<TableCastleEffectData>(_result, $"s_{i.ToString().ToLower()}_effect" )));
 
-            dailyDungeonGrade = new(LoadList<TableDailyDungeonGradeData>(_result, "DailyDungeonGrade"));
-            dailyDungeonBoss = new(LoadList<TableDailyDungeonBossData>(_result, "DailyDungeonBoss"));
+            dailyDungeonGrade = new(LoadList<TableDailyDungeonGradeData>(_result, "s_daily_dungeon_grade"));
+            dailyDungeonBoss = new(LoadList<TableDailyDungeonBossData>(_result, "s_daily_dungeon_boss"));
 
-            storyNode = new(LoadList<Table_StoryMode_Node.TableStoryModeNodeData>(_result, "StoryMode_Node"));
-            storyUnlock = new(LoadList<Table_StoryMode_Unlock.TableStoryModeUnlockData>(_result, "StoryMode_Unlock"));
-            storyChoice = new(LoadList<Table_StoryMode_Choice.TableStoryModeChoiceData>(_result, "StoryMode_Choice"));
+            storyNode = new(LoadList<Table_StoryMode_Node.TableStoryModeNodeData>(_result, "s_story_node"));
+            storyUnlock = new(LoadList<Table_StoryMode_Unlock.TableStoryModeUnlockData>(_result, "s_story_node_unlock"));
+            storyChoice = new(LoadList<Table_StoryMode_Choice.TableStoryModeChoiceData>(_result, "s_story_node_choice"));
             storyString = new(LoadList<TableStringData>(_result, "String_Story"));
 
-            guideQuest = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "GuideQuest"));
-            guideQuestRepeat = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "GuideQuest_Repeat"));
+            guideQuest = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "s_guide_quest"));
+            guideQuestRepeat = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "s_guide_quest_repeat"));
             guideQuestString = new(LoadList<TableStringData>(_result, "String_GuideQuest"));
 
             tournamentReward = new(new());
-
-            traits = new(LoadList<TableTraitsData>(_result, "Traits"));
-            traitsValue = new(LoadList<TableTraitsValueData>(_result, "Traits_Value"));
 
             foreach (var h in _result)
                 h.Value.Release();

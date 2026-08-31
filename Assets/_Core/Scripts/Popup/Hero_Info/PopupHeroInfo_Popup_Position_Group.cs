@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
 {
-
-    public void Initialize(List<HeroPositionData> _data, UnityAction<HeroPositionType> _onClick)
+    Dictionary<HeroPositionType, ButtonPositionData> m_data = new();
+    public void Initialize(List<TableHeroPositionData> _data, UnityAction<HeroPositionType> _onClick)
     {
         int i = 0;
-        for( ; i < _data.Count; i++)
+        for (; i < _data.Count; i++)
         {
             var d = _data[i];
             ButtonPositionData att = new();
@@ -24,20 +24,32 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
                 att.button.onClick.RemoveAllListeners();
             }
 
-            att.button.onClick.AddListener(() => _onClick(d.key));
+            att.button.onClick.AddListener(() => _onClick(d.type));
             att.txtName.text = d.name;
             att.txtAttribute.text = d.stringAttribute;
 
-            if (d.heroKey.IsActive() == false)
-                att.txtHeroName.gameObject.SetActive(false);
-            else
-            {
-                att.txtHeroName.gameObject.SetActive(true);
-                att.txtHeroName.text = TableManager.hero.Get(d.heroKey).name;
-            }
+            att.transform.ForceRebuildLayout();
+
+            m_data.Add(d.type, att);
         }
 
         transform.ForceRebuildLayout();
+    }
+
+    public void RefreshData()
+    {
+        foreach(var att in m_data)
+        {
+            var hpData = DataManager.heroPosition.GetHeroPositionData(att.Key);
+
+            if (hpData == null)
+                att.Value.txtHeroName.gameObject.SetActive(false);
+            else
+            {
+                att.Value.txtHeroName.gameObject.SetActive(true);
+                att.Value.txtHeroName.text = DataManager.userInfo.GetHeroInfoData(hpData.heroKey).name;
+            }
+        }
     }
 
     #region VALIDATE
@@ -74,6 +86,7 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
             check = _transform.Find("Panel/Box/Check").gameObject;
         }
 
+        public Transform transform => button.transform;
     }
     #endregion VALIDATA
 }

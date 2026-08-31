@@ -25,10 +25,8 @@ public class TableCastleMissionData
 {
     public string key;
     [JsonProperty] CoreStatType req_stat_type;
-    [JsonProperty] string relic_key;
 
     public CoreStatType statType => req_stat_type;
-    public string keyRelic => relic_key;
 }
 
 public enum test

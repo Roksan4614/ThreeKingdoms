@@ -180,10 +180,10 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
             hero.move.SetFlip(true);
             hero.gameObject.SetActive(true);
-            hero.transform.DOLocalMoveX(prevPos.x, .2f).SetEase(Ease.InCubic).Forget();
+            hero.transform.DOLocalMoveX(prevPos.x, .1f).Forget();//.SetEase(Ease.InCubic).Forget();
         }
 
-        hero.anim.PlayAttack();
+        //hero.anim.PlayAttack();
     }
 
     public async UniTask OnButtonAsync_Skip()

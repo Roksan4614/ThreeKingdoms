@@ -11,7 +11,7 @@ public class Table_GuideQuest : BaseTable<string, Table_GuideQuest.TableGuideQue
     }
 
     public TableGuideQuestData GetGuideData(GuideQuestType _guideType)
-        => m_list.Find(x => x.key.ToUpper() == _guideType.ToString());
+        => m_list.Find(x => x.key.ToUpper() == _guideType.ToString().ToUpper());
 
     public TableGuideQuestData GetOpenStageData(int _chater, int _stage)
         => m_list.Find(x => x.startStage[0] == _chater && x.startStage[1] == _stage);

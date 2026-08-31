@@ -13,7 +13,7 @@ public class HeroIconComponent_UserInfo : HeroIconComponent
     {
         SetHeroData(_heroData, null, null);
 
-        m_elementUserInfo.txtPosition.text = TableManager.stringTable.GetHeroPositionType(_heroData.positionType);
+        //m_elementUserInfo.txtPosition.text = TableManager.stringTable.GetHeroPositionType(_heroData.positionType);
         m_elementUserInfo.txtRelicLevel.text = $"Lv.{_heroData.relicLevel}";
 
         // ICON

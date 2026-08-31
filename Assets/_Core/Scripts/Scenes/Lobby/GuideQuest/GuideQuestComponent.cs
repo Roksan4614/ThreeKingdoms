@@ -25,8 +25,8 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
 
         m_element.button.onClick.AddListener(OnButton_Quest);
 
-        if (TutorialManager.instance.IsCompleteGuide(GuideQuestType.DASH_USE))
-            ControllerManager.instance.SetActive_GuideQuestArrow(false, GuideQuestType.DASH_USE);
+        if (TutorialManager.instance.IsCompleteGuide(GuideQuestType.dash_use))
+            ControllerManager.instance.SetActive_GuideQuestArrow(false, GuideQuestType.dash_use);
 
         StartGuideQuest(true);
     }
@@ -92,35 +92,35 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
             var guideType = TutorialManager.data.guideType;
             switch (guideType)
             {
-                case GuideQuestType.MOVE:
+                case GuideQuestType.move:
                     OnButton_Quest();
                     await MoveAsync();
                     break;
-                case GuideQuestType.NORMAL_ATTACK:
+                case GuideQuestType.normal_attack:
                     OnButton_Quest();
                     ControllerManager.instance.SetActive_GuideQuestArrow(true, guideType);
                     await NormalAttackAsync();
                     ControllerManager.instance.SetActive_GuideQuestArrow(false, guideType);
                     break;
-                case GuideQuestType.MAIN_SKILL_USE:
+                case GuideQuestType.main_skill_use:
                     OnButton_Quest();
                     ControllerManager.instance.SetActive_GuideQuestArrow(true, guideType);
                     await MainSkillUseAsync();
                     ControllerManager.instance.SetActive_GuideQuestArrow(false, guideType);
                     break;
-                case GuideQuestType.DASH_USE:
+                case GuideQuestType.dash_use:
                     OnButton_Quest();
                     ControllerManager.instance.SetActive_GuideQuestArrow(true, guideType);
                     await DashUseAsync();
                     ControllerManager.instance.SetActive_GuideQuestArrow(false, guideType);
                     break;
-                case GuideQuestType.STORYMODE_PLAY:
+                case GuideQuestType.storymode_play:
                     BannerComponent.instance.SetActive_GuideArrow(true, guideType);
                     HostTalkboxStart("스토리_모드를_진행해서\n동료를_얻자!", true);
                     await StoryModePlayAsync();
                     BannerComponent.instance.SetActive_GuideArrow(false);
                     break;
-                case GuideQuestType.CHARACTER_DEPLOY:
+                case GuideQuestType.character_deploy:
                     if (TeamManager.instance.members.Count == 1)
                         HostTalkboxStart("얻은 장수를 ", true);
                     await CharacterDeployAsync();
@@ -131,7 +131,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         {
             switch (TutorialManager.data.repeatType)
             {
-                case GuideQuestRepeatType.ENEMY_KILL:
+                case GuideQuestRepeatType.enemy_kill:
                     break;
             }
         }
@@ -177,41 +177,41 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                 var talkbox = TeamManager.instance.mainHero.talkbox;
                 switch (TutorialManager.data.guideType)
                 {
-                    case GuideQuestType.MOVE:
+                    case GuideQuestType.move:
                         {
                             HostTalkboxStart(Configure.isPC ?
                                 "[W,A,S,D]를_눌러\n이동해보자." :
                                 "화면을_터치해_이동해보자.");
                         }
                         break;
-                    case GuideQuestType.NORMAL_ATTACK:
+                    case GuideQuestType.normal_attack:
                         {
                             HostTalkboxStart(Configure.isPC ?
                                     "[X]키를_눌러_공격해보자.\n화면을_터치해도_가능해." :
                                     "공격_버튼을_눌러보자.");
                         }
                         break;
-                    case GuideQuestType.MAIN_SKILL_USE:
+                    case GuideQuestType.main_skill_use:
                         {
                             HostTalkboxStart(Configure.isPC ?
                                     "[C]키를_누른_후_좌클릭해봐.\n버튼을_눌러서도_가능해." :
                                     "스킬_버튼을_눌러보자.");
                         }
                         break;
-                    case GuideQuestType.DASH_USE:
+                    case GuideQuestType.dash_use:
                         {
                             HostTalkboxStart(Configure.isPC ?
                                 "[SpaceBar]키를_눌러보자.\n버튼을_눌러서도_가능해." :
                                 "대쉬_버튼을_눌러보자.");
                         }
                         break;
-                    case GuideQuestType.STORYMODE_PLAY:
+                    case GuideQuestType.storymode_play:
                         BannerComponent.instance.story.OnButtonAsync_OpenPopup().Forget();
                         break;
-                    case GuideQuestType.CHARACTER_DEPLOY:
+                    case GuideQuestType.character_deploy:
                         LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Hero);
                         break;
-                    case GuideQuestType.DAILY_DUNGEON_PLAY:
+                    case GuideQuestType.daily_dungeon_play:
                         LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Boss);
                         break;
                 }

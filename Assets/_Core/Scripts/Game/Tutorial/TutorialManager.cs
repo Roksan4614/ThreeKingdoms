@@ -87,7 +87,7 @@ public partial class TutorialManager
             {
                 switch (type)
                 {
-                    case GuideQuestRepeatType.STAGE_BOSS_KILL:
+                    case GuideQuestRepeatType.stage_boss_kill:
                         {
                             m_data.stageKey++;
                             if (m_data.stageKey > 10)
@@ -169,7 +169,7 @@ public partial class TutorialManager
         public GuideQuestRepeatType nowRepeatType => isGuide ? GuideQuestRepeatType.NONE : repeatType;
         public bool isGuide => guideType > GuideQuestType.NONE;
         public string name => TableManager.guideQuestString.Get(
-            $"{(isGuide ? "GUIDE_" : "REPEAT_")}{(isGuide ? guideType : repeatType)}_TITLE"
+            $"{(isGuide ? "GUIDE_" : "REPEAT_")}{(isGuide ? guideType.ToString().ToUpper() : repeatType.ToString().ToUpper())}_TITLE"
             ).message;
         public Table_GuideQuest.TableGuideQuestData tableData =>
             isGuide ?
@@ -203,16 +203,16 @@ public enum GuideQuestType
 {
     NONE = -1,
 
-    MOVE,                               // 이동하기
-    NORMAL_ATTACK,                      // 기본공격 하기
-    MAIN_SKILL_USE,                     // 스킬 사용하기
-    DASH_USE,                           // 대쉬 사용하기
-    STORYMODE_PLAY,                     // 스토리모드 클리어하기
-    CHARACTER_DEPLOY,                   // 장수 배치하기
-    DAILY_DUNGEON_PLAY,                 // 요일 던전
+    move,                               // 이동하기
+    normal_attack,                      // 기본공격 하기
+    main_skill_use,                     // 스킬 사용하기
+    dash_use,                           // 대쉬 사용하기
+    storymode_play,                     // 스토리모드 클리어하기
+    character_deploy,                   // 장수 배치하기
+    daily_dungeon_play,                 // 요일 던전
 
     CASTLE_START,
-    CASTLE_WALLY,
+    castle_wally,
     CASTLE_FINISHED,
 
     MAX
@@ -222,15 +222,15 @@ public enum GuideQuestRepeatType
 {
     NONE = -1,
 
-    ENEMY_KILL,                                // 적 처치하기
-    TOURNAMENT_PLAY,                           // 토너먼트 참여하기
-    RAID_PLAY,                                 // 레이드 참여하기
-    GACHA_PROGRESS,                            // 장수 모집 진행하기
-    FARM_RICE_EARN,                            // 군량 수확하기
-    MARKET_GOLD_EARN,                          // 금화 수확하기
-    OFFICE_MISSION_PROGRESS,                   // 관아 파견 보내기
-    DAILY_DUNGEON_PLAY,                        // 요일던전 플레이하기
-    STAGE_BOSS_KILL,                           // 스테이지 보스 처치
+    enemy_kill,                                // 적 처치하기
+    tournament_play,                           // 토너먼트 참여하기
+    raid_play,                                 // 레이드 참여하기
+    gacha_progress,                            // 장수 모집 진행하기
+    farm_rice_earn,                            // 군량 수확하기
+    market_gold_earn,                          // 금화 수확하기
+    office_mission_progress,                   // 관아 파견 보내기
+    daily_dungeon_play,                        // 요일던전 플레이하기
+    stage_boss_kill,                           // 스테이지 보스 처치
 
     MAX
 }

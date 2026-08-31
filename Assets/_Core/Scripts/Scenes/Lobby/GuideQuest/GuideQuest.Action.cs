@@ -7,7 +7,7 @@ public partial class TutorialManager
         if (DataManager.instance.isLobby == false)
             return;
 
-        if (m_data.nowRepeatType == GuideQuestRepeatType.ENEMY_KILL)
+        if (m_data.nowRepeatType == GuideQuestRepeatType.enemy_kill)
             Update();
     }
 
@@ -16,13 +16,13 @@ public partial class TutorialManager
         if (DataManager.instance.isLobby == false)
             return;
 
-        if (m_data.nowRepeatType == GuideQuestRepeatType.STAGE_BOSS_KILL)
+        if (m_data.nowRepeatType == GuideQuestRepeatType.stage_boss_kill)
             Update();
     }
 
     public void Action_DailyDungeonPlay()
     {
-        if (m_data.guideType == GuideQuestType.DAILY_DUNGEON_PLAY)
+        if (m_data.guideType == GuideQuestType.daily_dungeon_play)
             Update();
     }
 }

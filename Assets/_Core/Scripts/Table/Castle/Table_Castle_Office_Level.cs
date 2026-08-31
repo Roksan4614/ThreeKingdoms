@@ -17,6 +17,5 @@ public class TableCastleOfficeLevelData
     public int level;
     public int req_xp;
     public int accum_xp;
-    public int upgrade_seconds;
 
 }

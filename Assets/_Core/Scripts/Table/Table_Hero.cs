@@ -9,7 +9,7 @@ public class Table_Hero : BaseTable<string, TableHeroData>
 {
     public List<TableHeroData> GetHeroList()
     {
-        return m_list.Where(x => x.is_active_lock == false).ToList();
+        return m_list.Where(x => x.is_lock_active == false).ToList();
     }
 
     public Table_Hero(List<TableHeroData> _table) : base(_table)
@@ -60,12 +60,13 @@ public class Table_Hero : BaseTable<string, TableHeroData>
 public class TableHeroData
 {
     public string key;
+    
+    public bool is_lock_active;
 
-    public HeroClassType classType;
-    public RegionType regionType;
-    public bool is_active_lock;
+    [JsonProperty] HeroClassType character_class; public HeroClassType classType => character_class;
+    [JsonProperty] RegionType country; public RegionType regionType => country;
 
-    [JsonProperty] bool is_lock; public bool isLock => is_lock;
+    [JsonProperty] bool is_lock_summon; public bool isLockSummon => is_lock_summon;
     [JsonProperty] float percent_start_cooldown;
     [JsonProperty] float skill_cooltime;
 
@@ -220,6 +221,8 @@ public class HeroInfoData
                     m_resultStat = DataManager.stat.GetResultStat(this);
                 return m_resultStat;
             }
+            else if (statData == null)
+                statData = TableManager.statHero.GetStatData(this);
             return statData;
         }
     }
