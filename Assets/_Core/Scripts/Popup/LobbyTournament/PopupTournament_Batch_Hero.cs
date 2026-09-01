@@ -12,12 +12,6 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 {
     bool m_isAttackType;
 
-    public struct BatchData
-    {
-        public TournamentBatchData batch;
-        public bool isUpdated;
-    }
-
     BatchData m_batchData_Attack;
     BatchData m_batchData_Defence;
 
@@ -118,20 +112,32 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
     protected override void OnEnable()
     {
         if (m_isStarted == true)
+        {
             m_element.scroll.content.anchoredPosition = Vector2.zero;
+
+            //유물 쪽에서 넘어온거야. 이건 그냥 
+            if (m_isNeedUpdateLayout == true)
+            {
+                m_batchData_Attack.batch = TournamentWorker.instance.GetBatchData(true);
+                m_batchData_Defence.batch = TournamentWorker.instance.GetBatchData(false);
+
+                m_batchData_Attack.ResetResultStat();
+                m_batchData_Defence.ResetResultStat();
+
+                m_isNeedUpdateLayout = false;
+
+                m_elementTournament.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
+            }
+        }
     }
 
-    protected override void UpdateHeroes()
+    protected override void UpdateHeroes(HeroInfoData _heroData)
     {
-        for (int i = 0; i < batchData.heroes.Count; i++)
-        {
-            var data = batchData.heroes[i];
+        m_batchData_Attack.UpdateHeroInfo(_heroData);
+        m_batchData_Defence.UpdateHeroInfo(_heroData);
 
-            var newData = DataManager.userInfo.GetHeroInfoData(data.key);
-            data.grade = newData.grade;
-            data.enchantLevel = newData.enchantLevel;
-            batchData.heroes[i] = data;
-        }
+        //TournamentWorker.instance.UpdateHero(true, m_batchData_Attack.batch.heroes);
+        //TournamentWorker.instance.UpdateHero(false, m_batchData_Defence.batch.heroes);
 
         m_elementTournament.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
         SetLayout_List();
@@ -192,6 +198,8 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
             heroData.isMain = false;
             heroData.sortIdx = _sortIdx;
             heroData.isBatch = true;
+            heroData.isTournament = true;
+            heroData.isTournament_Attack = m_isAttackType;
             batchData.heroes[idxHero] = heroData;
         };
 
@@ -250,13 +258,20 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         isUpdated = true;
     }
 
+    public void Open()
+    {
+        m_batchData_Attack.batch = TournamentWorker.instance.GetBatchData(true);
+        m_batchData_Defence.batch = TournamentWorker.instance.GetBatchData(false);
+    }
+
     public void OnButton_Type(bool _isAttackType, bool _isForce = false)
     {
         if (m_isAttackType == _isAttackType && _isForce == false)
             return;
 
         m_isAttackType = TournamentWorker.instance.isAttackType = _isAttackType;
-        batchData = TournamentWorker.instance.GetBatchData(m_isAttackType);
+        if (batchData == null)
+            batchData = TournamentWorker.instance.GetBatchData(m_isAttackType);
 
         m_elementTournament.btnAttack.SetDrawSelect(_isAttackType == true);
         m_elementTournament.btnDefence.SetDrawSelect(_isAttackType == false);
@@ -380,6 +395,8 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
             itemData.isMain = false;
             itemData.isBatch = true;
+            itemData.isTournament = true;
+            itemData.isTournament_Attack = m_isAttackType;
             itemData.sortIdx = TournamentWorker.instance.GetPositionByClass(batchData, itemData.classType);
 
             batchData.heroes.Add(itemData);
@@ -468,5 +485,36 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
 
             power = _transform.GetComponent<UIPowerHelper>("Power");
         }
+    }
+
+    public struct BatchData
+    {
+        public TournamentBatchData batch;
+        public bool isUpdated;
+
+        public void UpdateHeroInfo(HeroInfoData _heroData)
+        {
+            var idxHero = batch.heroes.FindIndex(x => x.key == _heroData.key);
+            if (idxHero > -1)
+            {
+                var hero = batch.heroes[idxHero];
+                hero.grade = _heroData.grade;
+                hero.enchantLevel = _heroData.enchantLevel;
+                hero.relicLevel = _heroData.relicLevel;
+                hero.traits = new();
+                if (_heroData.traits != null)
+                    hero.traits.AddRange(_heroData.traits);
+                hero.ResetResultStat();
+                batch.heroes[idxHero] = hero;
+                isUpdated = true;
+            }
+        }
+
+        public void ResetResultStat()
+        {
+            foreach (var h in batch.heroes)
+                h.ResetResultStat();
+        }
+
     }
 }

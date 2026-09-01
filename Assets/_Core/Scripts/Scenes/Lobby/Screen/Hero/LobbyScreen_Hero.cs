@@ -81,7 +81,7 @@ public class LobbyScreen_Hero : LobbyScreen_Base
     public override void Close(bool _isTween = true)
     {
         // SaveData
-        (m_tabs[HeroTabType.Hero] as LobbyScreen_Hero_Hero).SaveDataAsync().Forget();
+        (m_tabs[HeroTabType.Hero] as LobbyScreen_Hero_Hero).Close_SaveDataAsync().Forget();
         base.Close(_isTween);
     }
     public override void OnManualValidate()

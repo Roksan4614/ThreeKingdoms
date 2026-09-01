@@ -24,7 +24,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
     TeamPositionType m_teamPosition;
 
-    bool m_isNeedUpdateLayout;
+    protected bool m_isNeedUpdateLayout;
 
     protected override void Awake()
     {
@@ -182,6 +182,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             SetLayout_List();
         }
 
+        m_isNeedUpdateLayout = false;
         m_element.scroll.content.anchoredPosition = Vector2.zero;
         m_teamPosition = DataManager.option.mainTeamPosition;
     }
@@ -223,7 +224,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         await UniTask.Yield();
     }
 
-    public async UniTask SaveDataAsync()
+    public async UniTask Close_SaveDataAsync()
     {
         List<string> resultSkins = m_itemBatch.FindAll(x => x.data != null).Select(x => x.data.skin).ToList();
         m_isNeedUpdateLayout = m_isNeedUpdateLayout || m_openHeroSkins.Count != resultSkins.Count;
@@ -244,11 +245,8 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         if (m_isNeedUpdateLayout)
         {
-            //OnEnable();
-            m_isNeedUpdateLayout = false;
             MapManager.instance.FadeDimm(true, 0f);
 
-            //var heroList = m_itemBatch.FindAll(x => x.data.isActive == true).Select(x => x.data).ToList();
             var heroList = m_itemList.FindAll(x => x.data.isMine == true).Select(x => x.data).ToList();
             for (int i = 0; i < heroList.Count; i++)
             {
@@ -261,18 +259,6 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             Signal.instance.UpdateTeamPosition.Emit();
 
             EffectWorker.instance.ResetEffect();
-
-            //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
-            //{
-            //    await TeamManager.instance.SpawnUpdateAsync();
-
-            //    DataManager.userInfo.SortTeamPosition(TeamManager.instance.members.Select(x => x.Value.info).ToList());
-
-            //    TeamManager.instance.RepositionToMain(0, true);
-
-            //    MapManager.instance.FadeDimm(false);
-            //    return;
-            //}
 
             TeamManager.instance.SetState(CharacterStateType.None);
             StageManager.instance.SetState(CharacterStateType.None);
@@ -346,21 +332,18 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             if (idx > -1)
                 m_myHero[idx] = m_popupHeroInfo.heroInfoData;
 
-            UpdateHeroes();
+            UpdateHeroes(m_popupHeroInfo.heroInfoData);
         }
         //SetLayout_List(DataManager.userInfo.GetHeroInfoData(_data.key));
     }
 
-    protected virtual void UpdateHeroes()
+    protected virtual void UpdateHeroes(HeroInfoData _heroData)
     {
-        for (int i = 0; i < m_myHero.Count; i++)
-        {
-            var itemBatch = m_itemBatch.Find(x => x.key == m_myHero[i].key);
-            itemBatch?.UpdateHeroInfo(m_myHero[i]);
+        var itemBatch = m_itemBatch.Find(x => x.key == _heroData.key);
+        itemBatch?.UpdateHeroInfo(_heroData);
 
-            var itemList = m_itemList.Find(x => x.key == m_myHero[i].key);
-            itemList.UpdateHeroInfo(m_myHero[i]);
-        }
+        var itemList = m_itemList.Find(x => x.key == _heroData.key);
+        itemList.UpdateHeroInfo(_heroData);
 
         SetLayout_Batch();
         SetLayout_List();

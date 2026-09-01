@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Tournament;
 using System.Collections.Generic;
 
 public class Data_Stat
@@ -41,7 +42,7 @@ public class Data_Stat
         }
 
         //특성
-        if(_heroInfoData.traits != null)
+        if (_heroInfoData.traits != null)
         {
             foreach (var trait in _heroInfoData.traits)
             {
@@ -55,12 +56,32 @@ public class Data_Stat
         }
 
         // 보물
-        foreach (var bs in relic.bonusTreasureBonus)
+        if (_heroInfoData.isTournament)
         {
-            if (bonusRate.ContainsKey(bs.Key))
-                bonusRate[bs.Key] += bs.Value.value;
-            else
-                bonusRate.Add(bs.Key, bs.Value.value);
+            var batchData = TournamentWorker.instance.GetBatchData(_heroInfoData.isTournament_Attack);
+
+            foreach (var bs in batchData.treasure)
+            {
+                var db = TableManager.treasure.Get(bs.key);
+
+                foreach (var effect in db.dbEffect)
+                {
+                    if (bonusRate.ContainsKey(effect.Key))
+                        bonusRate[effect.Key] += effect.Value.value;
+                    else
+                        bonusRate.Add(effect.Key, effect.Value.value);
+                }
+            }
+        }
+        else
+        {
+            foreach (var bs in relic.bonusTreasureBonus)
+            {
+                if (bonusRate.ContainsKey(bs.Key))
+                    bonusRate[bs.Key] += bs.Value.value;
+                else
+                    bonusRate.Add(bs.Key, bs.Value.value);
+            }
         }
 
         // 인연

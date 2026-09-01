@@ -117,6 +117,9 @@ public class HeroInfoData
     [JsonProperty] public TableStatData statData;
     [JsonProperty] public List<HeroTraitsData> traits;
 
+    [JsonProperty] public bool isTournament;
+    [JsonProperty] public bool isTournament_Attack;
+
     [JsonProperty] HeroClassType m_classType;
     [JsonProperty] RegionType m_regionType;
     public HeroClassType classType => m_classType;

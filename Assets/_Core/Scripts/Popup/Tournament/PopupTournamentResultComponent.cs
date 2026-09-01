@@ -30,12 +30,12 @@ public class PopupTournamentResultComponent : BasePopupComponent
     {
         bool isWin = TournamentHeroInfoManager.instance.IsWin();
 
-        var prevRankerData = TournamentWorker.instance.rankData;
-        var rankerData = await TournamentWorker.instance.API_Result();
-
         m_element.title.gameObject.SetActive(false);
         m_element.panel.gameObject.SetActive(false);
         m_element.btnExit.gameObject.SetActive(false);
+
+        var prevRankerData = TournamentWorker.instance.rankData.DeepClone();
+        var rankerData = await TournamentWorker.instance.API_Result();
 
         await UniTask.WaitForSeconds(.5f);
 

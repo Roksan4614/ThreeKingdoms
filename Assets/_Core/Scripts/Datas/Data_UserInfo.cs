@@ -223,9 +223,9 @@ public partial class Data_UserInfo
         }
     }
 
-    public void ResetResultStat(params HeroInfoData[] _heroData)
+    public void ResetResultStat(params string[] _heroKey)
     {
-        if (_heroData.Length == 0)
+        if (_heroKey.Length == 0)
         {
             foreach (var h in m_element.myHero)
                 h.ResetResultStat();
@@ -234,10 +234,10 @@ public partial class Data_UserInfo
         }
         else
         {
-            foreach (var h in _heroData)
+            foreach (var k in _heroKey)
             {
-                h.ResetResultStat();
-                Signal.instance.UpdateHeroStat.Emit(h.key);
+                m_element.myHero.Find(x => x.key == k)?.ResetResultStat();
+                Signal.instance.UpdateHeroStat.Emit(k);
             }
         }
 

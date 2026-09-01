@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Table_Hero_Position : BaseTable<HeroPositionType, TableHeroPositionData>
 {
@@ -37,6 +38,7 @@ public struct TableHeroPositionData
         {
             if (m_statData == null)
             {
+                m_statData = new();
                 var db = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, int>>(effect);
                 foreach (var d in db)
                 {
@@ -64,7 +66,20 @@ public struct TableHeroPositionData
                 if (idx > 0)
                     result += "\n";
 
-                result += $"{s.statName} {s.stringPoint}";
+                string stringPoint = "";
+                switch (s.statType)
+                {
+                    case BattleStatType.attack_power:
+                    case BattleStatType.defence:
+                    case BattleStatType.health_max:
+                        stringPoint = $"+{Mathf.RoundToInt(s.value).AmountKMBT()}";
+                        break;
+                    default:
+                        stringPoint = $"+{s.value.AmountKMBT()}%";
+                        break;
+                }
+
+                result += $"{s.statName} {stringPoint}";
                 idx++;
             }
             return result;

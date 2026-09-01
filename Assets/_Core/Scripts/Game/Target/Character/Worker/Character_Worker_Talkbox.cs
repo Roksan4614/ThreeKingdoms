@@ -109,10 +109,10 @@ public class Character_Worker_Talkbox : Character_Worker
 
     public void SetTyping(bool _isTyping) => isTyping = _isTyping;
 
-    public async UniTask WaitFinishTyping()
+    public async UniTask WaitFinishTyping(CancellationToken _token)
     {
-        await UniTask.WaitUntil(() => isTyping == true);
-        await UniTask.WaitUntil(() => isTyping == false);
+        await UniTask.WaitUntil(() => isTyping == true, cancellationToken: _token);
+        await UniTask.WaitUntil(() => isTyping == false, cancellationToken: _token);
     }
 
     public void Start(CancellationToken _token, params string[] _talks)

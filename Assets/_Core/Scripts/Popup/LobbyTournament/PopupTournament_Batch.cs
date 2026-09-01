@@ -1,6 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Rev9.Tournament;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,6 +34,8 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
         Utils.SetActivePunch(m_element.panelHero.parentList, true);
 
         OnButton_Tab(TabType.Hero);
+
+        m_element.panelHero.Open();
         m_element.panelHero.OnButton_Type(true, true);
 
         await UniTask.WaitUntil(() => m_isCloseStart == true, cancellationToken: destroyCancellationToken);

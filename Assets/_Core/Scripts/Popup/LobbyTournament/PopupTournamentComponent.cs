@@ -232,13 +232,13 @@ public class PopupTournamentComponent : BasePopupComponent
             case TournamentPopupType.Batch:
                 {
                     // 열었는데 공격 배치가 바뀌었어? 그럼 업데이트 해줘야지
-                    if (await m_element.popupBatch.OpenAsync())
-                    {
-                        //IngameLog.Add("배치팝업 이후 업데이트");
-                        var batchData = TournamentWorker.instance.GetBatchData(true);
-                        m_element.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
+                    bool isUpdated = await m_element.popupBatch.OpenAsync();
+                    //IngameLog.Add("배치팝업 이후 업데이트");
+                    var batchData = TournamentWorker.instance.GetBatchData(true);
+                    m_element.power.text = batchData.totalPower.AmountKMBT(_isMBT: true);
+
+                    if (isUpdated)
                         await m_element.panelBatch.SetBatchDataAsync(batchData);
-                    }
                 }
                 break;
             case TournamentPopupType.Reward:

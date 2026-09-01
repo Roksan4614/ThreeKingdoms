@@ -24,43 +24,68 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
                 continue;
 
             var group = Instantiate(m_element.baseGroup, m_element.scroll.content);
-            group.Initialize(data, _type => OnButtonAsync(_type).Forget());
+            group.Initialize(type, data, (_category, _type) => OnButtonAsync(_category, _type).Forget());
 
             m_group.Add(type, group);
         }
 
         DestroyImmediate(m_element.baseGroup.gameObject);
         m_element.scroll.transform.ForceRebuildLayout();
+
+        RefreshData();
     }
 
-    public void SetActive(string _heroKey)
+    public bool isNeedUpdate { get; private set; }
+
+    public async UniTask<bool> OpenPopupAsync(string _heroKey)
     {
+        isNeedUpdate = false;
         gameObject.SetActive(true);
         m_heroKey = _heroKey;
 
         m_element.scroll.content.anchoredPosition = Vector2.zero;
         RefreshData();
+
+        await UniTask.WaitUntil(() => gameObject.activeSelf == false);
+
+        return isNeedUpdate;
     }
 
-    void RefreshData()
+    void RefreshData(CategoryType_HeroPositon _category = CategoryType_HeroPositon.NONE, HeroPositionType _heroPositionType = HeroPositionType.NONE)
     {
-        foreach (var g in m_group)
-            g.Value.RefreshData();
+        if (_heroPositionType > HeroPositionType.NONE)
+            m_group[_category].RefreshData(_heroPositionType);
+        else
+        {
+            foreach (var g in m_group)
+                g.Value.RefreshData();
+        }
     }
 
     bool m_isDoing = false;
-    async UniTask OnButtonAsync(HeroPositionType _heroPositionType)
+    async UniTask OnButtonAsync(CategoryType_HeroPositon _category, HeroPositionType _heroPositionType)
     {
         if (m_isDoing == true)
             return;
 
-        IngameLog.Add("OnButton: " + _heroPositionType);
         m_isDoing = true;
+
+        HeroPositionData prevData = DataManager.heroPosition.GetHeroPosition(m_heroKey);
 
         bool result = await DataManager.heroPosition.API_BindPosition(m_heroKey, _heroPositionType);
 
         if (result == true)
-            RefreshData();
+        {
+            RefreshData(_category, _heroPositionType);
+
+            if (prevData != null)
+            {
+                var prevCategory = prevData.positionData.category;
+                RefreshData(prevCategory, prevData.type);
+            }
+
+            isNeedUpdate = true;
+        }
 
         m_isDoing = false;
     }

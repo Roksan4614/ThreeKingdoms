@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +17,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         m_startPosY = m_element.rt.anchoredPosition.y;
 
         m_guide = transform.GetComponent<CharacterComponent>("Talkbox/Host/Guide");
+        //m_guide.talkbox.SetMaxWidth(790);
     }
 
     private void Start()
@@ -221,6 +223,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
 
     void HostTalkboxStart(string _message, bool _isLoop = false)
         => HostTalkboxStartAsync(_message, _isLoop).Forget();
+    CancellationTokenSource m_ctsTalk;
     async UniTask HostTalkboxStartAsync(string _message, bool _isLoop = false)
     {
         if (m_guide.gameObject.activeSelf == false)
@@ -244,20 +247,25 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                 .SetEase(Ease.Linear).Forget();
 
             await UniTask.WaitForSeconds(.5f);
-        }
 
-        if (m_guide.talkbox.isActive == false)
-        {
             m_guide.talkbox.rt.pivot = new Vector2(0, .3f);
             m_guide.talkbox.rt.SetAnchoredPosition(0, 190);
+        }
+
+        if (m_guide.talkbox.isTyping == false)
+        {
+            m_ctsTalk = m_ctsTalk.ReleaseCTS(true);
+            var token = m_ctsTalk.Token;
 
             m_guide.anim.Play("Talk", 1);
-            if (_isLoop == true)
-                m_guide.talkbox.Start(destroyCancellationToken, _message);
-            else
-                m_guide.talkbox.Start_AutoClose(destroyCancellationToken, _message);
 
-            await m_guide.talkbox.WaitFinishTyping();
+            m_guide.talkbox.Start(destroyCancellationToken, _message);
+            //if (_isLoop == true)
+            //    m_guide.talkbox.Start(destroyCancellationToken, _message);
+            //else
+            //    m_guide.talkbox.Start_AutoClose(destroyCancellationToken, _message);
+
+            await m_guide.talkbox.WaitFinishTyping(token);
 
             m_guide.anim.Play("NONE", 1);
         }

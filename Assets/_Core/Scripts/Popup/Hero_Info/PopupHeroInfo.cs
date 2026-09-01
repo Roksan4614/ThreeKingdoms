@@ -33,11 +33,11 @@ public class PopupHeroInfo : BasePopupComponent
     {
         //m_element.btnCharacter.onClick.AddListener(() => m_character.anim.Play(CharacterAnimType.Attack));
 
-        m_element.btnStatus.onClick.AddListener(
+        m_element.btnPosition.onClick.AddListener(
             () =>
             {
                 if (m_heroInfoData.isMine == true)
-                    m_element.popupPosition.SetActive(m_heroInfoData.key);
+                    OpenPopupAsync_Position().Forget();
             });
 
         for (int i = 0; i < m_element.popup.childCount; i++)
@@ -132,9 +132,9 @@ public class PopupHeroInfo : BasePopupComponent
         var key = $"{_data.regionType}_{_data.key}".ToUpper();
         m_element.txtName.text = $"{TableManager.stringHero.GetString("NAME_" + key)}<size=80%><color=#888888> {TableManager.stringHero.GetString("COURTESY_" + key)}";
         m_element.txtDescTalk.text = _data.talk;
-        //m_element.txtEnchantLevel.text = _isJustWatch ? "" : $"(+{_data.enchantLevel})";
         m_element.txtEnchantLevel.text = _data.enchantLevel == 0 ? "" : $"(+{_data.enchantLevel})";
         SetHeroInfoText($"등급_:_{_data.gradeClass}");
+        SetPositionType();
 
         // 고유 능력치
         SetHeroInfo_CoreStat(m_heroInfoData);
@@ -304,6 +304,21 @@ public class PopupHeroInfo : BasePopupComponent
         m_element.statAttribute.interactable = true;
     }
 
+    async UniTask OpenPopupAsync_Position()
+    {
+        if( await m_element.popupPosition.OpenPopupAsync(m_heroInfoData.key))
+            SetPositionType();
+    }
+
+    void SetPositionType()
+    {
+        var pd = DataManager.heroPosition.GetHeroPosition(m_heroInfoData.key);
+        if (pd == null)
+            m_element.btnPosition.text = "없음";
+        else
+            m_element.btnPosition.text = pd.positionData.name;
+    }
+
     public async UniTask AutoCloseAsync(float _duration)
     {
         string key = "{0}초후_닫힘._터치하면_취소됩니다.";
@@ -357,7 +372,8 @@ public class PopupHeroInfo : BasePopupComponent
     public override void OnManualValidate()
         => m_element.Initialize(transform);
 
-    [SerializeField, HideInInspector]
+    //[SerializeField, HideInInspector]
+    [SerializeField]
     ElementData m_element;
     [Serializable]
     struct ElementData
@@ -365,7 +381,7 @@ public class PopupHeroInfo : BasePopupComponent
         public Transform panel;
         public Transform panelHero;
         //public Button btnCharacter;
-        public Button btnStatus;
+        public ButtonHelper btnPosition;
 
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtInfo;
@@ -397,7 +413,7 @@ public class PopupHeroInfo : BasePopupComponent
             //btnCharacter = panel.GetComponent<Button>("btn_character");
 
             var frontPanel = panel.Find("FrontPanel");
-            btnStatus = frontPanel.GetComponent<Button>("btn_status");
+            btnPosition = frontPanel.GetComponent<ButtonHelper>("btn_position");
             txtName = frontPanel.GetComponent<TextMeshProUGUI>("txt_name");
             txtInfo = frontPanel.GetComponent<TextMeshProUGUI>("txt_info");
             txtEnchantLevel = frontPanel.GetComponent<TextMeshProUGUI>("txt_level");

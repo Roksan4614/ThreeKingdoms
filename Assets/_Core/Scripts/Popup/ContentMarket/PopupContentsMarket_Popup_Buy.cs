@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -56,7 +57,7 @@ namespace Rev9.ContentsMarket
             m_element.rewardItem.SetItemData(_productData.itemData);
             string peroidType = TableManager.stringTable.GetString("PEROID_TYPE_" + _productData.peroidType.ToString().ToUpper());
             m_element.txtLimitCount.text = $"({peroidType} {_productData.strRemainCount})";
-            
+
             OnButton_MinMax(true);
         }
 
@@ -82,7 +83,11 @@ namespace Rev9.ContentsMarket
 
             if (isSuccess)
             {
-                RewardWorker.OpenRewardPopup(m_productData.itemData);
+                List<ItemData> rewards = new();
+                for (int i = 0; i < m_buyCount; i++)
+                    rewards.Add(m_productData.itemData);
+
+                RewardWorker.OpenRewardPopup(rewards.ToArray());
                 PopupManager.instance.GetPopup<PopupContentsMarketComponent>(PopupType.ContentsMarket).SetProductLayout();
                 Close();
             }

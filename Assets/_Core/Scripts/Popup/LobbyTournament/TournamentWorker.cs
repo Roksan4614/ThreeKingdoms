@@ -75,7 +75,7 @@ namespace Rev9.Tournament
 
         public void StopTimer() => m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
 
-        // 승급이나 강화했을 때 
+        // 승급이나 강화, 유물 강화했을 때 
         public void UpdateHero()
         {
             if (m_data.IsActive() == false)
@@ -92,6 +92,8 @@ namespace Rev9.Tournament
                     var data = m_data.teamAttack.heroes[i];
                     data.grade = newData.grade;
                     data.enchantLevel = newData.enchantLevel;
+                    data.relicLevel = newData.relicLevel;
+                    data.ResetResultStat();
                     m_data.teamAttack.heroes[i] = data;
                 }
                 if (m_data.teamDefence?.heroes != null && i < m_data.teamDefence.heroes.Count)
@@ -100,10 +102,19 @@ namespace Rev9.Tournament
                     var data = m_data.teamDefence.heroes[i];
                     data.grade = newData.grade;
                     data.enchantLevel = newData.enchantLevel;
+                    data.relicLevel = newData.relicLevel;
+                    data.ResetResultStat();
                     m_data.teamDefence.heroes[i] = data;
                 }
             }
 
+            SaveData();
+        }
+
+        public void UpdateHero(bool _isAttack, List<HeroInfoData> _heroData)
+        {
+            var team = _isAttack ? m_data.teamAttack : m_data.teamDefence;
+            team.heroes = _heroData.DeepClone();
             SaveData();
         }
 
@@ -144,6 +155,8 @@ namespace Rev9.Tournament
                         var heroInfo = team.heroes[idxHeroInfo];
                         heroInfo.isMain = false;
                         heroInfo.sortIdx = idxPosition;
+                        heroInfo.isTournament = true;
+                        heroInfo.isTournament_Attack = _isAttack;
                         team.heroes[idxHeroInfo] = heroInfo;
                     }
 
@@ -154,7 +167,12 @@ namespace Rev9.Tournament
                     team = new();
                     team.Default();
 
-                    team.heroes.AddRange(m_data.teamAttack.heroes);
+                    foreach (var member in m_data.teamAttack.heroes)
+                    {
+                        var m = member.DeepClone();
+                        m.isTournament_Attack = false;
+                        team.heroes.Add(m);
+                    }
                     team.treasure.AddRange(m_data.teamAttack.treasure);
 
                     m_data.teamDefence = team;

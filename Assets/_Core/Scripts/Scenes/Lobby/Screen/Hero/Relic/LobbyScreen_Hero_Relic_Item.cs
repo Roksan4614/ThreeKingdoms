@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Tournament;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         {
             m_heroInfoData.relicLevel++;
             DataManager.stat.relic.Upgrade_HeroRelic(m_heroInfoData);
+            TournamentWorker.instance.UpdateHero();
             SetRelicData(m_heroInfoData, true);
         }
 

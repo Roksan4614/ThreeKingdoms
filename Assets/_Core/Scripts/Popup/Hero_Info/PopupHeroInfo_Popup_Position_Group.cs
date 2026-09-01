@@ -8,8 +8,16 @@ using UnityEngine.UI;
 public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
 {
     Dictionary<HeroPositionType, ButtonPositionData> m_data = new();
-    public void Initialize(List<TableHeroPositionData> _data, UnityAction<HeroPositionType> _onClick)
+    public void Initialize(CategoryType_HeroPositon _category, List<TableHeroPositionData> _data, UnityAction<CategoryType_HeroPositon, HeroPositionType> _onClick)
     {
+        m_element.txtTitle.text = _category switch
+        {
+            CategoryType_HeroPositon.HEAD => "수장",
+            CategoryType_HeroPositon.GENERAL => "관직",
+            _ => "칭호"
+        };
+        m_element.txtTitle.transform.parent.ForceRebuildLayout();
+
         int i = 0;
         for (; i < _data.Count; i++)
         {
@@ -24,7 +32,7 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
                 att.button.onClick.RemoveAllListeners();
             }
 
-            att.button.onClick.AddListener(() => _onClick(d.type));
+            att.button.onClick.AddListener(() => _onClick(_category, d.type));
             att.txtName.text = d.name;
             att.txtAttribute.text = d.stringAttribute;
 
@@ -36,20 +44,27 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
         transform.ForceRebuildLayout();
     }
 
-    public void RefreshData()
+    public void RefreshData(HeroPositionType _heroPositionType = HeroPositionType.NONE)
     {
-        foreach(var att in m_data)
+        if (_heroPositionType > HeroPositionType.NONE)
+            RefreshData(_heroPositionType, m_data[_heroPositionType]);
+        else
         {
-            var hpData = DataManager.heroPosition.GetHeroPositionData(att.Key);
-
-            if (hpData == null)
-                att.Value.txtHeroName.gameObject.SetActive(false);
-            else
-            {
-                att.Value.txtHeroName.gameObject.SetActive(true);
-                att.Value.txtHeroName.text = DataManager.userInfo.GetHeroInfoData(hpData.heroKey).name;
-            }
+            foreach (var att in m_data)
+                RefreshData(att.Key, att.Value);
         }
+    }
+
+    void RefreshData(HeroPositionType _type, ButtonPositionData _data)
+    {
+        var hpData = DataManager.heroPosition.GetHeroPositionData(_type);
+
+        bool isActive_Hero = hpData != null;
+        _data.check.SetActive(isActive_Hero);
+        _data.txtHeroName.gameObject.SetActive(isActive_Hero);
+
+        if (isActive_Hero)
+            _data.txtHeroName.text = DataManager.userInfo.GetHeroInfoData(hpData.heroKey).name;
     }
 
     #region VALIDATE
@@ -62,8 +77,11 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
     struct ElementData
     {
         public Transform basePosition;
+        public TextMeshProUGUI txtTitle;
+
         public void Initialize(Transform _transform)
         {
+            txtTitle = _transform.GetComponent<TextMeshProUGUI>("Title/Panel/Text");
             basePosition = _transform.Find("btn_position");
         }
     }
