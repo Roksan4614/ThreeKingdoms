@@ -62,18 +62,37 @@ public class Scene_Login : SceneBase
 
         TimeManager.instance.InitializeAsync().Forget();
 
+        if (DataManager.userInfo.myHero.Count == 0)
+            tasks.Add(PopupManager.instance.LoadAsset(PopupType.SelectRegion));
+
+        tasks.Add(AddressableManager.instance.DownloadAsync(true, null, "02_Lobby"));
+        tasks.Add(LoadLobbyScreenAsync());
+
         await UniTask.WhenAll(tasks.ToArray());
+        IngameLog.AddBuild($"Login: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
 
         var time = Time.realtimeSinceStartup - timeStart;
         if (time < 1)
             await UniTask.WaitForSeconds(1 - time);
 
-        await PopupManager.instance.ShowDimmAsync(true);
+        IngameLog.Add("Load Scene: Lobby");
 
 #if !UNITY_EDITOR
         IngameLog.AddBuild($"Login: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
 #endif
+        await PopupManager.instance.ShowDimmAsync(true);
 
         AddressableManager.instance.LoadScene("02_Lobby");
+    }
+
+    public async UniTask LoadLobbyScreenAsync()
+    {
+        IngameLog.AddBuild("LoadLobbyScreenAsync: Start");
+        var instantiateScreen = new List<LobbyScreenType>() { LobbyScreenType.Hero, LobbyScreenType.Castle };
+
+        for (int i = 0; i < instantiateScreen.Count; i++)
+            await AddressableManager.instance.Load_LobbyScreenAsync(instantiateScreen[i]);
+
+        IngameLog.AddBuild("LoadLobbyScreenAsync: Finished");
     }
 }

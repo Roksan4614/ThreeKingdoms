@@ -297,7 +297,7 @@ public partial class AddressableManager
         return m_lobbyScreen.ContainsKey(key) ? m_lobbyScreen[key].Result : null;
     }
 
-    async UniTask Load_LobbyScreenAsync(LobbyScreenType _screenType)
+    public async UniTask Load_LobbyScreenAsync(LobbyScreenType _screenType)
     {
         string key = $"LobbyScreen/{_screenType}.prefab";
 

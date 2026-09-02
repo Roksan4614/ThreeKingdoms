@@ -104,69 +104,40 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                     .Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false && x.isLockSummon == false && x.is_lock_active == false).ToList());
 
             int i = 0;
-
-            //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
-            //{
-            //    i++;
-            //    result.Add(new()
-            //    {
-            //        key = ItemType.Dedicated_Soul_Stone,
-            //        value = _hostKey,
-            //        count = TableManager.hero.GetNeedSoul(GradeType.Normal),
-            //        category = ItemCategoryType.Soul_Stone,
-            //    });
-
-            //    var startHero = TableManager.region.Get(
-            //        TableManager.hero.Get(_hostKey).regionType).startHeroKey;
-
-            //    for (; i < startHero.Length; i++)
-            //    {
-            //        result.Add(new()
-            //        {
-            //            key = ItemType.Dedicated_Soul_Stone,
-            //            value = startHero[i],
-            //            count = 10,
-            //            category = ItemCategoryType.Soul_Stone,
-            //        });
-            //    }
-            //}
-            //else
+            // 호스트 넣기
             {
-                // 호스트 넣기
-                {
-                    ItemData itemData = TableManager.item.GetItemData(ItemType.Dedicated_Soul_Stone,
-                        TableManager.hero.GetNeedSoul(GradeType.Normal)                        );
-                    itemData.value = _hostKey;
-                    itemData.category = ItemCategoryType.Soul_Stone;
-                    result.Add(itemData);
-                    i++;
-                }
+                ItemData itemData = TableManager.item.GetItemData(ItemType.dedicated_soul_stone,
+                    TableManager.hero.GetNeedSoul(GradeType.Normal));
+                itemData.value = _hostKey;
+                itemData.category = ItemCategoryType.Soul_Stone;
+                result.Add(itemData);
+                i++;
+            }
 
-                //일단 영웅 뽑기
-                for (; i < 10; i++)
-                {
-                    if (UnityEngine.Random.value > m_element.dbRate[i])
-                        break;
+            //일단 영웅 뽑기
+            for (; i < 10; i++)
+            {
+                if (UnityEngine.Random.value > m_element.dbRate[i])
+                    break;
 
-                    ItemData itemData = TableManager.item.GetItemData(ItemType.Dedicated_Soul_Stone);
+                ItemData itemData = TableManager.item.GetItemData(ItemType.dedicated_soul_stone);
 
-                    var randomIdx = UnityEngine.Random.Range(0, dbHeroes.Count);
-                    itemData.value = dbHeroes[randomIdx].key;
-                    dbHeroes.RemoveAt(randomIdx);
+                var randomIdx = UnityEngine.Random.Range(0, dbHeroes.Count);
+                itemData.value = dbHeroes[randomIdx].key;
+                dbHeroes.RemoveAt(randomIdx);
 
-                    GradeType grade = GradeType.Normal;
-                    while (UnityEngine.Random.value <= m_element.dbRate[i + 1] && grade < GradeType.MAX - 1)
-                        grade++;
+                GradeType grade = GradeType.Normal;
+                while (UnityEngine.Random.value <= m_element.dbRate[i + 1] && grade < GradeType.MAX - 1)
+                    grade++;
 
-                    itemData.count = TableManager.hero.GetNeedSoul(grade);
-                    itemData.category = ItemCategoryType.Soul_Stone;
-                    result.Add(itemData);
-                }
+                itemData.count = TableManager.hero.GetNeedSoul(grade);
+                itemData.category = ItemCategoryType.Soul_Stone;
+                result.Add(itemData);
             }
 
             for (; i < 10; i++)
             {
-                ItemData itemData = TableManager.item.GetItemData(UnityEngine.Random.value > 0.5f ? ItemType.Gold : ItemType.Rice);
+                ItemData itemData = TableManager.item.GetItemData(UnityEngine.Random.value > 0.5f ? ItemType.gold : ItemType.rice);
                 itemData.value = itemData.key.ToString();
                 itemData.count = UnityEngine.Random.Range(1, 10) * 10;
                 result.Add(itemData);
@@ -178,27 +149,27 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         result = result
             .OrderByDescending(x =>
             {
-                if (x.key == ItemType.Dedicated_Soul_Stone)
+                if (x.key == ItemType.dedicated_soul_stone)
                     // 새 영웅일 경우 맨 뒤로
                     return _hostKey.Equals(x.value) ? 1 : DataManager.userInfo.GetHeroInfoData(x.value)?.isMine ?? false ? 2 : 3;
                 else
                     return 0;
             })
             .ThenByDescending(x => x.count)
-            .ThenByDescending(x => x.key == ItemType.Gold)
+            .ThenByDescending(x => x.key == ItemType.gold)
             .ToList();
 
-        var keyHero = result.FindAll(x => x.key == ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
+        var keyHero = result.FindAll(x => x.key == ItemType.dedicated_soul_stone).Select(x => x.value).ToArray();
 
-        AddressableManager.instance.Load_HeroCharacterAsync(keyHero).Forget();
-        await AddressableManager.instance.Load_HeroIconAsync(keyHero);
+        //AddressableManager.instance.Load_HeroCharacterAsync(keyHero).Forget();
+        //await AddressableManager.instance.Load_HeroIconAsync(keyHero);
         SetItemDataAsync(result).Forget();
     }
     async UniTask SetItemDataAsync(List<ItemData> _result)
     {
         long totalGold = 0, totalRice = 0;
 
-        var keyItem = _result.FindAll(x => x.key != ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
+        var keyItem = _result.FindAll(x => x.key != ItemType.dedicated_soul_stone).Select(x => x.value).ToArray();
         await AddressableManager.instance.Load_ItemIconAsync(keyItem);
 
         Dictionary<string, long> resultSoul = new();
@@ -206,11 +177,11 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         {
             var data = _result[i];
 
-            if (data.key == ItemType.Gold)
+            if (data.key == ItemType.gold)
                 totalGold += data.count;
-            else if (data.key == ItemType.Rice)
+            else if (data.key == ItemType.rice)
                 totalRice += data.count;
-            else if (data.key == ItemType.Dedicated_Soul_Stone)
+            else if (data.key == ItemType.dedicated_soul_stone)
             {
                 if (resultSoul.ContainsKey(data.value))
                     resultSoul[data.value] += data.count;
@@ -274,7 +245,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                 item.localPosition = m_prevPos[m_prevPos.Count - idx - 1];
 
                 var itemData = m_itemComps[idx].data;
-                if (itemData.key == ItemType.Dedicated_Soul_Stone)
+                if (itemData.key == ItemType.dedicated_soul_stone)
                 {
                     if (DataManager.userInfo.GetHeroInfoData(itemData.value).IsActive() == false)
                         m_itemComps[idx].SetSoulCount(0);
@@ -284,7 +255,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
             }
             else
             {
-                if (m_itemComps[i].data.key == ItemType.Dedicated_Soul_Stone)
+                if (m_itemComps[i].data.key == ItemType.dedicated_soul_stone)
                     // 영웅 등장!!
                     await HeroActionAsync(idx);
 

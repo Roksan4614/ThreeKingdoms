@@ -84,7 +84,7 @@ public class Tutorial_START : TutorialBase
 
                     RewardWorker.instance.isSwitchReceive = false;
                     RewardWorker.instance.Run(enemy.transform.position,
-                        ItemType.Gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1), _durationWait: 2f);
+                        ItemType.gold + UnityEngine.Random.Range(0, (int)ItemType.MAX - 1), _durationWait: 2f);
 
                     await UniTask.NextFrame(token);
                 }
@@ -172,7 +172,7 @@ public class Tutorial_START : TutorialBase
             bottomButton[(int)LobbyScreenType.Summon].interactable = true;
 
             // 연회권 보상 연출
-            await RewardWorker.instance.RunAsync(enemy.transform.position, ItemType.Normal_Gatcha_Ticket, _isField: true);
+            await RewardWorker.instance.RunAsync(enemy.transform.position, ItemType.normal_gatcha_ticket, _isField: true);
 
             await UniTask.WaitForSeconds(.5f, cancellationToken: token);
 
@@ -354,7 +354,7 @@ public class Tutorial_START : TutorialBase
             //    i++;
             //    result.Add(new()
             //    {
-            //        key = ItemType.Dedicated_Soul_Stone,
+            //        key = ItemType.dedicated_soul_stone,
             //        value = _hostKey,
             //        count = TableManager.hero.GetNeedSoul(GradeType.Normal),
             //        category = ItemCategoryType.Soul_Stone,
@@ -367,7 +367,7 @@ public class Tutorial_START : TutorialBase
             //    {
             //        result.Add(new()
             //        {
-            //            key = ItemType.Dedicated_Soul_Stone,
+            //            key = ItemType.dedicated_soul_stone,
             //            value = startHero[i - 1],
             //            count = 10,
             //            category = ItemCategoryType.Soul_Stone,
@@ -378,7 +378,7 @@ public class Tutorial_START : TutorialBase
             for (; i < 10; i++)
             {
                 ItemData itemData = TableManager.item.GetItemData(
-                    UnityEngine.Random.value > 0.5f ? ItemType.Gold : ItemType.Rice,
+                    UnityEngine.Random.value > 0.5f ? ItemType.gold : ItemType.rice,
                     UnityEngine.Random.Range(1, 10) * 10
                     );
                 itemData.value = itemData.key.ToString();
@@ -387,7 +387,7 @@ public class Tutorial_START : TutorialBase
         }
         #endregion 영웅 불러오기
 
-        var keyHero = result.FindAll(x => x.key == ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
+        var keyHero = result.FindAll(x => x.key == ItemType.dedicated_soul_stone).Select(x => x.value).ToArray();
 
         AddressableManager.instance.Load_HeroCharacterAsync(keyHero).Forget();
         await AddressableManager.instance.Load_HeroIconAsync(keyHero);
@@ -397,7 +397,7 @@ public class Tutorial_START : TutorialBase
     {
         long totalGold = 0, totalRice = 0;
 
-        var keyItem = _result.FindAll(x => x.key != ItemType.Dedicated_Soul_Stone).Select(x => x.value).ToArray();
+        var keyItem = _result.FindAll(x => x.key != ItemType.dedicated_soul_stone).Select(x => x.value).ToArray();
         await AddressableManager.instance.Load_ItemIconAsync(keyItem);
 
         Dictionary<string, long> resultSoul = new();
@@ -405,11 +405,11 @@ public class Tutorial_START : TutorialBase
         {
             var data = _result[i];
 
-            if (data.key == ItemType.Gold)
+            if (data.key == ItemType.gold)
                 totalGold += data.count;
-            else if (data.key == ItemType.Rice)
+            else if (data.key == ItemType.rice)
                 totalRice += data.count;
-            else if (data.key == ItemType.Dedicated_Soul_Stone)
+            else if (data.key == ItemType.dedicated_soul_stone)
             {
                 if (resultSoul.ContainsKey(data.value))
                     resultSoul[data.value] += data.count;

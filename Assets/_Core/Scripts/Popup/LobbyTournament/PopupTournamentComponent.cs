@@ -191,7 +191,7 @@ public class PopupTournamentComponent : BasePopupComponent
             var result = await PopupManager.instance.OpenModalAsync("재화를_사용해서_갱신하시겠습니까?");
 
             if (result == StatusType.Success)
-                DataManager.userInfo.AddAsset(ItemType.Rice, -cost);
+                DataManager.userInfo.AddAsset(ItemType.rice, -cost);
             else
                 return;
         }

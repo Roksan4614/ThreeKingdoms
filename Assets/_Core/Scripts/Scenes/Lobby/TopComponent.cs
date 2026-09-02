@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Rev9.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,8 @@ using UnityEngine.UI;
 public class TopComponent : Singleton<TopComponent>, IValidatable
 {
     Dictionary<ItemType, AssetData> m_assets = new();
+
+    PopupInventoryComponent m_inventory;
 
     private void Start()
     {
@@ -34,6 +37,36 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
                 else
                     UpdateAsset(_data.itemType, -1, _data.isTween);
             });
+
+        m_element.assets.Find(x=>x.type == ItemType.gold).button.onClick.AddListener(() => OpenInventoryAsync().Forget());
+    }
+
+    async UniTask OpenInventoryAsync()
+    {
+        if (m_inventory == null)
+            m_inventory = await PopupManager.instance.OpenPopupAsync<PopupInventoryComponent>(PopupType.Inventory);
+
+        var scale = m_element.arrowInventory.localScale;
+        if (scale.y > 0)
+        {
+            scale.y *= -1;
+            m_element.arrowInventory.localScale = scale;
+        }
+
+        m_inventory.SetActivePunchAsync(true).Forget();
+
+        await UniTask.WaitUntil(() => m_inventory.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+
+        scale.y *= -1;
+        m_element.arrowInventory.localScale = scale;
+    }
+
+    protected override void OnDestroy()
+    {
+        if (m_inventory != null)
+            Destroy(m_inventory.gameObject);
+
+        base.OnDestroy();
     }
 
     async UniTask OnButtonAsync_PopupMenu()
@@ -83,7 +116,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
         data.amount = _amount;
         m_assets[_type] = data;
 
-        data.txtAmount.text = _amount.AmountKMBT(_isMBT: true);
+        data.button.text = _amount.AmountKMBT(_isMBT: true);
     }
 
     #region VALIDATA
@@ -101,22 +134,25 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
         public Button btnMenu;
         public GameObject popupMenu;
 
+        public Transform arrowInventory;
+
         public void Initialize(Transform _transform)
         {
-            List<ItemType> assetTypes = new() { ItemType.Gold, ItemType.Rice };
+            List<ItemType> assetTypes = new() { ItemType.gold, ItemType.rice };
 
             assets = new();
             foreach (var t in assetTypes)
             {
                 AssetData asset = new();
                 asset.type = t;
-                asset.txtAmount = _transform.GetComponent<TextMeshProUGUI>($"{t}/txt_amount");
+                asset.button = _transform.GetComponent<ButtonHelper>($"{t}");
                 asset.icon = _transform.Find($"{t}/Icon");
                 assets.Add(asset);
             }
 
             btnMenu = _transform.GetComponent<Button>("Menu");
             popupMenu = _transform.Find("Menu/Popup/Menu").gameObject;
+            arrowInventory = _transform.Find("gold/img_arrow");
         }
     }
 
@@ -124,7 +160,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
     public class AssetData
     {
         public ItemType type;
-        public TextMeshProUGUI txtAmount;
+        public ButtonHelper button;
         public Transform icon;
         public long amount;
     }

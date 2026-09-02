@@ -91,7 +91,13 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
         return internalId;
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_isIntersection">true: 전달한 라벨을 모두 갖고 있어야 함. false: 라벨이 여러개여도 라벨중 하나만 있어도 가져오게 됨 </param>
+    /// <param name="_onProgress"></param>
+    /// <param name="_labels"></param>
+    /// <returns></returns>
     public async UniTask DownloadAsync(bool _isIntersection, IProgress<float> _onProgress, params AddressableLabelType[] _labels)
     {
         await DownloadAsync(_isIntersection, _onProgress, _labels.Select(_x => _x.ToString()).ToArray());

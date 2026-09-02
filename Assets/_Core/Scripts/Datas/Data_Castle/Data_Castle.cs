@@ -349,7 +349,7 @@ public partial class Data_Castle
 
         var probity = GetGateProbityRate();
         var count = (int)(castleData.totalAmount * probity);
-        var itemType = _objectType == CastleObjectType.Market ? ItemType.Gold : ItemType.Rice;
+        var itemType = _objectType == CastleObjectType.Market ? ItemType.gold : ItemType.rice;
 
         castleData.totalAmount = 0;
         castleData.todayClaimAmount = castleData.todayClaimAmount + count;
@@ -359,7 +359,7 @@ public partial class Data_Castle
         SaveData();
         OnUpdateClaim();
 
-        PopupManager.instance.AlertShow($"{(itemType == ItemType.Gold ? "금화를" : "군량을")}_{count.AmountKMBT()}개_수령했습니다.");
+        PopupManager.instance.AlertShow($"{(itemType == ItemType.gold ? "금화를" : "군량을")}_{count.AmountKMBT()}개_수령했습니다.");
 
         // SAVEDATA 재화 데이타 저장
         DataManager.userInfo.AddAsset(itemType, count, false, false);

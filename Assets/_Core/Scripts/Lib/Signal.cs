@@ -310,5 +310,7 @@ public class Signal
     public SignalObject Update_StoryMode_PlayingMode = new();
 
     public SignalObject<Rev9.Tournament.TournamentStatusType> TournamentStatus = new();
+
+    public SignalObject<ItemData> Inventory_UpdateCount = new();
     #endregion
 }

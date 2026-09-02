@@ -83,23 +83,23 @@ public class TableDailyDungeonGradeData
                 new()
                 {
                     category = ItemCategoryType.Soul_Stone,
-                    key = ItemType.Class_Soul_Stone,
+                    key = ItemType.class_soul_stone,
                     value = _classType.ToString(),
                     count = _isWithCount ? soul_stone_count : 0
                 },
                 new()
                 {
-                    key = ItemType.Time_Stone,
+                    key = ItemType.time_stone,
                     count = _isWithCount ? time_stone_count : 0
                 },
                 new()
                 {
-                    key = ItemType.Gold,
+                    key = ItemType.gold,
                     count = _isWithCount ? gold : 0
                 },
                 new()
                 {
-                    key = ItemType.Rice,
+                    key = ItemType.rice,
                     count = _isWithCount ? rice : 0
                 }
             };

@@ -65,18 +65,12 @@ public enum HeroClassType
 {
     NONE = -1,
 
-    // ÁöÈÖ°ü
-    Commander,
-    // ¿ëÀå
-    Champion,
-    // ¼±ºÀÀå
-    Vanguard,
-    // Ãß°ÝÀÚ
-    Chaser,
-    // ±ÃÀå
-    Archer,
-    // Ã¥»ç
-    Strategist,
+    Commander,      // ÁöÈÖ°ü
+    Champion,       // ¿ëÀå
+    Vanguard,       // ¼±ºÀÀå
+    Chaser,         // Ãß°ÝÀÚ
+    Archer,         // ±ÃÀå
+    Strategist,     // Ã¥»ç
 
     MAX
 }

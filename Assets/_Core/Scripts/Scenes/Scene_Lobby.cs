@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,22 +11,27 @@ public class Scene_Lobby : SceneBase
 {
     async void Start()
     {
+        IngameLog.Add("Lobby: Start");
         await UniTask.NextFrame();
 
         // 캐릭터가 없다면 선택 화면부터
         if (DataManager.userInfo.myHero.Count == 0)
             await PopupManager.instance.OpenPopupAndWait(PopupType.SelectRegion);
 
-        await TeamManager.instance.SpawnUpdateAsync();
+        IngameLog.Add("Lobby: SpawnUpdateAsync: Start");
+        List<UniTask> tasks = new();
+        tasks.Add(TeamManager.instance.SpawnUpdateAsync());
+        tasks.Add(LobbyScreenManager.instance.InstantiateAsync());
 
-        //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
-        //    await TutorialManager.instance.StartAsync(GuideQuestType.START);
+        // 로비 생성 끝난 다음에 진행하자
+        await UniTask.WhenAll(tasks.ToArray());
+        IngameLog.Add("Lobby: SpawnUpdateAsync: Finished");
 
         StageManager.instance.StartStageAsync().Forget();
-
         ControllerManager.instance.SetSwitch(true);
 
         StageManager.instance.TestDevSelectAsync(false).Forget();
+
         // 요일던전에서 나온거면
         if (DataManager.dailyDungeon.enterWeekday == WeekdayType.MAX)
         {
@@ -54,18 +60,10 @@ public class Scene_Lobby : SceneBase
 #endif
         }
 
+        //스테이지 준비 되면 딤꺼짐.. 그 때까지 좀 기다려주자.
         await UniTask.WaitUntil(() => PopupManager.instance.isDimm == false);
         GuideQuestComponent.instance.RunAsync().Forget();
-
-        // TEST
-        //TutorialManager.instance.Complete(GuideQuestType.CASTLE_FINISHED);
     }
-
-    //private void Update()
-    //{
-    //    ScreenLogWorker.Add("DISANCE_MOUSE", (TeamManager.instance.mainHero.position - CameraManager.posPointer).sqrMagnitude);
-
-    //}
 
     public override void OnManualValidate() { m_element.Initialize(transform); }
 

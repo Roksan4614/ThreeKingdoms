@@ -116,8 +116,8 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
     //            rewards.Add(new(r.reward_key, Random.Range(r.reward_min, r.reward_max + 1)));
     //    }
 
-    //    var totalGold = rewards.FindAll(x => x.itemType == ItemType.Gold).Sum(x => x.count);
-    //    var totalRice = rewards.FindAll(x => x.itemType == ItemType.Rice).Sum(x => x.count);
+    //    var totalGold = rewards.FindAll(x => x.itemType == ItemType.gold).Sum(x => x.count);
+    //    var totalRice = rewards.FindAll(x => x.itemType == ItemType.rice).Sum(x => x.count);
     //    DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
 
     //    foreach (var r in rewards)

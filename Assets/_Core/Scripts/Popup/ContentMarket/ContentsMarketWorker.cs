@@ -29,7 +29,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        key = ItemType.Rice,
+                        key = ItemType.rice,
                         cost = 1000,
                         count = 100,
                         countMax = 5
@@ -37,7 +37,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        key = ItemType.Gold,
+                        key = ItemType.gold,
                         cost = 1000,
                         count = 100,
                         countMax = 5
@@ -45,7 +45,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        key = ItemType.Rice,
+                        key = ItemType.rice,
                         peroidType = PeroidType.Week,
                         cost = 7000,
                         count = 1000,
@@ -54,7 +54,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        key = ItemType.Gold,
+                        key = ItemType.gold,
                         peroidType = PeroidType.Week,
                         cost = 7000,
                         count = 1000,
@@ -65,14 +65,14 @@ namespace Rev9.ContentsMarket
                     {
                         lstData.Add(new()
                         {
-                            key = ItemType.Time_Stone,
+                            key = ItemType.time_stone,
                             cost = 2000,
                             count = 10,
                             countMax = 3
                         });
                         lstData.Add(new()
                         {
-                            key = ItemType.Dedicated_Soul_Stone,
+                            key = ItemType.dedicated_soul_stone,
                             cost = 2000,
                             count = 10,
                             countMax = 3
@@ -82,7 +82,7 @@ namespace Rev9.ContentsMarket
                     {
                         lstData.Add(new()
                         {
-                            key = ItemType.Tournament_Point,
+                            key = ItemType.tournament_point,
                             peroidType = PeroidType.Week,
                             cost = 2500,
                             count = 10,
@@ -91,7 +91,7 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            key = ItemType.Public_Soul_Stone,
+                            key = ItemType.public_soul_stone,
                             peroidType = PeroidType.Week,
                             cost = 2500,
                             count = 10,
@@ -103,7 +103,7 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            key = ItemType.Public_Soul_Stone,
+                            key = ItemType.public_soul_stone,
                             peroidType = PeroidType.Week,
                             cost = 3500,
                             count = 10,
@@ -111,7 +111,7 @@ namespace Rev9.ContentsMarket
                         });
                         lstData.Add(new()
                         {
-                            key = ItemType.Dedicated_Soul_Stone,
+                            key = ItemType.dedicated_soul_stone,
                             peroidType = PeroidType.Season,
                             value = CharacterName.LiuBei.ToString(),
                             cost = 4500,
@@ -121,7 +121,7 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            key = ItemType.Dedicated_Soul_Stone,
+                            key = ItemType.dedicated_soul_stone,
                             peroidType = PeroidType.Season,
                             value = CharacterName.CaoCao.ToString(),
                             cost = 4500,
@@ -130,7 +130,7 @@ namespace Rev9.ContentsMarket
                         });
                         lstData.Add(new()
                         {
-                            key = ItemType.Dedicated_Soul_Stone,
+                            key = ItemType.dedicated_soul_stone,
                             peroidType = PeroidType.Season,
                             value = CharacterName.SunQuan.ToString(),
                             cost = 4500,
@@ -143,7 +143,7 @@ namespace Rev9.ContentsMarket
                     {
                         var d = lstData[j];
                         d.idx = j;
-                        d.costType = i == ContentsMarketTabType.Tournament ? ItemType.Tournament_Point : i == ContentsMarketTabType.Raid ? ItemType.Raid_Point : ItemType.Gold;
+                        d.costType = i == ContentsMarketTabType.Tournament ? ItemType.tournament_point : i == ContentsMarketTabType.Raid ? ItemType.raid_point : ItemType.gold;
                         lstData[j] = d;
                     }
 
@@ -203,7 +203,7 @@ namespace Rev9.ContentsMarket
         ItemType? cost_type;
         public ItemType costType
         {
-            get => cost_type ?? ItemType.Gold;
+            get => cost_type ?? ItemType.gold;
             set => cost_type = value;
         }
 

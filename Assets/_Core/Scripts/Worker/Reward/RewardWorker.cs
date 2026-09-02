@@ -34,9 +34,9 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         Vector3 posFrom = _fromTarget == null ? CameraManager.posPointer : _fromTarget.position;
 
         if (_gold > 0)
-            Run(posFrom, ItemType.Gold, _gold, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
+            Run(posFrom, ItemType.gold, _gold, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
         if (_rice > 0)
-            Run(posFrom, ItemType.Rice, _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
+            Run(posFrom, ItemType.rice, _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
     }
 
     public async UniTask RunAsync(Vector3 _posFrom, bool _isPopup = true, bool _isStartPunch = false, params ItemData[] _itemData)
@@ -257,7 +257,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             //  spawnType = _spawnType;
         }
 
-        public bool isCurrency => itemType == ItemType.Gold || itemType == ItemType.Rice;
+        public bool isCurrency => itemType == ItemType.gold || itemType == ItemType.rice;
 
         public string name => TableManager.stringTable.GetString($"ITEM_NAME_{itemType.ToString().ToUpper()}");
     }

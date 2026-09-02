@@ -31,6 +31,7 @@ public enum PopupType
     LobbyTournament_History,
     UserInfo,
 
+    Inventory,
     Reward,
     UpgradeGuide,
     ContentsMarket,

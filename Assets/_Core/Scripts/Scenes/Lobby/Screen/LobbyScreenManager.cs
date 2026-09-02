@@ -37,10 +37,6 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     private void Start()
     {
         SetActiveDimm(false, false);
-
-        // 시작과 동시에 그냥 생성해주자
-        InstantiateAsync().Forget();
-
         Signal.instance.CloseLobbyScreen.connect = CloseScreen;
     }
 

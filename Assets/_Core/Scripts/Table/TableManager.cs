@@ -26,6 +26,7 @@ public class TableManager
     public static Table_String_Talk scenarioTalk { get; private set; }
     public static Table_String_Base stringMission { get; private set; }
     public static Table_String_Base stringTraits { get; private set; }
+    public static Table_String_Base stringItem { get; private set; }
 
     public static Table_Treasure treasure { get; private set; }
     public static Table_FriendShip friendShip { get; private set; }
@@ -77,6 +78,7 @@ public class TableManager
             scenarioTalk = new(LoadList<TableStringData>(_result, "String_ScenarioTalk"));
             stringMission = new(LoadList<TableStringData>(_result, "String_Mission"));
             stringTraits = new(LoadList<TableStringData>(_result, "String_Traits"));
+            stringItem = new(LoadList<TableStringData>(_result, "String_Item"));
 
             // TODO
             treasure = new(LoadList<TableTreasureData>(_result, "s_treasure"));

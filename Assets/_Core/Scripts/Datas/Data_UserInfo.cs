@@ -26,8 +26,8 @@ public partial class Data_UserInfo
         {
             m_element = PPWorker.Get<ElementData>(PlayerPrefsType.USER_DATA);
 
-            await AddressableManager.instance.Load_HeroIconAsync(m_element.myHero.Select(x => x.skin).ToArray());
-            await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
+            //await AddressableManager.instance.Load_HeroIconAsync(m_element.myHero.Select(x => x.skin).ToArray());
+            //await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
 
             //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
             //{
@@ -296,8 +296,8 @@ public partial class Data_UserInfo
         m_element.myHero.Add(new(_key, _isMain: _isMain, _isBatch: _isBatch));
         DataManager.stat.friendShip.Reload();
 
-        await AddressableManager.instance.Load_HeroIconAsync(_key);
-        await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
+        //await AddressableManager.instance.Load_HeroIconAsync(_key);
+        //await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
 
         SaveData();
 
@@ -312,7 +312,7 @@ public partial class Data_UserInfo
 
     #region ASSETS
     public long GetAssetAmount(ItemType _itemType)
-        => _itemType switch { ItemType.Gold => m_element.gold, ItemType.Rice => m_element.rice, _ => -1 };
+        => _itemType switch { ItemType.gold => m_element.gold, ItemType.rice => m_element.rice, _ => -1 };
 
     public void AddItem(ItemType _itemType, int _count, bool _isUpdate = true, bool _isTween = true, bool _isAction = true, Vector3 _actionPosition = default)
     {
@@ -329,11 +329,11 @@ public partial class Data_UserInfo
             {
                 switch (item.key)
                 {
-                    case ItemType.Rice:
-                    case ItemType.Gold:
+                    case ItemType.rice:
+                    case ItemType.gold:
                         AddAsset(item.key, item.count, _isUpdate, _isTween);
                         break;
-                    case ItemType.Dedicated_Soul_Stone:
+                    case ItemType.dedicated_soul_stone:
                         AddHeroSoul(item.value, (int)item.count);
                         break;
                 }
@@ -349,7 +349,7 @@ public partial class Data_UserInfo
             _isUpdate, _isTween);
     }
     public void AddAsset(ItemType _itemType, long _amount, bool _isUpdate = true, bool _isTween = true)
-        => AddAsset(_itemType == ItemType.Gold ? _amount : 0, _itemType == ItemType.Rice ? _amount : 0, _isUpdate, _isTween);
+        => AddAsset(_itemType == ItemType.gold ? _amount : 0, _itemType == ItemType.rice ? _amount : 0, _isUpdate, _isTween);
 
     //public void SetProvision(long _amount, bool _isUpdate = true, bool _isTween = true)
     //    => SetAsset(-1, _amount, _isUpdate, _isTween);
@@ -357,7 +357,7 @@ public partial class Data_UserInfo
     //    => SetAsset(_amount, -1, _isUpdate, _isTween);
     public void SetAsset(long _gold, long _rice, bool _isUpdate = true, bool _isTween = true)
     {
-        ItemType itemType = ItemType.Gold;
+        ItemType itemType = ItemType.gold;
 
         if (_gold > -1 && _rice > -1)
         {
@@ -368,12 +368,12 @@ public partial class Data_UserInfo
         else if (_gold > -1)
         {
             m_element.gold = _gold;
-            itemType = ItemType.Gold;
+            itemType = ItemType.gold;
         }
         else if (_rice > -1)
         {
             m_element.rice = _rice;
-            itemType = ItemType.Rice;
+            itemType = ItemType.rice;
         }
 
         if (_isUpdate)

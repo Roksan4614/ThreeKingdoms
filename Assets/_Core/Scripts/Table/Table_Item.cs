@@ -33,34 +33,36 @@ public enum ItemCategoryType
     Bundle,
     Random_Box,
     Item,
-    Piece
+    Piece,
+    Point,
+    Ticket,
 }
 
 public enum ItemType
 {
     NONE = 0,
 
-    Gold,                               // 골드
-    Rice,                               // 군량미
-    Time_Stone,                         // 시간석
-    Bundle_Normal,                      // 일반 보따리
-    Bundle_Elite,                       // 고급 보따리
-    Bundle_General,                     // 명장 보따리
-    Bundle_Hero,                        // 명장 보따리
-    Bundle_Legend,                      // 전설 보따리
-    Public_Soul_Stone,                  // 공용 영혼석
-    Class_Soul_Stone,                   // 클래스 영혼석
-    Dedicated_Soul_Stone,               // 전용 영혼석
-    Class_Soul_Stone_Random_Box,        // 클래스 영혼석 랜덤 상자
-    Dedicated_Soul_Stone_Random_Box,    // 전용 영혼석 랜덤 상자
-    Treasure,                           // 보물
-    Treasure_Piece,                     // 보물 조각
-    Treasure_Piece_Random_Box,          // 보물 조각 랜덤 상자
-    Normal_Gatcha_Ticket,               // 일반 가챠 티켓
-    Rare_Gatcha_Ticket,                 // 희귀 가챠 티켓
-
-    Tournament_Point,
-    Raid_Point,
+    gold,                               // 골드
+    rice,                               // 군량미
+    time_stone,                         // 시간석
+    bundle_normal,                      // 일반 보따리
+    bundle_elite,                       // 고급 보따리
+    bundle_general,                     // 명장 보따리
+    bundle_hero,                        // 명장 보따리
+    bundle_legend,                      // 전설 보따리
+    public_soul_stone,                  // 공용 영혼석
+    class_soul_stone,                   // 클래스 영혼석
+    dedicated_soul_stone,               // 전용 영혼석
+    class_soul_stone_random_box,        // 클래스 영혼석 랜덤 상자
+    dedicated_soul_stone_random_box,    // 전용 영혼석 랜덤 상자
+    treasure,                           // 보물
+    treasure_piece,                     // 보물 조각
+    treasure_piece_random_box,          // 보물 조각 랜덤 상자
+    normal_gatcha_ticket,               // 일반 가챠 티켓
+    rare_gatcha_ticket,                 // 희귀 가챠 티켓
+    tournament_point,
+    tournament_ticket,
+    raid_point,
 
     MAX
 }
@@ -71,5 +73,10 @@ public class TableItemData
     [JsonProperty] public ItemType key;
     [JsonProperty] public string value;
     [JsonProperty] public ItemCategoryType category;
+
+    public string stringKey => "NAME_" + key.ToString().ToUpper();
+    public string name => TableManager.stringItem.GetString(stringKey);
+    public string nameValue => TableManager.stringItem.GetString(stringKey + (value.IsActive() == false ? "" :$"_{value.ToUpper()}"));
+    public string iconKey => $"{key}{(value == null ? "" : $"_{value}")}";
 }
 

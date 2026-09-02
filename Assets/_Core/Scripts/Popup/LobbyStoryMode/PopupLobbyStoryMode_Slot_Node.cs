@@ -266,8 +266,8 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         {
             if (Enum.TryParse(storyNode.reward_currency_type, out ItemType currency))
             {
-                RewardWorker.instance.AddAsset(currency == ItemType.Gold ?
-                    storyNode.rewardCurrencyAmount : 0, currency == ItemType.Rice ? storyNode.rewardCurrencyAmount : 0,
+                RewardWorker.instance.AddAsset(currency == ItemType.gold ?
+                    storyNode.rewardCurrencyAmount : 0, currency == ItemType.rice ? storyNode.rewardCurrencyAmount : 0,
                     m_element.objBadge.transform, false);
             }
         }
