@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemComponent : MonoBehaviour, IValidatable
 {
@@ -16,6 +17,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         SetActiveRewardEffect(false);
     }
 
+    Transform m_iconSoulStone;
     public void SetItemData(ItemData _itemData)
     {
         data = _itemData;
@@ -33,6 +35,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
         }
 
         //m_element.panel.gameObject.SetActive(false);
+        m_iconSoulStone?.gameObject.SetActive(false);
 
         if (_itemData.category == ItemCategoryType.Soul_Stone)
         {
@@ -40,11 +43,20 @@ public class ItemComponent : MonoBehaviour, IValidatable
             {
                 SetIconAsync(_itemData.value, true, _iconHero =>
                 {
-                    SetIconAsync(_itemData.key.ToString(), false, _icon =>
+                    if (m_iconSoulStone == null)
                     {
-                        _icon.SetParent(_iconHero);
-                        _iconHero.gameObject.SetActive(true);
-                    }).Forget();
+                        SetIconAsync(_itemData.key.ToString(), false, _icon =>
+                        {
+                            m_iconSoulStone = _icon;
+                            _icon.SetParent(_iconHero);
+                            _iconHero.gameObject.SetActive(true);
+                        }).Forget();
+                    }
+                    else
+                    {
+                        m_iconSoulStone.SetParent(_iconHero);
+                        m_iconSoulStone.gameObject.SetActive(true);
+                    }
                 }).Forget();
             }
             else if (_itemData.key == ItemType.class_soul_stone)
@@ -67,7 +79,11 @@ public class ItemComponent : MonoBehaviour, IValidatable
 
             icon.SetActive(icon.name.Equals(_key));
             if (isFinded == false)
+            {
                 isFinded = icon.activeSelf;
+                if (isFinded)
+                    _onComplete?.Invoke(icon.transform);
+            }
         }
 
         if (isFinded == false && _key.IsActive())
@@ -106,6 +122,20 @@ public class ItemComponent : MonoBehaviour, IValidatable
 
         txtCount = _count == 0 ? "" : $"x{_count.AmountKMBT()}";
         SetActiveBadge(false);
+    }
+
+    public async UniTask SetHeroDataAsync(GradeType _grade)
+    {
+        var outline = transform.GetComponent<Image>("Panel/Icon/Outline");
+        var prevColor = outline.color;
+
+        m_iconSoulStone?.gameObject.SetActive(false);
+
+        outline.color =
+            Palette.instance.data.Get("icon_outline_grade_" + _grade.ToString().ToLower());
+
+        await UniTask.WaitUntil(() => gameObject.activeInHierarchy == false, cancellationToken: destroyCancellationToken);
+        outline.color = prevColor;
     }
 
     public string txtCount

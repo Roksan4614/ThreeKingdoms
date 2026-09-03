@@ -21,20 +21,20 @@ public partial class GuideQuestComponent
 
             await UniTask.WaitUntil(() => ControllerManager.instance.isDoing == true);
 
-            if (ControllerManager.instance.isKeyboardMode)
-            {
-                while (m_keycode.Count < 4)
-                {
-                    AddKeyCode(KeyCode.W);
-                    AddKeyCode(KeyCode.A);
-                    AddKeyCode(KeyCode.S);
-                    AddKeyCode(KeyCode.D);
+            //if (ControllerManager.instance.isKeyboardMode)
+            //{
+            //    while (m_keycode.Count < 4)
+            //    {
+            //        AddKeyCode(KeyCode.W);
+            //        AddKeyCode(KeyCode.A);
+            //        AddKeyCode(KeyCode.S);
+            //        AddKeyCode(KeyCode.D);
 
-                    await UniTask.NextFrame(destroyCancellationToken);
-                }
-                isComplete = true;
-            }
-            else
+            //        await UniTask.NextFrame(destroyCancellationToken);
+            //    }
+            //    isComplete = true;
+            //}
+            //else
             {
 
                 Vector3 prevPosition = main.position;

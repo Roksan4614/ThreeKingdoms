@@ -203,7 +203,16 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         // SAVEDATA 재화 데이타 저장
         DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
         foreach (var soul in resultSoul)
-            DataManager.userInfo.AddHeroSoul(soul.Key, (int)soul.Value);
+        {
+            var count = (int)soul.Value;
+            if (DataManager.userInfo.HasHero(soul.Key) == false)
+            {
+                var grade = TableManager.hero.GetGradeFromSoulCount(count);
+                DataManager.userInfo.AddHero(soul.Key, grade);
+            }
+            else
+                InventoryWorker.AddItem(ItemType.dedicated_soul_stone, count, soul.Key, _isRewardAction: false);
+        }
     }
     void InitializePos()
     {
@@ -247,8 +256,13 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                 var itemData = m_itemComps[idx].data;
                 if (itemData.key == ItemType.dedicated_soul_stone)
                 {
-                    if (DataManager.userInfo.GetHeroInfoData(itemData.value).IsActive() == false)
+                    if (itemData.isNew == true)
+                    {
                         m_itemComps[idx].SetSoulCount(0);
+
+                        GradeType grade = TableManager.hero.GetGradeFromSoulCount(itemData.count);
+                        m_itemComps[idx].SetHeroDataAsync(grade).Forget();
+                    }
                 }
 
                 m_itemComps[idx].MoveFinished();
@@ -343,15 +357,13 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
         if (itemComp.data.isNew)
         {
             itemComp.SetSoulCount(0);
+
+            GradeType grade = TableManager.hero.GetGradeFromSoulCount(itemComp.data.count);
+            itemComp.SetHeroDataAsync(grade).Forget();
+
             Utils.Shake(LobbyScreenManager.instance.GetScreenSummon().transform, true);
 
             await AfterNextStepAsync(1f);
-
-            GradeType grade = GradeType.Normal;
-            var soulCount = TableManager.hero.GetNeedSoul(grade);
-
-            while (itemComp.data.count > soulCount)
-                soulCount = TableManager.hero.GetNeedSoul(grade++);
 
             var stringGrade = TableManager.stringTable.GetGradeType(grade);
 

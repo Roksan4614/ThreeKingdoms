@@ -47,7 +47,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         {
             var data = _itemData[i];
 
-            DataManager.userInfo.AddItem(false, _isAction: false, _itemData: _itemData);
+            InventoryWorker.AddItem(false, _isRewardAction: false, _itemData: _itemData);
 
             tasks.Add(RunAsync(_posFrom, _itemData[i].key, _itemData[i].count, _isPopup: _isPopup, _isStartPunch: _isStartPunch));
         }
@@ -197,8 +197,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
 
     public Transform GetThrowTarget(RewardItemData _rewardItemData)
     {
-        Transform target = _rewardItemData.isCurrency ?
-            TopComponent.instance?.GetAssetIcon(_rewardItemData.itemType) :
+        Transform target = _rewardItemData.isGoldRice ? TopComponent.instance?.GetAssetIcon(_rewardItemData.itemType) :
             BottomComponent.instance?.GetIconScreen(_rewardItemData.itemType);
 
         if (target == null)
@@ -257,14 +256,14 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             //  spawnType = _spawnType;
         }
 
-        public bool isCurrency => itemType == ItemType.gold || itemType == ItemType.rice;
+        public bool isGoldRice => itemType == ItemType.gold || itemType == ItemType.rice;
 
         public string name => TableManager.stringTable.GetString($"ITEM_NAME_{itemType.ToString().ToUpper()}");
     }
 
     private void OnValidate()
     {
-        
+
     }
     #region VALIDATA
     public void OnManualValidate() => m_element.Initialize(transform);

@@ -423,7 +423,7 @@ public class Tutorial_START : TutorialBase
 
         // SAVEDATA 재화 데이타 저장
         DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
-        foreach (var soul in resultSoul)
-            DataManager.userInfo.AddHeroSoul(soul.Key, (int)soul.Value);
+        //foreach (var soul in resultSoul)
+        //    DataManager.userInfo.AddHeroSoul(soul.Key, (int)soul.Value);
     }
 }

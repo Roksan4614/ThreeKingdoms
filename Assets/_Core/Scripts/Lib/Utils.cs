@@ -210,16 +210,16 @@ public static class Utils
         //return result;
     }
 
-    public static void SetActivePunch(Transform _transform, bool _isActive, bool _isAutoActive = true, UnityAction _callback = null)
-        => SetActivePunchAsync(_transform, _isActive, _isAutoActive, _callback).Forget();
-    public static async UniTask SetActivePunchAsync(Transform _transform, bool _isActive, bool _isAutoActive = true, UnityAction _callback = null)
+    public static void SetActivePunch(Transform _transform, bool _isActive, bool _isAutoActive = true, UnityAction _callback = null, float _scaleValue = .5f)
+        => SetActivePunchAsync(_transform, _isActive, _isAutoActive, _callback, _scaleValue).Forget();
+    public static async UniTask SetActivePunchAsync(Transform _transform, bool _isActive, bool _isAutoActive = true, UnityAction _callback = null, float _scaleValue = .5f)
     {
         if (_isActive == true && _isAutoActive == true)
             _transform.gameObject.SetActive(true);
 
-        var targetScale = Vector3.one * (_isActive ? 1 : 0.5f);
+        var targetScale = Vector3.one * (_isActive ? 1 : _scaleValue);
         if (_isActive)
-            _transform.localScale = Vector3.one * 0.5f;
+            _transform.localScale = Vector3.one * _scaleValue;
         var duration = 0.15f;
 
         await _transform.DOScale(targetScale, duration).SetEase(_isActive ? Ease.OutBack : Ease.InBack).AsyncWaitForCompletion();

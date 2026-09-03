@@ -108,7 +108,6 @@ public class HeroInfoData
     [JsonProperty] public string skin;
     [JsonProperty] public GradeType grade;
     [JsonProperty] public HeroPositionType positionType;
-    [JsonProperty] public int soulCount;
     [JsonProperty] public int enchantLevel;
     [JsonProperty] public int relicLevel;
     [JsonProperty] public bool isBatch;
@@ -133,7 +132,6 @@ public class HeroInfoData
         grade = _grade;
         positionType = _heroPositionType;
         skin = _skin.IsActive() ? _skin : key;
-        soulCount = _soulCount;
         enchantLevel = _enchantLevel;
         relicLevel = _relicLevel;
         isBatch = _isBatch;

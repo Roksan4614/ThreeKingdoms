@@ -50,7 +50,8 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
 
         SelectButton(LobbyScreenManager.instance.curScreen, false);
 
-        LobbyScreenManager.instance.OpenScreenAsync(_screenType, _screen => {
+        LobbyScreenManager.instance.OpenScreenAsync(_screenType, _screen =>
+        {
             if (_screen != null)
                 SelectButton(_screenType, true);
             m_isDoing = false;
@@ -72,7 +73,10 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
         => m_dbScreen[_itemType switch
         {
             ItemType.normal_gatcha_ticket => LobbyScreenType.Summon,
-            _ => LobbyScreenType.Hero
+            ItemType.dedicated_soul_stone => LobbyScreenType.Hero,
+            ItemType.class_soul_stone => LobbyScreenType.Hero,
+            ItemType.public_soul_stone => LobbyScreenType.Hero,
+            _ => LobbyScreenType.Castle
         }].icon;
 
     #region VALIDATA

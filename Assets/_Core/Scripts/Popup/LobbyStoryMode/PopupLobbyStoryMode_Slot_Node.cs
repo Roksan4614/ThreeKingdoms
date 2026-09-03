@@ -231,7 +231,11 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             List<string> newHero = new();
             foreach (var key in rewards)
             {
-                DataManager.userInfo.AddHeroSoul(key, 10);
+                if (DataManager.userInfo.HasHero(key) == false)
+                    DataManager.userInfo.AddHero(key);
+                else
+                    InventoryWorker.AddItem(ItemType.dedicated_soul_stone, 10, key, _isRewardAction: false);
+
                 newHero.Add(key);
             }
 

@@ -253,10 +253,10 @@ public static class Extenssions
             }
             else if (_isStartMinute || _ts.TotalHours < 1)
                 result = $"{Mathf.FloorToInt((float)_ts.TotalMinutes):00}:{_ts.ToString(@"ss")}";
-            else if( _ts.TotalDays <= 1)
+            else if (_ts.TotalDays <= 1)
                 result = $"{Mathf.FloorToInt((float)_ts.TotalHours):00}:{_ts.ToString(@"mm\:ss")}";
             else
-                result =  $"{Mathf.FloorToInt((float)_ts.TotalDays)}d {_ts.ToString(@"hh\:mm\:ss")}";
+                result = $"{Mathf.FloorToInt((float)_ts.TotalDays)}d {_ts.ToString(@"hh\:mm\:ss")}";
 
             if (_mspace > -1)
                 result = Utils.MSpace(result, _mspace);

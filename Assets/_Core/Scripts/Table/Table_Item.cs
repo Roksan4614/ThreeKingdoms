@@ -9,7 +9,7 @@ public class Table_Item : BaseTable<ItemType, TableItemData>
         SetDictionary(x => x.key);
     }
 
-    public ItemData GetItemData(ItemType _itemType, int _count = 0)
+    public ItemData GetItemData(ItemType _itemType, int _count = 0, string _value = null)
     {
         var data = Get(_itemType);
 
@@ -18,7 +18,7 @@ public class Table_Item : BaseTable<ItemType, TableItemData>
 
         ItemData result = new() {
             key = data.key,
-            value = data.value,
+            value = _value ?? data.value,
             category = data.category,
             count = _count
         };
@@ -28,7 +28,9 @@ public class Table_Item : BaseTable<ItemType, TableItemData>
 
 public enum ItemCategoryType
 {
-    Currency = 1,
+    NONE,
+
+    Currency,
     Soul_Stone,
     Bundle,
     Random_Box,
@@ -36,6 +38,8 @@ public enum ItemCategoryType
     Piece,
     Point,
     Ticket,
+
+    MAX
 }
 
 public enum ItemType

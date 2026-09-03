@@ -145,7 +145,7 @@ public partial class Data_UserInfo
             result.AddRange(lstBatch);
         }
 
-        lstNotBatch.Sort((x, y) => { return SortCompare(x, y, true); });
+        lstNotBatch.Sort((x, y) => SortCompare(x, y, true));
 
         result.AddRange(lstNotBatch);
 
@@ -269,22 +269,6 @@ public partial class Data_UserInfo
         SaveData();
     }
 
-    public void AddHeroSoul(string _key, int _count)
-    {
-        var heroData = m_element.myHero.Find(x => x.key.Equals(_key));
-
-        if (heroData == null || heroData.isMine == false)
-        {
-            var grade = TableManager.hero.GetGradeFromSoulCount(_count);
-            AddHero(_key, grade);
-        }
-        else
-        {
-            heroData.soulCount += _count;
-            SaveData();
-        }
-    }
-
     public void AddHero(string _key, GradeType _grade = GradeType.Normal, bool _isBatch = false, bool _isMain = false)
         => AddHeroAsync(_key, _grade, _isBatch, _isMain).Forget();
 
@@ -293,11 +277,8 @@ public partial class Data_UserInfo
         if (m_element.myHero.Any(x => x.key == _key))
             return;
 
-        m_element.myHero.Add(new(_key, _isMain: _isMain, _isBatch: _isBatch));
+        m_element.myHero.Add(new(_key, _grade: _grade, _isMain: _isMain, _isBatch: _isBatch));
         DataManager.stat.friendShip.Reload();
-
-        //await AddressableManager.instance.Load_HeroIconAsync(_key);
-        //await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
 
         SaveData();
 
@@ -314,33 +295,22 @@ public partial class Data_UserInfo
     public long GetAssetAmount(ItemType _itemType)
         => _itemType switch { ItemType.gold => m_element.gold, ItemType.rice => m_element.rice, _ => -1 };
 
-    public void AddItem(ItemType _itemType, int _count, bool _isUpdate = true, bool _isTween = true, bool _isAction = true, Vector3 _actionPosition = default)
-    {
-        AddItem(_isUpdate, _isTween, _isAction, _actionPosition, TableManager.item.GetItemData(_itemType, _count));
-    }
 
-    public void AddItem(bool _isUpdate = true, bool _isTween = true, bool _isAction = true, Vector3 _actionPosition = default, params ItemData[] _itemData)
-    {
-        if (_isAction)
-            RewardWorker.instance.RunAsync(_actionPosition, _itemData: _itemData).Forget();
-        else
-        {
-            foreach (var item in _itemData)
-            {
-                switch (item.key)
-                {
-                    case ItemType.rice:
-                    case ItemType.gold:
-                        AddAsset(item.key, item.count, _isUpdate, _isTween);
-                        break;
-                    case ItemType.dedicated_soul_stone:
-                        AddHeroSoul(item.value, (int)item.count);
-                        break;
-                }
-            }
-        }
-    }
+    //public void AddHeroSoul(string _key, int _count)
+    //{
+    //    var heroData = m_element.myHero.Find(x => x.key.Equals(_key));
 
+    //    if (heroData == null || heroData.isMine == false)
+    //    {
+    //        var grade = TableManager.hero.GetGradeFromSoulCount(_count);
+    //        AddHero(_key, grade);
+    //    }
+    //    else
+    //    {
+    //        heroData.soulCount += _count;
+    //        SaveData();
+    //    }
+    //}
     public void AddAsset(long _gold, long _rice, bool _isUpdate = true, bool _isTween = true)
     {
         SetAsset(
@@ -405,9 +375,6 @@ public partial class Data_UserInfo
                 if (result != 0) return result;
                 result = CompareEnchantLevel(x, y) * (m_sortData.isDescending ? -1 : 1);
                 if (result != 0) return result;
-                result = CompareRegion(x, y);
-                if (result != 0) return result;
-                result = CompareClass(x, y);
                 break;
 
             case HeroSortType.LEVEL:
@@ -415,11 +382,12 @@ public partial class Data_UserInfo
                 if (result != 0) return result;
                 result = CompareGrade(x, y) * (m_sortData.isDescending ? -1 : 1);
                 if (result != 0) return result;
-                result = CompareRegion(x, y);
-                if (result != 0) return result;
-                result = CompareClass(x, y);
                 break;
         }
+
+        result = CompareRegion(x, y);
+        if (result != 0) return result;
+        result = CompareClass(x, y);
 
         if (result != 0) return result;
 

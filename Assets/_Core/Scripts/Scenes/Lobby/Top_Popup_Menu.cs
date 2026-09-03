@@ -1,47 +1,115 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Inventory;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class Top_Popup_Menu : MonoBehaviour, IValidatable
 {
+    enum ButtonType
+    {
+        NONE = -1,
+
+        Setting,
+        Noti,
+        Inventory,
+        Post,
+        Quest,
+        Rebirth,
+
+        MAX
+    }
+
+    Dictionary<ButtonType, ButtonHelper> m_buttons = new();
+
     RectTransform m_rt;
+
+    PopupInventoryComponent m_inventory;
+
     private void Start()
     {
         m_rt = (RectTransform)transform;
+        m_buttons = m_element.buttons.ToDictionary(x => (ButtonType)m_element.buttons.FindIndex(b => b == x), x => x);
 
-        m_element.btnExit.onClick.AddListener(OnButton_Exit);
-
+#if SERVICE_DEV
         {
-            var btn = Instantiate(m_element.btnSetting, m_element.btnSetting.transform.parent);
+            var btn = Instantiate(m_buttons[ButtonType.Rebirth], transform);
             btn.text = "길잡이 초기화";
             btn.onClick.AddListener(() =>
             {
                 TutorialManager.instance.TestResetData();
                 gameObject.SetActive(false);
             });
-            btn.transform.SetSiblingIndex(1);
         }
         {
-            var btn = Instantiate(m_element.btnSetting, m_element.btnSetting.transform.parent);
-            btn.text = "스토리모드 해금";
+            var btn = Instantiate(m_buttons[ButtonType.Rebirth], transform);
+            btn.text = "스토리 해금";
             btn.onClick.AddListener(OnButton_Cheat_StoryMode);
-            btn.transform.SetSiblingIndex(2);
+        }
+#endif
+
+        var btnRebirth = m_buttons[ButtonType.Rebirth];
+        btnRebirth.text = DataManager.instance.isLobby ? "_회귀" : "_나가기";
+
+        foreach (var b in m_buttons)
+            b.Value.onClick.AddListener(() => OnButtonAsync(b.Key).Forget());
+    }
+
+    void OnDestroy()
+    {
+        if (m_inventory != null)
+            Destroy(m_inventory.gameObject);
+    }
+
+    async UniTask OnButtonAsync(ButtonType _type)
+    {
+        Close();
+
+        var btn = m_buttons[_type];
+        btn.interactable = false;
+        switch (_type)
+        {
+            //    case ButtonType.Setting:
+            //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupSettingComponent>(PopupType.Setting).Forget());
+            //        break;
+            //    case ButtonType.Noti:
+            //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupNotiComponent>(PopupType.Noti).Forget());
+            //        break;
+            case ButtonType.Inventory:
+                if(m_inventory == null)
+                    m_inventory = await PopupManager.instance.OpenPopupAsync<PopupInventoryComponent>(PopupType.Inventory);
+                m_inventory.gameObject.SetActive(true);
+                Utils.SetActivePunch(m_inventory.panel, true);
+                break;
+            //    case ButtonType.Post:
+            //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupPostComponent>(PopupType.Post).Forget());
+            //        break;
+            //    case ButtonType.Quest:
+            //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupQuestComponent>(PopupType.Quest).Forget());
+            //        break;
+            case ButtonType.Rebirth:
+                OnButton_Exit();
+                break;
         }
 
-        m_element.btnExit.text = DataManager.instance.isLobby ? "종_료" : "_나가기_";
+        btn.interactable = true;
+    }
+
+    void Close()
+    {
+        Utils.SetActivePunch(transform, false, _scaleValue: .7f);
     }
 
     private void Update()
     {
         if (Utils.IsOutClick(m_rt) == true)
-            gameObject.SetActive(false);
+            Close();
     }
 
     void OnButton_Exit()
     {
-        m_element.btnExit.interactable = false;
+        var btnRebirth = m_buttons[ButtonType.Rebirth];
+        btnRebirth.interactable = false;
 
         if (BossRaidWorker.instance.isRunning)
             BossRaidWorker.instance.ExitAsync().Forget();
@@ -50,7 +118,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         else if (DataManager.storyMode.isRunning)
         {
             (SceneBase.instance as Scene_StoryMode).OnButtonAsync_Skip(
-                _result => m_element.btnExit.interactable = _result != StatusType.Success).Forget();
+                _result => btnRebirth.interactable = _result != StatusType.Success).Forget();
         }
         else
         {
@@ -91,7 +159,10 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
                     //일단 보상에 넣어주자
                     //배치하다가 꺼버릴수도 있어서
                     foreach (var key in rewards)
-                        DataManager.userInfo.AddHeroSoul(key, 10);
+                    {
+                        if (DataManager.userInfo.HasHero(key) == false)
+                            DataManager.userInfo.AddHero(key);
+                    }
                 }
                 DataManager.storyMode.TestSave(node);
             }
@@ -122,14 +193,14 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
     [System.Serializable]
     struct ElementData
     {
-        public ButtonHelper btnExit;
-        public ButtonHelper btnSetting;
+        public List<ButtonHelper> buttons;
 
         public void Initialize(Transform _transform)
         {
-            btnExit = _transform.GetComponent<ButtonHelper>("btn_exit");
-            btnSetting = _transform.GetComponent<ButtonHelper>("btn_setting");
+            buttons = _transform.GetComponentsInChildren<ButtonHelper>().ToList();
         }
+
+
     }
     #endregion VALIDATE
 

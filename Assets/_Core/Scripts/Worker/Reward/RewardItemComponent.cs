@@ -132,7 +132,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         m_target.DOScale(prevScale, .2f).Forget();
 
         // 금화와 군량일 경우 올려주는 연출
-        if (m_data.isCurrency)
+        if (m_data.isGoldRice)
             Signal.instance.UpdateAsset.Emit((true, m_data.itemType));
 
         FinishedAsync().Forget();

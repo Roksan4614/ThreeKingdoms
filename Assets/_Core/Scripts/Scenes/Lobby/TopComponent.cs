@@ -12,7 +12,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
 {
     Dictionary<ItemType, AssetData> m_assets = new();
 
-    PopupInventoryComponent m_inventory;
+    //PopupInventoryComponent m_inventory;
 
     private void Start()
     {
@@ -38,41 +38,44 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
                     UpdateAsset(_data.itemType, -1, _data.isTween);
             });
 
-        m_element.assets.Find(x=>x.type == ItemType.gold).button.onClick.AddListener(() => OpenInventoryAsync().Forget());
+        //m_element.assets.Find(x=>x.type == ItemType.gold).button.onClick.AddListener(() => OpenInventoryAsync().Forget());
     }
 
-    async UniTask OpenInventoryAsync()
-    {
-        if (m_inventory == null)
-            m_inventory = await PopupManager.instance.OpenPopupAsync<PopupInventoryComponent>(PopupType.Inventory);
+    //async UniTask OpenInventoryAsync()
+    //{
+    //    if (m_inventory == null)
+    //        m_inventory = await PopupManager.instance.OpenPopupAsync<PopupInventoryComponent>(PopupType.Inventory);
 
-        var scale = m_element.arrowInventory.localScale;
-        if (scale.y > 0)
-        {
-            scale.y *= -1;
-            m_element.arrowInventory.localScale = scale;
-        }
+    //    var scale = m_element.arrowInventory.localScale;
+    //    if (scale.y > 0)
+    //    {
+    //        scale.y *= -1;
+    //        m_element.arrowInventory.localScale = scale;
+    //    }
 
-        m_inventory.SetActivePunchAsync(true).Forget();
+    //    m_inventory.gameObject.SetActive(true);
+    //    Utils.SetActivePunch(m_inventory.panel, true);
 
-        await UniTask.WaitUntil(() => m_inventory.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
+    //    await UniTask.WaitUntil(() => m_inventory.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
 
-        scale.y *= -1;
-        m_element.arrowInventory.localScale = scale;
-    }
+    //    scale.y *= -1;
+    //    m_element.arrowInventory.localScale = scale;
+    //}
 
-    protected override void OnDestroy()
-    {
-        if (m_inventory != null)
-            Destroy(m_inventory.gameObject);
+    //protected override void OnDestroy()
+    //{
+    //    if (m_inventory != null)
+    //        Destroy(m_inventory.gameObject);
 
-        base.OnDestroy();
-    }
+    //    base.OnDestroy();
+    //}
 
     async UniTask OnButtonAsync_PopupMenu()
     {
         m_element.btnMenu.interactable = false;
-        m_element.popupMenu.SetActive(true);
+
+        Utils.SetActivePunch(m_element.popupMenu.transform, true, _scaleValue: .7f);
+        //m_element.popupMenu.gameObject.SetActive(true);
 
         await UniTask.WaitUntil(() => m_element.popupMenu.activeSelf == false, cancellationToken: destroyCancellationToken);
 
