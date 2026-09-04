@@ -313,11 +313,19 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     UnityEngine.ResourceManagement.ResourceProviders.SceneInstance m_prevSceneInstance;
     public async UniTask LoadSceneAsync(string _sceneName)
     {
-        if (m_prevSceneInstance.Scene.IsValid())
-            await Addressables.UnloadSceneAsync(m_prevSceneInstance).ToUniTask();
+        var prev = m_prevSceneInstance;
 
         curSceneName = _sceneName;
         m_prevSceneInstance = await Addressables.LoadSceneAsync(_sceneName).ToUniTask();
+
+        if (prev.Scene.IsValid())
+            await Addressables.UnloadSceneAsync(prev).ToUniTask();
+
+        //if (m_prevSceneInstance.Scene.IsValid())
+        //    await Addressables.UnloadSceneAsync(m_prevSceneInstance).ToUniTask();
+
+        //curSceneName = _sceneName;
+        //m_prevSceneInstance = await Addressables.LoadSceneAsync(_sceneName).ToUniTask();
     }
     public string curSceneName { get; private set; }
 

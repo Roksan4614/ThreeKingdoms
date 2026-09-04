@@ -173,8 +173,8 @@ MonoBehaviour:
   m_element:
     rt: {fileID: 6531025256288521797}
     txtContent: {fileID: 3167102925223765277}
-    btnConfirm: {fileID: 8824259235657920134}
-    btnCancel: {fileID: 2752942619983017924}
+    btnConfirm: {fileID: 2430978168366911426}
+    btnCancel: {fileID: 7672314709232868998}
     fitter: {fileID: 8704620642742070611}
 --- !u!1 &4699439934676166199
 GameObject:
@@ -455,6 +455,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6531025256288521797}
     m_Modifications:
+    - target: {fileID: 60395615127859002, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 60395615127859002, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 60395615127859002, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 60395615127859002, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2594906427908180779, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -551,6 +567,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5409818392079564414, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409818392079564414, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409818392079564414, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5409818392079564414, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7433032438385822094, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -576,9 +608,20 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
---- !u!114 &2752942619983017924 stripped
+--- !u!114 &2430978168366911426 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7889665702389301342, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7707139309653784664, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
+  m_PrefabInstance: {fileID: 5425099899897231258}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08be4068aba223343ac6976ab55a83fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHelper
+--- !u!114 &7672314709232868998 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2391510399061453084, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
   m_PrefabInstance: {fileID: 5425099899897231258}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -592,14 +635,3 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2594906427908180779, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
   m_PrefabInstance: {fileID: 5425099899897231258}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8824259235657920134 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3548768989737392412, guid: cccd322d0be8a3c43934ed38b061290f, type: 3}
-  m_PrefabInstance: {fileID: 5425099899897231258}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08be4068aba223343ac6976ab55a83fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ButtonHelper

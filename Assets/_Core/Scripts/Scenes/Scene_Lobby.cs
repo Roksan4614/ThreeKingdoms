@@ -18,14 +18,12 @@ public class Scene_Lobby : SceneBase
         if (DataManager.userInfo.myHero.Count == 0)
             await PopupManager.instance.OpenPopupAndWait(PopupType.SelectRegion);
 
-        IngameLog.Add("Lobby: SpawnUpdateAsync: Start");
         List<UniTask> tasks = new();
         tasks.Add(TeamManager.instance.SpawnUpdateAsync());
         tasks.Add(LobbyScreenManager.instance.InstantiateAsync());
 
         // 로비 생성 끝난 다음에 진행하자
         await UniTask.WhenAll(tasks.ToArray());
-        IngameLog.Add("Lobby: SpawnUpdateAsync: Finished");
 
         StageManager.instance.StartStageAsync().Forget();
         ControllerManager.instance.SetSwitch(true);

@@ -77,12 +77,11 @@ public class Scene_Login : SceneBase
 
         IngameLog.Add("Load Scene: Lobby");
 
-#if !UNITY_EDITOR
-        IngameLog.AddBuild($"Login: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
-#endif
         await PopupManager.instance.ShowDimmAsync(true);
 
         AddressableManager.instance.LoadScene("02_Lobby");
+
+        IngameLog.Add("Login: Finished");
     }
 
     public async UniTask LoadLobbyScreenAsync()

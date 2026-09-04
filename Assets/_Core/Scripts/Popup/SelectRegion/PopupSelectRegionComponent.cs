@@ -46,7 +46,9 @@ public class PopupSelectRegionComponent : BasePopupComponent
                 StartFade(hero, false, false);
         }
 
+        IngameLog.AddBuild("m_popupHeroInfo.OpenAsync");
         await m_popupHeroInfo.OpenAsync(regionData);
+        IngameLog.AddBuild("m_popupHeroInfo.OpenAsync: FINISHED");
 
         if (DataManager.userInfo.myHero.Count > 0)
         {
