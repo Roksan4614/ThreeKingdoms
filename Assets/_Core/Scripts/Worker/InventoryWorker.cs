@@ -165,6 +165,14 @@ public class ItemData : TableItemData
     //custom 
     [JsonProperty] public bool isNew;
     [JsonProperty] public long count;
+
+    public bool EqaulsItemData(ItemData _itemData)
+    {
+        if (key == _itemData.key &&
+            value.IsActive() == _itemData.value.IsActive())
+            return true;
+        return false;
+    }
 }
 
 [JsonObject(MemberSerialization.OptIn)]

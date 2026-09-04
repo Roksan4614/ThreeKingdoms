@@ -25,7 +25,7 @@ public static class IngameLog
 #if UNITY_EDITOR
             Debug.Log($"[{time}] {msg}");
 #else
-            Debug.Log("rr: " + msg);
+            Debug.Log($"rr: [{time}] {msg}");
 #endif
         }
     }

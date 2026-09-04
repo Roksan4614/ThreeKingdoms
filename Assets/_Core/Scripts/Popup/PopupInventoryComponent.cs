@@ -12,13 +12,12 @@ namespace Rev9.Inventory
 
         PopupInventoryComponent() : base(PopupType.Inventory) { }
 
-
         Dictionary<ItemCategoryType, ButtonHelper> m_tabs = new();
-        public RectTransform panel => m_element.panel;
 
-        bool m_isStarted = false;
-        private void Start()
+        protected override void Awake()
         {
+            base.Awake();
+
             var sortCategory = InventoryWorker.instance.sortCategory;
             var content = m_element.scrollTab.content;
 
@@ -37,21 +36,22 @@ namespace Rev9.Inventory
                 m_tabs.Add(type, button);
             }
 
+            Utils.WaitEscape(this, () =>
+            {
+                Close();
+            });
+        }
+
+        public override void OpenPopup(params object[] _args)
+        {
+            m_element.scrollList.content.anchoredPosition =
+            m_element.scrollTab.content.anchoredPosition = Vector2.zero;
+
             m_curCategory = ItemCategoryType.NONE - 1;
             SetTab(ItemCategoryType.NONE);
 
-            m_isStarted = true;
-        }
-
-        private void OnEnable()
-        {
-            if (m_isStarted == true)
-            {
-                m_element.scrollList.content.anchoredPosition =
-                m_element.scrollTab.content.anchoredPosition = Vector2.zero;
-
-                SetTab(ItemCategoryType.NONE);
-            }
+            gameObject.SetActive(true);
+            Utils.SetActivePunch(m_element.panel, true);
         }
 
         void SetTab(ItemCategoryType _category)

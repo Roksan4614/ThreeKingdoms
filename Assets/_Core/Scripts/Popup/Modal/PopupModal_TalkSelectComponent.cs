@@ -15,11 +15,6 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
 
     protected override void Start() { }
 
-    protected override void Update()
-    {
-        m_elementTalk.mouse.position = CameraManager.posPointer;
-    }
-
     // ModalTalkData
     public override void OpenPopup(params object[] _args)
     {
@@ -124,7 +119,6 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
     {
         public RectTransform rtPanel;
         public Image dimm;
-        public Transform mouse;
 
         public List<ButtonHelper> btnSelect;
 
@@ -136,7 +130,6 @@ public class PopupModal_TalkSelectComponent : PopupModalComponent
         {
             rtPanel = (RectTransform)_transform.Find("Panel");
             dimm = _transform.GetComponent<Image>("Dimm");
-            mouse = _transform.Find("MousePosition");
 
             btnSelect = rtPanel.GetComponentsInChildren<ButtonHelper>().ToList();
 

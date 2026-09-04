@@ -66,6 +66,7 @@ public class Data_DailyDungeon
             _onUpdate();
 
             recordData.isSweep = true;
+            PopupManager.instance.CloseAll();
             await PopupManager.instance.OpenPopupAndWait(PopupType.DailyDungeonResult, recordData);
         }
     }
@@ -128,6 +129,7 @@ public class Data_DailyDungeon
         };
 
         m_data.count--;
+        PopupManager.instance.CloseAll();
         var popup = await PopupManager.instance
             .OpenPopupAndWait<PopupDailyDungeonResultComponent>(PopupType.DailyDungeonResult, resultData);
 

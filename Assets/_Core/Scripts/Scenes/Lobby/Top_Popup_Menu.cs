@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Rev9.Inventory;
+using Rev9.Post;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -25,6 +26,11 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
     RectTransform m_rt;
 
     PopupInventoryComponent m_inventory;
+    PopupPostComponent m_post;
+
+    public bool isOpenMenu => gameObject.activeSelf ||
+        (m_inventory?.gameObject.activeSelf ?? false) ||
+        (m_post?.gameObject.activeSelf ?? false);
 
     private void Start()
     {
@@ -59,11 +65,17 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
     {
         if (m_inventory != null)
             Destroy(m_inventory.gameObject);
+        if (m_post != null)
+            Destroy(m_post.gameObject);
     }
+
+    public void SetActive(bool _isActive) => gameObject.SetActive(_isActive);
 
     async UniTask OnButtonAsync(ButtonType _type)
     {
         Close();
+
+        await UniTask.WaitForSeconds(.1f);
 
         var btn = m_buttons[_type];
         btn.interactable = false;
@@ -75,11 +87,17 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
             //    case ButtonType.Noti:
             //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupNotiComponent>(PopupType.Noti).Forget());
             //        break;
+            case ButtonType.Post:
+                if (m_post == null)
+                    m_post = await PopupManager.instance.OpenPopupAsync<PopupPostComponent>(PopupType.Post);
+                else
+                    m_post.OpenPopup();
+                break;
             case ButtonType.Inventory:
-                if(m_inventory == null)
+                if (m_inventory == null)
                     m_inventory = await PopupManager.instance.OpenPopupAsync<PopupInventoryComponent>(PopupType.Inventory);
-                m_inventory.gameObject.SetActive(true);
-                Utils.SetActivePunch(m_inventory.panel, true);
+                else
+                    m_inventory.OpenPopup();
                 break;
             //    case ButtonType.Post:
             //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupPostComponent>(PopupType.Post).Forget());
@@ -102,7 +120,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
 
     private void Update()
     {
-        if (Utils.IsOutClick(m_rt) == true)
+        if (Utils.IsOutClick(m_rt) == true || Input.GetKeyDown(KeyCode.Escape))
             Close();
     }
 

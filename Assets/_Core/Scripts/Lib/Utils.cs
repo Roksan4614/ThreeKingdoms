@@ -117,12 +117,12 @@ public static class Utils
         return $"{_byte:0.##} {strFileSize[count]}";
     }
 
-    public static void WaitEscape(MonoBehaviour _mono, UnityAction _onEscape, bool _isForceBreak = false, CancellationToken _token = default)
+    public static void WaitEscape(MonoBehaviour _mono, UnityAction _onEscape, CancellationToken _token = default, bool _isMenuPopup = false)
     {
-        WaitEscapeAsync(_mono, _onEscape, _isForceBreak, _token).Forget();
+        WaitEscapeAsync(_mono, _onEscape, _token, _isMenuPopup).Forget();
     }
 
-    public static async UniTask WaitEscapeAsync(MonoBehaviour _mono, UnityAction _onEscape, bool _isForceBreak = false, CancellationToken _token = default)
+    public static async UniTask WaitEscapeAsync(MonoBehaviour _mono, UnityAction _onEscape, CancellationToken _token = default, bool _isMenuPopup = false)
     {
         while (true)
         {
@@ -131,6 +131,9 @@ public static class Utils
                 return Input.GetKeyDown(KeyCode.Escape);
             }, cancellationToken: _token == default ? _mono.destroyCancellationToken : _token);
 
+            if (_mono == null)
+                break;
+
             if (PopupManager.instance.isOpenModal)
             {
                 if (PopupManager.instance.lastPopupModal.isSwitchEscape)
@@ -138,13 +141,13 @@ public static class Utils
                 continue;
             }
 
-            if (_mono == null)
-                break;
+            if (TopComponent.instance.isOpenMenu == true && _isMenuPopup == false)
+                continue;
 
             _onEscape();
 
-            if (_isForceBreak == true)
-                break;
+            //if (_isForceBreak == true)
+            //    break;
         }
     }
 

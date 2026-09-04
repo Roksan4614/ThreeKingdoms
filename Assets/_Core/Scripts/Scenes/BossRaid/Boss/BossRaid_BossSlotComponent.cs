@@ -132,6 +132,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         }
         else
         {
+            PopupManager.instance.CloseAll();
             PopupManager.instance.OpenPopup(PopupType.BossRaidResult);
         }
     }

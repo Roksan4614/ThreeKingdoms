@@ -21,7 +21,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
                 return;
 
             Close();
-        }, _token: destroyCancellationToken);
+        });
 
         InitializeTab();
         if (OpenIFMode() == false)

@@ -14,6 +14,8 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
 
     //PopupInventoryComponent m_inventory;
 
+    public bool isOpenMenu => m_element.popupMenu.isOpenMenu;
+
     private void Start()
     {
         for (int i = 0; i < m_element.assets.Count; i++)
@@ -77,7 +79,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
         Utils.SetActivePunch(m_element.popupMenu.transform, true, _scaleValue: .7f);
         //m_element.popupMenu.gameObject.SetActive(true);
 
-        await UniTask.WaitUntil(() => m_element.popupMenu.activeSelf == false, cancellationToken: destroyCancellationToken);
+        await UniTask.WaitUntil(() => m_element.popupMenu.gameObject.activeSelf == false, cancellationToken: destroyCancellationToken);
 
         await UniTask.WaitForSeconds(0.1f, cancellationToken: destroyCancellationToken);
 
@@ -135,7 +137,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
         public List<AssetData> assets;
 
         public Button btnMenu;
-        public GameObject popupMenu;
+        public Top_Popup_Menu popupMenu;
 
         public Transform arrowInventory;
 
@@ -154,7 +156,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
             }
 
             btnMenu = _transform.GetComponent<Button>("Menu");
-            popupMenu = _transform.Find("Menu/Popup/Menu").gameObject;
+            popupMenu = _transform.Find("Menu/Popup/Menu").GetComponent<Top_Popup_Menu>();
             arrowInventory = _transform.Find("gold/img_arrow");
         }
     }

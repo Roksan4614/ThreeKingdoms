@@ -32,6 +32,8 @@ public enum PopupType
     UserInfo,
 
     Inventory,
+    Post,
+
     Reward,
     UpgradeGuide,
     ContentsMarket,

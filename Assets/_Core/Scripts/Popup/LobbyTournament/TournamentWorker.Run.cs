@@ -49,6 +49,7 @@ namespace Rev9.Tournament
             statusType = TournamentStatusType.Finished;
 
             SaveHistoryAsync().Forget();
+            PopupManager.instance.CloseAll();
             PopupManager.instance.OpenPopup(PopupType.TournamentResult);
             Signal.instance.TournamentStatus.Emit(TournamentStatusType.Finished);
         }

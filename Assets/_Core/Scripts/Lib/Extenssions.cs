@@ -393,10 +393,10 @@ public static class Extenssions
     {
         return _class is not null;
     }
-    // null인지 체크
-    public static T DeepClone<T>(this T _class) where T : class
-    {
-        var json = Newtonsoft.Json.JsonConvert.SerializeObject(_class);
-        return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
-    }
+
+    //public static T DeepClone<T>(this T _class) where T : class
+    //{
+    //    var json = Newtonsoft.Json.JsonConvert.SerializeObject(_class);
+    //    return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
+    //}
 }
