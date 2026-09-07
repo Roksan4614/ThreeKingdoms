@@ -1,4 +1,6 @@
 using Cysharp.Threading.Tasks;
+using Rev9.ContentsMarket;
+using Rev9.Post;
 using Rev9.Tournament;
 using System;
 using System.Collections;
@@ -40,11 +42,13 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     {
         Signal.Release();
         DataManager.Release();
-        ScenarioManager.Release();
+        //ScenarioManager.Release();
         TimeManager.instance.Release();
-        AdsManager.instance.Release();
-        TournamentWorker.instance.Release();
-        InventoryWorker.instance.Release();
+        AdsManager.Release();
+        TournamentWorker.Release();
+        ContentsMarketWorker.Release();
+        InventoryWorker.Release();
+        PostWorker.Release();
     }
 
     public async UniTask InitializeAsync()

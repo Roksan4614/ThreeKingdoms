@@ -6,14 +6,25 @@ using UnityEngine;
 
 namespace Rev9.ContentsMarket
 {
-    public class ContentsMarketWorker : MonoSingleton<ContentsMarketWorker>
+    public class ContentsMarketWorker
     {
+        static ContentsMarketWorker m_instance;
+        public static ContentsMarketWorker instance
+        {
+            get
+            {
+                if (m_instance == null)
+                    m_instance = new();
+                return m_instance;
+            }
+        }
+
         Dictionary<ContentsMarketTabType, List<ContentsMarketProductData>> m_db;
 
-        protected override void OnDestroy()
+        public static void Release()
         {
-            m_db = null;
-            base.OnDestroy();
+            if (m_instance != null)
+                m_instance = null;
         }
 
         public async UniTask InitializeAsync()

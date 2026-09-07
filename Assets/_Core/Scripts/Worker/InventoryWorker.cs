@@ -6,19 +6,9 @@ using UnityEngine;
 public class InventoryWorker
 {
     static InventoryWorker m_instance;
-    public static InventoryWorker instance
-    {
-        get
-        {
-            if (m_instance == null)
-                m_instance = new();
-            return m_instance;
-        }
-    }
-    public void Release()
-    {
-        m_instance = null;
-    }
+    public static InventoryWorker instance => m_instance ??= new();
+    public static void Release()
+        => m_instance = null;
 
     List<InventoryItemData> m_data;
     public static List<InventoryItemData> data => instance.m_data;

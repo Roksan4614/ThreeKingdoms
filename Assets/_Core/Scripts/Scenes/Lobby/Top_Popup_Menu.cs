@@ -25,12 +25,20 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
 
     RectTransform m_rt;
 
-    PopupInventoryComponent m_inventory;
-    PopupPostComponent m_post;
+    Dictionary<ButtonType, BasePopupComponent> m_popups = new();
 
-    public bool isOpenMenu => gameObject.activeSelf ||
-        (m_inventory?.gameObject.activeSelf ?? false) ||
-        (m_post?.gameObject.activeSelf ?? false);
+    public bool isOpenMenu
+    {
+        get
+        {
+            if (gameObject.activeSelf)
+                return true;
+            foreach (var p in m_popups)
+                if (p.Value.gameObject.activeSelf == true)
+                    return true;
+            return false;
+        }
+    }
 
     private void Start()
     {
@@ -63,10 +71,10 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
 
     void OnDestroy()
     {
-        if (m_inventory != null)
-            Destroy(m_inventory.gameObject);
-        if (m_post != null)
-            Destroy(m_post.gameObject);
+        foreach (var p in m_popups)
+            Destroy(p.Value.gameObject);
+
+        m_popups = null;
     }
 
     public void SetActive(bool _isActive) => gameObject.SetActive(_isActive);
@@ -81,23 +89,32 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         btn.interactable = false;
         switch (_type)
         {
-            //    case ButtonType.Setting:
-            //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupSettingComponent>(PopupType.Setting).Forget());
-            //        break;
+            case ButtonType.Setting:
+                {
+                    if (m_popups.ContainsKey(_type) == false)
+                        m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupSettingComponent>(PopupType.Setting));
+                    else
+                        m_popups[_type].OpenPopup();
+                }
+                break;
             //    case ButtonType.Noti:
             //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupNotiComponent>(PopupType.Noti).Forget());
             //        break;
             case ButtonType.Post:
-                if (m_post == null)
-                    m_post = await PopupManager.instance.OpenPopupAsync<PopupPostComponent>(PopupType.Post);
-                else
-                    m_post.OpenPopup();
+                {
+                    if (m_popups.ContainsKey(_type) == false)
+                        m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupPostComponent>(PopupType.Post));
+                    else
+                        m_popups[_type].OpenPopup();
+                }
                 break;
             case ButtonType.Inventory:
-                if (m_inventory == null)
-                    m_inventory = await PopupManager.instance.OpenPopupAsync<PopupInventoryComponent>(PopupType.Inventory);
-                else
-                    m_inventory.OpenPopup();
+                {
+                    if (m_popups.ContainsKey(_type) == false)
+                        m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupPostComponent>(PopupType.Inventory));
+                    else
+                        m_popups[_type].OpenPopup();
+                }
                 break;
             //    case ButtonType.Post:
             //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupPostComponent>(PopupType.Post).Forget());

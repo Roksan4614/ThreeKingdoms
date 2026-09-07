@@ -10,11 +10,15 @@ namespace Rev9.Tournament
 {
     public partial class TournamentWorker
     {
-        public static TournamentWorker instance { get; private set; } = new();
-        public void Release()
+        static TournamentWorker m_instance;
+        public static TournamentWorker instance => m_instance ??= new();
+        public static void Release()
         {
-            m_ctsRefresh = m_ctsRefresh.ReleaseCTS();
-            instance = null;
+            if (m_instance != null)
+            {
+                m_instance.m_ctsRefresh = m_instance.m_ctsRefresh.ReleaseCTS();
+                m_instance = null;
+            }
         }
 
         TournamentData m_data;

@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class AdsManager
 {
-    public static AdsManager instance { get; private set; } = new();
-    public void Release() => instance = null;
+    static AdsManager m_instance;
+    public static AdsManager instance => m_instance ??= new();
+    public static void Release() => m_instance = null;
 
     public async UniTask<bool> ShowAsync()
     {

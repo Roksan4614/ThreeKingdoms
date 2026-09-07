@@ -3,8 +3,16 @@ using System.Collections.Generic;
 
 namespace Rev9.Post
 {
-    public class PostWorker : MonoSingleton<PostWorker>
+    public partial class PostWorker
     {
+        static PostWorker m_instance;
+        public static PostWorker instance => m_instance ??= new();
+
+        public PostWorker()
+            => InitializeAsync().Forget();
+        public static void Release()
+            => m_instance = null;
+
         public static bool isReady => instance.m_data != null;
         public static bool isRedDot => instance.IsRedDot();
         public static IReadOnlyList<PostInfoData> data => instance.GetData_RefreshTimer();
@@ -12,56 +20,9 @@ namespace Rev9.Post
         PostData m_data;
         const string c_key = "pp_post";
 
-        private void Start()
-        {
-            InitializeAsync().Forget();
-        }
-
         async UniTask InitializeAsync()
         {
-            m_data = PPWorker.Get<PostData>(c_key);
-            //if (m_data == null)
-            {
-                m_data = new();
-
-                m_data.posts.Add(new()
-                {
-                    title = "아침 접속 보상",
-                    index = 0,
-                    rewards = new()
-                    {
-                        TableManager.item.GetItemData(ItemType.gold, 100),
-                        TableManager.item.GetItemData(ItemType.rice, 100),
-                    }
-                });
-                m_data.posts.Add(new()
-                {
-                    title = "시간 테스트 용",
-                    index = 2,
-                    rewards = new()
-                    {
-                        TableManager.item.GetItemData(ItemType.dedicated_soul_stone, 10, "CaoCao"),
-                        TableManager.item.GetItemData(ItemType.public_soul_stone, 100),
-                    },
-                    tick_end = Utils.GetUTC().AddSeconds(20).Ticks
-                });
-                m_data.posts.Add(new()
-                {
-                    title = "그냥 접속 보상",
-                    index = 3,
-                    rewards = new()
-                    {
-                        TableManager.item.GetItemData(ItemType.public_soul_stone, 10),
-                        TableManager.item.GetItemData(ItemType.dedicated_soul_stone, 100, "CaoCao"),
-                        TableManager.item.GetItemData(ItemType.time_stone, 100000),
-                        TableManager.item.GetItemData(ItemType.gold, 100),
-                        TableManager.item.GetItemData(ItemType.rice, 100),
-                    },
-                    tick_end = Utils.GetUTC().AddHours(26).Ticks
-                });
-
-                SaveData();
-            }
+            await API_Load_PostData();
         }
 
         void SaveData()
@@ -199,5 +160,7 @@ namespace Rev9.Post
         public long tick_end;
         public bool isRead;
         public bool isReceiveReward;
+
+        //custom 
     }
 }

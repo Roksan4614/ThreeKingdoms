@@ -14,6 +14,11 @@ public enum OptionType
     AUTO_SKILL,
     HIDE_HP_BAR,
 
+    MUTE_SOUND_BGM,
+    MUTE_SOUND_SFX,
+    OFF_HAPTIC,
+    OFF_SCREEN_SHAKE,
+
     MAX
 }
 
@@ -83,27 +88,48 @@ public class Data_Option
 
     public bool isAutoSkill
     {
-        get => m_data.db[OptionType.AUTO_SKILL] == 1;
-        set
-        {
-            m_data.db[OptionType.AUTO_SKILL] = value ? 1 : 0;
-            SaveData_Option();
-        }
+        get => m_data.IsOn(OptionType.AUTO_SKILL);
+        set => SetOption(OptionType.AUTO_SKILL, value, false);
     }
 
     public bool isHideHpBar
     {
-        get => m_data.db.ContainsKey(OptionType.HIDE_HP_BAR) && m_data.db[OptionType.HIDE_HP_BAR] == 1;
-        set
-        {
-            if (m_data.db.ContainsKey(OptionType.HIDE_HP_BAR) == false)
-                m_data.db.Add(OptionType.HIDE_HP_BAR, 0);
+        get => m_data.IsOn(OptionType.HIDE_HP_BAR);
+        set => SetOption(OptionType.HIDE_HP_BAR, value);
+    }
 
-            m_data.db[OptionType.HIDE_HP_BAR] = value ? 1 : 0;
-            SaveData_Option();
+    public bool isMute_BGM
+    {
+        get => m_data.IsOn(OptionType.MUTE_SOUND_BGM);
+        set => SetOption(OptionType.MUTE_SOUND_BGM, value);
+    }
+    public bool isMute_SFX
+    {
+        get => m_data.IsOn(OptionType.MUTE_SOUND_SFX);
+        set => SetOption(OptionType.MUTE_SOUND_SFX, value);
+    }
+    public bool isHaptic
+    {
+        // off haptic 인데.. 펀의상 이렇게 하자;;
+        get => m_data.IsOn(OptionType.OFF_HAPTIC) == false;
+        set => SetOption(OptionType.OFF_HAPTIC, value == false, false);
+    }
+    public bool isScreenShake
+    {
+        // 기서도 진동처럼..
+        get => m_data.IsOn(OptionType.OFF_SCREEN_SHAKE) == false;
+        set => SetOption(OptionType.OFF_SCREEN_SHAKE, value == false, false);
+    }
 
-            Signal.instance.OptionUpdate.Emit(OptionType.HIDE_HP_BAR);
-        }
+    public bool IsOn(OptionType _type)
+        => m_data.IsOn(_type);
+
+    public void SetOption(OptionType _type, bool _isOn, bool _isEmit = true)
+    {
+        m_data.SetOption(_type, _isOn);
+        SaveData_Option();
+        if (_isEmit == true)
+            Signal.instance.OptionUpdate.Emit(_type);
     }
 
     [Serializable]
@@ -117,5 +143,17 @@ public class Data_Option
             for (var e = OptionType.NONE + 1; e < OptionType.MAX; e++)
                 db.Add(e, 0);
         }
+
+        public void SetOption(OptionType _type, bool _isOn)
+        {
+            int optionValue = _isOn ? 1 : 0;
+            if (db.ContainsKey(_type) == false)
+                db.Add(_type, optionValue);
+            else
+                db[_type] = optionValue;
+        }
+
+        public bool IsOn(OptionType _type)
+            => db.ContainsKey(_type) && db[_type] == 1;
     }
 }

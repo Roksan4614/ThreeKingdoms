@@ -10,7 +10,17 @@ namespace Rev9.Post
     public class PopupPost_Slot : MonoBehaviour, IValidatable
     {
         public PostInfoData postData { get; private set; }
-        public Button.ButtonClickedEvent onClick => m_element.btnReceive.onClick;
+        public Action<PopupPost_Slot> click { get; set; }
+        public Action<PopupPost_Slot> clickConfirm { get; set; }
+
+        public bool isReceivedRewards => postData.rewards.Count == 0 || postData.isReceiveReward == true;
+
+        private void Awake()
+        {
+            transform.GetComponent<Button>().onClick.AddListener(() => click(this));
+
+            m_element.btnConfirm.onClick.AddListener(() => clickConfirm(this));
+        }
 
         public void SetPostData(PostInfoData _postData)
         {
@@ -19,19 +29,41 @@ namespace Rev9.Post
 
             TimerAsync().Forget();
 
-            int i = 0;
-            var content = m_element.scroll.content;
-            for (; i < _postData.rewards.Count; i++)
+            m_element.txtContent.text = _postData.content.Replace("\n\n", " ").Replace("\n", " ");
+            var size = m_element.txtContent.rectTransform.sizeDelta;
+            var margin = m_element.txtContent.margin;
+            if (_postData.rewards.Count > 0)
             {
-                var slot = (i == content.childCount ? Instantiate(content.GetChild(0), content) : content.GetChild(i)).GetComponent<ItemComponent>();
-                slot.gameObject.SetActive(true);
-                slot.SetItemData(_postData.rewards[i]);
+                size.y = 60;
+                margin.z = 20;
+                m_element.scroll.gameObject.SetActive(true);
+
+                int i = 0;
+                var content = m_element.scroll.content;
+                for (; i < _postData.rewards.Count; i++)
+                {
+                    var slot = (i == content.childCount ? Instantiate(content.GetChild(0), content) : content.GetChild(i)).GetComponent<ItemComponent>();
+                    slot.gameObject.SetActive(true);
+                    slot.SetItemData(_postData.rewards[i]);
+                }
+
+                for (; i < content.childCount; i++)
+                    content.GetChild(i).gameObject.SetActive(false);
+                content.anchoredPosition = Vector2.zero;
+            }
+            else
+            {
+                size.y = 98;
+                margin.z = 170;
+                m_element.scroll.gameObject.SetActive(false);
             }
 
-            for (; i < content.childCount; i++)
-                content.GetChild(i).gameObject.SetActive(false);
+            m_element.txtContent.rectTransform.sizeDelta = size;
+            m_element.txtContent.margin = margin;
 
-            content.anchoredPosition = Vector2.zero;
+            transform.ForceRebuildLayout();
+
+            m_element.btnConfirm.text = isReceivedRewards ? "_보기_" : "_받기_";
         }
 
         void OnDisable()
@@ -40,7 +72,7 @@ namespace Rev9.Post
         }
 
         CancellationTokenSource m_cts;
-        async UniTask TimerAsync()
+        public async UniTask TimerAsync()
         {
             m_cts = m_cts.ReleaseCTS(true);
             var token = m_cts.Token;
@@ -77,16 +109,20 @@ namespace Rev9.Post
         {
             public TextMeshProUGUI txtTitle;
             public TextMeshProUGUI txtTimer;
+            public TextMeshProUGUI txtContent;
             public ScrollRect scroll;
-            public ButtonHelper btnReceive;
+
+            public ButtonHelper btnConfirm;
 
             public void Initialize(Transform _transform)
             {
                 txtTitle = _transform.GetComponent<TextMeshProUGUI>("Title/Text");
-                txtTimer = _transform.GetComponent<TextMeshProUGUI>("txt_timer");
-                scroll = _transform.GetComponent<ScrollRect>("Scroll");
-                btnReceive = _transform.GetComponent<ButtonHelper>("btn_receive");
+                txtTimer = _transform.GetComponent<TextMeshProUGUI>("Title/txt_timer");
+                scroll = _transform.GetComponent<ScrollRect>("Rewards");
 
+                btnConfirm = _transform.GetComponent<ButtonHelper>("btn_confirm");
+
+                txtContent = _transform.GetComponent<TextMeshProUGUI>("txt_content");
 
             }
         }

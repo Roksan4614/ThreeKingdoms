@@ -124,6 +124,9 @@ public class CameraManager : MonoSingleton<CameraManager>
     Tween m_tween;
     public async UniTask ShakeAsync(bool _isForceShake = false)
     {
+        if (DataManager.option.isScreenShake == false)
+            return;
+
         m_tween?.Kill();
 
         //if (ControllerManager.instance.isDoing == true && _isForceShake == false)

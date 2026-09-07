@@ -33,6 +33,7 @@ public enum PopupType
 
     Inventory,
     Post,
+    Setting,
 
     Reward,
     UpgradeGuide,
