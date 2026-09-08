@@ -8,19 +8,16 @@ namespace Rev9.Post
         static PostWorker m_instance;
         public static PostWorker instance => m_instance ??= new();
 
-        public PostWorker()
-            => InitializeAsync().Forget();
         public static void Release()
             => m_instance = null;
 
-        public static bool isReady => instance.m_data != null;
         public static bool isRedDot => instance.IsRedDot();
         public static IReadOnlyList<PostInfoData> data => instance.GetData_RefreshTimer();
 
         PostData m_data;
         const string c_key = "pp_post";
 
-        async UniTask InitializeAsync()
+        public async UniTask InitializeAsync()
         {
             await API_Load_PostData();
         }
@@ -119,7 +116,7 @@ namespace Rev9.Post
             return data?.rewards ?? new();
         }
 
-        public void SetReddotRefresh_OpenPost()
+        public void SetReddotRefresh_ClosePost()
         {
             var datas = GetData_RefreshTimer(false);
 

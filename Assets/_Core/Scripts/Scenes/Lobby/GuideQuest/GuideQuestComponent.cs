@@ -246,7 +246,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                 .SetLoops(-1, LoopType.Restart)
                 .SetEase(Ease.Linear).Forget();
 
-            await UniTask.WaitForSeconds(.5f);
+            await UniTask.WaitForSeconds(.2f);
 
             m_guide.talkbox.rt.pivot = new Vector2(0, .3f);
             m_guide.talkbox.rt.SetAnchoredPosition(0, 190);

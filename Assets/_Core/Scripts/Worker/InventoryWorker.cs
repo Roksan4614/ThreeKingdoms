@@ -25,64 +25,6 @@ public class InventoryWorker
         };
     public IReadOnlyList<ItemCategoryType> sortCategory => m_sortCategory;
 
-    void SaveData()
-    {
-        m_data.Sort((x, y) => SortCompare(x, y));
-        m_data = m_data.SortBy(x => m_sortCategory.FindIndex(s => s == x.category));
-
-        PPWorker.Set(c_key, m_data);
-    }
-
-    public int SortCompare(ItemData x, ItemData y)
-    {
-        if (ReferenceEquals(x, y)) return 0;
-        if (x == null) return -1;
-        if (y == null) return 1;
-
-        int result = 0;
-
-        // ¿µÈ¥¼®
-        if (x.key == ItemType.dedicated_soul_stone && y.key == ItemType.dedicated_soul_stone)
-        {
-            var heroX = DataManager.userInfo.GetHeroInfoData(x.value);
-            var heroY = DataManager.userInfo.GetHeroInfoData(y.value);
-
-            if (heroX.isMine != heroY.isMine)
-                return heroX.isMine ? -1 : 1;
-
-            result = CompareRegion(heroX, heroY);
-            if (result != 0) return result;
-            result = CompareClass(heroX, heroY);
-
-            if (result != 0) return result;
-        }
-        // Å¬·¡½º¿µÈ¥
-        else if (x.key == ItemType.class_soul_stone && y.key == ItemType.class_soul_stone)
-        {
-            HeroClassType classTypeX = System.Enum.Parse<HeroClassType>(x.value);
-            HeroClassType classTypeY = System.Enum.Parse<HeroClassType>(y.value);
-
-            result = classTypeX.CompareTo(classTypeY);
-            if (result != 0) return result;
-        }
-
-        result = string.Compare(x.name, y.name, System.StringComparison.Ordinal);
-        if (result != 0) return result;
-
-        return 0;
-    }
-    private int CompareRegion(HeroInfoData x, HeroInfoData y)
-    {
-        bool isX = x.regionType == DataManager.userInfo.region;
-        bool isY = y.regionType == DataManager.userInfo.region;
-
-        if (isX == isY)
-            return x.regionType.CompareTo(y.regionType);
-
-        return isX ? -1 : 1;
-    }
-    private int CompareClass(HeroInfoData x, HeroInfoData y) => x.classType.CompareTo(y.classType);
-
     public async UniTask InitializeAsync()
     {
         m_data = PPWorker.Get<List<InventoryItemData>>(c_key);
@@ -94,6 +36,14 @@ public class InventoryWorker
         }
 
         await UniTask.NextFrame();
+    }
+
+    void SaveData()
+    {
+        m_data.Sort((x, y) => SortCompare(x, y));
+        m_data = m_data.SortBy(x => m_sortCategory.FindIndex(s => s == x.category));
+
+        PPWorker.Set(c_key, m_data);
     }
 
     public long GetItemCount(ItemData _itemData)
@@ -147,6 +97,56 @@ public class InventoryWorker
             }
         }
     }
+
+    public int SortCompare(ItemData x, ItemData y)
+    {
+        if (ReferenceEquals(x, y)) return 0;
+        if (x == null) return -1;
+        if (y == null) return 1;
+
+        int result = 0;
+
+        // ¿µÈ¥¼®
+        if (x.key == ItemType.dedicated_soul_stone && y.key == ItemType.dedicated_soul_stone)
+        {
+            var heroX = DataManager.userInfo.GetHeroInfoData(x.value);
+            var heroY = DataManager.userInfo.GetHeroInfoData(y.value);
+
+            if (heroX.isMine != heroY.isMine)
+                return heroX.isMine ? -1 : 1;
+
+            result = CompareRegion(heroX, heroY);
+            if (result != 0) return result;
+            result = CompareClass(heroX, heroY);
+
+            if (result != 0) return result;
+        }
+        // Å¬·¡½º¿µÈ¥
+        else if (x.key == ItemType.class_soul_stone && y.key == ItemType.class_soul_stone)
+        {
+            HeroClassType classTypeX = System.Enum.Parse<HeroClassType>(x.value);
+            HeroClassType classTypeY = System.Enum.Parse<HeroClassType>(y.value);
+
+            result = classTypeX.CompareTo(classTypeY);
+            if (result != 0) return result;
+        }
+
+        result = string.Compare(x.name, y.name, System.StringComparison.Ordinal);
+        if (result != 0) return result;
+
+        return 0;
+    }
+    private int CompareRegion(HeroInfoData x, HeroInfoData y)
+    {
+        bool isX = x.regionType == DataManager.userInfo.region;
+        bool isY = y.regionType == DataManager.userInfo.region;
+
+        if (isX == isY)
+            return x.regionType.CompareTo(y.regionType);
+
+        return isX ? -1 : 1;
+    }
+    private int CompareClass(HeroInfoData x, HeroInfoData y) => x.classType.CompareTo(y.classType);
 }
 
 [JsonObject(MemberSerialization.OptIn)]

@@ -31,8 +31,6 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
 
         DestroyImmediate(m_element.baseGroup.gameObject);
         m_element.scroll.transform.ForceRebuildLayout();
-
-        RefreshData();
     }
 
     public bool isNeedUpdate { get; private set; }
@@ -41,10 +39,21 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
     {
         isNeedUpdate = false;
         gameObject.SetActive(true);
+        await UniTask.WaitForEndOfFrame();
         m_heroKey = _heroKey;
 
+        m_element.scroll.velocity =
         m_element.scroll.content.anchoredPosition = Vector2.zero;
+
         RefreshData();
+
+        var posData = DataManager.heroPosition.GetHeroPosition(_heroKey);
+        if (posData != null)
+        {
+            var pos = m_element.scroll.content.anchoredPosition;
+            pos.y = m_group[posData.positionData.category].GetPositionY(posData.type) * -1 - 200;
+            m_element.scroll.content.anchoredPosition = pos;
+        }
 
         await UniTask.WaitUntil(() => gameObject.activeSelf == false);
 

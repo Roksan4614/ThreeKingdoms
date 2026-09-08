@@ -66,8 +66,10 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
     public void SetColliderSize()
         => m_element.SetColliderSize();
 
+    public bool isDrawSelect { get; private set; }
     public void SetDrawSelect(bool _isSelect)
     {
+        isDrawSelect = _isSelect;
         m_element.image.color = _isSelect ?
                 Palette.instance.data.Get(PaletteColorType.button_select) :
                 m_prevColorData.button == default ? Color.white : m_prevColorData.button;

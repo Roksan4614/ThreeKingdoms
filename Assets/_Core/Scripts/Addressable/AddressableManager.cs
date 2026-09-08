@@ -49,6 +49,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         ContentsMarketWorker.Release();
         InventoryWorker.Release();
         PostWorker.Release();
+        QuestWorker.Release();
     }
 
     public async UniTask InitializeAsync()

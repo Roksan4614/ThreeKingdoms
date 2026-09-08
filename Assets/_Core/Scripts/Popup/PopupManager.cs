@@ -34,6 +34,7 @@ public enum PopupType
     Inventory,
     Post,
     Setting,
+    Quest,
 
     Reward,
     UpgradeGuide,
@@ -111,6 +112,8 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
             .GetComponent<BasePopupComponent>();
         popup.name = _popupType.ToString();
 
+        // 이걸 넣어줘야 Start가 먼저 드감
+        await UniTask.WaitForEndOfFrame();
         popup.OpenPopup(_data);
 
         return popup?.GetComponent<T>();

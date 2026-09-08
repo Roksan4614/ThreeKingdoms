@@ -7,19 +7,16 @@ namespace Rev9.Post
 {
     public class PopupPostComponent : BasePopupComponent
     {
-        PopupPostComponent() : base(PopupType.Post)
-        {
-        }
+        PopupPostComponent() : base(PopupType.Post) { }
 
         private void Start()
         {
             for (var i = 0; i < m_element.popup.childCount; i++)
                 m_element.popup.GetChild(i).gameObject.SetActive(false);
 
-            LoadDataAsync().Forget();
             Utils.WaitEscape(this, () =>
             {
-                if( m_element.popupInfo.gameObject.activeSelf == true)
+                if (m_element.popupInfo.gameObject.activeSelf == true)
                 {
                     m_element.popupInfo.Close();
                     return;
@@ -30,6 +27,8 @@ namespace Rev9.Post
             m_element.btnReceiveAll.onClick.AddListener(() => OnButtonAsync_ReceiveAll().Forget());
             m_element.btnDeleteAll.onClick.AddListener(() => OnButtonAsync_DeleteAll().Forget());
 
+            LoadDataAsync().Forget();
+
             // setlocalization
             {
                 m_element.btnReceiveAll.text = "일괄_받기";
@@ -37,22 +36,19 @@ namespace Rev9.Post
             }
         }
 
-        bool m_isStarted = false;
+        public override void OpenPopup(params object[] _args)
+        {
+            gameObject.SetActive(true);
+            Utils.SetActivePunch(m_element.panel, true);
+
+            if (PostWorker.isRedDot == true)
+                LoadDataAsync().Forget();
+
+            m_element.scroll.content.anchoredPosition = Vector2.zero;
+        }
+
         async UniTask LoadDataAsync()
         {
-            if (PostWorker.isReady == false)
-            {
-                m_element.scroll.content.gameObject.SetActive(false);
-                m_element.txtEmpty.text = "불러오는_중";
-
-                await UniTask.WaitUntil(() => PostWorker.isReady == true);
-
-                m_element.txtEmpty.text = "우편함이_비었습니다.";
-                m_element.scroll.content.gameObject.SetActive(true);
-            }
-
-            m_isStarted = true;
-
             var posts = PostWorker.data;
             var content = m_element.scroll.content;
             int i = 0;
@@ -63,7 +59,7 @@ namespace Rev9.Post
                 slot.gameObject.SetActive(true);
                 slot.SetPostData(posts[i]);
 
-                if (isNew || i == 0)
+                if (slot.click == null)
                 {
                     slot.click = _slot => OnButtonAsync_OpenInfo(_slot).Forget();
                     slot.clickConfirm = _slot => OnButtonAsync_Confirm(_slot).Forget();
@@ -78,19 +74,9 @@ namespace Rev9.Post
             m_element.txtEmpty.gameObject.SetActive(i == 0);
         }
 
-        public override void OpenPopup(params object[] _args)
-        {
-            gameObject.SetActive(true);
-            Utils.SetActivePunch(m_element.panel, true);
-
-            if (m_isStarted == true && PostWorker.isRedDot == true)
-                LoadDataAsync().Forget();
-
-            m_element.scroll.content.anchoredPosition = Vector2.zero;
-        }
-
         public override void Close()
         {
+            PostWorker.instance.SetReddotRefresh_ClosePost();
             Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
         }
 

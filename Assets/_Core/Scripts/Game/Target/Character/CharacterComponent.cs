@@ -314,7 +314,12 @@ public class CharacterComponent : TargetComponent
                             ControllerManager.instance.SetDie_SkillTimer();
 
                         if (m_faction == FactionType.Enemy)
+                        {
                             TutorialManager.instance.Action_EnemyKill();
+
+                            if( DataManager.instance.isLobby)
+                                QuestWorker.instance.AddCount(QuestType.enemy_kill);
+                        }
                     }
                 }
             }

@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Rev9.Inventory;
 using Rev9.Post;
+using Rev9.Quest;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -72,7 +73,10 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
     void OnDestroy()
     {
         foreach (var p in m_popups)
-            Destroy(p.Value.gameObject);
+        {
+            if (p.Value.gameObject != null)
+                Destroy(p.Value.gameObject);
+        }
 
         m_popups = null;
     }
@@ -116,12 +120,14 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
                         m_popups[_type].OpenPopup();
                 }
                 break;
-            //    case ButtonType.Post:
-            //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupPostComponent>(PopupType.Post).Forget());
-            //        break;
-            //    case ButtonType.Quest:
-            //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupQuestComponent>(PopupType.Quest).Forget());
-            //        break;
+            case ButtonType.Quest:
+                {
+                    if (m_popups.ContainsKey(_type) == false)
+                        m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupQuestComponent>(PopupType.Quest));
+                    else
+                        m_popups[_type].OpenPopup();
+                }
+                break;
             case ButtonType.Rebirth:
                 OnButton_Exit();
                 break;

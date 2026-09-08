@@ -1,0 +1,230 @@
+using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class QuestWorker
+{
+    static QuestWorker m_instance;
+    public static QuestWorker instance => m_instance ??= new();
+    public static void Release() => m_instance = null;
+
+    QuestData m_data;
+    const string c_key = "pp_quest_data";
+
+    long m_tickCheck;
+    const string c_key_tick = "pp_quest_data_check";
+
+    public async UniTask InitializeAsync()
+    {
+        await UniTask.NextFrame();
+        m_data = PPWorker.Get<QuestData>(c_key);
+        if (m_data == null)
+        {
+            m_data = new();
+            m_data.ResetData();
+
+            SaveData();
+        }
+
+        m_tickCheck = PPWorker.Get<long>(c_key_tick);
+
+        Signal.instance.DayChange.connect = SlotDayChange;
+    }
+
+    public long SaveReddotTick()
+    {
+        var tick = Utils.GetUTC().Ticks;
+        PPWorker.Set(c_key_tick, tick);
+        return tick;
+    }
+
+    public QuestInfoData GetQuestData(QuestCategoryType _category, QuestType _key)
+        => m_data.GetQuestData(_category, _key);
+
+    public void AddCount(QuestType _key)
+    {
+        for (var i = QuestCategoryType.NONE + 1; i < QuestCategoryType.MAX; i++)
+        {
+            var questData = m_data.GetQuestData(i, _key);
+
+            if (questData.isComplete == false)
+            {
+                questData.AddCount();
+                Signal.instance.Quest_UpdateStatus.Emit(questData);
+
+                if (questData.isComplete == true)
+                    Signal.instance.Quest_Complete.Emit(questData);
+            }
+        }
+
+        SaveData();
+    }
+
+    void SlotDayChange()
+    {
+        var daily = TableManager.quest.GetQuestList(QuestCategoryType.daily);
+        foreach (var q in daily)
+            m_data.GetQuestData(QuestCategoryType.daily, q.key).ResetCount();
+        m_data.rewardDaily.Clear();
+
+        if (Utils.GetUTC().DayOfWeek == System.DayOfWeek.Monday)
+        {
+            var week = TableManager.quest.GetQuestList(QuestCategoryType.weekly);
+            foreach (var q in week)
+                m_data.GetQuestData(QuestCategoryType.weekly, q.key).ResetCount();
+            m_data.rewardWeekly.Clear();
+        }
+
+        SaveData();
+    }
+
+    public bool IsReceiveGaugeReward(QuestCategoryType _categoryType, int _targetValue)
+    {
+        var rewards = _categoryType == QuestCategoryType.daily ? m_data.rewardDaily : m_data.rewardWeekly;
+        return rewards.Contains(_targetValue);
+    }
+
+    public int GetCountComplete(QuestCategoryType _categoryType)
+    {
+        var db = _categoryType == QuestCategoryType.daily ? m_data.daily : m_data.weekly;
+
+        int countComplete = 0;
+        foreach (var q in db)
+        {
+            if (q.isComplete)
+                countComplete++;
+        }
+        return countComplete;
+    }
+
+    public async UniTask<bool> API_ReceiveGaugeReward(QuestCategoryType _categoryType, int _targetValue)
+    {
+        if(GetCountComplete(_categoryType) > _targetValue)
+        {
+            IngameLog.Add("조건이 안맞음");
+            return false;
+        }
+
+        var rewards = _categoryType == QuestCategoryType.daily ? m_data.rewardDaily : m_data.rewardWeekly;
+
+        if (rewards.Contains(_targetValue))
+        {
+            IngameLog.Add("Already received");
+            return false;
+        }
+
+        rewards.Add(_targetValue);
+        SaveData();
+
+        return true;
+    }
+
+    public async UniTask<bool> API_ReceiveReward(QuestInfoData _questData)
+    {
+        _questData.isReceiveReward = true;
+        SaveData();
+
+        return true;
+    }
+
+    public bool IsReddot(QuestCategoryType _categoryType = QuestCategoryType.NONE)
+    {
+        Queue<QuestCategoryType> queue = new();
+
+        if (_categoryType == QuestCategoryType.NONE)
+        {
+            queue.Enqueue(QuestCategoryType.daily);
+            queue.Enqueue(QuestCategoryType.weekly);
+        }
+        else
+            queue.Enqueue(_categoryType);
+
+        while (queue.Count > 0)
+        {
+            var category = queue.Dequeue();
+            var db = category == QuestCategoryType.daily ? m_data.daily : m_data.weekly;
+            foreach (var q in db)
+            {
+                if (q.tickComplete >= m_tickCheck)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    void SaveData() => PPWorker.Set(c_key, m_data);
+}
+
+public class QuestData
+{
+    public List<QuestInfoData> daily = new();
+    public List<QuestInfoData> weekly = new();
+
+    public List<int> rewardDaily = new();
+    public List<int> rewardWeekly = new();
+
+    public QuestInfoData GetQuestData(QuestCategoryType _type, QuestType _key)
+    {
+        var db = _type == QuestCategoryType.daily ? daily : weekly;
+        var data = db.Find(x => x.key == _key);
+
+        if (data == null)
+        {
+            data = new()
+            {
+                type = _type,
+                key = _key,
+            };
+            db.Add(data);
+        }
+
+        return data;
+    }
+
+    public void ResetData()
+    {
+        for (var i = QuestCategoryType.NONE + 1; i < QuestCategoryType.MAX; i++)
+        {
+            var db = i == QuestCategoryType.daily ? daily : weekly;
+            db.Clear();
+
+            var table = TableManager.quest.GetQuestList(i);
+            foreach (var d in table)
+                db.Add(new()
+                {
+                    type = i,
+                    key = d.key
+                });
+        }
+    }
+}
+
+[JsonObject(MemberSerialization.OptIn)]
+public class QuestInfoData
+{
+    [JsonProperty] public QuestType key;
+    [JsonProperty] public QuestCategoryType type;
+    [JsonProperty] public int count;
+    [JsonProperty] public bool isReceiveReward;
+    [JsonProperty] public long tickComplete;
+
+    TableQuestData m_data;
+    public TableQuestData data => m_data ??= TableManager.quest.GetQuestData(type, key);
+
+    public string name => TableManager.questString.GetString($"{key.ToString().ToUpper()}_NAME");
+
+    public bool isComplete => count >= data.target_value;
+    public void AddCount()
+    {
+        if (isComplete == true)
+            return;
+
+        count = Mathf.Min(count + 1, data.target_value);
+        if (isComplete == true)
+            tickComplete = Utils.GetUTC().Ticks;
+    }
+    public void ResetCount() => tickComplete = count = 0;
+
+}

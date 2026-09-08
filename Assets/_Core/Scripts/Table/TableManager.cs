@@ -11,102 +11,150 @@ public class TableManager
 {
     public static TableManager instance { get; private set; } = new();
 
-    public static Table_Hero hero { get; private set; }
-    public static Table_Hero_Position heroPosition { get; private set; }
+    public static Table_Hero hero => instance.m_hero;
+    Table_Hero m_hero;
+    public static Table_Hero_Position heroPosition => instance.m_heroPosition;
+    Table_Hero_Position m_heroPosition;
 
-    public static Table_Stat statHero { get; private set; }
-    public static Table_Stat statEnemy { get; private set; }
+    public static Table_Stat statHero => instance.m_statHero;
+    Table_Stat m_statHero;
+    public static Table_Stat statEnemy => instance.m_statEnemy;
+    Table_Stat m_statEnemy;
 
-    public static Table_Region region { get; private set; }
-    public static Table_Item item { get; private set; }
-    //public static Table_Scenario scenario { get; private set; }
+    public static Table_Region region => instance.m_region;
+    Table_Region m_region;
 
-    public static Table_String stringTable { get; private set; }
-    public static Table_String_Hero stringHero { get; private set; }
-    public static Table_String_Talk scenarioTalk { get; private set; }
-    public static Table_String_Base stringMission { get; private set; }
-    public static Table_String_Base stringTraits { get; private set; }
-    public static Table_String_Base stringItem { get; private set; }
+    public static Table_Item item => instance.m_item;
+    Table_Item m_item;
+    public static Table_String_Base stringItem => instance.m_stringItem;
+    Table_String_Base m_stringItem;
 
-    public static Table_Treasure treasure { get; private set; }
-    public static Table_FriendShip friendShip { get; private set; }
+    public static Table_String stringTable => instance.m_stringTable;
+    Table_String m_stringTable;
+    public static Table_String_Hero stringHero => instance.m_stringHero;
+    Table_String_Hero m_stringHero;
+    public static Table_String_Talk scenarioTalk => instance.m_scenarioTalk;
+    Table_String_Talk m_scenarioTalk;
+    public static Table_String_Base stringMission => instance.m_stringMission;
+    Table_String_Base m_stringMission;
+    public static Table_String_Base stringTraits => instance.m_stringTraits;
+    Table_String_Base m_stringTraits;
 
-    public static Table_Castle castle { get; private set; }
-    public static Table_CastleRise castleRise { get; private set; }
-    public static Table_CastleMission castleMisson { get; private set; }
-    public static Table_CastleMission_Grade castleMissonGrade { get; private set; }
-    public static Table_CastleMission_Reward castleMissonReward { get; private set; }
-    public static Table_Castle_Office_Level castleOfficeLevel { get; private set; }
+    public static Table_Treasure treasure => instance.m_treasure;
+    Table_Treasure m_treasure;
 
-    public static Table_DailyDungeon_Grade dailyDungeonGrade { get; private set; }
-    public static Table_DailyDungeon_Boss dailyDungeonBoss { get; private set; }
+    public static Table_FriendShip friendShip => instance.m_friendShip;
+    Table_FriendShip m_friendShip;
 
-    public static Table_StoryMode_Node storyNode { get; private set; }
-    public static Table_StoryMode_Unlock storyUnlock { get; private set; }
-    public static Table_StoryMode_Choice storyChoice { get; private set; }
-    public static Table_String_Story storyString { get; private set; }
 
-    public static Table_GuideQuest guideQuest { get; private set; }
-    public static Table_GuideQuest_Repeat guideQuestRepeat { get; private set; }
-    public static Table_String_GuideQuest guideQuestString { get; private set; }
+    public static Table_Castle castle => instance.m_castle;
+    Table_Castle m_castle;
+    public static Table_CastleRise castleRise => instance.m_castleRise;
+    Table_CastleRise m_castleRise;
+    public static Table_CastleMission castleMission => instance.m_castleMission;
+    Table_CastleMission m_castleMission;
+    public static Table_CastleMission_Grade castleMissionGrade => instance.m_castleMissionGrade;
+    Table_CastleMission_Grade m_castleMissionGrade;
+    public static Table_CastleMission_Reward castleMissionReward => instance.m_castleMissionReward;
+    Table_CastleMission_Reward m_castleMissionReward;
+    public static Table_Castle_Office_Level castleOfficeLevel => instance.m_castleOfficeLevel;
+    Table_Castle_Office_Level m_castleOfficeLevel;
+    
+    public static Table_DailyDungeon_Grade dailyDungeonGrade => instance.m_dailyDungeonGrade;
+    Table_DailyDungeon_Grade m_dailyDungeonGrade;
+    public static Table_DailyDungeon_Boss dailyDungeonBoss => instance.m_dailyDungeonBoss;
+    Table_DailyDungeon_Boss m_dailyDungeonBoss;
 
-    public static Table_TournamentReward tournamentReward { get; private set; }
 
-    public static Table_Traits traits { get; private set; }
-    public static Table_TraitsValue traitsValue { get; private set; }
+    public static Table_StoryMode_Node storyNode => instance.m_storyNode;
+    Table_StoryMode_Node m_storyNode;
+    public static Table_StoryMode_Unlock storyUnlock => instance.m_storyUnlock;
+    Table_StoryMode_Unlock m_storyUnlock;
+    public static Table_StoryMode_Choice storyChoice => instance.m_storyChoice;
+    Table_StoryMode_Choice m_storyChoice;
+    public static Table_String_Story storyString => instance.m_storyString;
+    Table_String_Story m_storyString;
 
-    public static Dictionary<CastleObjectType, Table_Castle_Effect> castleEffect { get; private set; } = new();
+    public static Table_GuideQuest guideQuest => instance.m_guideQuest;
+    Table_GuideQuest m_guideQuest;
+    public static Table_GuideQuest_Repeat guideQuestRepeat => instance.m_guideQuestRepeat;
+    Table_GuideQuest_Repeat m_guideQuestRepeat;
+    public static Table_String_GuideQuest guideQuestString => instance.m_guideQuestString;
+    Table_String_GuideQuest m_guideQuestString;
+
+    public static Table_Quest quest => instance.m_quest;
+    Table_Quest m_quest;
+    public static Table_QuestReward questReward => instance.m_questReward;
+    Table_QuestReward m_questReward;
+    public static Table_String_Base questString => instance.m_questString;
+    Table_String_Base m_questString;
+
+
+    public static Table_TournamentReward tournamentReward => instance.m_tournamentReward;
+    Table_TournamentReward m_tournamentReward;
+    
+    public static Table_Traits traits => instance.m_traits;
+    Table_Traits m_traits;
+    public static Table_TraitsValue traitsValue => instance.m_traitsValue;
+    Table_TraitsValue m_traitsValue;
+
+    Dictionary<CastleObjectType, Table_Castle_Effect> m_castleEffect;
+    public static Dictionary<CastleObjectType, Table_Castle_Effect> castleEffect => instance.m_castleEffect;
 
     public async UniTask InitializeAsync()
     {
         await AddressableManager.instance.LoadAssetAsync<TextAsset>(true, _result =>
         {
-            hero = new(LoadList<TableHeroData>(_result, "s_character"));
-            heroPosition = new(LoadList<TableHeroPositionData>(_result, "s_position"));
-            statHero = new(LoadList<TableStatData>(_result, "s_character_stat_data"));
-            statEnemy = new(LoadList<TableStatData>(_result, "s_enemy_stat_data"));
-            traits = new(LoadList<TableTraitsData>(_result, "s_traits_pool"));
-            traitsValue = new(LoadList<TableTraitsValueData>(_result, "s_traits_value_pool"));
+            m_hero = new(LoadList<TableHeroData>(_result, "s_character"));
+            m_heroPosition = new(LoadList<TableHeroPositionData>(_result, "s_position"));
+            m_statHero = new(LoadList<TableStatData>(_result, "s_character_stat_data"));
+            m_statEnemy = new(LoadList<TableStatData>(_result, "s_enemy_stat_data"));
+            m_traits = new(LoadList<TableTraitsData>(_result, "s_traits_pool"));
+            m_traitsValue = new(LoadList<TableTraitsValueData>(_result, "s_traits_value_pool"));
 
 
-            item = new(LoadList<TableItemData>(_result, "ItemData"));
-            //scenario = new(LoadList<TableScenarioData>(_result, "ScenarioData"));
-            region = new(LoadList<TableRegionData>(_result, "RegionData"));
+            m_item = new(LoadList<TableItemData>(_result, "ItemData"));
+            m_region = new(LoadList<TableRegionData>(_result, "RegionData"));
 
-            stringTable = new(LoadList<TableStringData>(_result, "String"));
-            stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
-            scenarioTalk = new(LoadList<TableStringData>(_result, "String_ScenarioTalk"));
-            stringMission = new(LoadList<TableStringData>(_result, "String_Mission"));
-            stringTraits = new(LoadList<TableStringData>(_result, "String_Traits"));
-            stringItem = new(LoadList<TableStringData>(_result, "String_Item"));
+            m_stringTable = new(LoadList<TableStringData>(_result, "String"));
+            m_stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
+            m_scenarioTalk = new(LoadList<TableStringData>(_result, "String_ScenarioTalk"));
+            m_stringMission = new(LoadList<TableStringData>(_result, "String_Mission"));
+            m_stringTraits = new(LoadList<TableStringData>(_result, "String_Traits"));
+            m_stringItem = new(LoadList<TableStringData>(_result, "String_Item"));
 
             // TODO
-            treasure = new(LoadList<TableTreasureData>(_result, "s_treasure"));
-            treasure.InitializeStringTable(new Table_String(LoadList<TableStringData>(_result, "String_Treasure")));
-            friendShip = new(new());
+            m_treasure = new(LoadList<TableTreasureData>(_result, "s_treasure"));
+            m_treasure.InitializeStringTable(new Table_String(LoadList<TableStringData>(_result, "String_Treasure")));
+            m_friendShip = new(new());
 
-            castle = new(LoadList<TableCastleData>(_result, "s_building"));
-            castleRise = new(LoadList<TableCastleRiseData>(_result, "s_building_level"));
-            castleMisson = new(LoadList<TableCastleMissionData>(_result, "s_office_mission"));
-            castleMissonGrade = new(LoadList<TableCastleMissionGradeData>(_result, "s_office_mission_grade"));
-            castleMissonReward = new(LoadList<TableCastleMissionRewardData>(_result, "s_office_mission_reward_pool"));
-            castleOfficeLevel = new(LoadList<TableCastleOfficeLevelData>(_result, "s_office_level"));
+            m_castle = new(LoadList<TableCastleData>(_result, "s_building"));
+            m_castleRise = new(LoadList<TableCastleRiseData>(_result, "s_building_level"));
+            m_castleMission = new(LoadList<TableCastleMissionData>(_result, "s_office_mission"));
+            m_castleMissionGrade = new(LoadList<TableCastleMissionGradeData>(_result, "s_office_mission_grade"));
+            m_castleMissionReward = new(LoadList<TableCastleMissionRewardData>(_result, "s_office_mission_reward_pool"));
+            m_castleOfficeLevel = new(LoadList<TableCastleOfficeLevelData>(_result, "s_office_level"));
+            m_castleEffect = new();
             for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
-                castleEffect.Add(i, new(LoadList<TableCastleEffectData>(_result, $"s_{i.ToString().ToLower()}_effect" )));
+                m_castleEffect.Add(i, new(LoadList<TableCastleEffectData>(_result, $"s_{i.ToString().ToLower()}_effect")));
 
-            dailyDungeonGrade = new(LoadList<TableDailyDungeonGradeData>(_result, "s_daily_dungeon_grade"));
-            dailyDungeonBoss = new(LoadList<TableDailyDungeonBossData>(_result, "s_daily_dungeon_boss"));
+            m_dailyDungeonGrade = new(LoadList<TableDailyDungeonGradeData>(_result, "s_daily_dungeon_grade"));
+            m_dailyDungeonBoss = new(LoadList<TableDailyDungeonBossData>(_result, "s_daily_dungeon_boss"));
 
-            storyNode = new(LoadList<Table_StoryMode_Node.TableStoryModeNodeData>(_result, "s_story_node"));
-            storyUnlock = new(LoadList<Table_StoryMode_Unlock.TableStoryModeUnlockData>(_result, "s_story_node_unlock"));
-            storyChoice = new(LoadList<Table_StoryMode_Choice.TableStoryModeChoiceData>(_result, "s_story_node_choice"));
-            storyString = new(LoadList<TableStringData>(_result, "String_Story"));
+            m_storyNode = new(LoadList<Table_StoryMode_Node.TableStoryModeNodeData>(_result, "s_story_node"));
+            m_storyUnlock = new(LoadList<Table_StoryMode_Unlock.TableStoryModeUnlockData>(_result, "s_story_node_unlock"));
+            m_storyChoice = new(LoadList<Table_StoryMode_Choice.TableStoryModeChoiceData>(_result, "s_story_node_choice"));
+            m_storyString = new(LoadList<TableStringData>(_result, "String_Story"));
 
-            guideQuest = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "s_guide_quest"));
-            guideQuestRepeat = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "s_guide_quest_repeat"));
-            guideQuestString = new(LoadList<TableStringData>(_result, "String_GuideQuest"));
+            m_guideQuest = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "s_guide_quest"));
+            m_guideQuestRepeat = new(LoadList<Table_GuideQuest.TableGuideQuestData>(_result, "s_guide_quest_repeat"));
+            m_guideQuestString = new(LoadList<TableStringData>(_result, "String_GuideQuest"));
 
-            tournamentReward = new(new());
+            m_quest = new(LoadList<TableQuestData>(_result, "s_quest"));
+            m_questReward = new(LoadList<TableQuestData>(_result, "s_quest_reward"));
+            m_questString = new(LoadList<TableStringData>(_result, "String_Quest"));
+
+            m_tournamentReward = new(new());
 
             foreach (var h in _result)
                 h.Value.Release();

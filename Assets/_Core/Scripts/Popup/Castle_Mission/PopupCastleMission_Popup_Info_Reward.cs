@@ -23,7 +23,7 @@ public class PopupCastleMission_Popup_Info_Reward : MonoBehaviour, IValidatable
 
     public void SetRewardList(Data_Castle_Mission.CastleMissionData _missionData, float _percent)
     {
-        var dbGroup = TableManager.castleMissonReward.GetReward(_missionData).GroupBy(x => x.unlock_pct == 0).ToDictionary(x => x.Key, x => x);
+        var dbGroup = TableManager.castleMissionReward.GetReward(_missionData).GroupBy(x => x.unlock_pct == 0).ToDictionary(x => x.Key, x => x);
 
         // 확정 보상
         m_rewardFixed.SetReward(100, dbGroup[true].ToArray());

@@ -44,6 +44,18 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
         transform.ForceRebuildLayout();
     }
 
+    public float GetPositionY(HeroPositionType _heroPositionType)
+    {
+        var rt = (RectTransform)transform;
+        float posY = rt.anchoredPosition.y;
+
+        rt = ((RectTransform)m_data[_heroPositionType].transform);
+        posY += rt.anchoredPosition.y;
+
+        return posY;
+    }
+
+
     public void RefreshData(HeroPositionType _heroPositionType = HeroPositionType.NONE)
     {
         if (_heroPositionType > HeroPositionType.NONE)

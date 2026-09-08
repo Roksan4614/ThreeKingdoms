@@ -82,7 +82,7 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
             List<TableCastleMissionRewardData> dbFixed = new();
 
             for (int i = 0; i < _missionDatas.Length; i++)
-                dbFixed.AddRange(TableManager.castleMissonReward.GetReward(_missionDatas[i]).Where(x => x.unlock_pct == 0).ToList());
+                dbFixed.AddRange(TableManager.castleMissionReward.GetReward(_missionDatas[i]).Where(x => x.unlock_pct == 0).ToList());
 
             m_element.reward.SetReward_ResultFixed(dbFixed.ToArray());
         }
@@ -91,7 +91,7 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
             List<TableCastleMissionRewardData> dbFixed = new();
 
             for (int i = 0; i < _missionDatas.Length; i++)
-                dbFixed.AddRange(TableManager.castleMissonReward.GetReward(_missionDatas[i]).Where(x => x.unlock_pct > 0 && x.unlock_pct <= _missionDatas[i].percentStat).ToList());
+                dbFixed.AddRange(TableManager.castleMissionReward.GetReward(_missionDatas[i]).Where(x => x.unlock_pct > 0 && x.unlock_pct <= _missionDatas[i].percentStat).ToList());
             dbFixed = dbFixed.SortByDescending(x => x.unlock_pct);
 
             m_element.reward.SetReward_ResultRandom(dbFixed.ToArray());
@@ -111,7 +111,7 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
     //    var rewards = new List<RewardWorker.RewardItemData>();
     //    foreach (var m in _missionDatas)
     //    {
-    //        var reward = TableManager.castleMissonReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
+    //        var reward = TableManager.castleMissionReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
     //        foreach (var r in reward)
     //            rewards.Add(new(r.reward_key, Random.Range(r.reward_min, r.reward_max + 1)));
     //    }

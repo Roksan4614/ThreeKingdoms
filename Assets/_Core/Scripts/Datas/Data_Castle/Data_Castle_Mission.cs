@@ -30,7 +30,7 @@ public class Data_Castle_Mission
         {
             m_idxMission = 1;
             m_data = new();
-            var dbTable = TableManager.castleMisson.list.SortBy(x => Random.value);
+            var dbTable = TableManager.castleMission.list.SortBy(x => Random.value);
 
             for (int i = 0; i < 3; i++)
             {
@@ -94,7 +94,7 @@ public class Data_Castle_Mission
 
     public void AddNewMission(bool _isAutoSave, int _prevNumber)
     {
-        var newMission = TableManager.castleMisson.GetNewMission(m_data.Select(x => x.key).ToArray());
+        var newMission = TableManager.castleMission.GetNewMission(m_data.Select(x => x.key).ToArray());
 
         var grade = GradeType.NONE + 1 + Random.Range(0, 3) * 2;
         CastleMissionData newData = new()
@@ -171,7 +171,7 @@ public class Data_Castle_Mission
         List<ItemData> rewards = new();
         foreach (var m in _missionDatas)
         {
-            var reward = TableManager.castleMissonReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
+            var reward = TableManager.castleMissionReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
             foreach (var r in reward)
             {
                 var item = TableManager.item.GetItemData(r.reward_key, Random.Range(r.reward_min, r.reward_max + 1));
@@ -273,12 +273,12 @@ public class Data_Castle_Mission
         public bool isFinished => Utils.GetUTC().Ticks >= tickEnd;
 
         public TableCastleMissionData dbData
-            => TableManager.castleMisson.Get(key);
+            => TableManager.castleMission.Get(key);
         public TableCastleMissionGradeData dbGradeData
-            => TableManager.castleMissonGrade.Get(grade);
+            => TableManager.castleMissionGrade.Get(grade);
 
         //public IReadOnlyList<TableCastleMissionRewardData> dbRewardData
-        //    => TableManager.castleMissonReward.GetReward(this);
+        //    => TableManager.castleMissionReward.GetReward(this);
 
         //TODO : stringtable 에서 가져와야 해.
         string missionName => TableManager.stringMission.GetString(key.ToUpper() + "_TITLE");

@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Post;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -48,6 +49,8 @@ public class DataManager
         tasks.Add(storyMode.InitializeAsync());
 
         tasks.Add(InventoryWorker.instance.InitializeAsync());
+        tasks.Add(PostWorker.instance.InitializeAsync());
+        tasks.Add(QuestWorker.instance.InitializeAsync());
 
         await UniTask.WhenAll(tasks.ToArray());
     }
