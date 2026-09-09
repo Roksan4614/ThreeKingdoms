@@ -76,6 +76,7 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
             ItemType.dedicated_soul_stone => LobbyScreenType.Hero,
             ItemType.class_soul_stone => LobbyScreenType.Hero,
             ItemType.public_soul_stone => LobbyScreenType.Hero,
+            ItemType.time_stone => LobbyScreenType.Hero,
             _ => LobbyScreenType.Castle
         }].icon;
 

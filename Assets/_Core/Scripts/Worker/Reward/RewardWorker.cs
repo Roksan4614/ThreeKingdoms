@@ -39,6 +39,9 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
             Run(posFrom, ItemType.rice, _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
     }
 
+    public void Run(Vector3 _posFrom, bool _isPopup = true, bool _isStartPunch = false, params ItemData[] _itemData)
+        => RunAsync(_posFrom, _isPopup, _isStartPunch, _itemData).Forget();
+
     public async UniTask RunAsync(Vector3 _posFrom, bool _isPopup = true, bool _isStartPunch = false, params ItemData[] _itemData)
     {
         List<UniTask> tasks = new();

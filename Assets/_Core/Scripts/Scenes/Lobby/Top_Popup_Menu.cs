@@ -74,7 +74,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
     {
         foreach (var p in m_popups)
         {
-            if (p.Value.gameObject != null)
+            if (p.Value != null)
                 Destroy(p.Value.gameObject);
         }
 
@@ -101,9 +101,6 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
                         m_popups[_type].OpenPopup();
                 }
                 break;
-            //    case ButtonType.Noti:
-            //        btn.onClick.AddListener(() => PopupManager.instance.OpenPopupAsync<PopupNotiComponent>(PopupType.Noti).Forget());
-            //        break;
             case ButtonType.Post:
                 {
                     if (m_popups.ContainsKey(_type) == false)
@@ -115,7 +112,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
             case ButtonType.Inventory:
                 {
                     if (m_popups.ContainsKey(_type) == false)
-                        m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupPostComponent>(PopupType.Inventory));
+                        m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupInventoryComponent>(PopupType.Inventory));
                     else
                         m_popups[_type].OpenPopup();
                 }
@@ -129,7 +126,20 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
                 }
                 break;
             case ButtonType.Rebirth:
-                OnButton_Exit();
+                {
+                    if (DataManager.instance.isLobby == true)
+                    {
+                        if (m_popups.ContainsKey(_type) == false)
+                            m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupRebirthComponent>(PopupType.Rebirth));
+                        else
+                            m_popups[_type].OpenPopup();
+                    }
+                    else
+                        OnButton_Exit();
+                }
+                break;
+            default:
+                PopupManager.instance.AlertShow("아직_준비중입니다.");
                 break;
         }
 
@@ -161,15 +171,6 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
             (SceneBase.instance as Scene_StoryMode).OnButtonAsync_Skip(
                 _result => btnRebirth.interactable = _result != StatusType.Success).Forget();
         }
-        else
-        {
-#if UNITY_EDITOR
-            Application.Quit();
-#else
-#endif
-        }
-
-        gameObject.SetActive(false);
     }
 
     void OnButton_Cheat_StoryMode()

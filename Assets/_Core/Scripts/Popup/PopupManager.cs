@@ -35,6 +35,7 @@ public enum PopupType
     Post,
     Setting,
     Quest,
+    Rebirth,
 
     Reward,
     UpgradeGuide,
@@ -250,16 +251,41 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         canvasScaler.matchWidthOrHeight = _isLandscape ? 1 : 0;
     }
 
-    public void CloseAll()
+    public void CloseAll(params PopupType[] _ignore)
     {
         int max = Mathf.Max(m_element.pPopup.childCount, m_element.pModal.childCount);
 
-        for (int i = 0; i < max; i++)
+        if (_ignore.Length == 0)
         {
-            if (i < m_element.pPopup.childCount)
-                m_element.pPopup.GetChild(i).GetComponent<BasePopupComponent>().Close();
-            if (i < m_element.pModal.childCount)
-                m_element.pModal.GetChild(i).GetComponent<BasePopupComponent>().Close();
+            for (int i = 0; i < max; i++)
+            {
+                if (i < m_element.pPopup.childCount)
+                    m_element.pPopup.GetChild(i).GetComponent<BasePopupComponent>().Close();
+                if (i < m_element.pModal.childCount)
+                    m_element.pModal.GetChild(i).GetComponent<BasePopupComponent>().Close();
+            }
+        }
+        else
+        {
+            List<PopupType> ignore = new();
+            foreach (var p in _ignore)
+                ignore.Add(p);
+
+            for (int i = 0; i < max; i++)
+            {
+                if (i < m_element.pPopup.childCount)
+                {
+                    var popup = m_element.pPopup.GetChild(i).GetComponent<BasePopupComponent>();
+                    if (ignore.Contains(popup.popupType) == false)
+                        popup.Close();
+                }
+                if (i < m_element.pModal.childCount)
+                {
+                    var popup = m_element.pModal.GetChild(i).GetComponent<BasePopupComponent>();
+                    if (ignore.Contains(popup.popupType) == false)
+                        popup.Close();
+                }
+            }
         }
     }
 

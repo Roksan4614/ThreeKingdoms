@@ -5,10 +5,14 @@ using UnityEngine.UI;
 public class PopupQuest_Slot : MonoBehaviour, IValidatable
 {
     public System.Action<PopupQuest_Slot, QuestInfoData> actionConfirm { get; set; }
+    public Transform trnsRewardIcon => m_element.reward.transform;
 
     private void Start()
     {
         m_element.btnConfirm.onClick.AddListener(() => actionConfirm(this, questData));
+
+        // setlocalization
+        m_element.badge.text = TableManager.stringTable.GetString("COMPLETE_REWARD");
     }
 
     public QuestInfoData questData { get; private set; }
@@ -18,24 +22,26 @@ public class PopupQuest_Slot : MonoBehaviour, IValidatable
 
         m_element.txtTitle.text = questData.name;
 
-        var reward = questData.data.reward;
-        m_element.reward.SetItemData(reward);
+        var rewardItem = questData.data.itemData;
+        m_element.reward.SetItemData(rewardItem);
         m_element.reward.SetCountText(0);
-        m_element.txtReward.text = $"{reward.name}{(reward.count == 0 ? "" : $" x{reward.count}")}";
+        m_element.txtReward.text = $"{rewardItem.name}{(rewardItem.count == 0 ? "" : $" x{rewardItem.count}")}";
 
-        UpdateStatus();
+        UpdateStatus(true);
     }
 
-    public void UpdateStatus()
+    public void UpdateStatus(bool _isInit)
     {
-        m_element.txtCount.text = questData.isComplete ? "" : $"({questData.count}/{questData.data.target_value})";
+        m_element.txtCount.text = questData.isComplete
+            ? $"({TableManager.stringTable.GetString("COMPLETE")})"
+            : $"({questData.count}/{questData.data.target_value})";
 
-        m_element.completeBadge.SetActive(questData.isReceiveReward);
+        m_element.badge.transform.parent.gameObject.SetActive(questData.isReceiveReward);
 
         m_element.btnConfirm.gameObject.SetActive(questData.isReceiveReward == false);
-        m_element.btnConfirm.text = TableManager.stringTable.GetString($"BUTTON_{(questData.isComplete ?"RECEIVE":"NAVIGATION")}");
+        m_element.btnConfirm.text = TableManager.stringTable.GetString($"BUTTON_{(questData.isComplete ? "RECEIVE" : "NAVIGATION")}");
 
-        if (m_element.btnConfirm.isDrawSelect != questData.isComplete && questData.isReceiveReward == false)
+        if (_isInit == true || m_element.btnConfirm.isDrawSelect != questData.isComplete && questData.isReceiveReward == false)
             m_element.btnConfirm.SetDrawSelect(questData.isComplete);
     }
 
@@ -54,7 +60,8 @@ public class PopupQuest_Slot : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtReward;
         public ItemComponent reward;
         public ButtonHelper btnConfirm;
-        public GameObject completeBadge;
+
+        public BadgeHelper badge;
 
         public void Initialize(Transform _transform)
         {
@@ -65,7 +72,7 @@ public class PopupQuest_Slot : MonoBehaviour, IValidatable
             txtReward = _transform.GetComponent<TextMeshProUGUI>("txt_reward");
             btnConfirm = _transform.GetComponent<ButtonHelper>("btn_confirm");
 
-            completeBadge = _transform.Find("Badge").gameObject;
+            badge = _transform.GetComponent<BadgeHelper>("Badge/Badge");
         }
     }
     #endregion VALIDATE

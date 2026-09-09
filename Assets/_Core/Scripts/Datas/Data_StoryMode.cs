@@ -186,8 +186,8 @@ public class Data_StoryMode
         {
             if (m_nextOpenOrderNumber == 0)
             {
-                var stageData = StageManager.instance.data;
-                if (stageData.level > 1)
+                var recordStageData = StageManager.instance.recordData;
+                if (recordStageData.level > 1)
                 {
                     m_nextOpenOrderNumber = int.MaxValue;
                     return m_nextOpenOrderNumber;
@@ -195,8 +195,8 @@ public class Data_StoryMode
 
                 var dbStory = TableManager.storyNode.list.ToList()
                     .FindAll(x =>
-                        (x.chapter_key > stageData.chapterNumber ||
-                        (x.stage_key >= stageData.stageNumber && x.chapter_key == stageData.chapterNumber))
+                        (x.chapter_key > recordStageData.chapterNumber ||
+                        (x.stage_key >= recordStageData.stageNumber && x.chapter_key == recordStageData.chapterNumber))
                         && x.chapter_key > 0);
 
                 // 해금 챕터가 같을수도 있어.

@@ -66,7 +66,7 @@ public class ButtonHelper : MonoBehaviour, IValidatable, IPointerDownHandler, IP
     public void SetColliderSize()
         => m_element.SetColliderSize();
 
-    public bool isDrawSelect { get; private set; }
+    public bool isDrawSelect { get; private set; } = false;
     public void SetDrawSelect(bool _isSelect)
     {
         isDrawSelect = _isSelect;

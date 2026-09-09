@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Triggers;
+using Newtonsoft.Json;
 using NUnit.Framework.Interfaces;
 using System;
 using System.Collections;
@@ -18,6 +19,9 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
     public LoadData_Stage data => m_loadData;
     List<CharacterComponent> m_enemyList = new();
 
+    public LoadData_Stage recordData { get; private set; }
+    public LoadData_Stage rebirthData { get; private set; }
+
     StageComponent m_stage;
 
     long m_tickStart;
@@ -30,9 +34,22 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
     {
         if (BossRaidWorker.instance.isRunning == false)
         {
-            if (PPWorker.HasKey(PlayerPrefsType.CHAPTER_STAGE_INFO))
-                m_loadData = PPWorker.Get<LoadData_Stage>(PlayerPrefsType.CHAPTER_STAGE_INFO);
-            else
+            m_loadData = PPWorker.Get<LoadData_Stage>(PlayerPrefsType.CHAPTER_STAGE_INFO);
+            recordData = PPWorker.Get<LoadData_Stage>(PlayerPrefsType.CHAPTER_STAGE_INFO_RECORD);
+            rebirthData = PPWorker.Get<LoadData_Stage>(PlayerPrefsType.CHAPTER_STAGE_INFO_REBIRTH);
+
+            if (rebirthData == null)
+            {
+                rebirthData = new()
+                {
+                    level = 1,
+                    chapterNumber = 1,
+                    stageNumber = 1,
+                };
+                PPWorker.Set(PlayerPrefsType.CHAPTER_STAGE_INFO_REBIRTH, rebirthData);
+            }
+
+            if (m_loadData == null)
             {
                 m_loadData = new()
                 {
@@ -41,6 +58,12 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
                     stageNumber = 1,
                 };
                 SaveData();
+            }
+
+            if (recordData == null)
+            {
+                recordData = new();
+                SaveDataRecord();
             }
         }
 
@@ -76,6 +99,21 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
     void SaveData()
         => PPWorker.Set(PlayerPrefsType.CHAPTER_STAGE_INFO, m_loadData);
+
+    bool SaveDataRecord()
+    {
+        if (recordData < m_loadData)
+        {
+            recordData.level = m_loadData.level;
+            recordData.chapterNumber = m_loadData.chapterNumber;
+            recordData.stageNumber = m_loadData.stageNumber;
+
+            PPWorker.Set(PlayerPrefsType.CHAPTER_STAGE_INFO_RECORD, recordData);
+            return true;
+        }
+
+        return false;
+    }
 
     AsyncOperationHandle<GameObject> m_handlerStage;
     public async UniTask<bool> LoadStageAsync()
@@ -260,7 +298,10 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
             if (m_loadData.isBossWait == false)
             {
                 TutorialManager.instance.Action_StageBossKill();
-                bool isUnlockStoryMode = DataManager.storyMode.ClearStage_AddStoryMode(m_loadData);
+
+                // 기록을 깻으면 스토리모드 해금 되었는지 확인해주자
+                bool isUnlockStoryMode = SaveDataRecord() == true 
+                    && DataManager.storyMode.ClearStage_AddStoryMode(m_loadData);
 
                 MapManager.instance.FadeDimm(true, _token: m_cts);
                 await UniTask.WaitForSeconds(0.2f, cancellationToken: ctsToken);
@@ -323,6 +364,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
     {
         m_loadData = _loadData;
         SaveData();
+        SaveDataRecord();
     }
 
     public void RestartStage(bool _isRestart = true)
@@ -433,6 +475,22 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
     public void ClearEnemyList()
         => m_enemyList.Clear();
 
+    public async UniTask StartRebirthAsync()
+    {
+        await PopupManager.instance.ShowDimmAsync(true);
+
+        m_loadData.stageNumber =
+        m_loadData.chapterNumber = 1;
+
+        rebirthData.level =
+        m_loadData.level = Mathf.Max(1, m_loadData.level - 2);
+        SaveData();
+
+        PPWorker.Set(PlayerPrefsType.CHAPTER_STAGE_INFO_REBIRTH, rebirthData);
+
+        RestartStage();
+    }
+
     public void OnManualValidate()
     {
         m_element.Initialize(transform);
@@ -454,15 +512,24 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
         }
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public class LoadData_Stage
     {
-        public int level;
-        public int chapterNumber;
-        public int stageNumber;
-        public bool isBossWait;
+        [JsonProperty] public int level;
+        [JsonProperty] public int chapterNumber;
+        [JsonProperty] public int stageNumber;
+        [JsonProperty] public bool isBossWait;
 
         public string GetKey_Scenario(int _phaseIdx, bool _isStart)
             => $"{chapterNumber}_{stageNumber}_{_phaseIdx + 1}_{DataManager.userInfo.region.ToString().ToUpper()}_{(_isStart ? "START" : "END")}";
+
+        public string difficultName
+            => TableManager.stringTable
+            .GetString($"GRADE_DIFFICULT_{(GradeType.NONE + Math.Min(level, 5)).ToString().ToUpper()}")
+            + (level > 5 ? $"{(level - 4)}" : "");
+
+        public string stageFullName
+            => $"[{difficultName}] {chapterNumber}-{stageNumber}";
 
         //public string GetKey_Tutorial(int _phaseIdx, bool _isStart)
         //    => $"{chapterNumber}.{stageNumber}.{_phaseIdx + 1}_{(_isStart ? "START" : "END")}";
@@ -475,5 +542,10 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
                 return false;
             return true;
         }
+
+        public static bool operator >(LoadData_Stage _a, LoadData_Stage _b)
+            => _a.level > _b.level || _a.chapterNumber > _b.chapterNumber || _a.stageNumber > _b.stageNumber;
+        public static bool operator <(LoadData_Stage _a, LoadData_Stage _b)
+            => _a.level < _b.level || _a.chapterNumber < _b.chapterNumber || _a.stageNumber < _b.stageNumber;
     }
 }

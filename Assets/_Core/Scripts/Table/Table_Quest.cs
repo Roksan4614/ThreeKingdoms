@@ -69,7 +69,7 @@ public enum QuestType
     raid_play,                    // 레이드 참여하기
     gacha_proceed,                // 연회 진행하기
     rice_claim,                   // 군량 수확하기
-    gole_claim,                   // 금화 수확하기
+    gold_claim,                   // 금화 수확하기
     office_dispatch,              // 관아 파견하기
     daily_dungeon_play,           // 요일 던전 플레이하기
     stage_boss_kill,              // 스테이지 보스 처치하기
@@ -88,6 +88,6 @@ public class TableQuestData
     public ItemType reward_item_key;
     public int reward_count;
 
-    ItemData m_reward;
-    public ItemData reward => m_reward ??= TableManager.item.GetItemData(reward_item_key, reward_count);
+    ItemData m_itemData;
+    public ItemData itemData => m_itemData ??= TableManager.item.GetItemData(reward_item_key, reward_count);
 }

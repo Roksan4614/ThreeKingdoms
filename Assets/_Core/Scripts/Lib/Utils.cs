@@ -128,7 +128,7 @@ public static class Utils
         {
             await UniTask.WaitUntil(() =>
             {
-                return Input.GetKeyDown(KeyCode.Escape);
+                return Input.GetKeyDown(KeyCode.Escape) || _mono == null;
             }, cancellationToken: _token == default ? _mono.destroyCancellationToken : _token);
 
             if (_mono == null)

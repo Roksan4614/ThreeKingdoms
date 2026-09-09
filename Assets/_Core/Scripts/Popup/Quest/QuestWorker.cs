@@ -54,7 +54,7 @@ public class QuestWorker
                 Signal.instance.Quest_UpdateStatus.Emit(questData);
 
                 if (questData.isComplete == true)
-                    Signal.instance.Quest_Complete.Emit(questData);
+                    Signal.instance.Quest_UpdateComplete.Emit(questData.type);
             }
         }
 
@@ -77,12 +77,9 @@ public class QuestWorker
         }
 
         SaveData();
-    }
 
-    public bool IsReceiveGaugeReward(QuestCategoryType _categoryType, int _targetValue)
-    {
-        var rewards = _categoryType == QuestCategoryType.daily ? m_data.rewardDaily : m_data.rewardWeekly;
-        return rewards.Contains(_targetValue);
+        Signal.instance.Quest_UpdateStatus.Emit(null);
+        Signal.instance.Quest_UpdateComplete.Emit(QuestCategoryType.NONE);
     }
 
     public int GetCountComplete(QuestCategoryType _categoryType)
@@ -98,26 +95,28 @@ public class QuestWorker
         return countComplete;
     }
 
-    public async UniTask<bool> API_ReceiveGaugeReward(QuestCategoryType _categoryType, int _targetValue)
-    {
-        if(GetCountComplete(_categoryType) > _targetValue)
-        {
-            IngameLog.Add("조건이 안맞음");
-            return false;
-        }
+    public bool IsReceivedGaugeReward(QuestCategoryType _categoryType, int _targetValue)
+        => (_categoryType == QuestCategoryType.daily ? m_data.rewardDaily : m_data.rewardWeekly).Contains(_targetValue);
 
+    public async UniTask<bool> API_ReceiveGaugeReward(QuestCategoryType _categoryType, params int[] _targetValues)
+    {
+        int countComplete = GetCountComplete(_categoryType);
         var rewards = _categoryType == QuestCategoryType.daily ? m_data.rewardDaily : m_data.rewardWeekly;
 
-        if (rewards.Contains(_targetValue))
+        bool isUpdated = false;
+        foreach (var targetValue in _targetValues)
         {
-            IngameLog.Add("Already received");
-            return false;
+            if (countComplete >= targetValue && rewards.Contains(targetValue) == false)
+            {
+                rewards.Add(targetValue);
+                isUpdated = true;
+            }
         }
 
-        rewards.Add(_targetValue);
-        SaveData();
+        if (isUpdated == true)
+            SaveData();
 
-        return true;
+        return isUpdated;
     }
 
     public async UniTask<bool> API_ReceiveReward(QuestInfoData _questData)

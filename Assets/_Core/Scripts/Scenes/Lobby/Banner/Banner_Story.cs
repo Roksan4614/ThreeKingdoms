@@ -12,12 +12,12 @@ public class Banner_Story : MonoBehaviour, IValidatable
 
     void Start()
     {
-        var stageData = StageManager.instance.data;
+        var recordStageData = StageManager.instance.recordData;
 
         var dbStory2 = TableManager.storyNode.list.ToList()
             .FindAll(x =>
-                (x.chapter_key < stageData.chapterNumber ||
-                (x.stage_key < stageData.stageNumber && x.chapter_key == stageData.chapterNumber))
+                (x.chapter_key < recordStageData.chapterNumber ||
+                (x.stage_key < recordStageData.stageNumber && x.chapter_key == recordStageData.chapterNumber))
                 && x.chapter_key > 0);
 #if !UNITY_EDITOR && !SERVICE_DEV
         if (TutorialManager.instance.IsCompleteGuide(GuideQuestType.storymode_play - 1) == false)
@@ -27,11 +27,11 @@ public class Banner_Story : MonoBehaviour, IValidatable
         {
             var dbStory = TableManager.storyNode.list.ToList()
                 .FindAll(x =>
-                    (x.chapter_key < stageData.chapterNumber ||
-                    (x.stage_key < stageData.stageNumber && x.chapter_key == stageData.chapterNumber))
+                    (x.chapter_key < recordStageData.chapterNumber ||
+                    (x.stage_key < recordStageData.stageNumber && x.chapter_key == recordStageData.chapterNumber))
                     && x.chapter_key > 0);
 
-            if (dbStory.Count == 0 && stageData.level == 1)
+            if (dbStory.Count == 0 && recordStageData.level == 1)
                 gameObject.SetActive(false);
         }
 

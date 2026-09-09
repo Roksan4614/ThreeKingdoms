@@ -66,23 +66,9 @@ public class InfoStageComponent : Singleton<InfoStageComponent>, IValidatable
 
     void SlotStartStage(StageManager.LoadData_Stage _data)
     {
-        //일반, 어려움, 지옥, 심연, 전설
-        Dictionary<string, string> dbString = new();
-        dbString.Add("DIFFICULTY_NORMAL", "일반");
-        dbString.Add("DIFFICULTY_ELITE", "난세");
-        dbString.Add("DIFFICULTY_GENERAL", "극한");
-        dbString.Add("DIFFICULTY_HERO", "지옥");
-        dbString.Add("DIFFICULTY_LEGEND", "심연");
-
         var sf = "[{0}] <size=150%><color=#000000>{1}-{2}";
 
-        GradeType gt = GradeType.NONE + Math.Min(_data.level, 5);
-        var key = $"DIFFICULTY_{gt.ToString().ToUpper()}";
-        var diff = dbString[key];
-        if (_data.level > 5)
-            diff += $"{_data.level - 4}";
-
-        m_element.txtLevel.text = string.Format(sf, diff, _data.chapterNumber, _data.stageNumber);
+        m_element.txtLevel.text = string.Format(sf, _data.difficultName, _data.chapterNumber, _data.stageNumber);
         m_element.btn_challenge.gameObject.SetActive(_data.isBossWait);
 
         m_element.infoStage.gameObject.SetActive(false);

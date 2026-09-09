@@ -314,7 +314,7 @@ public class Signal
     public SignalObject<ItemData> Inventory_UpdateCount = new();
 
     public SignalObject<QuestInfoData> Quest_UpdateStatus = new();
-    public SignalObject<QuestInfoData> Quest_Complete = new();
+    public SignalObject<QuestCategoryType> Quest_UpdateComplete = new();
 
     #endregion
 }
