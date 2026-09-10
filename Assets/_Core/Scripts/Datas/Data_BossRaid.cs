@@ -373,14 +373,11 @@ public class RankerData
 }
 
 [JsonObject(MemberSerialization.OptIn)]
-public class RankerUserData
+public class RankerUserData : UserInfoData
 {
     [JsonProperty] public int rank;
     [JsonProperty] public int prevRank;
-    [JsonProperty] public int indexProfile;
     [JsonProperty] public string skin;
-    [JsonProperty] public string nickname;
-    [JsonProperty] public int uid;
     [JsonProperty] public long point;
     [JsonProperty] public long power;
     [JsonProperty] int? tier;

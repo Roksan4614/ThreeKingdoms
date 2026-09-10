@@ -111,6 +111,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         PopupManager.instance.AlertShow(alertMessage);
         DataManager.userInfo.UpdateUpgrade(m_heroInfoData);
         DataManager.stat.friendShip.Reload();
+
         DataManager.userInfo.ResetResultStat(m_heroInfoData.key);
 
         var caslteObject = DataManager.castle.GetHeroObjectType(m_heroInfoData.key);

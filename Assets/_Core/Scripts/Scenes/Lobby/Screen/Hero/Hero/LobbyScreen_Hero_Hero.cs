@@ -256,7 +256,6 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             }
 
             DataManager.userInfo.UpdateAll(heroList);
-            Signal.instance.UpdateTeamPosition.Emit();
 
             EffectWorker.instance.ResetEffect();
 
@@ -266,6 +265,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
             DataManager.option.mainTeamPosition = m_teamPosition;
 
             await TeamManager.instance.SpawnUpdateAsync();
+            Signal.instance.UpdateTeamPosition.Emit();
 
             DataManager.userInfo.SortTeamPosition(TeamManager.instance.members.Select(x => x.Value.info).ToList());
 
@@ -330,7 +330,10 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         {
             int idx = m_myHero.FindIndex(x => x.key == _data.key);
             if (idx > -1)
+            {
                 m_myHero[idx] = m_popupHeroInfo.heroInfoData;
+                m_myHero[idx].ResetResultStat();
+            }
 
             UpdateHeroes(m_popupHeroInfo.heroInfoData);
         }

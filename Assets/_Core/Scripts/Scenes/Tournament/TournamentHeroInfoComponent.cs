@@ -24,7 +24,7 @@ namespace Rev9.Tournament
         {
             m_isMe = _isMe;
 
-            m_element.profile.SetProfileData(_userData.info.indexProfile, _userData.info.skin);
+            m_element.profile.SetProfileData(_userData.info.profileIdx, _userData.info.skin);
             m_element.txtNickname.text = _userData.info.nickname;
 
             m_element.tierPoint.SetRankInfo(_userData.info);

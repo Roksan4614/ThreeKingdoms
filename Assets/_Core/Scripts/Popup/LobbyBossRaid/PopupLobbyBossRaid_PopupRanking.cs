@@ -155,7 +155,6 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
             uid = _rankerData.uid,
             batchHeroes = new(),
             treasures = new(),
-            descript = $"Áî¸£¶ó½º¶ßºÎÀÌÂÅ.\n¹Ì³Ä ÀÚº× [{_rankerData.nickname}]."
         };
 
         {

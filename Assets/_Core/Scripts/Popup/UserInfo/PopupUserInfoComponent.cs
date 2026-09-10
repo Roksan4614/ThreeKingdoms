@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,14 +7,24 @@ using UnityEngine;
 public class PopupUserInfoComponent : BasePopupComponent, IValidatable
 {
     PopupUserInfoComponent() : base(PopupType.UserInfo) { }
+    protected PopupUserInfoComponent(PopupType _popupType) : base(_popupType) { }
 
     public StatusType statusType;
+    protected long m_uid;
 
-    protected override void Awake()
+    protected virtual void Start()
     {
-        base.Awake();
+        m_element.btnConfirm.onClick.AddListener(OnButtonClose);
+        m_element.btnCopy.onClick.AddListener(OnButtonCopy);
+    }
 
-        m_element.btnConfirm.onClick.AddListener(Close);
+    protected virtual void OnButtonClose()
+        => Close();
+
+    protected virtual void OnButtonCopy()
+    {
+        PopupManager.instance.AlertShow("복사_완료");
+        Utils.CopyText(m_uid.ToString());
     }
 
     public override void OpenPopup(params object[] _args)
@@ -21,20 +32,19 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
         statusType = StatusType.Wait;
         var userInfo = (UserInfoData)_args[0];
 
+        m_element.panel.gameObject.SetActive(false);
+        Utils.SetActivePunch(m_element.panel, true);
+
         SetUserInfoAsync(userInfo).Forget();
     }
 
-    async UniTask SetUserInfoAsync(UserInfoData _userInfo)
+    protected async UniTask SetUserInfoAsync(UserInfoData _userInfo)
     {
-        m_element.panel.gameObject.SetActive(false);
-        await UniTask.Yield();
-
-        Utils.SetActivePunch(m_element.panel, true);
-
-        m_element.profile.SetProfileData(_userInfo.profileIdx, _userInfo.batchHeroes[0].key);
-        m_element.txtNickname.text = _userInfo.nickname;
-        m_element.txtInfo.text = $"UID : {_userInfo.uid}\n소속_: {_userInfo.regionName}";
-        m_element.txtDesc.text = $"\"{(_userInfo.descript ?? "......")}\"";
+        m_uid = _userInfo.uid;
+        m_element.profile.SetProfileData(_userInfo.profileIdx, _userInfo.profileSkin);
+        m_element.infNickname.text = _userInfo.nickname;
+        m_element.txtInfo.text = $"UID : {m_uid}\n소속_: {_userInfo.regionName}";
+        m_element.infDesc.text = $"\"{(_userInfo.desc)}\"";
 
         for (int i = 0; i < m_element.slotHeroes.Length; i++)
             m_element.slotHeroes[i].SetHeroData_UserInfoAsync(_userInfo.batchHeroes[i]).Forget();
@@ -57,51 +67,61 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField, HideInInspector]
-    ElementData m_element;
+    //[SerializeField, HideInInspector]
+    [SerializeField]
+    protected ElementData m_element;
 
     [System.Serializable]
-    struct ElementData
+    protected struct ElementData
     {
         public Transform panel;
 
         public ProfileIconCompoent profile;
-        public TextMeshProUGUI txtNickname;
+        public TMP_InputField infNickname;
         public TextMeshProUGUI txtInfo;
-        public TextMeshProUGUI txtDesc;
+        public TMP_InputField infDesc;
 
         public HeroIconComponent_UserInfo[] slotHeroes;
 
         public ButtonHelper btnConfirm;
+        public ButtonHelper btnCopy;
 
         public void Initialize(Transform _transform)
         {
             panel = _transform.Find("Panel");
 
             profile = _transform.GetComponent<ProfileIconCompoent>("Panel/FrontPanel/Slot_Profile");
-            txtNickname = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/Name/txt_name");
+            infNickname = _transform.GetComponent<TMP_InputField>("Panel/FrontPanel/inf_nickname");
             txtInfo = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/txt_info");
-            txtDesc = _transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/txt_desc");
+            infDesc = _transform.GetComponent<TMP_InputField>("Panel/FrontPanel/inf_desc");
 
-            slotHeroes = _transform.Find("Panel/Batch/Layout").GetComponentsInChildren<HeroIconComponent_UserInfo>();
+            slotHeroes = _transform.Find("Panel/Batch/Layout")?.GetComponentsInChildren<HeroIconComponent_UserInfo>();
 
             btnConfirm = _transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
+            btnCopy = _transform.GetComponent<ButtonHelper>("Panel/FrontPanel/txt_info/btn_copy");
         }
     }
     #endregion VALIDATE
 
 }
 
+[JsonObject(MemberSerialization.OptIn)]
 public class UserInfoData
 {
-    public int uid;
-    public string nickname;
-    public RegionType region;
-    public string descript;
-    public int profileIdx;
+    [JsonProperty] public int uid;
+    [JsonProperty] public string nickname;
+    [JsonProperty] public RegionType region;
+    [JsonProperty] string descript;
+    [JsonProperty] public int profileIdx;
+    [JsonProperty] public string profileSkin;
 
-    public List<HeroInfoData> batchHeroes;
-    public List<string> treasures;
+    [JsonProperty] public List<HeroInfoData> batchHeroes;
+    [JsonProperty] public List<string> treasures;
 
     public string regionName => TableManager.stringTable.GetRegionType(region, true);
+    public string desc
+    {
+        get => descript ?? $"안녕하세요.\n저는_[{nickname}]_입니다.";
+        set => descript = value;
+    }
 }

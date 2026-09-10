@@ -239,6 +239,7 @@ public class PopupHeroInfo : BasePopupComponent
         {
             TournamentWorker.instance.UpdateHero();
             m_heroInfoData = m_element.popupUpgrade.heroInfoData;
+            m_heroInfoData.ResetResultStat();
             isNeedUpdate = true;
 
             m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
@@ -306,7 +307,7 @@ public class PopupHeroInfo : BasePopupComponent
 
     async UniTask OpenPopupAsync_Position()
     {
-        if( await m_element.popupPosition.OpenPopupAsync(m_heroInfoData.key))
+        if (await m_element.popupPosition.OpenPopupAsync(m_heroInfoData.key))
             SetPositionType();
     }
 

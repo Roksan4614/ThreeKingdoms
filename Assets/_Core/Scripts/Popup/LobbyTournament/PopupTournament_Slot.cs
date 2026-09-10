@@ -39,7 +39,7 @@ public class PopupTournament_Slot : MonoBehaviour, IValidatable
         m_element.tierPoint.SetRankInfo(_rankerUserData.info);
 
         m_element.profile.SetActivePanel(true);
-        m_element.profile.SetProfileData(_rankerUserData.info.indexProfile, _rankerUserData.info.skin);
+        m_element.profile.SetProfileData(_rankerUserData.info.profileIdx, _rankerUserData.info.skin);
     }
 
     #region VALIDATE
