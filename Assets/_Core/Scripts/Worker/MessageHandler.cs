@@ -22,6 +22,8 @@ public class MessageHandler : MonoSingleton<MessageHandler>
 
     [DllImport("__Internal")]
     public static extern bool IsMobileBrowser();
+    [DllImport("__Internal")]
+    public static extern void CopyText(string _text);
 
     public void SetFirebaseTokenFailed(string _errMessage)
     {

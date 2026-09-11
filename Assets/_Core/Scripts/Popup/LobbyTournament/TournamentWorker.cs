@@ -485,7 +485,7 @@ namespace Rev9.Tournament
         [JsonProperty] public int index;
         [JsonProperty] public int uid;
         [JsonProperty] public string nickname;
-        [JsonProperty] public int indexProfile;
+        [JsonProperty] public int profileIdx;
         [JsonProperty] public string skin;
         [JsonProperty] public bool isWin;
         [JsonProperty] public int resultPoint;

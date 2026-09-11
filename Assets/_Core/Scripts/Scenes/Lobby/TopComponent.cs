@@ -25,6 +25,12 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
             UpdateAsset(data.type, -1, false);
         }
 
+        SetNickname();
+        m_element.txtPower.text = "";
+
+        if (DataManager.instance.isLobby)
+            m_element.btnProfile.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.UserInfo_My));
+
         m_element.btnMenu.onClick.AddListener(() => OnButtonAsync_PopupMenu().Forget());
         m_element.popupMenu.SetActive(false);
 
@@ -40,8 +46,13 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
                     UpdateAsset(_data.itemType, -1, _data.isTween);
             });
 
-        //m_element.assets.Find(x=>x.type == ItemType.gold).button.onClick.AddListener(() => OpenInventoryAsync().Forget());
+        Signal.instance.UpdateHeroStat.connectLambda = new(this, _ => { SetTeamPower(); });
+        Signal.instance.UpdateTeamPosition.connect = SetTeamPower;
     }
+
+    public void SetNickname() => m_element.txtNickname.text = DataManager.userInfo.nickname;
+    public void SetTeamPower()
+        => m_element.txtPower.text = TeamManager.instance.totalPower.AmountKMBT(_isMBT: true);
 
     //async UniTask OpenInventoryAsync()
     //{
@@ -127,7 +138,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
     #region VALIDATA
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField, HideInInspector]
+    [SerializeField]
     ElementData m_element;
     public ElementData element => m_element;
 
@@ -135,6 +146,10 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
     public struct ElementData
     {
         public List<AssetData> assets;
+
+        public Button btnProfile;
+        public TextMeshProUGUI txtNickname;
+        public TextMeshProUGUI txtPower;
 
         public Button btnMenu;
         public Top_Popup_Menu popupMenu;
@@ -154,6 +169,10 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
                 asset.icon = _transform.Find($"{t}/Icon");
                 assets.Add(asset);
             }
+
+            btnProfile = _transform.GetComponent<Button>("Profile/Panel");
+            txtNickname = _transform.GetComponent<TextMeshProUGUI>("Profile/txt_nickname");
+            txtPower = _transform.GetComponent<TextMeshProUGUI>("Profile/txt_power");
 
             btnMenu = _transform.GetComponent<Button>("Menu");
             popupMenu = _transform.Find("Menu/Popup/Menu").GetComponent<Top_Popup_Menu>();

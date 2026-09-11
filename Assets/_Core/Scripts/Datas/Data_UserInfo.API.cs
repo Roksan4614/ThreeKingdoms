@@ -57,4 +57,16 @@ public partial class Data_UserInfo
         await UniTask.NextFrame();
         return true;
     }
+
+    public async UniTask<bool> API_SetUserData(string _nickname, string _desc)
+    {
+        m_element.userInfoData.nickname = _nickname;
+        m_element.userInfoData.desc = _desc;
+        SaveData();
+
+        TopComponent.instance.SetNickname();
+
+        await UniTask.NextFrame();
+        return true;
+    }
 }

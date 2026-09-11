@@ -85,7 +85,7 @@ public class CharacterComponent : TargetComponent
 
     public virtual void SetHeroData(string _key)
     {
-        m_info = DataManager.userInfo.GetHeroInfoData(_key);
+        m_info = DataManager.userInfo.GetHeroInfoData(_key, false);
         m_stat = DataManager.stat.GetResultStat(m_info);
         attack.ResetFX();
 

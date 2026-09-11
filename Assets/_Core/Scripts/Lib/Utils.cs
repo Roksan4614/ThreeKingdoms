@@ -14,6 +14,16 @@ using UnityEngine.UI;
 
 public static class Utils
 {
+    public static void CopyText(string _text)
+    {
+        IngameLog.Add("CopytText: " + _text);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        MessageHandler.CopyText(_text);
+#endif
+        GUIUtility.systemCopyBuffer = _text;
+    }
+
     public static void ClearDebugLog()
     {
 #if UNITY_EDITOR

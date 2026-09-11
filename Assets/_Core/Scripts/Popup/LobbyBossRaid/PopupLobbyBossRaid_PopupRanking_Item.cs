@@ -45,7 +45,7 @@ public class PopupLobbyBossRaid_PopupRanking_Item : MonoBehaviour, IValidatable
             m_element.imgPanel.color = Color.white;
 
         // æ∆¿Ãƒ‹
-        m_element.profile.SetProfileData(_rankerData.indexProfile, _rankerData.skin);
+        m_element.profile.SetProfileData(_rankerData.profileIdx, _rankerData.skin);
 
         await UniTask.NextFrame();
     }

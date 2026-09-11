@@ -30,6 +30,7 @@ public enum PopupType
     LobbyTournament,
     LobbyTournament_History,
     UserInfo,
+    UserInfo_My,
 
     Inventory,
     Post,

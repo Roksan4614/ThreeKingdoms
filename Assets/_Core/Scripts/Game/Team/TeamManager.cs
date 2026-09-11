@@ -37,6 +37,8 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         Signal.instance.UpdateHP.connect = heroInfo.UpdateHP;
     }
 
+    public long totalPower => m_member.Values.Sum(x => x.info.power);
+
     public void MoveAttactTarget(Character_Enemy _target)
     {
         foreach (var hero in m_member)
@@ -441,6 +443,34 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
 
     public void SetHeroInfoHide(bool _isHide, bool _isTween)
         => heroInfo.SetHide(_isHide, _isTween);
+    public void UpdateUpgrade(HeroInfoData _heroData)
+    {
+        foreach (var h in m_member)
+        {
+            if (h.Value.info.key == _heroData.key)
+                h.Value.SetHeroData(_heroData.key);
+        }
+    }
+
+    public void ResetResultStat(params string[] _heroKey)
+    {
+        if (_heroKey.Length == 0)
+        {
+            foreach (var h in m_member)
+                h.Value.info.ResetResultStat();
+        }
+        else
+        {
+            foreach (var key in _heroKey)
+            {
+                foreach (var h in m_member)
+                {
+                    if (h.Value.info.key == key)
+                        h.Value.info.ResetResultStat();
+                }
+            }
+        }
+    }
 
     public void OnManualValidate() => m_element.Initialize(transform);
 

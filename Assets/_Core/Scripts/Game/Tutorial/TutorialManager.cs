@@ -15,7 +15,7 @@ public partial class TutorialManager
         await UniTask.Yield();
 
         //PPWorker.DeleteKey(PlayerPrefsType.GUIDE_QUEST_DATA);
-        m_data = PPWorker.Get<GuideQuestRepeatData>(PlayerPrefsType.GUIDE_QUEST_DATA);
+        m_data = PPWorker.Get<GuideQuestRepeatData>(PlayerPrefsType.GUIDE_QUEST_DATA, false);
 
         if (m_data == null)
         {
@@ -145,7 +145,7 @@ public partial class TutorialManager
 
     void SaveData()
     {
-        PPWorker.Set(PlayerPrefsType.GUIDE_QUEST_DATA, m_data);
+        PPWorker.Set(PlayerPrefsType.GUIDE_QUEST_DATA, m_data, false);
     }
 
     public class GuideQuestRepeatData

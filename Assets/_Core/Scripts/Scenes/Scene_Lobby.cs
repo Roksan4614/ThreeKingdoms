@@ -25,6 +25,8 @@ public class Scene_Lobby : SceneBase
         // 로비 생성 끝난 다음에 진행하자
         await UniTask.WhenAll(tasks.ToArray());
 
+        TopComponent.instance.SetTeamPower();
+
         StageManager.instance.StartStageAsync().Forget();
         ControllerManager.instance.SetSwitch(true);
 

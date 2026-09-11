@@ -148,7 +148,7 @@ namespace Rev9.Tournament
 
                 if (isMine)
                 {
-                    userData.indexProfile = DataManager.userInfo.profileIdx;
+                    userData.profileIdx = DataManager.userInfo.profileIdx;
                     userData.skin = DataManager.userInfo.profileSkin;
                     result.my = userData;
                 }
@@ -239,7 +239,7 @@ namespace Rev9.Tournament
                 uid = _userData.info.uid,
                 nickname = _userData.info.nickname,
                 batchData = _userData.batchData,
-                indexProfile = _userData.info.indexProfile,
+                profileIdx = _userData.info.profileIdx,
                 skin = _userData.info.skin,
                 isAttack = _isAttackType,
                 isWin = _isWin,

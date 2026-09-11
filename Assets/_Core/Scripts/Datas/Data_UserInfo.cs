@@ -10,12 +10,14 @@ public partial class Data_UserInfo
     HeroSortData m_sortData;
     public HeroSortData sortData => m_sortData;
 
-    public int uid => m_element.uid;
-    public string nickname => m_element.nickname;
-    public RegionType region => m_element.region;
+    const int c_testUid = 41754614;
+    public int uid => m_element.userInfoData?.uid ?? c_testUid;
+    public string nickname => m_element.userInfoData.nickname;
+    public RegionType region => m_element.userInfoData.region;
     public IReadOnlyList<HeroInfoData> myHero => m_element.myHero.DeepClone();
-    public int profileIdx => m_element.profileIdx;
-    public string profileSkin => m_element.profileSkin;
+    public int profileIdx => m_element.userInfoData.profileIdx;
+    public string profileSkin => m_element.userInfoData.profileSkin;
+    public UserInfoData userInfoData => m_element.userInfoData;
 
     public long gold => m_element.gold;
     public long rice => m_element.rice;
@@ -49,8 +51,8 @@ public partial class Data_UserInfo
             SaveData();
         }
 
-        if (PPWorker.HasKey(PlayerPrefsType.HERO_SORTING_DATA))
-            m_sortData = PPWorker.Get<HeroSortData>(PlayerPrefsType.HERO_SORTING_DATA);
+        if (PPWorker.HasKey(PlayerPrefsType.HERO_SORTING_DATA, false))
+            m_sortData = PPWorker.Get<HeroSortData>(PlayerPrefsType.HERO_SORTING_DATA, false);
         else
         {
             m_sortData = new();
@@ -191,15 +193,15 @@ public partial class Data_UserInfo
         => HasHero(_name.ToString());
     public bool HasHero(string _key)
         => m_element.myHero.FindIndex(x => x.key == _key) > -1;
-    public HeroInfoData GetHeroInfoData(CharacterName _characterName)
-        => GetHeroInfoData(_characterName.ToString());
-    public HeroInfoData GetHeroInfoData(string _key)
+    public HeroInfoData GetHeroInfoData(CharacterName _characterName, bool _isDeepClone = false)
+        => GetHeroInfoData(_characterName.ToString(), _isDeepClone);
+    public HeroInfoData GetHeroInfoData(string _key, bool _isDeepClone = false)
     {
         for (int i = 0; i < m_element.myHero.Count; i++)
         {
             var heroData = m_element.myHero[i];
             if (heroData.key.IsEquals(_key))
-                return heroData.DeepClone();
+                return _isDeepClone ? heroData.DeepClone() : heroData;
         }
         return null;
     }
@@ -220,11 +222,15 @@ public partial class Data_UserInfo
             hero.enchantLevel = _heroData.enchantLevel;
             hero.grade = _heroData.grade;
             SaveData();
+
+            TeamManager.instance.UpdateUpgrade(_heroData);
         }
     }
 
     public void ResetResultStat(params string[] _heroKey)
     {
+        TeamManager.instance.ResetResultStat(_heroKey);
+
         if (_heroKey.Length == 0)
         {
             foreach (var h in m_element.myHero)
@@ -286,8 +292,8 @@ public partial class Data_UserInfo
     }
     public void SetRegion(RegionType _region)
     {
-        m_element.region = _region;
-        m_element.profileSkin = TableManager.region.Get(_region).master;
+        m_element.userInfoData.region = _region;
+        m_element.userInfoData.profileSkin = TableManager.region.Get(_region).master;
         SaveData();
     }
 
@@ -418,24 +424,21 @@ public partial class Data_UserInfo
 
     struct ElementData
     {
-        public int uid;
-        public string nickname;
-        public RegionType region;
-        public List<HeroInfoData> myHero;
+        public UserInfoData userInfoData;
 
-        public int profileIdx;
-        public string profileSkin;
+        public List<HeroInfoData> myHero;
 
         public long gold;
         public long rice;
 
         public void Default()
         {
-            region = RegionType.SHU;
-            nickname = "·Ï»ê";
+            userInfoData = new()
+            {
+                uid = c_testUid,
+                nickname = "ROKSAN"
+            };
             myHero = new();
-
-            profileSkin = "LiuBei";
         }
     }
 

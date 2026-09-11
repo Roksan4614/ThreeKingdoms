@@ -38,7 +38,7 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
         if (ColorUtility.TryParseHtmlString($"#{(_historyData.isWin ? Palette.htmlString_Up : Palette.htmlString_Down)}", out Color clr))
             m_element.txtResult.color = clr;
 
-        m_element.profile.SetProfileData(_historyData.indexProfile, _historyData.skin);
+        m_element.profile.SetProfileData(_historyData.profileIdx, _historyData.skin);
 
         m_element.objRevenge.gameObject.SetActive(isRevenge);
 

@@ -106,7 +106,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
     bool m_isPushSkillOn_C = false;
     private void Update()
     {
-        if (isSwitch == false || m_mainHero?.isLive == false)
+        if (m_isSwitch == false || m_mainHero?.isLive == false)
             return;
 
         OnUpdateMove();
