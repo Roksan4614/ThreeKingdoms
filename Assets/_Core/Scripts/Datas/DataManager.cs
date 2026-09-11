@@ -38,8 +38,6 @@ public class DataManager
 
     public async UniTask InitializeAsync()
     {
-        await m_userInfo.InitializeAsync();
-
         List<UniTask> tasks = new();
         tasks.Add(m_stat.InitializeAsync());
         tasks.Add(m_heroPosition.InitializeAsync());

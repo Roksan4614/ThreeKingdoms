@@ -1,5 +1,5 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,6 +9,7 @@ public partial class Data_UserInfo
     ElementData m_element;
     HeroSortData m_sortData;
     public HeroSortData sortData => m_sortData;
+    public IdleRewardData idleRewardData { get; private set; } = new();
 
     const int c_testUid = 41754614;
     public int uid => m_element.userInfoData?.uid ?? c_testUid;
@@ -22,45 +23,6 @@ public partial class Data_UserInfo
     public long gold => m_element.gold;
     public long rice => m_element.rice;
 
-    public async UniTask InitializeAsync()
-    {
-        if (PPWorker.HasKey(PlayerPrefsType.USER_DATA))
-        {
-            m_element = PPWorker.Get<ElementData>(PlayerPrefsType.USER_DATA);
-
-            //await AddressableManager.instance.Load_HeroIconAsync(m_element.myHero.Select(x => x.skin).ToArray());
-            //await AddressableManager.instance.Load_HeroCharacterAsync(m_element.myHero.FindAll(x => x.isBatch).Select(x => x.skin).ToArray());
-
-            //if (TutorialManager.instance.IsComplete(GuideQuestType.START) == false)
-            //{
-            //    var heroes = m_element.myHero.FindAll(x => x.isMain == false && x.isBatch == true).ToList();
-            //    if (heroes.Count > 0)
-            //    {
-            //        for (int i = 0; i < heroes.Count; i++)
-            //        {
-            //            var h = heroes[i];
-            //            h.isBatch = false;
-            //            Update(h);
-            //        }
-            //    }
-            //}
-        }
-        else
-        {
-            m_element.Default();
-            SaveData();
-        }
-
-        if (PPWorker.HasKey(PlayerPrefsType.HERO_SORTING_DATA, false))
-            m_sortData = PPWorker.Get<HeroSortData>(PlayerPrefsType.HERO_SORTING_DATA, false);
-        else
-        {
-            m_sortData = new();
-            m_sortData.Default();
-            SaveData_SortingData();
-        }
-    }
-
     public void SaveData()
     {
         if (m_element.myHero.Count > 1)
@@ -68,10 +30,14 @@ public partial class Data_UserInfo
 
         PPWorker.Set(PlayerPrefsType.USER_DATA, m_element);
     }
+    public void SaveData_IdleReward()
+    {
+        PPWorker.Set(PlayerPrefsType.USER_DATA_IDLE_REWARD, idleRewardData);
+    }
 
     public void SaveData_SortingData()
     {
-        PPWorker.Set(PlayerPrefsType.HERO_SORTING_DATA, m_sortData);
+        PPWorker.Set(PlayerPrefsType.HERO_DATA_SORTING, m_sortData, false);
     }
 
     public void SetFilterData(List<RegionType> _region, List<HeroClassType> _class, List<GradeType> _grade)
@@ -436,10 +402,32 @@ public partial class Data_UserInfo
             userInfoData = new()
             {
                 uid = c_testUid,
-                nickname = "ROKSAN"
+                nickname = "ROKSAN",
             };
+
             myHero = new();
         }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class IdleRewardData
+    {
+        [JsonProperty] public long tickReceive;
+        [JsonProperty] public long tickRefresh;
+        [JsonProperty] public List<ItemData> rewards;
+
+        public void Default()
+        {
+            tickRefresh =
+            tickReceive = Utils.GetUTC().Ticks;
+            rewards = new();
+        }
+
+        public System.DateTime dtReceive => Utils.GetDateTime(tickReceive);
+        public System.DateTime dtRefresh => Utils.GetDateTime(tickRefresh);
+        public System.TimeSpan tsReceive => Utils.GetUTC() - dtReceive;
+        public System.TimeSpan tsRefresh => Utils.GetUTC() - dtRefresh;
+        public float percent => Mathf.Min(1, (float)tsReceive.TotalHours / 12f);
     }
 
     public class HeroSortData

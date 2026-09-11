@@ -13,6 +13,7 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
         });
 
         m_element.btnTournament.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.LobbyTournament));
+        m_element.btnIdleReward.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.Reward_Idle));
 
         Signal.instance.UnlockStoryMode.connect = SlotUnlockStoryMode;
     }
@@ -71,6 +72,8 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
         public Banner_Story story;
         public Transform guideArrow;
 
+        public ButtonHelper btnIdleReward;
+
         public void Initialize(Transform _transform)
         {
             btnTutorialSkip = _transform.parent.GetComponent<ButtonHelper>("btn_skip");
@@ -79,6 +82,7 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
             story = _transform.GetComponent<Banner_Story>("Right/btn_story");
 
             guideArrow = _transform.Find("GuideArrow");
+            btnIdleReward = _transform.GetComponent<ButtonHelper>("Left/btn_idle_reward");
         }
     }
     #endregion VALIDATA

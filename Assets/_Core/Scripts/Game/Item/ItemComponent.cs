@@ -93,6 +93,8 @@ public class ItemComponent : MonoBehaviour, IValidatable
                 return;
 
             var icon = Instantiate(result, m_element.iconPanel);
+            await UniTask.Yield();
+
             icon.transform.SetAsFirstSibling();
             icon.AutoResizeParent().name = _key;
 

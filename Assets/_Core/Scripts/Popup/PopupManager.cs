@@ -39,6 +39,7 @@ public enum PopupType
     Rebirth,
 
     Reward,
+    Reward_Idle,
     UpgradeGuide,
     ContentsMarket,
 
@@ -115,7 +116,8 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
         popup.name = _popupType.ToString();
 
         // 이걸 넣어줘야 Start가 먼저 드감
-        await UniTask.WaitForEndOfFrame();
+        //await UniTask.WaitForEndOfFrame();
+        await UniTask.Yield();
         popup.OpenPopup(_data);
 
         return popup?.GetComponent<T>();

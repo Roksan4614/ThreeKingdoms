@@ -5,6 +5,94 @@ using UnityEngine;
 
 public partial class Data_UserInfo
 {
+    public async UniTask API_Login()
+    {
+        await UniTask.NextFrame();
+
+        if (PPWorker.HasKey(PlayerPrefsType.USER_DATA))
+        {
+            m_element = PPWorker.Get<ElementData>(PlayerPrefsType.USER_DATA);
+        }
+        else
+        {
+            m_element.Default();
+            SaveData();
+        }
+
+        if (PPWorker.HasKey(PlayerPrefsType.HERO_DATA_SORTING, false))
+            m_sortData = PPWorker.Get<HeroSortData>(PlayerPrefsType.HERO_DATA_SORTING, false);
+        else
+        {
+            m_sortData = new();
+            m_sortData.Default();
+            SaveData_SortingData();
+        }
+
+        if (PPWorker.HasKey(PlayerPrefsType.USER_DATA_IDLE_REWARD))
+            idleRewardData = PPWorker.Get<IdleRewardData>(PlayerPrefsType.USER_DATA_IDLE_REWARD);
+        else
+        {
+            idleRewardData = new();
+            idleRewardData.Default();
+            SaveData_IdleReward();
+        }
+    }
+
+    public async UniTask<List<ItemData>> API_ReceiveIdleReward()
+    {
+        await API_RefreshIdleReward(true);
+
+        List<ItemData> result = new(idleRewardData.rewards);
+
+        idleRewardData.rewards.Clear();
+        idleRewardData.tickReceive = Utils.GetUTC().Ticks;
+        SaveData_IdleReward();
+
+        return result;
+    }
+
+    public async UniTask API_RefreshIdleReward(bool _isForce = false)
+    {
+        if (_isForce == true || idleRewardData.tsRefresh.TotalMinutes > 1)
+        {
+            await UniTask.NextFrame();
+
+            idleRewardData.tickRefresh = Utils.GetUTC().Ticks;
+
+            //int count = (int)idleRewardData.tsReceive.TotalMinutes;
+            int count = (int)idleRewardData.tsReceive.TotalSeconds;
+            count = Mathf.Min(count, 60 * 12);
+
+            idleRewardData.rewards = new()
+            {
+                TableManager.item.GetItemData(ItemType.gold, count),
+                TableManager.item.GetItemData(ItemType.rice, (int)(count * 1.2f)),
+            };
+
+            var item = TableManager.item.GetItemData(ItemType.time_stone, (int)(count * 0.5f));
+            if (item.count > 0)
+                idleRewardData.rewards.Add(item);
+
+            item = TableManager.item.GetItemData(ItemType.gold, (int)(count * 0.2f));
+            if (item.count > 0)
+                idleRewardData.rewards.Add(item);
+
+            item = TableManager.item.GetItemData(ItemType.time_stone, (int)(count * 0.3f), HeroClassType.Champion.ToString());
+            if (item.count > 0)
+                idleRewardData.rewards.Add(item);
+
+            item = TableManager.item.GetItemData(ItemType.rice, (int)(count * 0.3f), HeroClassType.Vanguard.ToString());
+            if (item.count > 0)
+                idleRewardData.rewards.Add(item);
+
+            item = TableManager.item.GetItemData(ItemType.time_stone, (int)(count * 0.3f), HeroClassType.Strategist.ToString());
+            if (item.count > 0)
+                idleRewardData.rewards.Add(item);
+
+            SaveData_IdleReward();
+        }
+    }
+
     public async UniTask<HeroInfoData> API_TraitsChange(string _keyHero)
     {
         var hero = m_element.myHero.Find(x => x.key == _keyHero);

@@ -58,6 +58,7 @@ public class Scene_Login : SceneBase
 
         // TODO: Login
         await TutorialManager.instance.InitializeAsync();
+        await DataManager.userInfo.API_Login();
         await DataManager.instance.InitializeAsync();
 
         TimeManager.instance.InitializeAsync().Forget();
