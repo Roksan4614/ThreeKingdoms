@@ -48,6 +48,9 @@ namespace ThreeKingdoms.Shared.Types
         [JsonProperty("transition_ends_at", NullValueHandling = NullValueHandling.Include)]
         public string? TransitionEndsAt { get; set; } = default!;
 
+        [JsonProperty("remaining_milliseconds", NullValueHandling = NullValueHandling.Include)]
+        public long RemainingMilliseconds { get; set; } = default!;
+
         [JsonProperty("hp", NullValueHandling = NullValueHandling.Include)]
         public string Hp { get; set; } = default!;
 

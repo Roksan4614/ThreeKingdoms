@@ -16,6 +16,12 @@ namespace ThreeKingdoms.Shared.Types
     public class GuideQuestLobbyDto
     {
         /// <summary>
+        /// 기기 로컬 저장 없이 튜토리얼 완료 상태를 복원할 기획 quest idx 목록.
+        /// </summary>
+        [JsonProperty("completed_learning_quest_ids", NullValueHandling = NullValueHandling.Include)]
+        public List<long> CompletedLearningQuestIds { get; set; } = default!;
+
+        /// <summary>
         /// 현재 서버의 기획 테이블 hash.
         /// </summary>
         [JsonProperty("table_version", NullValueHandling = NullValueHandling.Include)]
