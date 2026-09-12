@@ -85,13 +85,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 보스 ID 순의 전체 최고 기록. 미처치는 null로 포함한다.
         /// </summary>
         [JsonProperty("records", NullValueHandling = NullValueHandling.Include)]
-        public List<DailyDungeonRecordDto> Records { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.DailyDungeonRecordDto> Records { get; set; } = default!;
 
         /// <summary>
         /// 현재 정산 가능한 입장. 새 입장 성공 시 대체한다.
         /// </summary>
         [JsonProperty("active_entry", NullValueHandling = NullValueHandling.Include)]
-        public DailyDungeonActiveEntryDto? ActiveEntry { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.DailyDungeonActiveEntryDto? ActiveEntry { get; set; } = default!;
 
     }
 }

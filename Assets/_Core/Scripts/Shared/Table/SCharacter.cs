@@ -26,12 +26,12 @@ namespace ThreeKingdoms.Shared.Table
         /// 소속 국가
         /// </summary>
         [JsonProperty("country", NullValueHandling = NullValueHandling.Include)]
-        public Country Country { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.Country Country { get; set; } = default!;
         /// <summary>
         /// 클래스
         /// </summary>
         [JsonProperty("character_class", NullValueHandling = NullValueHandling.Include)]
-        public CharacterClass CharacterClass { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CharacterClass CharacterClass { get; set; } = default!;
         /// <summary>
         /// 캐릭터 기본 전투력
         /// </summary>

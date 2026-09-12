@@ -31,7 +31,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 추첨된 수치 등급.
         /// </summary>
         [JsonProperty("trait_value_grade", NullValueHandling = NullValueHandling.Include)]
-        public TraitsValueGrade TraitValueGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.TraitsValueGrade TraitValueGrade { get; set; } = default!;
 
         /// <summary>
         /// 기획 수치의 자리 번호(0,1,2)를 key로 보존.

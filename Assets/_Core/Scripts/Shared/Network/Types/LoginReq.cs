@@ -37,7 +37,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 플랫폼 구분. 허용된 OsType 숫자만 전달한다.
         /// </summary>
         [JsonProperty("os_type", NullValueHandling = NullValueHandling.Include)]
-        public OsType OsType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.OsType OsType { get; set; } = default!;
 
         private string? _OsName = default!;
         [JsonIgnore] public bool OsNameSpecified { get; private set; }

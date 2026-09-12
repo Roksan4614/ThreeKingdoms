@@ -21,7 +21,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 파견 등급
         /// </summary>
         [JsonProperty("mission_grade", NullValueHandling = NullValueHandling.Include)]
-        public MissionGrade MissionGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.MissionGrade MissionGrade { get; set; } = default!;
         /// <summary>
         /// 파견 기본 소요 시간(초)
         /// </summary>

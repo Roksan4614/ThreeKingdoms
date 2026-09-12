@@ -16,7 +16,7 @@ namespace ThreeKingdoms.Shared.Types
         /// CharacterCombatStatsDto의 10개 property 이름 중 하나.
         /// </summary>
         [JsonProperty("stat", NullValueHandling = NullValueHandling.Include)]
-        public CombatStatKey Stat { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CombatStatKey Stat { get; set; } = default!;
 
         /// <summary>
         /// 스냅샷에 고정한 효과 수치.

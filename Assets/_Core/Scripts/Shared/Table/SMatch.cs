@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 소속
         /// </summary>
         [JsonProperty("country", NullValueHandling = NullValueHandling.Include)]
-        public Country Country { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.Country Country { get; set; } = default!;
         /// <summary>
         /// 구성원 1 (옵셔널, s_character.key 참조)
         /// </summary>

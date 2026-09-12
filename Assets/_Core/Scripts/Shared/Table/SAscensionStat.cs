@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 등급
         /// </summary>
         [JsonProperty("grade", NullValueHandling = NullValueHandling.Include)]
-        public CharacterGrade Grade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CharacterGrade Grade { get; set; } = default!;
         /// <summary>
         /// 승급 시 통솔 증가량
         /// </summary>

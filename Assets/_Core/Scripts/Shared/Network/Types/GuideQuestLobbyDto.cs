@@ -31,7 +31,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 현재 클라이언트가 진행하고 수령할 단일 회차.
         /// </summary>
         [JsonProperty("issue", NullValueHandling = NullValueHandling.Include)]
-        public GuideQuestIssueDto Issue { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.GuideQuestIssueDto Issue { get; set; } = default!;
 
     }
 }

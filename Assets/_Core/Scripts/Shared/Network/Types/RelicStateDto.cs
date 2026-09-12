@@ -43,7 +43,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 다음 한 단계의 시간석 비용. 현재 등급 상한에 도달했으면 null이다.
         /// </summary>
         [JsonProperty("next_enhance", NullValueHandling = NullValueHandling.Include)]
-        public RelicStateDto_NextEnhance? NextEnhance { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.RelicStateDto_NextEnhance? NextEnhance { get; set; } = default!;
 
     }
 }

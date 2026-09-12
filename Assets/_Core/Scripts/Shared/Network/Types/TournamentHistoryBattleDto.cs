@@ -40,13 +40,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 진행·완료·포기·만료 상태.
         /// </summary>
         [JsonProperty("status", NullValueHandling = NullValueHandling.Include)]
-        public TournamentBattleStatus Status { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.TournamentBattleStatus Status { get; set; } = default!;
 
         /// <summary>
         /// 완료되지 않았으면 null, 완료되었으면 조회 사용자 관점 승패.
         /// </summary>
         [JsonProperty("result", NullValueHandling = NullValueHandling.Include)]
-        public TournamentBattleResult? Result { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.TournamentBattleResult? Result { get; set; } = default!;
 
         /// <summary>
         /// 조회 사용자 관점의 실제 점수 증감.

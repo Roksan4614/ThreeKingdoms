@@ -19,7 +19,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 새 session_key를 포함한 현재 계정·프로필 정보.
         /// </summary>
         [JsonProperty("user_info", NullValueHandling = NullValueHandling.Include)]
-        public UserInfoDto UserInfo { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.UserInfoDto UserInfo { get; set; } = default!;
 
         /// <summary>
         /// 이번 로그인 요청에서 계정이 새로 생성됐는지 여부.
@@ -37,7 +37,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 로그인 시점의 전체 재화 잔액.
         /// </summary>
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
     }
 }

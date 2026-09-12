@@ -31,13 +31,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 미장착 보물을 포함한 전체 보유 목록.
         /// </summary>
         [JsonProperty("treasures", NullValueHandling = NullValueHandling.Include)]
-        public List<TreasureStateDto> Treasures { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.TreasureStateDto> Treasures { get; set; } = default!;
 
         /// <summary>
         /// 보물 효과를 반영한 전체 무장 상태.
         /// </summary>
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
 
     }
 }

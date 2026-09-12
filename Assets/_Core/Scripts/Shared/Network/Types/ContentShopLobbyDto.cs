@@ -61,7 +61,7 @@ namespace ThreeKingdoms.Shared.Types
         public double MerchantGradeUpRate { get; set; } = default!;
 
         [JsonProperty("shops", NullValueHandling = NullValueHandling.Include)]
-        public List<ContentShopDto> Shops { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.ContentShopDto> Shops { get; set; } = default!;
 
     }
 }

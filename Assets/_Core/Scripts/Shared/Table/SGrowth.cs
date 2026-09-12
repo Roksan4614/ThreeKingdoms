@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 필요 재료 종류
         /// </summary>
         [JsonProperty("growth_material_type", NullValueHandling = NullValueHandling.Include)]
-        public GrowthMaterialType GrowthMaterialType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GrowthMaterialType GrowthMaterialType { get; set; } = default!;
         /// <summary>
         /// 필요 재료 수량
         /// </summary>

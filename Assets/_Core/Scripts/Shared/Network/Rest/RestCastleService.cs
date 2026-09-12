@@ -18,105 +18,105 @@ namespace ThreeKingdoms.Shared.Rest
         /// 영지 로비 정보
         /// 현재 서버 시각까지 영지 생산을 확정하고 전체 영지 스냅샷을 반환한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleSnapshotDto>> LobbyAsync(CastleLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleSnapshotDto>> LobbyAsync(global::ThreeKingdoms.Shared.Types.CastleLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleLobbyReq, CastleSnapshotDto>(new Rest.RestEndpoint("/client/private/castle/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleLobbyReq, global::ThreeKingdoms.Shared.Types.CastleSnapshotDto>(new Rest.RestEndpoint("/client/private/castle/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 건물 무장 배치/해제
         /// 한 건물의 무장 배치를 요청 순서의 전체 상태로 교체하고 최신 영지 스냅샷을 반환한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleSnapshotDto>> BuildingSetCharactersAsync(CastleSetCharactersReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleSnapshotDto>> BuildingSetCharactersAsync(global::ThreeKingdoms.Shared.Types.CastleSetCharactersReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleSetCharactersReq, CastleSnapshotDto>(new Rest.RestEndpoint("/client/private/castle/building/set-characters", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleSetCharactersReq, global::ThreeKingdoms.Shared.Types.CastleSnapshotDto>(new Rest.RestEndpoint("/client/private/castle/building/set-characters", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 농지/시장 재화 수령
         /// 시장 또는 농지의 적립 생산물을 수령하고 최신 영지·재화 상태를 반환한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleCollectRes>> BuildingCollectAsync(CastleCollectReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleCollectRes>> BuildingCollectAsync(global::ThreeKingdoms.Shared.Types.CastleCollectReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleCollectReq, CastleCollectRes>(new Rest.RestEndpoint("/client/private/castle/building/collect", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleCollectReq, global::ThreeKingdoms.Shared.Types.CastleCollectRes>(new Rest.RestEndpoint("/client/private/castle/building/collect", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 도둑 포획 시도
         /// 현재 도둑 instance를 tap해 포획을 판정하고 성공 시 경과 시간을 반영한 재화를 반환한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleThiefCaptureRes>> ThiefCaptureAsync(CastleThiefCaptureReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleThiefCaptureRes>> ThiefCaptureAsync(global::ThreeKingdoms.Shared.Types.CastleThiefCaptureReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleThiefCaptureReq, CastleThiefCaptureRes>(new Rest.RestEndpoint("/client/private/castle/thief/capture", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleThiefCaptureReq, global::ThreeKingdoms.Shared.Types.CastleThiefCaptureRes>(new Rest.RestEndpoint("/client/private/castle/thief/capture", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 도둑 디버프 해제
         /// 해제 시각까지 감소된 생산을 정산하고 농지·시장의 정상 효율을 복원한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleThiefClearDebuffRes>> ThiefClearDebuffAsync(CastleThiefClearDebuffReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleThiefClearDebuffRes>> ThiefClearDebuffAsync(global::ThreeKingdoms.Shared.Types.CastleThiefClearDebuffReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleThiefClearDebuffReq, CastleThiefClearDebuffRes>(new Rest.RestEndpoint("/client/private/castle/thief/clear-debuff", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleThiefClearDebuffReq, global::ThreeKingdoms.Shared.Types.CastleThiefClearDebuffRes>(new Rest.RestEndpoint("/client/private/castle/thief/clear-debuff", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 건물 증축 로비 정보
         /// 진행 중 건물별 상태·남은 시간, 현재 단축 효율과 광고 일일 사용량을 반환한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleBuildingUpgradeLobbyDto>> BuildingUpgradeLobbyAsync(CastleBuildingUpgradeLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeLobbyDto>> BuildingUpgradeLobbyAsync(global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleBuildingUpgradeLobbyReq, CastleBuildingUpgradeLobbyDto>(new Rest.RestEndpoint("/client/private/castle/building/upgrade/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeLobbyReq, global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeLobbyDto>(new Rest.RestEndpoint("/client/private/castle/building/upgrade/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 건물 증축 시작
         /// 목표 한 단계의 궁성/건물 선행조건과 배치 능력치를 검증하고 독립 증축을 시작한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleBuildingUpgradeStartRes>> BuildingUpgradeStartAsync(CastleBuildingUpgradeStartReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeStartRes>> BuildingUpgradeStartAsync(global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeStartReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleBuildingUpgradeStartReq, CastleBuildingUpgradeStartRes>(new Rest.RestEndpoint("/client/private/castle/building/upgrade/start", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeStartReq, global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeStartRes>(new Rest.RestEndpoint("/client/private/castle/building/upgrade/start", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 건물 증축 시간석 단축
         /// 현재 궁성 매력 효율로 필요한 수량까지만 시간석을 차감하고 완료되면 생산 경계를 함께 정산한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleBuildingUpgradeShortenRes>> BuildingUpgradeShortenAsync(CastleBuildingUpgradeShortenReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeShortenRes>> BuildingUpgradeShortenAsync(global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeShortenReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleBuildingUpgradeShortenReq, CastleBuildingUpgradeShortenRes>(new Rest.RestEndpoint("/client/private/castle/building/upgrade/shorten", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeShortenReq, global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeShortenRes>(new Rest.RestEndpoint("/client/private/castle/building/upgrade/shorten", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 건물 증축 광고 단축
         /// 광고 완료 후 계정별 일일 상한 안에서 현재 궁성 레벨의 광고 단축 시간을 적용한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleBuildingUpgradeCompleteAdRes>> BuildingUpgradeCompleteAdAsync(CastleBuildingUpgradeCompleteAdReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeCompleteAdRes>> BuildingUpgradeCompleteAdAsync(global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeCompleteAdReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleBuildingUpgradeCompleteAdReq, CastleBuildingUpgradeCompleteAdRes>(new Rest.RestEndpoint("/client/private/castle/building/upgrade/complete-ad", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeCompleteAdReq, global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeCompleteAdRes>(new Rest.RestEndpoint("/client/private/castle/building/upgrade/complete-ad", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 관아 파견 로비 정보
         /// 현재 offer3개·진행/완료 회차·보상 수령 가능 횟수·관아 경험치와 레벨을 반환한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleOfficeLobbyDto>> OfficeLobbyAsync(CastleOfficeLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleOfficeLobbyDto>> OfficeLobbyAsync(global::ThreeKingdoms.Shared.Types.CastleOfficeLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleOfficeLobbyReq, CastleOfficeLobbyDto>(new Rest.RestEndpoint("/client/private/castle/office/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleOfficeLobbyReq, global::ThreeKingdoms.Shared.Types.CastleOfficeLobbyDto>(new Rest.RestEndpoint("/client/private/castle/office/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 관아 파견 시작
         /// 현재 offer와 무장 중복을 검증하고 결과·보상 snapshot을 고정하되 횟수는 보상 수령까지 차감하지 않는다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleOfficeStartRes>> OfficeStartAsync(CastleOfficeStartReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleOfficeStartRes>> OfficeStartAsync(global::ThreeKingdoms.Shared.Types.CastleOfficeStartReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleOfficeStartReq, CastleOfficeStartRes>(new Rest.RestEndpoint("/client/private/castle/office/start", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleOfficeStartReq, global::ThreeKingdoms.Shared.Types.CastleOfficeStartRes>(new Rest.RestEndpoint("/client/private/castle/office/start", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 관아 파견 보상 수령
         /// 완료된 파견의 보상·관아 경험치/레벨·횟수1회 차감·원장·receipt를 원자적으로 확정한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleOfficeClaimRes>> OfficeClaimAsync(CastleOfficeClaimReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleOfficeClaimRes>> OfficeClaimAsync(global::ThreeKingdoms.Shared.Types.CastleOfficeClaimReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleOfficeClaimReq, CastleOfficeClaimRes>(new Rest.RestEndpoint("/client/private/castle/office/claim", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleOfficeClaimReq, global::ThreeKingdoms.Shared.Types.CastleOfficeClaimRes>(new Rest.RestEndpoint("/client/private/castle/office/claim", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 관아 파견 목록 갱신
         /// 진행 중 파견은 유지하고 군량1000을 차감해 미사용 offer3개를 모두 교체한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<CastleOfficeRefreshRes>> OfficeRefreshAsync(CastleOfficeLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CastleOfficeRefreshRes>> OfficeRefreshAsync(global::ThreeKingdoms.Shared.Types.CastleOfficeLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<CastleOfficeLobbyReq, CastleOfficeRefreshRes>(new Rest.RestEndpoint("/client/private/castle/office/refresh", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.CastleOfficeLobbyReq, global::ThreeKingdoms.Shared.Types.CastleOfficeRefreshRes>(new Rest.RestEndpoint("/client/private/castle/office/refresh", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
     }
 }

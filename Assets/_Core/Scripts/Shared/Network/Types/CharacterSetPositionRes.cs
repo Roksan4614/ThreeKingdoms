@@ -28,13 +28,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 이번 처리 후의 전체 직책 상태.
         /// </summary>
         [JsonProperty("positions", NullValueHandling = NullValueHandling.Include)]
-        public List<CharacterPositionDto> Positions { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CharacterPositionDto> Positions { get; set; } = default!;
 
         /// <summary>
         /// 직책 변경과 전투 스탯·CP를 반영한 전체 무장 스냅샷.
         /// </summary>
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
 
     }
 }

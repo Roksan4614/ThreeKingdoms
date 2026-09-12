@@ -22,13 +22,13 @@ namespace ThreeKingdoms.Shared.Types
         public long UsedTimeStoneCount { get; set; } = default!;
 
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         [JsonProperty("castle", NullValueHandling = NullValueHandling.Include)]
-        public CastleSnapshotDto Castle { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleSnapshotDto Castle { get; set; } = default!;
 
         [JsonProperty("building_upgrade", NullValueHandling = NullValueHandling.Include)]
-        public CastleBuildingUpgradeLobbyDto BuildingUpgrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeLobbyDto BuildingUpgrade { get; set; } = default!;
 
     }
 }

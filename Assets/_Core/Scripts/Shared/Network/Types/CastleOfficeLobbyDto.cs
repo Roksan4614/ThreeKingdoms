@@ -67,13 +67,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 항상 3개인 현재 미사용 목록.
         /// </summary>
         [JsonProperty("offers", NullValueHandling = NullValueHandling.Include)]
-        public List<CastleOfficeOfferDto> Offers { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CastleOfficeOfferDto> Offers { get; set; } = default!;
 
         /// <summary>
         /// 진행·완료 후 미수령 파견.
         /// </summary>
         [JsonProperty("runs", NullValueHandling = NullValueHandling.Include)]
-        public List<CastleOfficeRunDto> Runs { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CastleOfficeRunDto> Runs { get; set; } = default!;
 
         [JsonProperty("refresh_cost_rice", NullValueHandling = NullValueHandling.Include)]
         public long RefreshCostRice { get; set; } = default!;

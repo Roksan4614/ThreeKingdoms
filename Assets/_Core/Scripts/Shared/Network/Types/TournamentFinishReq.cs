@@ -22,7 +22,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 클라이언트가 보고할 Win(0) 또는 Lose(1).
         /// </summary>
         [JsonProperty("result", NullValueHandling = NullValueHandling.Include)]
-        public TournamentBattleResult Result { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.TournamentBattleResult Result { get; set; } = default!;
 
     }
 }

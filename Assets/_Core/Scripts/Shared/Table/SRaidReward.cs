@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 구간 타입
         /// </summary>
         [JsonProperty("rank_type", NullValueHandling = NullValueHandling.Include)]
-        public RaidRankType RankType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.RaidRankType RankType { get; set; } = default!;
         /// <summary>
         /// 최솟값 (rank=정확한 순위, percent=초과 기준 %)
         /// </summary>

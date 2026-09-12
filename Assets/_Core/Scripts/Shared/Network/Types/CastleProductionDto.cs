@@ -19,7 +19,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 농지는 Rice, 시장은 FreeGold다.
         /// </summary>
         [JsonProperty("currency", NullValueHandling = NullValueHandling.Include)]
-        public UserAssetType Currency { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.UserAssetType Currency { get; set; } = default!;
 
         /// <summary>
         /// 아직 수령하지 않은 적립량. scale 9 고정 소수 문자열.

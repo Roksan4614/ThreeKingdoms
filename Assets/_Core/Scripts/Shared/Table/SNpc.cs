@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 등장 조건
         /// </summary>
         [JsonProperty("spawn_trigger", NullValueHandling = NullValueHandling.Include)]
-        public SpawnTrigger SpawnTrigger { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.SpawnTrigger SpawnTrigger { get; set; } = default!;
         /// <summary>
         /// 소멸 시간(초); 0=상시, -1=s_gate_effect.npc_duration_seconds 연동, 양수=고정 시간
         /// </summary>

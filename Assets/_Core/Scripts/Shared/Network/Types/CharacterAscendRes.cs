@@ -31,13 +31,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 등급·특성·인연·CP를 갱신한 전체 무장 상태.
         /// </summary>
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
 
         /// <summary>
         /// 이번에 차감된 stack의 절대 잔액과 버전.
         /// </summary>
         [JsonProperty("item_updates", NullValueHandling = NullValueHandling.Include)]
-        public List<ItemStackDto> ItemUpdates { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.ItemStackDto> ItemUpdates { get; set; } = default!;
 
         /// <summary>
         /// 영지에 배치된 무장의 능력 변경이 반영된 영지 버전.

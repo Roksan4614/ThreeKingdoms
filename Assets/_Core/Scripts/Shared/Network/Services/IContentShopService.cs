@@ -17,12 +17,12 @@ namespace ThreeKingdoms.Shared.Services
         /// 일일 진열과 세 상점의 활성 상품·가격·구매한도·행상 적용 상태를 반환한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/content-shop/lobby")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<ContentShopLobbyDto>> LobbyAsync(ContentShopLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.ContentShopLobbyDto>> LobbyAsync(global::ThreeKingdoms.Shared.Types.ContentShopLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 콘텐츠 상점 상품 구매
         /// 서버가 현재 진열·한도·가격을 검증하고 결제·지급·원장·구매 횟수를 한 transaction에서 확정한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/content-shop/buy")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<ContentShopBuyRes>> BuyAsync(ContentShopBuyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.ContentShopBuyRes>> BuyAsync(global::ThreeKingdoms.Shared.Types.ContentShopBuyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
     }
 }

@@ -26,6 +26,6 @@ namespace ThreeKingdoms.Shared.Table
         /// 요구 능력치 타입
         /// </summary>
         [JsonProperty("stat_type", NullValueHandling = NullValueHandling.Include)]
-        public StatType StatType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.StatType StatType { get; set; } = default!;
     }
 }

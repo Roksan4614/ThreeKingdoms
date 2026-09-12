@@ -25,19 +25,19 @@ namespace ThreeKingdoms.Shared.Types
         /// 생산량 초기화와 revision 증가까지 반영한 전체 영지 상태.
         /// </summary>
         [JsonProperty("castle", NullValueHandling = NullValueHandling.Include)]
-        public CastleSnapshotDto Castle { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleSnapshotDto Castle { get; set; } = default!;
 
         /// <summary>
         /// 이번에 수령한 재화. 농지는 Rice, 시장은 FreeGold다.
         /// </summary>
         [JsonProperty("collected_currency", NullValueHandling = NullValueHandling.Include)]
-        public UserAssetType CollectedCurrency { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.UserAssetType CollectedCurrency { get; set; } = default!;
 
         /// <summary>
         /// 자연 재생 선정산과 생산물 지급까지 반영한 재화 절대 상태.
         /// </summary>
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
     }
 }

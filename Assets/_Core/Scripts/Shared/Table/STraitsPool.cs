@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 특성 등급
         /// </summary>
         [JsonProperty("traits_grade", NullValueHandling = NullValueHandling.Include)]
-        public TraitsGrade TraitsGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.TraitsGrade TraitsGrade { get; set; } = default!;
         /// <summary>
         /// 특성별 등장 가중치 뽑힐 확률 = 자기 weight ÷ 전체 weight 합계 합계는 고정값이 아니며, 특성이 추가·삭제되면 각 확률은 자동으로 조정됨 0 = 등장하지 않음
         /// </summary>

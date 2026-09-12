@@ -21,7 +21,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 보스 등급
         /// </summary>
         [JsonProperty("key", NullValueHandling = NullValueHandling.Include)]
-        public DungeonBossGrade Key { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.DungeonBossGrade Key { get; set; } = default!;
         /// <summary>
         /// 체력 배율 (s_character_stat.health_max 기준, 1.0=그대로) 스탯 character_key
         /// </summary>

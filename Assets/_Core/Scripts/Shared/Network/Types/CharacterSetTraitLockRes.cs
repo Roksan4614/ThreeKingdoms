@@ -31,7 +31,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 잠금 상태를 반영한 전체 무장 정보.
         /// </summary>
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
 
     }
 }

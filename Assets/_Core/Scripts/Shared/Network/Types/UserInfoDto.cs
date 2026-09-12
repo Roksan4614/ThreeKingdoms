@@ -31,7 +31,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 계정을 처음 생성할 때 사용한 인증 방식. 최근 로그인·현재 연동 목록과 구분한다.
         /// </summary>
         [JsonProperty("login_type", NullValueHandling = NullValueHandling.Include)]
-        public GameClientLoginType LoginType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GameClientLoginType LoginType { get; set; } = default!;
 
         /// <summary>
         /// 서버에 저장된 현재 닉네임.
@@ -44,7 +44,7 @@ namespace ThreeKingdoms.Shared.Types
         /// SelectableRegionType: RegionType.Wei | RegionType.Shu | RegionType.Wu
         /// </summary>
         [JsonProperty("region", NullValueHandling = NullValueHandling.Include)]
-        public RegionType? Region { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.RegionType? Region { get; set; } = default!;
 
         /// <summary>
         /// 프로필 대표 무장 ID. 아직 지정되지 않았으면 null이다.

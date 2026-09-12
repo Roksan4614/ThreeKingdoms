@@ -25,7 +25,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 승급으로 열린 특성과 저장된 잠금 상태.
         /// </summary>
         [JsonProperty("traits", NullValueHandling = NullValueHandling.Include)]
-        public List<CharacterTraitStateDto> Traits { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CharacterTraitStateDto> Traits { get; set; } = default!;
 
         /// <summary>
         /// s_character.idx에 대응하는 무장 숫자 ID.
@@ -49,7 +49,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 현재 무장 등급.
         /// </summary>
         [JsonProperty("character_grade", NullValueHandling = NullValueHandling.Include)]
-        public CharacterGrade CharacterGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CharacterGrade CharacterGrade { get; set; } = default!;
 
         /// <summary>
         /// 현재 성장 단계. 성장 전 초기 상태는 0이다.
@@ -67,19 +67,19 @@ namespace ThreeKingdoms.Shared.Types
         /// 다음 성장 시도 미리보기. 최대 성장 단계이면 null이다.
         /// </summary>
         [JsonProperty("next_growth", NullValueHandling = NullValueHandling.Include)]
-        public GrowthPreviewDto? NextGrowth { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.GrowthPreviewDto? NextGrowth { get; set; } = default!;
 
         /// <summary>
         /// 이 무장의 전용 유물 현재 상태.
         /// </summary>
         [JsonProperty("relic", NullValueHandling = NullValueHandling.Include)]
-        public RelicStateDto Relic { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.RelicStateDto Relic { get; set; } = default!;
 
         /// <summary>
         /// 서버가 현재 보유 상태 전체로 계산한 최종 전투 능력치.
         /// </summary>
         [JsonProperty("combat_stats", NullValueHandling = NullValueHandling.Include)]
-        public CharacterCombatStatsDto CombatStats { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterCombatStatsDto CombatStats { get; set; } = default!;
 
         /// <summary>
         /// combat_stats를 현재 클라이언트 CP 공식으로 평가한 전투력.

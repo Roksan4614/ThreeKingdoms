@@ -22,7 +22,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 직접 플레이는 이번 처치 등급, 토벌은 사용한 영구 최고 등급.
         /// </summary>
         [JsonProperty("highest_killed_grade", NullValueHandling = NullValueHandling.Include)]
-        public DungeonBossGrade? HighestKilledGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.DungeonBossGrade? HighestKilledGrade { get; set; } = default!;
 
         /// <summary>
         /// 직접 플레이는 입장 당시, 토벌은 현재 보상표 버전.
@@ -34,7 +34,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 서버가 계산한 이번 보상 수량.
         /// </summary>
         [JsonProperty("rewards", NullValueHandling = NullValueHandling.Include)]
-        public DailyDungeonRewardsDto Rewards { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.DailyDungeonRewardsDto Rewards { get; set; } = default!;
 
     }
 }

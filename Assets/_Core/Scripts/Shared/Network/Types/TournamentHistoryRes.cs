@@ -16,7 +16,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 승패·점수 증감이 조회한 본인 관점인 공격·방어 이력.
         /// </summary>
         [JsonProperty("battles", NullValueHandling = NullValueHandling.Include)]
-        public List<TournamentHistoryBattleDto> Battles { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.TournamentHistoryBattleDto> Battles { get; set; } = default!;
 
         /// <summary>
         /// 추가 이력이 있으면 다음 cursor.

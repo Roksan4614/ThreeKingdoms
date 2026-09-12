@@ -16,7 +16,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 보유 무장1~4명과 위치.
         /// </summary>
         [JsonProperty("heroes", NullValueHandling = NullValueHandling.Include)]
-        public List<TournamentHeroPositionDto> Heroes { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.TournamentHeroPositionDto> Heroes { get; set; } = default!;
 
         /// <summary>
         /// 순서 있는 보유 보물0~3개. 일반 장착과 독립이다.

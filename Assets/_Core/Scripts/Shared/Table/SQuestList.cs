@@ -21,7 +21,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 임무 종류
         /// </summary>
         [JsonProperty("key", NullValueHandling = NullValueHandling.Include)]
-        public QuestType Key { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.QuestType Key { get; set; } = default!;
         /// <summary>
         /// 일일/주간 분류 타입
         /// </summary>

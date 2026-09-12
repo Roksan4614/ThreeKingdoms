@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 노드 타입
         /// </summary>
         [JsonProperty("node_type", NullValueHandling = NullValueHandling.Include)]
-        public StoryNodeType NodeType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.StoryNodeType NodeType { get; set; } = default!;
         /// <summary>
         /// 연도
         /// </summary>
@@ -56,7 +56,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 클리어 보상 재화 타입
         /// </summary>
         [JsonProperty("reward_currency_type", NullValueHandling = NullValueHandling.Include)]
-        public RewardCurrencyType RewardCurrencyType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.RewardCurrencyType RewardCurrencyType { get; set; } = default!;
         /// <summary>
         /// 클리어 보상 재화 값
         /// </summary>

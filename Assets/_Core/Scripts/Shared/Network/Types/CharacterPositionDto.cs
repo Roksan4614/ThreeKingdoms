@@ -31,7 +31,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 해금 완료, 조건 미충족, 실제 진행 기록 연결 전을 구분한다.
         /// </summary>
         [JsonProperty("status", NullValueHandling = NullValueHandling.Include)]
-        public CharacterPositionStatus Status { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CharacterPositionStatus Status { get; set; } = default!;
 
         /// <summary>
         /// 현재 이 직책을 장착한 무장 ID. 미장착이면 null이다.

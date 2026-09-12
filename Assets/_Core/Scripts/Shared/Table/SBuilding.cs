@@ -26,12 +26,12 @@ namespace ThreeKingdoms.Shared.Table
         /// 요구 능력치
         /// </summary>
         [JsonProperty("stat_type_1", NullValueHandling = NullValueHandling.Include)]
-        public StatType StatType1 { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.StatType StatType1 { get; set; } = default!;
         /// <summary>
         /// 요구 능력치
         /// </summary>
         [JsonProperty("stat_type_2", NullValueHandling = NullValueHandling.Include)]
-        public StatType StatType2 { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.StatType StatType2 { get; set; } = default!;
         /// <summary>
         /// 최대 레벨
         /// </summary>

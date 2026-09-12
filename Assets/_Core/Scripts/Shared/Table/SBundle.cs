@@ -26,12 +26,12 @@ namespace ThreeKingdoms.Shared.Table
         /// 패키지타입
         /// </summary>
         [JsonProperty("bundle_item_type", NullValueHandling = NullValueHandling.Include)]
-        public BundleItemType BundleItemType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.BundleItemType BundleItemType { get; set; } = default!;
         /// <summary>
         /// 번들단계분류
         /// </summary>
         [JsonProperty("item_grade", NullValueHandling = NullValueHandling.Include)]
-        public ItemGrade ItemGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemGrade ItemGrade { get; set; } = default!;
         /// <summary>
         /// 지급 최소량 configuration_minimum~ configuration_maximum 사이 랜덤 값 지급
         /// </summary>

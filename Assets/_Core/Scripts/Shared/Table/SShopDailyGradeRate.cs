@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 상품 등급
         /// </summary>
         [JsonProperty("grade", NullValueHandling = NullValueHandling.Include)]
-        public ItemGrade Grade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemGrade Grade { get; set; } = default!;
         /// <summary>
         /// 등급이 뽑힐 확률 (1=100%) 같은 상점 안에서 합계가 1.0이 돼야 한다
         /// </summary>

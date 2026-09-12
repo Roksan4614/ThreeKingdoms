@@ -19,10 +19,10 @@ namespace ThreeKingdoms.Shared.Types
         public string EventId { get; set; } = default!;
 
         [JsonProperty("office", NullValueHandling = NullValueHandling.Include)]
-        public CastleOfficeLobbyDto Office { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleOfficeLobbyDto Office { get; set; } = default!;
 
         [JsonProperty("run", NullValueHandling = NullValueHandling.Include)]
-        public CastleOfficeRunDto Run { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleOfficeRunDto Run { get; set; } = default!;
 
     }
 }

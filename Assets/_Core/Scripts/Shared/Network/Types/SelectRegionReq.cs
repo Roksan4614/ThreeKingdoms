@@ -20,7 +20,7 @@ namespace ThreeKingdoms.Shared.Types
         /// SelectableRegionType: RegionType.Wei | RegionType.Shu | RegionType.Wu
         /// </summary>
         [JsonProperty("region", NullValueHandling = NullValueHandling.Include)]
-        public RegionType Region { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.RegionType Region { get; set; } = default!;
 
     }
 }

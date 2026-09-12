@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 청렴도 미충족 시 적용할 디버프 종류
         /// </summary>
         [JsonProperty("debuff_type", NullValueHandling = NullValueHandling.Include)]
-        public CastleDebuffType DebuffType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CastleDebuffType DebuffType { get; set; } = default!;
         /// <summary>
         /// 청렴도 충족률 0%일 때 보장되는 기본 효과 비율; 실제 효과=기본 효과×(minimum_rate+(1-minimum_rate)×청렴도 충족률)
         /// </summary>

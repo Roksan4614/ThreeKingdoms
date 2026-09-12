@@ -22,10 +22,10 @@ namespace ThreeKingdoms.Shared.Types
         public long RiceCost { get; set; } = default!;
 
         [JsonProperty("office", NullValueHandling = NullValueHandling.Include)]
-        public CastleOfficeLobbyDto Office { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleOfficeLobbyDto Office { get; set; } = default!;
 
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
     }
 }

@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 아이템 타입. bundle의 세부 종류는 s_bundle.bundle_item_type(pocket/random_box)으로 구분한다.
         /// </summary>
         [JsonProperty("category", NullValueHandling = NullValueHandling.Include)]
-        public ItemType Category { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemType Category { get; set; } = default!;
         /// <summary>
         /// 전용 영혼석 대상 s_character.key. 다른 아이템은 빈 문자열
         /// </summary>

@@ -17,6 +17,6 @@ namespace ThreeKingdoms.Shared.Services
         /// 보유 container를 차감하고 서버 추첨 결과·보상·원장·절대 잔액을 한 transaction에서 확정한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/item/open-container")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<OpenItemContainerRes>> OpenContainerAsync(OpenItemContainerReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.OpenItemContainerRes>> OpenContainerAsync(global::ThreeKingdoms.Shared.Types.OpenItemContainerReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
     }
 }

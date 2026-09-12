@@ -31,7 +31,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 증축 시간 진행 중 또는 조건 미충족 일시 정지.
         /// </summary>
         [JsonProperty("status", NullValueHandling = NullValueHandling.Include)]
-        public CastleBuildingUpgradeStatus Status { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CastleBuildingUpgradeStatus Status { get; set; } = default!;
 
         /// <summary>
         /// state_at 기준 올림한 남은 초.

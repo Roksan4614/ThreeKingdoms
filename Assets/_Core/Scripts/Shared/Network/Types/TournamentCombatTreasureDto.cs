@@ -28,7 +28,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 선택 시점에 고정한 보물 효과.
         /// </summary>
         [JsonProperty("effects", NullValueHandling = NullValueHandling.Include)]
-        public List<TournamentTreasureEffectDto> Effects { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.TournamentTreasureEffectDto> Effects { get; set; } = default!;
 
     }
 }

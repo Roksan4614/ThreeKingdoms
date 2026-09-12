@@ -25,7 +25,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 직책 ID 순의 전체 목록. 새 해금도 저장된 상태다.
         /// </summary>
         [JsonProperty("positions", NullValueHandling = NullValueHandling.Include)]
-        public List<CharacterPositionDto> Positions { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CharacterPositionDto> Positions { get; set; } = default!;
 
     }
 }

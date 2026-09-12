@@ -21,7 +21,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 일일/주간 분류 타입
         /// </summary>
         [JsonProperty("type", NullValueHandling = NullValueHandling.Include)]
-        public QuestDateType Type { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.QuestDateType Type { get; set; } = default!;
         /// <summary>
         /// 보상 배치값 (횟수) 해당 수치만큼 임무 달성 시 보상 수령 가능
         /// </summary>

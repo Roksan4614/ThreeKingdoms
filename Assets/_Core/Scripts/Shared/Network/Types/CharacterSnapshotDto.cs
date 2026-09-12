@@ -19,13 +19,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 영혼석 등 현재 보유 stack. 없는 item은 보유량0이며 0행의 버전도 유지한다.
         /// </summary>
         [JsonProperty("items", NullValueHandling = NullValueHandling.Include)]
-        public List<ItemStackDto> Items { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.ItemStackDto> Items { get; set; } = default!;
 
         /// <summary>
         /// 계정이 보유한 보물과 현재 장착 순서.
         /// </summary>
         [JsonProperty("treasures", NullValueHandling = NullValueHandling.Include)]
-        public List<TreasureStateDto> Treasures { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.TreasureStateDto> Treasures { get; set; } = default!;
 
         /// <summary>
         /// 이 스냅샷 계산에 사용한 table_hash의 64자리 SHA-256 값.
@@ -43,7 +43,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 획득 시각이 빠른 순서로 정렬된 전체 보유 무장 상태.
         /// </summary>
         [JsonProperty("characters", NullValueHandling = NullValueHandling.Include)]
-        public List<CharacterStateDto> Characters { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CharacterStateDto> Characters { get; set; } = default!;
 
     }
 }

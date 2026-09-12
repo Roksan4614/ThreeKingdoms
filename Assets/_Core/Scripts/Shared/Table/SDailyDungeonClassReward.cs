@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 등급 고유 ID
         /// </summary>
         [JsonProperty("dungeon_boss_grade", NullValueHandling = NullValueHandling.Include)]
-        public DungeonBossGrade DungeonBossGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.DungeonBossGrade DungeonBossGrade { get; set; } = default!;
         /// <summary>
         /// s_item.key 참조
         /// </summary>

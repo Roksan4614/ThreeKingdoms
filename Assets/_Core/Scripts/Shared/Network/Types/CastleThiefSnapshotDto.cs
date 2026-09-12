@@ -19,7 +19,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 출현 중인 도둑. 없으면 null.
         /// </summary>
         [JsonProperty("active", NullValueHandling = NullValueHandling.Include)]
-        public CastleThiefActiveDto? Active { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleThiefActiveDto? Active { get; set; } = default!;
 
         /// <summary>
         /// active가 없을 때 다음 등장 판정이 가능한 UTC ISO 8601 시각.

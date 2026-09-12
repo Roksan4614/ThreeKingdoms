@@ -22,25 +22,25 @@ namespace ThreeKingdoms.Shared.Types
         /// 보상 지급·기록·횟수1회 차감이 반영된 최신 상태.
         /// </summary>
         [JsonProperty("daily_dungeon", NullValueHandling = NullValueHandling.Include)]
-        public DailyDungeonLobbyDto DailyDungeon { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.DailyDungeonLobbyDto DailyDungeon { get; set; } = default!;
 
         /// <summary>
         /// 이번 정산 대상·최고 처치 등급·고정 보상표와 계산 보상.
         /// </summary>
         [JsonProperty("result", NullValueHandling = NullValueHandling.Include)]
-        public DailyDungeonRewardResultDto Result { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.DailyDungeonRewardResultDto Result { get; set; } = default!;
 
         /// <summary>
         /// 정산 후의 절대 재화 잔액과 버전.
         /// </summary>
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         /// <summary>
         /// 이번에 변경한 item stack의 절대 잔액과 버전. 없으면 빈 배열.
         /// </summary>
         [JsonProperty("item_updates", NullValueHandling = NullValueHandling.Include)]
-        public List<ItemStackDto> ItemUpdates { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.ItemStackDto> ItemUpdates { get; set; } = default!;
 
     }
 }

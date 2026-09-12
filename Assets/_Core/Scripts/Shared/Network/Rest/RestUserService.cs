@@ -18,9 +18,9 @@ namespace ThreeKingdoms.Shared.Rest
         /// 초기 지역 선택
         /// Wei·Shu·Wu의 RegionType 숫자값으로 초기 지역을 설정하며 최초 선택에서 대표 무장·유물과 콘텐츠 초기 상태를 함께 만든다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<SelectRegionRes>> SelectRegionAsync(SelectRegionReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.SelectRegionRes>> SelectRegionAsync(global::ThreeKingdoms.Shared.Types.SelectRegionReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<SelectRegionReq, SelectRegionRes>(new Rest.RestEndpoint("/client/private/user/select-region", true, new Rest.RestHeaderRequirement[] {  }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.SelectRegionReq, global::ThreeKingdoms.Shared.Types.SelectRegionRes>(new Rest.RestEndpoint("/client/private/user/select-region", true, new Rest.RestHeaderRequirement[] {  }), request, options, cancellationToken);
         }
     }
 }

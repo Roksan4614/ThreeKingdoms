@@ -34,7 +34,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 스냅샷 시점 등급.
         /// </summary>
         [JsonProperty("character_grade", NullValueHandling = NullValueHandling.Include)]
-        public CharacterGrade CharacterGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CharacterGrade CharacterGrade { get; set; } = default!;
 
         /// <summary>
         /// 스냅샷 시점 성장 단계.
@@ -52,13 +52,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 선택된 무장의 특성.
         /// </summary>
         [JsonProperty("traits", NullValueHandling = NullValueHandling.Include)]
-        public List<CharacterTraitStateDto> Traits { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CharacterTraitStateDto> Traits { get; set; } = default!;
 
         /// <summary>
         /// 서버가 계산한 최종 전투 스탯.
         /// </summary>
         [JsonProperty("combat_stats", NullValueHandling = NullValueHandling.Include)]
-        public CharacterCombatStatsDto CombatStats { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterCombatStatsDto CombatStats { get; set; } = default!;
 
         /// <summary>
         /// 서버가 계산한 전투력.

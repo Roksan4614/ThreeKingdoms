@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 상품 등급 진열 추첨에 사용한다 (등급별 확률은 s_shop_daily_grade_rate 참조) 보따리·랜덤 상자는 이 등급으로 지급 수량이 정해진다
         /// </summary>
         [JsonProperty("grade", NullValueHandling = NullValueHandling.Include)]
-        public ItemGrade Grade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemGrade Grade { get; set; } = default!;
         /// <summary>
         /// 지급 수량
         /// </summary>
@@ -36,7 +36,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 결제 재화 타입
         /// </summary>
         [JsonProperty("pay_type", NullValueHandling = NullValueHandling.Include)]
-        public PayType PayType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.PayType PayType { get; set; } = default!;
         /// <summary>
         /// 가격
         /// </summary>
@@ -46,7 +46,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 한도 초기화 주기 (daily=일일, weekly=주간, season=시즌, permanent=초기화 없음)
         /// </summary>
         [JsonProperty("limit_reset_type", NullValueHandling = NullValueHandling.Include)]
-        public LimitResetType LimitResetType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.LimitResetType LimitResetType { get; set; } = default!;
         /// <summary>
         /// 구매 한도 (-1=무한)
         /// </summary>

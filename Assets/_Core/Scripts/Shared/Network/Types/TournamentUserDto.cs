@@ -100,19 +100,19 @@ namespace ThreeKingdoms.Shared.Types
         /// 현재 공격 선택 편성.
         /// </summary>
         [JsonProperty("attack_formation", NullValueHandling = NullValueHandling.Include)]
-        public TournamentFormationInput? AttackFormation { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.TournamentFormationInput? AttackFormation { get; set; } = default!;
 
         /// <summary>
         /// 마지막 저장 시점 방어 입력.
         /// </summary>
         [JsonProperty("defense_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public TournamentCombatSnapshot? DefenseSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.TournamentCombatSnapshot? DefenseSnapshot { get; set; } = default!;
 
         /// <summary>
         /// 실제 사용자0~4명.
         /// </summary>
         [JsonProperty("candidates", NullValueHandling = NullValueHandling.Include)]
-        public List<TournamentCandidateDto> Candidates { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.TournamentCandidateDto> Candidates { get; set; } = default!;
 
         /// <summary>
         /// 아직 정산되지 않은 본인 전투 ID.

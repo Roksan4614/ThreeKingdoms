@@ -55,13 +55,13 @@ namespace ThreeKingdoms.Shared.Types
         /// stat_type_1 뒤 stat_type_2 순서이며 None은 제외한다.
         /// </summary>
         [JsonProperty("requirements", NullValueHandling = NullValueHandling.Include)]
-        public List<CastleRequirementDto> Requirements { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CastleRequirementDto> Requirements { get; set; } = default!;
 
         /// <summary>
         /// 시장·농지만 생산 상태가 있고 다른 건물은 null이다.
         /// </summary>
         [JsonProperty("production", NullValueHandling = NullValueHandling.Include)]
-        public CastleProductionDto? Production { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleProductionDto? Production { get; set; } = default!;
 
     }
 }

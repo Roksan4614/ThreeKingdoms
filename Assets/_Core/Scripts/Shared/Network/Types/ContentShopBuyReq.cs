@@ -16,7 +16,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 구매할 상점 타입. Daily(1)·Raid(2)·Tournament(3).
         /// </summary>
         [JsonProperty("shop_type", NullValueHandling = NullValueHandling.Include)]
-        public ContentShopType ShopType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ContentShopType ShopType { get; set; } = default!;
 
         /// <summary>
         /// 같은 shop_type의 content-shop/lobby에서 받은 상품 ID.

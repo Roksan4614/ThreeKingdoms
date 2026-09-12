@@ -25,16 +25,16 @@ namespace ThreeKingdoms.Shared.Types
         public long OpenedQuantity { get; set; } = default!;
 
         [JsonProperty("rewards", NullValueHandling = NullValueHandling.Include)]
-        public List<OpenItemContainerRewardDto> Rewards { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.OpenItemContainerRewardDto> Rewards { get; set; } = default!;
 
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         [JsonProperty("item_updates", NullValueHandling = NullValueHandling.Include)]
-        public List<ItemStackDto> ItemUpdates { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.ItemStackDto> ItemUpdates { get; set; } = default!;
 
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto? CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto? CharacterSnapshot { get; set; } = default!;
 
     }
 }

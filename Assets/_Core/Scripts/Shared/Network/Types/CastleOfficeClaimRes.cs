@@ -25,19 +25,19 @@ namespace ThreeKingdoms.Shared.Types
         public string RunId { get; set; } = default!;
 
         [JsonProperty("rewards", NullValueHandling = NullValueHandling.Include)]
-        public List<CastleOfficeRewardDto> Rewards { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CastleOfficeRewardDto> Rewards { get; set; } = default!;
 
         [JsonProperty("office", NullValueHandling = NullValueHandling.Include)]
-        public CastleOfficeLobbyDto Office { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleOfficeLobbyDto Office { get; set; } = default!;
 
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         [JsonProperty("item_updates", NullValueHandling = NullValueHandling.Include)]
-        public List<ItemStackDto> ItemUpdates { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.ItemStackDto> ItemUpdates { get; set; } = default!;
 
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto? CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto? CharacterSnapshot { get; set; } = default!;
 
     }
 }

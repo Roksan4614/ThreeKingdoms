@@ -43,7 +43,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 결제에 사용하는 기획 재화 종류.
         /// </summary>
         [JsonProperty("pay_type", NullValueHandling = NullValueHandling.Include)]
-        public PayType PayType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.PayType PayType { get; set; } = default!;
 
         /// <summary>
         /// 행상 할인까지 확정한 1개당 결제 가격.

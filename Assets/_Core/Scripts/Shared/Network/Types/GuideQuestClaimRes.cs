@@ -46,25 +46,25 @@ namespace ThreeKingdoms.Shared.Types
         /// 수령 뒤 새로 발행된 다음 회차.
         /// </summary>
         [JsonProperty("guide_quest", NullValueHandling = NullValueHandling.Include)]
-        public GuideQuestLobbyDto GuideQuest { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.GuideQuestLobbyDto GuideQuest { get; set; } = default!;
 
         /// <summary>
         /// 지급 뒤 전체 재화 절대 잔액.
         /// </summary>
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         /// <summary>
         /// 일반 item 보상이면 영향받은 절대 stack. 재화만 지급하면 빈 배열.
         /// </summary>
         [JsonProperty("item_updates", NullValueHandling = NullValueHandling.Include)]
-        public List<ItemStackDto> ItemUpdates { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.ItemStackDto> ItemUpdates { get; set; } = default!;
 
         /// <summary>
         /// 무장·보물 획득이 발생한 item 보상이면 최신 상태.
         /// </summary>
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto? CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto? CharacterSnapshot { get; set; } = default!;
 
     }
 }

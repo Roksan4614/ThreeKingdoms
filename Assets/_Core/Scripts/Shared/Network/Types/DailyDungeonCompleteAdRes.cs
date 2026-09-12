@@ -22,7 +22,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 통합 잔량+1과 광고 사용량+1을 반영한 상태.
         /// </summary>
         [JsonProperty("daily_dungeon", NullValueHandling = NullValueHandling.Include)]
-        public DailyDungeonLobbyDto DailyDungeon { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.DailyDungeonLobbyDto DailyDungeon { get; set; } = default!;
 
     }
 }

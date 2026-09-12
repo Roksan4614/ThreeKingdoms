@@ -28,7 +28,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 순위 순 참가자.
         /// </summary>
         [JsonProperty("entries", NullValueHandling = NullValueHandling.Include)]
-        public List<TournamentRankingRes_Entries> Entries { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.TournamentRankingRes_Entries> Entries { get; set; } = default!;
 
         /// <summary>
         /// 해당 시즌 미참여면 null.

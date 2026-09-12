@@ -21,7 +21,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 등급
         /// </summary>
         [JsonProperty("character_grade", NullValueHandling = NullValueHandling.Include)]
-        public CharacterGrade CharacterGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CharacterGrade CharacterGrade { get; set; } = default!;
         /// <summary>
         /// 해당 등급 도달 시 별도로 소비하는 수량 일반 등급은 최초 무장 획득 비용 여러 등급 승급은 현재 다음 등급부터 목표까지 합산 전용 → 같은 클래스 → 공용 영혼석 순서로 자동 사용
         /// </summary>

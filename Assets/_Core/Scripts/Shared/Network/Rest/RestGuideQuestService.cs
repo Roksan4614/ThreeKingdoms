@@ -18,17 +18,17 @@ namespace ThreeKingdoms.Shared.Rest
         /// 가이드 퀘스트 로비 정보
         /// 현재 발행 회차를 조회하며 미초기화 계정은 첫 학습 또는 반복 퀘스트를 한 번 발행한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<GuideQuestLobbyDto>> LobbyAsync(GuideQuestLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.GuideQuestLobbyDto>> LobbyAsync(global::ThreeKingdoms.Shared.Types.GuideQuestLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<GuideQuestLobbyReq, GuideQuestLobbyDto>(new Rest.RestEndpoint("/client/private/guide-quest/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.GuideQuestLobbyReq, global::ThreeKingdoms.Shared.Types.GuideQuestLobbyDto>(new Rest.RestEndpoint("/client/private/guide-quest/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 가이드 퀘스트 보상 수령
         /// 현재 회차 완료를 인정하고 보상 지급·완료 이력·다음 회차 발행을 한 transaction에서 확정한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<GuideQuestClaimRes>> ClaimAsync(GuideQuestClaimReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.GuideQuestClaimRes>> ClaimAsync(global::ThreeKingdoms.Shared.Types.GuideQuestClaimReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<GuideQuestClaimReq, GuideQuestClaimRes>(new Rest.RestEndpoint("/client/private/guide-quest/claim", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.GuideQuestClaimReq, global::ThreeKingdoms.Shared.Types.GuideQuestClaimRes>(new Rest.RestEndpoint("/client/private/guide-quest/claim", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
     }
 }

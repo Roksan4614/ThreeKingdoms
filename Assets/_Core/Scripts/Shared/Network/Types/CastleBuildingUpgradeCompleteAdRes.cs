@@ -22,13 +22,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 광고 단축으로 완료될 수 있는 최신 영지 상태.
         /// </summary>
         [JsonProperty("castle", NullValueHandling = NullValueHandling.Include)]
-        public CastleSnapshotDto Castle { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleSnapshotDto Castle { get; set; } = default!;
 
         /// <summary>
         /// 광고 횟수와 단축 결과를 반영한 증축 상태.
         /// </summary>
         [JsonProperty("building_upgrade", NullValueHandling = NullValueHandling.Include)]
-        public CastleBuildingUpgradeLobbyDto BuildingUpgrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeLobbyDto BuildingUpgrade { get; set; } = default!;
 
     }
 }

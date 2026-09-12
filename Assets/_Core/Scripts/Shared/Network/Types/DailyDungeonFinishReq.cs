@@ -25,7 +25,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 이번에 처치 완료한 등급. 일반도 미처치면 null, 진행 중 등급이 아니다.
         /// </summary>
         [JsonProperty("highest_killed_grade", NullValueHandling = NullValueHandling.Include)]
-        public DungeonBossGrade? HighestKilledGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.DungeonBossGrade? HighestKilledGrade { get; set; } = default!;
 
         /// <summary>
         /// 진행 중 보스의 남은 HP를 양수 INT64 10진 문자열로 전달. 심연 처치 완료면 null.

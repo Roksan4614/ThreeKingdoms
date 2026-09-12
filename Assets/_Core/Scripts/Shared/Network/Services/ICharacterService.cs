@@ -17,54 +17,54 @@ namespace ThreeKingdoms.Shared.Services
         /// 현재 조건으로 새 직책을 해금하고 전체 직책의 장착 상태·조건 진행도·장착 가능한 무장을 조회한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/character/position/sync")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<CharacterPositionSyncRes>> PositionSyncAsync(EmptyRes request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CharacterPositionSyncRes>> PositionSyncAsync(global::ThreeKingdoms.Shared.Types.EmptyRes request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 직책 장착·해제
         /// 직책을 보유 무장에게 옮겨 장착하거나 해제하며 변경된 무장 능력치와 전투력을 반환한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/character/set-position")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<CharacterSetPositionRes>> SetPositionAsync(CharacterSetPositionReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CharacterSetPositionRes>> SetPositionAsync(global::ThreeKingdoms.Shared.Types.CharacterSetPositionReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 무장 로비 정보
         /// 현재 사용자의 전체 보유 무장과 성장·유물·전투 상태를 일관된 로비 정보로 조회한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/character/lobby")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<CharacterSnapshotDto>> LobbyAsync(EmptyRes request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto>> LobbyAsync(global::ThreeKingdoms.Shared.Types.EmptyRes request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 무장 성장
         /// 무장 성장 1회를 처리하며 성장 판정이 fail이어도 군량을 차감하고, 같은 x-request-id 재시도에는 같은 결과를 반환한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/character/grow")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<CharacterGrowRes>> GrowAsync(CharacterGrowReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CharacterGrowRes>> GrowAsync(global::ThreeKingdoms.Shared.Types.CharacterGrowReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 유물 강화
         /// 무장의 전용 유물을 현재보다 높은 목표 단계까지 강화하고 중간 단계 누적 시간석을 차감한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/character/relic/enhance")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<RelicEnhanceRes>> RelicEnhanceAsync(RelicEnhanceReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.RelicEnhanceRes>> RelicEnhanceAsync(global::ThreeKingdoms.Shared.Types.RelicEnhanceReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 보물 착용 설정
         /// 보유 보물 중 장착할 전체 목록과 순서를 지정하며 빈 목록은 전체 해제한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/character/treasure/set-equipped")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TreasureSetEquippedRes>> TreasureSetEquippedAsync(TreasureSetEquippedReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TreasureSetEquippedRes>> TreasureSetEquippedAsync(global::ThreeKingdoms.Shared.Types.TreasureSetEquippedReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 특성 재추첨
         /// 잠기지 않은 열린 특성을 모두 재추첨하고 잠금 개수에 따른 군량 비용을 차감한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/character/reroll-traits")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<CharacterRerollTraitsRes>> RerollTraitsAsync(CharacterRerollTraitsReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CharacterRerollTraitsRes>> RerollTraitsAsync(global::ThreeKingdoms.Shared.Types.CharacterRerollTraitsReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 특성 잠금 설정
         /// 열린 특성 슬롯의 잠금 여부를 지정하며 같은 상태는 변경하지 않는다.
         /// </summary>
         [Attributes.PostMethod("/client/private/character/set-trait-lock")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<CharacterSetTraitLockRes>> SetTraitLockAsync(CharacterSetTraitLockReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CharacterSetTraitLockRes>> SetTraitLockAsync(global::ThreeKingdoms.Shared.Types.CharacterSetTraitLockReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 무장 승급
         /// 전용·동일 클래스·공용 영혼석을 순서대로 소비하고 목표 등급까지 수동 승급한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/character/ascend")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<CharacterAscendRes>> AscendAsync(CharacterAscendReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.CharacterAscendRes>> AscendAsync(global::ThreeKingdoms.Shared.Types.CharacterAscendReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
     }
 }

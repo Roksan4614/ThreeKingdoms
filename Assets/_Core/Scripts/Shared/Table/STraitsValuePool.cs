@@ -31,7 +31,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 등급
         /// </summary>
         [JsonProperty("traits_value_grade", NullValueHandling = NullValueHandling.Include)]
-        public TraitsValueGrade TraitsValueGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.TraitsValueGrade TraitsValueGrade { get; set; } = default!;
         /// <summary>
         /// 수치별 등장 확률 같은 고유 key의 rate 합이 1 등급별 합계 normal : 50% elite : 25% general : 15% hero : 7% legend : 3%
         /// </summary>

@@ -20,19 +20,19 @@ namespace ThreeKingdoms.Shared.Types
         /// SelectableRegionType: RegionType.Wei | RegionType.Shu | RegionType.Wu
         /// </summary>
         [JsonProperty("region", NullValueHandling = NullValueHandling.Include)]
-        public RegionType Region { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.RegionType Region { get; set; } = default!;
 
         /// <summary>
         /// 선택 결과가 반영된 현재 사용자 정보.
         /// </summary>
         [JsonProperty("user_info", NullValueHandling = NullValueHandling.Include)]
-        public UserInfoDto UserInfo { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.UserInfoDto UserInfo { get; set; } = default!;
 
         /// <summary>
         /// 최초 선택의 대표 무장 지급까지 반영된 전체 무장 상태.
         /// </summary>
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
 
     }
 }

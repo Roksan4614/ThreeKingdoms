@@ -70,7 +70,7 @@ namespace ThreeKingdoms.Shared.Types
         public long AdLimit { get; set; } = default!;
 
         [JsonProperty("upgrades", NullValueHandling = NullValueHandling.Include)]
-        public List<CastleBuildingUpgradeDto> Upgrades { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeDto> Upgrades { get; set; } = default!;
 
     }
 }

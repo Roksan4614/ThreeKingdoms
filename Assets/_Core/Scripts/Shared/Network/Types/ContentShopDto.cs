@@ -16,7 +16,7 @@ namespace ThreeKingdoms.Shared.Types
         /// Daily(1)·Raid(2)·Tournament(3) 상점 타입.
         /// </summary>
         [JsonProperty("shop_type", NullValueHandling = NullValueHandling.Include)]
-        public ContentShopType ShopType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ContentShopType ShopType { get; set; } = default!;
 
         /// <summary>
         /// 상점 탭 표시 순서.
@@ -34,7 +34,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 일일은 확정 진열, 포인트 상점은 활성 고정 카탈로그.
         /// </summary>
         [JsonProperty("products", NullValueHandling = NullValueHandling.Include)]
-        public List<ContentShopProductDto> Products { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.ContentShopProductDto> Products { get; set; } = default!;
 
     }
 }

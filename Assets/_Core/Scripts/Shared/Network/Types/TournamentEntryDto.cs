@@ -88,13 +88,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 이번 전투에 고정된 공격 입력.
         /// </summary>
         [JsonProperty("attack", NullValueHandling = NullValueHandling.Include)]
-        public TournamentCombatSnapshot Attack { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.TournamentCombatSnapshot Attack { get; set; } = default!;
 
         /// <summary>
         /// 이번 전투에 고정된 최신 저장 방어 입력.
         /// </summary>
         [JsonProperty("defense", NullValueHandling = NullValueHandling.Include)]
-        public TournamentCombatSnapshot Defense { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.TournamentCombatSnapshot Defense { get; set; } = default!;
 
     }
 }

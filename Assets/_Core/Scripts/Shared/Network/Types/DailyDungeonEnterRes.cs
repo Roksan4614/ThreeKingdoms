@@ -22,13 +22,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 횟수 차감 없이 새 입장만 반영된 상태.
         /// </summary>
         [JsonProperty("daily_dungeon", NullValueHandling = NullValueHandling.Include)]
-        public DailyDungeonLobbyDto DailyDungeon { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.DailyDungeonLobbyDto DailyDungeon { get; set; } = default!;
 
         /// <summary>
         /// 새 전투 시작 정보.
         /// </summary>
         [JsonProperty("entry", NullValueHandling = NullValueHandling.Include)]
-        public DailyDungeonEntryDto Entry { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.DailyDungeonEntryDto Entry { get; set; } = default!;
 
     }
 }

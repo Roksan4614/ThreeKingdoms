@@ -22,13 +22,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 실제 구매한 상점 타입.
         /// </summary>
         [JsonProperty("shop_type", NullValueHandling = NullValueHandling.Include)]
-        public ContentShopType ShopType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ContentShopType ShopType { get; set; } = default!;
 
         /// <summary>
         /// 구매 직후 갱신된 한도 상태.
         /// </summary>
         [JsonProperty("product", NullValueHandling = NullValueHandling.Include)]
-        public ContentShopProductDto Product { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.ContentShopProductDto Product { get; set; } = default!;
 
         /// <summary>
         /// 이번에 구매한 수량.
@@ -49,13 +49,13 @@ namespace ThreeKingdoms.Shared.Types
         public long TotalRewardCount { get; set; } = default!;
 
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         [JsonProperty("item_updates", NullValueHandling = NullValueHandling.Include)]
-        public List<ItemStackDto> ItemUpdates { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.ItemStackDto> ItemUpdates { get; set; } = default!;
 
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto? CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto? CharacterSnapshot { get; set; } = default!;
 
     }
 }

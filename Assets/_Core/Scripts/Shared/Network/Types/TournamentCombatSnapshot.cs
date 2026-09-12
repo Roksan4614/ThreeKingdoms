@@ -34,13 +34,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 위치와 스탯이 고정된 무장 목록.
         /// </summary>
         [JsonProperty("heroes", NullValueHandling = NullValueHandling.Include)]
-        public List<TournamentCombatHeroDto> Heroes { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.TournamentCombatHeroDto> Heroes { get; set; } = default!;
 
         /// <summary>
         /// 선택 순서의 보물 효과.
         /// </summary>
         [JsonProperty("treasures", NullValueHandling = NullValueHandling.Include)]
-        public List<TournamentCombatTreasureDto> Treasures { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.TournamentCombatTreasureDto> Treasures { get; set; } = default!;
 
         /// <summary>
         /// 편성 전체 전투력.

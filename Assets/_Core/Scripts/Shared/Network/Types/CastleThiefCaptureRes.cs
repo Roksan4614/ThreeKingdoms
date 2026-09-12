@@ -31,19 +31,19 @@ namespace ThreeKingdoms.Shared.Types
         /// tap 결과까지 반영한 전체 영지 상태.
         /// </summary>
         [JsonProperty("castle", NullValueHandling = NullValueHandling.Include)]
-        public CastleSnapshotDto Castle { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleSnapshotDto Castle { get; set; } = default!;
 
         /// <summary>
         /// 자연 회복과 반환 재화까지 반영한 절대 잔액.
         /// </summary>
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         /// <summary>
         /// rice, free_gold 순서의 실제 양수 지급분.
         /// </summary>
         [JsonProperty("rewards", NullValueHandling = NullValueHandling.Include)]
-        public List<CastleThiefRewardDto> Rewards { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CastleThiefRewardDto> Rewards { get; set; } = default!;
 
     }
 }

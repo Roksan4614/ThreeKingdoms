@@ -20,7 +20,7 @@ namespace ThreeKingdoms.Shared.Types
         /// RequirementStatType: StatType.Leadership | StatType.Strength | StatType.Intellect | StatType.Politics | StatType.Charisma
         /// </summary>
         [JsonProperty("stat_type", NullValueHandling = NullValueHandling.Include)]
-        public StatType StatType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.StatType StatType { get; set; } = default!;
 
         /// <summary>
         /// 배치된 무장의 현재 합산 능력치. scale 6 고정 소수 문자열.

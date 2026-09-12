@@ -16,7 +16,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 농지 군량 또는 시장 무료 금화.
         /// </summary>
         [JsonProperty("currency", NullValueHandling = NullValueHandling.Include)]
-        public UserAssetType Currency { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.UserAssetType Currency { get; set; } = default!;
 
         /// <summary>
         /// 경과 비율을 반영해 최종 floor한 지급 수량.

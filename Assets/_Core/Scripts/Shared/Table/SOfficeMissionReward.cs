@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 파견 등급
         /// </summary>
         [JsonProperty("mission_grade", NullValueHandling = NullValueHandling.Include)]
-        public MissionGrade MissionGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.MissionGrade MissionGrade { get; set; } = default!;
         /// <summary>
         /// 보상 해금 기준 달성률 (0=확정 보상, 해당 비율 이상이면 후보 해금)
         /// </summary>

@@ -36,6 +36,6 @@ namespace ThreeKingdoms.Shared.Table
         /// 클라이언트 API에 사용하는 콘텐츠 상점 타입
         /// </summary>
         [JsonProperty("shop_type", NullValueHandling = NullValueHandling.Include)]
-        public ContentShopType ShopType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ContentShopType ShopType { get; set; } = default!;
     }
 }

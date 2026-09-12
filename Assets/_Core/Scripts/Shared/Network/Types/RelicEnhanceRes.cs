@@ -31,13 +31,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 대상 무장과 클래스 공유 효과가 적용된 같은 클래스 무장까지 반영한 전체 무장 상태.
         /// </summary>
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
 
         /// <summary>
         /// 현재 단계부터 목표 단계까지의 누적 비용이 차감된 재화 절대 상태.
         /// </summary>
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
     }
 }

@@ -25,7 +25,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 학습 퀘스트 또는 반복 퀘스트.
         /// </summary>
         [JsonProperty("kind", NullValueHandling = NullValueHandling.Include)]
-        public GuideQuestKind Kind { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GuideQuestKind Kind { get; set; } = default!;
 
         /// <summary>
         /// kind에 해당하는 기획 테이블의 numeric idx.

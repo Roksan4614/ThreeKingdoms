@@ -25,7 +25,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 처치 완료 등급. 해당 보스의 일반도 미처치면 null.
         /// </summary>
         [JsonProperty("highest_killed_grade", NullValueHandling = NullValueHandling.Include)]
-        public DungeonBossGrade? HighestKilledGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.DungeonBossGrade? HighestKilledGrade { get; set; } = default!;
 
     }
 }

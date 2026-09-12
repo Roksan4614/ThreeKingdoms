@@ -34,7 +34,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 시즌 준비 중이면 새 동작을 진행할 수 없다.
         /// </summary>
         [JsonProperty("season_status", NullValueHandling = NullValueHandling.Include)]
-        public TournamentAvailabilityStatus SeasonStatus { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.TournamentAvailabilityStatus SeasonStatus { get; set; } = default!;
 
         /// <summary>
         /// 서버 UTC 시각.
@@ -64,7 +64,7 @@ namespace ThreeKingdoms.Shared.Types
         /// preparing 상태에는 null.
         /// </summary>
         [JsonProperty("user", NullValueHandling = NullValueHandling.Include)]
-        public TournamentUserDto? User { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.TournamentUserDto? User { get; set; } = default!;
 
     }
 }

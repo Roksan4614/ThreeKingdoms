@@ -18,17 +18,17 @@ namespace ThreeKingdoms.Shared.Rest
         /// 재화 조회
         /// 자동 충전 정산 없이 현재 asset의 revision·rice·free_gold·paid_gold·time_stone 스냅샷을 조회한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<AssetDto>> InfoAsync(EmptyRes request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.AssetDto>> InfoAsync(global::ThreeKingdoms.Shared.Types.EmptyRes request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<EmptyRes, AssetDto>(new Rest.RestEndpoint("/client/private/currency/info", true, new Rest.RestHeaderRequirement[] {  }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.EmptyRes, global::ThreeKingdoms.Shared.Types.AssetDto>(new Rest.RestEndpoint("/client/private/currency/info", true, new Rest.RestHeaderRequirement[] {  }), request, options, cancellationToken);
         }
         /// <summary>
         /// 군량 충전 타이머
         /// 경과 시간을 서버 시각으로 정산해 군량을 갱신하고 다음 충전까지 남은 시간·상한·주기를 반환한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<RiceTimerRes>> RiceTimerAsync(EmptyRes request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.RiceTimerRes>> RiceTimerAsync(global::ThreeKingdoms.Shared.Types.EmptyRes request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<EmptyRes, RiceTimerRes>(new Rest.RestEndpoint("/client/private/currency/rice/timer", true, new Rest.RestHeaderRequirement[] {  }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.EmptyRes, global::ThreeKingdoms.Shared.Types.RiceTimerRes>(new Rest.RestEndpoint("/client/private/currency/rice/timer", true, new Rest.RestHeaderRequirement[] {  }), request, options, cancellationToken);
         }
     }
 }

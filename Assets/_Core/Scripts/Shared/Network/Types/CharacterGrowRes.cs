@@ -31,19 +31,19 @@ namespace ThreeKingdoms.Shared.Types
         /// 성장 성공·실패와 성장 포인트가 반영된 전체 무장 상태.
         /// </summary>
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
 
         /// <summary>
         /// 성공 여부와 관계없이 비용이 반영된 재화 절대 상태.
         /// </summary>
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         /// <summary>
         /// 이번 성장 시도의 최종 판정.
         /// </summary>
         [JsonProperty("growth_result", NullValueHandling = NullValueHandling.Include)]
-        public CharacterGrowthResult GrowthResult { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CharacterGrowthResult GrowthResult { get; set; } = default!;
 
         /// <summary>
         /// 이번 성장으로 영지 cache가 무효화됐으면 새 revision, 아니면 null.

@@ -31,13 +31,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 특성·CP를 반영한 전체 무장 상태.
         /// </summary>
         [JsonProperty("character_snapshot", NullValueHandling = NullValueHandling.Include)]
-        public CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CharacterSnapshotDto CharacterSnapshot { get; set; } = default!;
 
         /// <summary>
         /// 비용 차감 후 재화 절대 상태.
         /// </summary>
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         /// <summary>
         /// 영지 생산 능력에 영향이 있으면 갱신된 영지 버전.

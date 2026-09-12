@@ -262,6 +262,30 @@ namespace ThreeKingdoms.Shared.Constants
         /// </summary>
         public const string PROVIDER_UNAVAILABLE = "PROVIDER_UNAVAILABLE";
         /// <summary>
+        /// 신규 참가 시간이 종료되었다.
+        /// </summary>
+        public const string RAID_JOIN_CLOSED = "RAID_JOIN_CLOSED";
+        /// <summary>
+        /// 이 회차에 참가하지 않았다.
+        /// </summary>
+        public const string RAID_NOT_JOINED = "RAID_NOT_JOINED";
+        /// <summary>
+        /// 레이드 회차가 아직 준비되지 않았다.
+        /// </summary>
+        public const string RAID_NOT_READY = "RAID_NOT_READY";
+        /// <summary>
+        /// 레이드 단계가 변경되어 상태 갱신이 필요하다.
+        /// </summary>
+        public const string RAID_PHASE_CHANGED = "RAID_PHASE_CHANGED";
+        /// <summary>
+        /// 회차 보상이 아직 정산되지 않았다.
+        /// </summary>
+        public const string RAID_REWARD_NOT_READY = "RAID_REWARD_NOT_READY";
+        /// <summary>
+        /// 요청한 레이드 회차가 없다.
+        /// </summary>
+        public const string RAID_ROUND_NOT_FOUND = "RAID_ROUND_NOT_FOUND";
+        /// <summary>
         /// 로그인 요청 횟수가 IP별 제한을 초과했다.
         /// </summary>
         public const string RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED";

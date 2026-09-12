@@ -22,13 +22,13 @@ namespace ThreeKingdoms.Shared.Types
         /// 처리 후 본인 상태.
         /// </summary>
         [JsonProperty("tournament", NullValueHandling = NullValueHandling.Include)]
-        public TournamentSnapshotDto Tournament { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.TournamentSnapshotDto Tournament { get; set; } = default!;
 
         /// <summary>
         /// 재화를 쓰지 않는 action도 현재 절대 상태를 그대로 반환한다.
         /// </summary>
         [JsonProperty("asset", NullValueHandling = NullValueHandling.Include)]
-        public AssetDto Asset { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
     }
 }

@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Types
         /// AscendTargetGrade: CharacterGrade.Elite | CharacterGrade.General | CharacterGrade.Hero | CharacterGrade.Legend
         /// </summary>
         [JsonProperty("target_grade", NullValueHandling = NullValueHandling.Include)]
-        public CharacterGrade TargetGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.CharacterGrade TargetGrade { get; set; } = default!;
 
     }
 }

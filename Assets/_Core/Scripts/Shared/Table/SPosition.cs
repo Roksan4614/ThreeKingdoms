@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 직책 분류 (table_enum.position_category 참조)
         /// </summary>
         [JsonProperty("position_category", NullValueHandling = NullValueHandling.Include)]
-        public PositionCategory PositionCategory { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.PositionCategory PositionCategory { get; set; } = default!;
         /// <summary>
         /// 직책 장착 시 적용할 전투 능력치 JSON
         /// </summary>
@@ -36,7 +36,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 해금 조건 종류 (table_enum.position_unlock_condition_type 참조) 조건 판정 로직은 서버가 소유하며 지원하지 않는 종류는 실패 처리
         /// </summary>
         [JsonProperty("unlock_condition_type", NullValueHandling = NullValueHandling.Include)]
-        public PositionUnlockConditionType UnlockConditionType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.PositionUnlockConditionType UnlockConditionType { get; set; } = default!;
         /// <summary>
         /// 해금 판정 기준값 character_grade_owned 계열은 조건 등급을 만족해야 하는 무장 인원 수, level/count 계열은 최소 레벨·누적 횟수 세부 등급·대상·조합은 s_position.key별 서버 규칙이 소유하며 none은 0
         /// </summary>
@@ -46,7 +46,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 장착 조건 종류 (table_enum.position_equip_condition_type 참조)
         /// </summary>
         [JsonProperty("equip_condition_type", NullValueHandling = NullValueHandling.Include)]
-        public PositionEquipConditionType EquipConditionType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.PositionEquipConditionType EquipConditionType { get; set; } = default!;
         /// <summary>
         /// 장착 최소 기준값 character_grade는 table_enum.character_grade 값, character_growth_stage는 s_growth.stage
         /// </summary>

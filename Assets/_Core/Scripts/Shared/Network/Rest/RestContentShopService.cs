@@ -18,17 +18,17 @@ namespace ThreeKingdoms.Shared.Rest
         /// 콘텐츠 상점 로비 정보
         /// 일일 진열과 세 상점의 활성 상품·가격·구매한도·행상 적용 상태를 반환한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<ContentShopLobbyDto>> LobbyAsync(ContentShopLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.ContentShopLobbyDto>> LobbyAsync(global::ThreeKingdoms.Shared.Types.ContentShopLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<ContentShopLobbyReq, ContentShopLobbyDto>(new Rest.RestEndpoint("/client/private/content-shop/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.ContentShopLobbyReq, global::ThreeKingdoms.Shared.Types.ContentShopLobbyDto>(new Rest.RestEndpoint("/client/private/content-shop/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 콘텐츠 상점 상품 구매
         /// 서버가 현재 진열·한도·가격을 검증하고 결제·지급·원장·구매 횟수를 한 transaction에서 확정한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<ContentShopBuyRes>> BuyAsync(ContentShopBuyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.ContentShopBuyRes>> BuyAsync(global::ThreeKingdoms.Shared.Types.ContentShopBuyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<ContentShopBuyReq, ContentShopBuyRes>(new Rest.RestEndpoint("/client/private/content-shop/buy", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.ContentShopBuyReq, global::ThreeKingdoms.Shared.Types.ContentShopBuyRes>(new Rest.RestEndpoint("/client/private/content-shop/buy", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
     }
 }

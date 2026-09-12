@@ -46,6 +46,6 @@ namespace ThreeKingdoms.Shared.Table
         /// 클라이언트 RegionType 숫자 값 (초기 선택은 wei/shu/wu만 허용)
         /// </summary>
         [JsonProperty("region_type", NullValueHandling = NullValueHandling.Include)]
-        public RegionType RegionType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.RegionType RegionType { get; set; } = default!;
     }
 }

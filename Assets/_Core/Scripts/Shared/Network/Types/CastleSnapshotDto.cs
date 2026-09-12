@@ -37,13 +37,13 @@ namespace ThreeKingdoms.Shared.Types
         /// building_id 오름차순의 6개 건물.
         /// </summary>
         [JsonProperty("buildings", NullValueHandling = NullValueHandling.Include)]
-        public List<CastleBuildingDto> Buildings { get; set; } = default!;
+        public List<global::ThreeKingdoms.Shared.Types.CastleBuildingDto> Buildings { get; set; } = default!;
 
         /// <summary>
         /// 도둑 출현·디버프와 다음 전이 시각.
         /// </summary>
         [JsonProperty("thief", NullValueHandling = NullValueHandling.Include)]
-        public CastleThiefSnapshotDto Thief { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleThiefSnapshotDto Thief { get; set; } = default!;
 
     }
 }

@@ -18,41 +18,41 @@ namespace ThreeKingdoms.Shared.Rest
         /// 요일던전 로비 정보
         /// 오늘 도전 가능한 보스, 남은 횟수, 광고 사용량과 보스별 최고 처치 기록을 조회한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<DailyDungeonLobbyDto>> LobbyAsync(DailyDungeonLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.DailyDungeonLobbyDto>> LobbyAsync(global::ThreeKingdoms.Shared.Types.DailyDungeonLobbyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<DailyDungeonLobbyReq, DailyDungeonLobbyDto>(new Rest.RestEndpoint("/client/private/daily-dungeon/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.DailyDungeonLobbyReq, global::ThreeKingdoms.Shared.Types.DailyDungeonLobbyDto>(new Rest.RestEndpoint("/client/private/daily-dungeon/lobby", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 요일던전 입장
         /// 횟수 차감 없이 선택한 보스로 새 도전을 시작하며, 보상 수령 시 1회를 차감한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<DailyDungeonEnterRes>> EnterAsync(DailyDungeonBossReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.DailyDungeonEnterRes>> EnterAsync(global::ThreeKingdoms.Shared.Types.DailyDungeonBossReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<DailyDungeonBossReq, DailyDungeonEnterRes>(new Rest.RestEndpoint("/client/private/daily-dungeon/enter", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.DailyDungeonBossReq, global::ThreeKingdoms.Shared.Types.DailyDungeonEnterRes>(new Rest.RestEndpoint("/client/private/daily-dungeon/enter", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 요일던전 광고 추가 횟수
         /// 광고 완료 시 일일 광고 상한 안에서 통합 입장 가능 횟수를1회 추가한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<DailyDungeonCompleteAdRes>> CompleteAdAsync(DailyDungeonCompleteAdReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.DailyDungeonCompleteAdRes>> CompleteAdAsync(global::ThreeKingdoms.Shared.Types.DailyDungeonCompleteAdReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<DailyDungeonCompleteAdReq, DailyDungeonCompleteAdRes>(new Rest.RestEndpoint("/client/private/daily-dungeon/complete-ad", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.DailyDungeonCompleteAdReq, global::ThreeKingdoms.Shared.Types.DailyDungeonCompleteAdRes>(new Rest.RestEndpoint("/client/private/daily-dungeon/complete-ad", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 요일던전 결과 정산
         /// 처치 완료 등급과 남은 HP로 보상을 지급하고 최고 기록과 입장 횟수1회 차감을 함께 확정한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<DailyDungeonRewardRes>> FinishAsync(DailyDungeonFinishReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.DailyDungeonRewardRes>> FinishAsync(global::ThreeKingdoms.Shared.Types.DailyDungeonFinishReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<DailyDungeonFinishReq, DailyDungeonRewardRes>(new Rest.RestEndpoint("/client/private/daily-dungeon/finish", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.DailyDungeonFinishReq, global::ThreeKingdoms.Shared.Types.DailyDungeonRewardRes>(new Rest.RestEndpoint("/client/private/daily-dungeon/finish", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
         /// <summary>
         /// 요일던전 토벌
         /// 공유 횟수1회를 소비해 해당 보스의 최고 처치 등급까지 누적 보상을 즉시 받는다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<DailyDungeonRewardRes>> SweepAsync(DailyDungeonBossReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.DailyDungeonRewardRes>> SweepAsync(global::ThreeKingdoms.Shared.Types.DailyDungeonBossReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<DailyDungeonBossReq, DailyDungeonRewardRes>(new Rest.RestEndpoint("/client/private/daily-dungeon/sweep", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.DailyDungeonBossReq, global::ThreeKingdoms.Shared.Types.DailyDungeonRewardRes>(new Rest.RestEndpoint("/client/private/daily-dungeon/sweep", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
     }
 }

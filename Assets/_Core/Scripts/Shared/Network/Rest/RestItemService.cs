@@ -18,9 +18,9 @@ namespace ThreeKingdoms.Shared.Rest
         /// 주머니·랜덤박스 개봉
         /// 보유 container를 차감하고 서버 추첨 결과·보상·원장·절대 잔액을 한 transaction에서 확정한다.
         /// </summary>
-        public Cysharp.Threading.Tasks.UniTask<CommonBody<OpenItemContainerRes>> OpenContainerAsync(OpenItemContainerReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
+        public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.OpenItemContainerRes>> OpenContainerAsync(global::ThreeKingdoms.Shared.Types.OpenItemContainerReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {
-            return _client.PostAsync<OpenItemContainerReq, OpenItemContainerRes>(new Rest.RestEndpoint("/client/private/item/open-container", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
+            return _client.PostAsync<global::ThreeKingdoms.Shared.Types.OpenItemContainerReq, global::ThreeKingdoms.Shared.Types.OpenItemContainerRes>(new Rest.RestEndpoint("/client/private/item/open-container", true, new Rest.RestHeaderRequirement[] { new Rest.RestHeaderRequirement("x-request-id", true), new Rest.RestHeaderRequirement("x-table-version", true) }), request, options, cancellationToken);
         }
     }
 }

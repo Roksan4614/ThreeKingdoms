@@ -17,6 +17,6 @@ namespace ThreeKingdoms.Shared.Services
         /// Firebase 익명·소셜 로그인 (ID token 검증 → 동일 Firebase UID의 게임 계정 조회/자동 가입)
         /// </summary>
         [Attributes.PostMethod("/client/public/login")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<LoginRes>> LoginAsync(LoginReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.LoginRes>> LoginAsync(global::ThreeKingdoms.Shared.Types.LoginReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
     }
 }

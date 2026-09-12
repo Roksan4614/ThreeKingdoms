@@ -22,7 +22,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 해제 시각까지 정산한 최신 영지 상태.
         /// </summary>
         [JsonProperty("castle", NullValueHandling = NullValueHandling.Include)]
-        public CastleSnapshotDto Castle { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleSnapshotDto Castle { get; set; } = default!;
 
     }
 }

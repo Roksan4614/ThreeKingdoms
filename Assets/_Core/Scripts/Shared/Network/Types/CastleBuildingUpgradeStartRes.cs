@@ -19,7 +19,7 @@ namespace ThreeKingdoms.Shared.Types
         public string EventId { get; set; } = default!;
 
         [JsonProperty("building_upgrade", NullValueHandling = NullValueHandling.Include)]
-        public CastleBuildingUpgradeLobbyDto BuildingUpgrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Types.CastleBuildingUpgradeLobbyDto BuildingUpgrade { get; set; } = default!;
 
     }
 }

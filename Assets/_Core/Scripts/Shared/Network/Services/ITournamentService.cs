@@ -17,60 +17,60 @@ namespace ThreeKingdoms.Shared.Services
         /// 현재 시즌·편성·횟수·실유저 후보를 조회하고 필요한 일일 상태만 갱신한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/snapshot")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentSnapshotDto>> SnapshotAsync(TournamentEmptyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentSnapshotDto>> SnapshotAsync(global::ThreeKingdoms.Shared.Types.TournamentEmptyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 토너먼트 공격 편성
         /// 무장1~4명의9칸 배치와 보물0~3개를 저장한다. 방어가 없으면 최초 한 번 복사한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/set-attack")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentMutationRes>> SetAttackAsync(TournamentFormationInput request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentMutationRes>> SetAttackAsync(global::ThreeKingdoms.Shared.Types.TournamentFormationInput request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 토너먼트 방어 편성
         /// 현재 무장 스탯과 선택 보물을 계산해 다른 플레이어가 공격할 방어 스냅샷을 고정한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/set-defense")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentMutationRes>> SetDefenseAsync(TournamentFormationInput request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentMutationRes>> SetDefenseAsync(global::ThreeKingdoms.Shared.Types.TournamentFormationInput request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 토너먼트 상대 갱신
         /// 무료 잔량을 우선 사용하고 소진 시 군량으로 실제 사용자 후보0~4명을 새로 구성한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/refresh")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentMutationRes>> RefreshAsync(TournamentRefreshReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentMutationRes>> RefreshAsync(global::ThreeKingdoms.Shared.Types.TournamentRefreshReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 토너먼트 광고 추가 도전
         /// 광고 완료를 일일 상한 안에서 처리해 도전 잔량을1 늘린다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/complete-ad")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentMutationRes>> CompleteAdAsync(TournamentEmptyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentMutationRes>> CompleteAdAsync(global::ThreeKingdoms.Shared.Types.TournamentEmptyReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 토너먼트 입장
         /// 후보 슬롯을 선택해1회를 차감하고 공격·상대 방어와 적용 점수를 고정한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/start")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentEnterRes>> StartAsync(TournamentStartReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentEnterRes>> StartAsync(global::ThreeKingdoms.Shared.Types.TournamentStartReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 토너먼트 복수
         /// 이번 시즌에 실제 점수를 잃은 본인의 방어 이력으로 한 번만 복수한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/revenge")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentEnterRes>> RevengeAsync(TournamentRevengeReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentEnterRes>> RevengeAsync(global::ThreeKingdoms.Shared.Types.TournamentRevengeReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 토너먼트 결과 정산
         /// 클라이언트 승패로 양쪽 점수와 공격자의 영구 보유 토너먼트 포인트를 한 번만 정산한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/finish")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentFinishRes>> FinishAsync(TournamentFinishReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentFinishRes>> FinishAsync(global::ThreeKingdoms.Shared.Types.TournamentFinishReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 토너먼트 전투 이력
         /// 본인의 공격·방어 결과와 현재 복수 가능 여부를 최근 순서로 조회한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/history")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentHistoryRes>> HistoryAsync(TournamentHistoryReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentHistoryRes>> HistoryAsync(global::ThreeKingdoms.Shared.Types.TournamentHistoryReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
         /// <summary>
         /// 토너먼트 랭킹
         /// 현재 시즌 순위 또는 마감된 시즌의 확정 순위와 본인 순위를 조회한다.
         /// </summary>
         [Attributes.PostMethod("/client/private/tournament/ranking")]
-        Cysharp.Threading.Tasks.UniTask<CommonBody<TournamentRankingRes>> RankingAsync(TournamentRankingReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
+        Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.TournamentRankingRes>> RankingAsync(global::ThreeKingdoms.Shared.Types.TournamentRankingReq request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default);
     }
 }
