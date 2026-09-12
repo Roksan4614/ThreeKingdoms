@@ -33,6 +33,8 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
     const string c_key = "pp_timestone_count";
 
     public int timeBonus { get; private set; }
+    public bool IsAd { get; private set; }
+    public int TimeStoneCount => m_countTimeStone;
 
     protected override void Awake()
     {
@@ -42,7 +44,7 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
         m_element.btnMenu.onClick.AddListener(OnButton_Menu);
 
         // test
-        m_myTimeStone = 3234;
+        m_myTimeStone = ThreeKingdoms.Client.Server.GameServer.Enabled ? checked((int)(ThreeKingdoms.Client.Server.ServerState.Asset?.TimeStone ?? 0)) : 3234;
         m_element.txtAsset.text = $"{m_myTimeStone:#,0}";
         m_element.txtAsset.transform.ForceRebuildLayout();
 
@@ -83,6 +85,16 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
     {
         m_idx = _args.Length == 0 ? -1 : (int)_args[0];
         m_countTimeStone = -1;
+        IsAd = false;
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            m_myTimeStone = checked((int)(ThreeKingdoms.Client.Server.ServerState.Asset?.TimeStone ?? 0));
+            m_element.txtAsset.text = m_myTimeStone.ToString("N0");
+            var upgrade = DataManager.castle.ServerUpgrade;
+            m_secTimeStone = checked((int)(upgrade?.SaveSecondsPerTimeStone ?? 1));
+            m_minuteAD = checked((int)((upgrade?.SaveSecondsPerAd ?? 0) / 60));
+            m_element.btnAD.text = "AD: " + m_minuteAD + "m (" + Math.Max(0, (upgrade?.AdLimit ?? 0) - (upgrade?.AdUsedCount ?? 0)) + ")";
+        }
 
         statusType = StatusType.Wait;
         Utils.SetActivePunch(m_element.panel, true);
@@ -131,6 +143,8 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
     void OnButton_TimeStone()
     {
+        IsAd = false;
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled && m_countTimeStone <= 0) return;
         timeBonus = m_countTimeStone * m_secTimeStone;
 
         statusType = StatusType.Success;
@@ -139,9 +153,9 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
 
     void OnButton_AD()
     {
+        IsAd = true;
         timeBonus = m_minuteAD * 60;
-        m_adCountData.countAD--;
-        SaveData_ADCount();
+        if (!ThreeKingdoms.Client.Server.GameServer.Enabled) { m_adCountData.countAD--; SaveData_ADCount(); }
 
         statusType = StatusType.Success;
         Close();

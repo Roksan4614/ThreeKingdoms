@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Data_BossRaid;
 
-public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
+public partial class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 {
     enum BossRaidSkillType_LuBu
     {
@@ -87,6 +87,7 @@ public class Weapon_Vanguard_Lubu_BossRaid : Weapon_Vanguard_Lubu
 
     async UniTask SkillAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await ServerSkillAsync(); return; }
         m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 

@@ -181,6 +181,7 @@ public class TableTraitsValueData
 [JsonObject(MemberSerialization.OptIn)]
 public class HeroTraitsData
 {
+    [JsonProperty] public int[] serverValues;
     [JsonProperty] public int index;
     [JsonProperty] public TraitsType type;
     [JsonProperty] public int indexValue;
@@ -192,7 +193,8 @@ public class HeroTraitsData
         get
         {
             if (m_traitsValueData == null)
-                m_traitsValueData = TableManager.traitsValue.GetTraitsValueData(type, indexValue);
+                m_traitsValueData = serverValues == null ? TableManager.traitsValue.GetTraitsValueData(type, indexValue)
+                    : new Newtonsoft.Json.Linq.JObject { ["key"] = type.ToString(), ["value"] = string.Join(",", serverValues), ["grade"] = indexValue }.ToObject<TableTraitsValueData>();
             return m_traitsValueData;
         }
     }

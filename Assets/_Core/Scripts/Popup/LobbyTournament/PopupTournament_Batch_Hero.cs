@@ -159,7 +159,8 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
                 isNeedUpdateClose = true;
             }
 
-            await UniTask.WhenAll(tasks.ToArray());
+            try { await UniTask.WhenAll(tasks.ToArray()); }
+            catch (System.Exception error) { PopupManager.instance.AlertShow(error.Message); return; }
         }
         else if (m_batchData_Attack.isUpdated == true || m_batchData_Defence.isUpdated == true)
         {

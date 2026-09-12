@@ -12,10 +12,17 @@ public partial class TutorialManager
 
     public async UniTask InitializeAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            m_data = new GuideQuestRepeatData(); m_data.SetDefault();
+            m_data.guideType = GuideQuestType.NONE; m_data.repeatType = GuideQuestRepeatType.NONE;
+            await ServerRefreshAsync();
+            return;
+        }
         await UniTask.Yield();
 
         //PPWorker.DeleteKey(PlayerPrefsType.GUIDE_QUEST_DATA);
-        m_data = PPWorker.Get<GuideQuestRepeatData>(PlayerPrefsType.GUIDE_QUEST_DATA, false);
+        m_data = PPWorker.Get<GuideQuestRepeatData>(PlayerPrefsType.GUIDE_QUEST_DATA, true);
 
         if (m_data == null)
         {
@@ -27,6 +34,8 @@ public partial class TutorialManager
 
     public void TestResetData()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        { ServerRefreshAsync().Forget(ThreeKingdoms.Client.Server.GameServer.Report); return; }
         m_data = new();
         m_data.SetDefault();
         SaveData();
@@ -36,6 +45,9 @@ public partial class TutorialManager
 
     public bool Update()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+            return ServerRecordProgress(ServerIssue?.QuestKey);
+        if (m_data == null) return false;
         if (m_data.isComplete == false)
         {
             m_data.countTagetValue++;
@@ -53,6 +65,8 @@ public partial class TutorialManager
 
     public void NextOpen()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        { ServerClaimAsync().Forget(ThreeKingdoms.Client.Server.GameServer.Report); return; }
         // 가이드 퀘스트일 경우
         if (m_data.isGuide)
         {
@@ -141,11 +155,12 @@ public partial class TutorialManager
         => await UniTask.WaitUntil(() => instance.IsCompleteGuide(_type), cancellationToken: _token);
 
     public bool IsCompleteGuide(GuideQuestType _type)
-        => m_data.historyGuide.Contains(_type);
+        => m_data?.historyGuide?.Contains(_type) == true;
 
     void SaveData()
     {
-        PPWorker.Set(PlayerPrefsType.GUIDE_QUEST_DATA, m_data, false);
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { SaveServerProgress(); return; }
+        PPWorker.Set(PlayerPrefsType.GUIDE_QUEST_DATA, m_data, true);
     }
 
     public class GuideQuestRepeatData
@@ -167,16 +182,18 @@ public partial class TutorialManager
         }
 
         public GuideQuestRepeatType nowRepeatType => isGuide ? GuideQuestRepeatType.NONE : repeatType;
-        public bool isGuide => guideType > GuideQuestType.NONE;
-        public string name => TableManager.guideQuestString.Get(
+        public bool isGuide => ThreeKingdoms.Client.Server.GameServer.Enabled
+            ? instance.ServerIssue?.Kind == ThreeKingdoms.Shared.Enums.GuideQuestKind.Learning : guideType > GuideQuestType.NONE;
+        public string name => ThreeKingdoms.Client.Server.GameServer.Enabled ? instance.ServerTitle : TableManager.guideQuestString.Get(
             $"{(isGuide ? "GUIDE_" : "REPEAT_")}{(isGuide ? guideType.ToString().ToUpper() : repeatType.ToString().ToUpper())}_TITLE"
             ).message;
         public Table_GuideQuest.TableGuideQuestData tableData =>
-            isGuide ?
+            ThreeKingdoms.Client.Server.GameServer.Enabled ? instance.ServerTableData : isGuide ?
             TableManager.guideQuest.GetGuideData(guideType) :
             TableManager.guideQuestRepeat.GetRepeatData(repeatType);
-        public bool isComplete => countTagetValue >= tableData.targetValue;
-        public string statusMessage => isComplete ?
+        public bool isComplete => ThreeKingdoms.Client.Server.GameServer.Enabled
+            ? instance.ServerProgressComplete : tableData != null && countTagetValue >= tableData.targetValue;
+        public string statusMessage => ThreeKingdoms.Client.Server.GameServer.Enabled ? instance.ServerStatus : isComplete ?
             $"_(완료)" :
             $"({countTagetValue}/{tableData.targetValue})";
     }
@@ -215,7 +232,31 @@ public enum GuideQuestType
     castle_wally,
     CASTLE_FINISHED,
 
-    MAX
+    // Preserve legacy control values 0..9 and the offline sentinel.
+    MAX = 10,
+    match = 100,
+    sub_skill_use = 101,
+    auto_play_active = 102,
+    change_main = 103,
+    change_position = 104,
+    gacha_progress = 105,
+    castle = 106,
+    palace_deploy = 107,
+    farm_deploy = 108,
+    market_deploy = 109,
+    thief_catch = 110,
+    gate_deploy = 111,
+    office_mission_refresh = 112,
+    office_mission_progress = 113,
+    merchant_deploy = 114,
+    merchant_shop_list_refresh = 115,
+    farm_rice_earn = 116,
+    market_gold_earn = 117,
+    tournament_play = 118,
+    raid_play = 119,
+    equip_treasure = 120,
+    @return = 121,
+    relic_enhance = 122
 }
 
 public enum GuideQuestRepeatType

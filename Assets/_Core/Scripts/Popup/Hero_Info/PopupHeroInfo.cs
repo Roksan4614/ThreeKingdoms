@@ -197,7 +197,7 @@ public class PopupHeroInfo : BasePopupComponent
     {
         var heroInfoData = m_heroInfoData.DeepClone();
 
-        if (heroInfoData.key == CharacterName.SunJian.ToString())
+        if (!ThreeKingdoms.Client.Server.GameServer.Enabled && heroInfoData.key == CharacterName.SunJian.ToString())
         {
             PopupManager.instance.AlertShow("시스템에_의해_차단되었습니다.");
             return;
@@ -219,7 +219,7 @@ public class PopupHeroInfo : BasePopupComponent
         {
             heroInfoData.enchantLevel++;
 
-            if (heroInfoData.enchantLevel > 20)
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled ? ThreeKingdoms.Client.Server.ServerState.Character(heroInfoData.key)?.NextGrowth == null : heroInfoData.enchantLevel > 20)
             {
                 PopupManager.instance.AlertShow("이미_최대_레벨입니다.");
                 return;
@@ -274,8 +274,10 @@ public class PopupHeroInfo : BasePopupComponent
         m_element.txtInfo.text += $"\n소속_:_{TableManager.stringTable.GetRegionType(m_heroInfoData.regionType, true)}";
     }
 
+    bool m_serverRerolling;
     async UniTask OnButtonAsync_TraitsReroll()
     {
+        if (m_serverRerolling) return;
         if (m_heroInfoData.countOpenTraits == 0)
         {
             PopupManager.instance.AlertShow("명장부터_특성_부여가_가능합니다.");
@@ -287,28 +289,43 @@ public class PopupHeroInfo : BasePopupComponent
             return;
         }
 
+        m_serverRerolling = true;
         m_element.statAttribute.interactable = false;
+        try
+        {
 
-        m_heroInfoData = await DataManager.userInfo.API_TraitsChange(m_heroInfoData.key);
+            m_heroInfoData = await DataManager.userInfo.API_TraitsChange(m_heroInfoData.key);
 
-        // 고유 능력치
-        SetHeroInfo_CoreStat(m_heroInfoData);
+            // 고유 능력치
+            SetHeroInfo_CoreStat(m_heroInfoData);
 
-        // 전투 능력치
-        m_element.statBattle.SetStatData(m_heroInfoData);
+            // 전투 능력치
+            m_element.statBattle.SetStatData(m_heroInfoData);
 
-        // 파워
-        m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
-        isNeedUpdate = true;
+            // 파워
+            m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
+            isNeedUpdate = true;
 
-        m_element.statAttribute.SetActive(true, m_heroInfoData);
-        m_element.statAttribute.interactable = true;
+            m_element.statAttribute.SetActive(true, m_heroInfoData);
+        }
+        catch (System.Exception error) { PopupManager.instance.AlertShow(error.Message); }
+        finally { m_serverRerolling = false; m_element.statAttribute.interactable = true; }
     }
 
     async UniTask OpenPopupAsync_Position()
     {
         if (await m_element.popupPosition.OpenPopupAsync(m_heroInfoData.key))
+        {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+            {
+                m_heroInfoData = ThreeKingdoms.Client.Server.ServerState.ToHero(ThreeKingdoms.Client.Server.ServerState.Character(m_heroInfoData.key));
+                m_element.statBattle.SetStatData(m_heroInfoData);
+                SetHeroInfo_CoreStat(m_heroInfoData);
+                m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
+                isNeedUpdate = true;
+            }
             SetPositionType();
+        }
     }
 
     void SetPositionType()

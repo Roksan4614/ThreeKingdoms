@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using static Data_BossRaid;
 
-public class PopupBossRaidResultComponent : BasePopupComponent
+public partial class PopupBossRaidResultComponent : BasePopupComponent
 {
     PopupBossRaidResultComponent() : base(PopupType.BossRaidResult) { }
 
@@ -18,6 +18,7 @@ public class PopupBossRaidResultComponent : BasePopupComponent
 
     public override void OpenPopup(params object[] _args)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { OpenServerResultAsync().Forget(); return; }
         Utils.SetActivePunch(transform, true);
 
         var dataRaid = DataManager.bossRaid.data;

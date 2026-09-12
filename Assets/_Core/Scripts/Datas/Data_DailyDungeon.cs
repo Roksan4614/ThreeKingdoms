@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine.Events;
 
-public class Data_DailyDungeon
+public partial class Data_DailyDungeon
 {
     DailyDungeonData m_data;
     public DailyDungeonData data => m_data;
@@ -29,6 +29,14 @@ public class Data_DailyDungeon
     {
         await UniTask.Yield();
 
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            m_data = new();
+            m_data.Default();
+            await RefreshServerAsync();
+            return;
+        }
+
         m_recordData = PPWorker.Get<List<DailyDungeonRecordData>>(c_recordKey);
         if (m_recordData == null)
             m_recordData = new();
@@ -39,6 +47,7 @@ public class Data_DailyDungeon
 
     public async UniTask<bool> ShowAdsAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return await CompleteAdServerAsync();
         if (m_data.adCount == 0)
             return false;
 
@@ -55,6 +64,7 @@ public class Data_DailyDungeon
     // 토벌
     public async UniTask SweepAsync(WeekdayType _weekType, UnityAction _onUpdate)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await SweepServerAsync(_weekType, _onUpdate); return; }
         DailyDungeonRecordData recordData = DataManager.dailyDungeon.GetRecordGradeType(_weekType);
         recordData.percent = 0;
 
@@ -75,6 +85,8 @@ public class Data_DailyDungeon
     {
         if (m_data.enterWeekday == _weekType && _isForce == false)
             return false;
+
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled && !await EnterServerAsync(_weekType)) return false;
 
         TutorialManager.instance.Action_DailyDungeonPlay();
 
@@ -111,35 +123,59 @@ public class Data_DailyDungeon
 
     public async UniTask TimeoutAsync()
     {
-        TeamManager.instance.SetState(CharacterStateType.None);
-        StageManager.instance.SetState(CharacterStateType.None);
-
-        TeamManager.instance.StopAllRespawn();
-        TeamManager.instance.StopSkillCooltime();
-
-        ControllerManager.instance.SetSwitch(false);
-
-        Signal.instance.DailyDungeonStatus.Emit(DailyDungeonStatusType.Timeout);
-
-        DailyDungeonRecordData resultData = new()
+        if (m_finishing) return;
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled
+            && (m_serverEntry == null || m_data.enterWeekday < WeekdayType.Monday || m_data.enterWeekday > WeekdayType.Saturday)) return;
+        m_finishing = true;
+        try
         {
-            weekday = m_data.enterWeekday,
-            gradeType = m_data.curGradeType,
-            percent = m_data.percent,
-        };
+            TeamManager.instance.SetState(CharacterStateType.None);
+            StageManager.instance.SetState(CharacterStateType.None);
 
-        m_data.count--;
-        PopupManager.instance.CloseAll();
-        var popup = await PopupManager.instance
-            .OpenPopupAndWait<PopupDailyDungeonResultComponent>(PopupType.DailyDungeonResult, resultData);
+            TeamManager.instance.StopAllRespawn();
+            TeamManager.instance.StopSkillCooltime();
 
-        await UniTask.WaitForEndOfFrame();
+            ControllerManager.instance.SetSwitch(false);
 
-        // 재도전
-        if (popup.result == StatusType.Success)
-            EnterAsync(m_data.enterWeekday, true).Forget();
-        else
-            ExitAsync().Forget();
+            Signal.instance.DailyDungeonStatus.Emit(DailyDungeonStatusType.Timeout);
+
+            DailyDungeonRecordData resultData = new()
+            {
+                weekday = m_data.enterWeekday,
+                gradeType = m_data.curGradeType,
+                percent = m_data.percent,
+            };
+
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+            {
+                while (true)
+                {
+                    try { resultData = await FinishServerAsync(); break; }
+                    catch (System.Exception error)
+                    {
+                        PopupManager.instance.AlertShow(error.Message);
+                        if (await PopupManager.instance.OpenModalAsync("Server result failed. Retry settlement?") != StatusType.Success)
+                        {
+                            await ExitAsync();
+                            return;
+                        }
+                    }
+                }
+            }
+            else m_data.count--;
+            PopupManager.instance.CloseAll();
+            var popup = await PopupManager.instance
+                .OpenPopupAndWait<PopupDailyDungeonResultComponent>(PopupType.DailyDungeonResult, resultData);
+
+            await UniTask.WaitForEndOfFrame();
+
+            // 재도전
+            if (popup.result == StatusType.Success)
+                EnterAsync(m_data.enterWeekday, true).Forget();
+            else
+                ExitAsync().Forget();
+        }
+        finally { m_finishing = false; }
     }
 
     public async UniTask ExitAsync()
@@ -170,6 +206,7 @@ public class Data_DailyDungeon
     public void SaveResultData(float _percent)
     {
         m_data.percent = _percent;
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
 
         int index = m_recordData.FindIndex(x => x.weekday == m_data.enterWeekday);
         if (index >= 0)
@@ -230,5 +267,6 @@ public class Data_DailyDungeon
 
         //public float percent { get; set; }
         public bool isSweep { get; set; }
+        public List<ItemData> serverRewards { get; set; }
     }
 }

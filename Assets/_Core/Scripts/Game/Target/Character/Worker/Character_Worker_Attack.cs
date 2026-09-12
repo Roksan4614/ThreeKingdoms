@@ -12,6 +12,9 @@ public class Character_Worker_Attack : Character_Worker
 {
     public bool isAttack => m_weapon.isAttack;
     public bool isRunningAttack { get; set; }
+    // Monotonic observations of actual actions; they do not control combat or input.
+    public long controlAttackCount { get; private set; }
+    public long skillUseCount { get; private set; }
 
     public Character_Worker_Attack(CharacterComponent _owner) : base(_owner)
     {
@@ -27,6 +30,44 @@ public class Character_Worker_Attack : Character_Worker
     Character_Weapon m_weapon;
 
     float m_timeAttack;
+    bool m_waitingAttackHit;
+    int m_attackStartedFrame;
+    int m_pendingAttackLayer;
+    CharacterAnimType m_pendingAttackAnimation;
+
+    internal static float GetAttackIntervalSeconds(float attacksPerSecond)
+    {
+        if (float.IsNaN(attacksPerSecond) || float.IsInfinity(attacksPerSecond) || attacksPerSecond <= 0)
+            throw new ArgumentOutOfRangeException(nameof(attacksPerSecond), "Attack rate must be finite and positive.");
+        var interval = 1f / attacksPerSecond;
+        if (float.IsInfinity(interval) || interval <= 0)
+            throw new ArgumentOutOfRangeException(nameof(attacksPerSecond), "Attack interval cannot be represented.");
+        return interval;
+    }
+
+    float AttackIntervalSeconds => GetAttackIntervalSeconds(m_owner.stat.attackSpeed);
+
+    bool IsWaitingForAttackHit
+    {
+        get
+        {
+            if (!m_waitingAttackHit) return false;
+            // CrossFade is evaluated later in the frame. Preserve the pending hit until that first evaluation.
+            if (Time.frameCount == m_attackStartedFrame) return true;
+            if (m_owner.anim.IsType(m_pendingAttackAnimation, m_pendingAttackLayer)) return true;
+            // Walk, dash, knockdown or another state interrupted this attack before its event.
+            m_waitingAttackHit = false;
+            return false;
+        }
+    }
+
+    void AwaitAttackHit(bool moving)
+    {
+        m_waitingAttackHit = true;
+        m_attackStartedFrame = Time.frameCount;
+        m_pendingAttackLayer = moving ? 1 : 0;
+        m_pendingAttackAnimation = moving ? CharacterAnimType.Attack_Move : CharacterAnimType.Attack;
+    }
 
     public async UniTask AttackAsync(CancellationToken _token)
     {
@@ -38,10 +79,12 @@ public class Character_Worker_Attack : Character_Worker
             {
                 if (m_ctsAttackPush == null &&
                     m_timeAttack < Time.realtimeSinceStartup &&
-                    m_weapon.isUseSkill == false)
+                    m_weapon.isUseSkill == false && !isUseSkill && !IsWaitingForAttackHit)
                 {
+                    var interval = AttackIntervalSeconds;
+                    AwaitAttackHit(m_owner.move.isMoving);
                     m_weapon.Attack(IsCritical());
-                    m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
+                    m_timeAttack = Time.realtimeSinceStartup + interval;
                 }
             }
             else if (m_timeAttack < Time.realtimeSinceStartup)
@@ -63,12 +106,15 @@ public class Character_Worker_Attack : Character_Worker
         m_ctsAttackPush = m_ctsAttackPush.ReleaseCTS(true);
         var token = m_ctsAttackPush.Token;
 
-        if (m_timeAttack - m_owner.stat.attackSpeed * 0.5f > Time.realtimeSinceStartup)
+        if (m_timeAttack - AttackIntervalSeconds * 0.5f > Time.realtimeSinceStartup)
         {
             while (m_timeAttack > Time.realtimeSinceStartup)
                 await UniTask.NextFrame(token, true);
             _isPushButton = false;
         }
+
+        while (IsWaitingForAttackHit)
+            await UniTask.NextFrame(token, true);
 
         m_timeAttack = -1;
 
@@ -76,8 +122,9 @@ public class Character_Worker_Attack : Character_Worker
             Input.GetKey(KeyCode.X) ||
             _isPushButton == true)
         {
-            if (m_timeAttack < Time.realtimeSinceStartup && m_weapon.isUseSkill == false)
+            if (m_timeAttack < Time.realtimeSinceStartup && m_weapon.isUseSkill == false && !isUseSkill && !IsWaitingForAttackHit)
             {
+                var interval = AttackIntervalSeconds;
                 m_owner.target.SetTargetNearest();
 
                 _onAttack();
@@ -86,10 +133,12 @@ public class Character_Worker_Attack : Character_Worker
                 if (isCritical == false || m_timeAttack == -1)
                     ShowSlashEffect(true);
 
+                AwaitAttackHit(m_owner.rig.linearVelocity != Vector2.zero);
                 m_owner.anim.PlayAttack();
+                controlAttackCount++;
                 //isAttackPush = true;
 
-                m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
+                m_timeAttack = Time.realtimeSinceStartup + interval;
             }
             _isPushButton = false;
             await UniTask.NextFrame(token, true);
@@ -105,6 +154,7 @@ public class Character_Worker_Attack : Character_Worker
     public bool isRush { get; private set; }
     public async UniTask RushAsync(Vector3 _targetPos, bool _isCameraShake = true)
     {
+        m_waitingAttackHit = false;
         isRush = true;
         m_owner.move.MoveStop();
         m_owner.move.SetFlip(_targetPos.x > m_owner.position.x);
@@ -144,6 +194,7 @@ public class Character_Worker_Attack : Character_Worker
 
     public void EventAttackHit()
     {
+        m_waitingAttackHit = false;
         m_weapon.EventAttackHit(m_owner);
     }
 
@@ -155,13 +206,19 @@ public class Character_Worker_Attack : Character_Worker
         => m_owner.isLive && m_weapon.IsValidUseSkill();
 
     public bool isUseSkill { get; private set; }
-    public void SetType_UseSkill(bool _isUseSkill) => isUseSkill = _isUseSkill;
+    public void SetType_UseSkill(bool _isUseSkill)
+    {
+        if (_isUseSkill) m_waitingAttackHit = false;
+        isUseSkill = _isUseSkill;
+    }
 
     public async UniTask UseSkillAsync()
     {
-        m_timeAttack = Time.realtimeSinceStartup + m_owner.stat.attackSpeed;
+        m_waitingAttackHit = false;
+        m_timeAttack = Time.realtimeSinceStartup + AttackIntervalSeconds;
         isUseSkill = true;
         await m_weapon.UseSkillAsync();
+        skillUseCount++;
         isUseSkill = false;
     }
 
@@ -169,12 +226,15 @@ public class Character_Worker_Attack : Character_Worker
 
     public void ResetFX()
     {
+        m_waitingAttackHit = false;
         m_weapon.ResetFX();
         isRunningAttack = false;
     }
 
     public void Die()
     {
+        m_waitingAttackHit = false;
+        m_ctsAttackPush = m_ctsAttackPush.ReleaseCTS();
         m_weapon.Die();
     }
 

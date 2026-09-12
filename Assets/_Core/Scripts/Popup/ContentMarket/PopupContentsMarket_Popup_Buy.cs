@@ -66,33 +66,43 @@ namespace Rev9.ContentsMarket
             if (_isMinus)
                 m_buyCount = Mathf.Max(1, m_buyCount - 1);
             else
-                m_buyCount = Mathf.Min(m_productData.countMax, m_buyCount + 1);
+                m_buyCount = Mathf.Min(m_productData.isLimit ? m_productData.remainCount : int.MaxValue, m_buyCount + 1);
 
             m_element.txtCount.text = $"{m_buyCount:#,0}";
         }
 
         void OnButton_MinMax(bool _isMin)
         {
-            m_buyCount = _isMin ? 1 : m_productData.countMax;
+            m_buyCount = _isMin || !m_productData.isLimit ? 1 : Mathf.Max(1, m_productData.remainCount);
             m_element.txtCount.text = $"{m_buyCount:#,0}";
         }
 
+        bool m_buying;
         async UniTask OnButtonAsync_Confirm()
         {
-            bool isSuccess = await ContentsMarketWorker.instance.API_ProductBuy(m_tabType, m_productData, m_buyCount);
-
-            if (isSuccess)
+            if (m_buying) return;
+            m_buying = true;
+            try
             {
-                List<ItemData> rewards = new();
-                for (int i = 0; i < m_buyCount; i++)
-                    rewards.Add(m_productData.itemData);
+                bool isSuccess = await ContentsMarketWorker.instance.API_ProductBuy(m_tabType, m_productData, m_buyCount);
 
-                RewardWorker.OpenRewardPopup(rewards.ToArray());
-                PopupManager.instance.GetPopup<PopupContentsMarketComponent>(PopupType.ContentsMarket).SetProductLayout();
-                Close();
+                if (isSuccess)
+                {
+                    List<ItemData> rewards = new();
+                    if (!ThreeKingdoms.Client.Server.GameServer.Enabled)
+                        for (int i = 0; i < m_buyCount; i++)
+                            rewards.Add(m_productData.itemData);
+
+                    if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+                        await RewardWorker.instance.RunAsync(m_element.rewardItem.transform.position, m_productData.key, (long)m_productData.count * m_buyCount, _isPopup: true);
+                    else RewardWorker.OpenRewardPopup(rewards.ToArray());
+                    PopupManager.instance.GetPopup<PopupContentsMarketComponent>(PopupType.ContentsMarket).SetProductLayout();
+                    Close();
+                }
+                else if (!ThreeKingdoms.Client.Server.GameServer.Enabled)
+                    PopupManager.instance.AlertShow("_구매 실패_");
             }
-            else
-                PopupManager.instance.AlertShow("_구매 실패_");
+            finally { m_buying = false; }
         }
 
         void Close()

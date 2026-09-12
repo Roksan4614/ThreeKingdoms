@@ -13,7 +13,7 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
         });
 
         m_element.btnTournament.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.LobbyTournament));
-        m_element.btnIdleReward.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.Reward_Idle));
+        m_element.btnIdleReward.onClick.AddListener(() => { if (!ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) PopupManager.instance.OpenPopup(PopupType.Reward_Idle); });
 
         Signal.instance.UnlockStoryMode.connect = SlotUnlockStoryMode;
     }

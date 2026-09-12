@@ -24,7 +24,7 @@ namespace Rev9.Tournament
         TournamentData m_data;
         public static TournamentData data => instance.m_data;
 
-        public RankerUserData rankData => m_dbRankData[PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Point].my;
+        public RankerUserData rankData => ThreeKingdoms.Client.Server.GameServer.Enabled ? m_data.rankData : m_dbRankData[PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Point].my;
 
         List<TournamentHistoryData> m_history;
         public List<TournamentHistoryData> history => m_history;
@@ -42,6 +42,7 @@ namespace Rev9.Tournament
 
         public async UniTask InitailizeAsync()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await InitializeServerAsync(); return; }
             if (m_data.IsActive() == false)
             {
                 //PPWorker.DeleteKey(c_keyHistory);
@@ -82,6 +83,7 @@ namespace Rev9.Tournament
         // 승급이나 강화, 유물 강화했을 때 
         public void UpdateHero()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
             if (m_data.IsActive() == false)
                 m_data = PPWorker.Get<TournamentData>(PlayerPrefsType.TOURNAMENT);
 
@@ -124,6 +126,11 @@ namespace Rev9.Tournament
 
         public TournamentBatchData GetBatchData(bool _isAttack, bool _isOrinData = false)
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+            {
+                var serverTeam = (_isAttack ? m_data.teamAttack : m_data.teamDefence) ?? EmptyTeam(ThreeKingdoms.Client.Server.GameServer.Uid);
+                return _isOrinData ? serverTeam : serverTeam.DeepClone();
+            }
             var team = _isAttack ? m_data.teamAttack : m_data.teamDefence;
             if (team.IsActive() == false)
             {
@@ -192,10 +199,13 @@ namespace Rev9.Tournament
         }
 
         public void SaveData()
-            => PPWorker.Set(PlayerPrefsType.TOURNAMENT, m_data);
+        {
+            if (!ThreeKingdoms.Client.Server.GameServer.Enabled) PPWorker.Set(PlayerPrefsType.TOURNAMENT, m_data);
+        }
 
         void SlotDayChange()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { ReloadServerSnapshotWithAlertAsync().Forget(); return; }
             m_data.SetChangeDate();
             m_data.tick = Utils.GetUTC().Ticks;
             SaveData();
@@ -206,6 +216,7 @@ namespace Rev9.Tournament
 
         public async UniTask<bool> ShowAdsAsync()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return await CompleteAdServerAsync();
             if (m_data.countAD > 0)
             {
                 var result = await PopupManager.instance.OpenModalAsync("광고보러_가기");
@@ -227,6 +238,7 @@ namespace Rev9.Tournament
 
         public async UniTask RefreshListAsync()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await RefreshServerListAsync(); return; }
             if (m_data.countRefresh <= 0)
                 return;
 
@@ -242,6 +254,7 @@ namespace Rev9.Tournament
 
         public async UniTask TimerRefreshCountAsync()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await TimerServerRefreshAsync(); return; }
             m_ctsRefresh = m_ctsRefresh.ReleaseCTS(true);
             var token = m_ctsRefresh.Token;
 
@@ -476,7 +489,8 @@ namespace Rev9.Tournament
             treasure = new();
         }
 
-        public long totalPower => heroes.Sum(x => x.power);
+        public long? serverPower;
+        public long totalPower => serverPower ?? heroes.Sum(x => x.power);
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -494,14 +508,16 @@ namespace Rev9.Tournament
         [JsonProperty] public long tick; // 방어에 패배했음에도 0이면 복수를 성공한걸로 간주하자
         [JsonProperty] public TournamentBatchData batchData;
 
-        public bool isRevenge => isAttack == false && isWin == false;
-        public bool isOpenRevenge => teamDefence != null;
+        public bool? serverRevengeAvailable;
+        public System.DateTime? serverRevengeEnd;
+        public bool isRevenge => serverRevengeAvailable ?? (isAttack == false && isWin == false);
+        public bool isOpenRevenge => serverRevengeAvailable ?? (teamDefence != null);
         public List<HeroInfoData> teamDefence;
 
 #if SERVICE_DEV
-        public System.DateTime dtEndRevenge => new System.DateTime(tick, System.DateTimeKind.Utc).AddMinutes(2);
+        public System.DateTime dtEndRevenge => serverRevengeEnd ?? new System.DateTime(tick, System.DateTimeKind.Utc).AddMinutes(2);
 #else
-        public System.DateTime dtEndRevenge => new System.DateTime(tick, System.DateTimeKind.Utc).AddHours(12);
+        public System.DateTime dtEndRevenge => serverRevengeEnd ?? new System.DateTime(tick, System.DateTimeKind.Utc).AddHours(12);
 #endif
     }
 }

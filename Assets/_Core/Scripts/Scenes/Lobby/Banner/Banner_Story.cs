@@ -58,6 +58,7 @@ public class Banner_Story : MonoBehaviour, IValidatable
 
     public async UniTask OnButtonAsync_OpenPopup()
     {
+        if (ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
         PPWorker.DeleteKey(c_keyReddot);
 
         m_element.button.interactable = false;

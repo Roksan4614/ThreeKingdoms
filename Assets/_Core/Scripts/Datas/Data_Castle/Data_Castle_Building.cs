@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine.Events;
 
-public class Data_Castle_Building
+public partial class Data_Castle_Building
 {
     Dictionary<CastleObjectType, CancellationTokenSource> m_cts = new();
 
@@ -27,6 +27,7 @@ public class Data_Castle_Building
 
     async UniTask UpdateBuindingUpgradeAsync(CastleObjectType _objectType)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { UpdateServerUpgradeView(_objectType); return; }
         if (_objectType == CastleObjectType.NONE)
         {
             for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
@@ -109,6 +110,7 @@ public class Data_Castle_Building
 
     public async UniTask StartUpgradeAsync(CastleObjectType _objectType, UnityAction<Data_Castle.CastleData> _callback)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await StartServerUpgradeAsync(_objectType, _callback); return; }
         var db = DataManager.castle.GetCaslteData(_objectType);
 
         if (db.level == 10)
@@ -143,6 +145,7 @@ public class Data_Castle_Building
 
     public Data_Castle.CastleData CompleteUpgrade(CastleObjectType _objectType)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return DataManager.castle.GetCaslteData(_objectType);
         var db = DataManager.castle.GetCaslteData(_objectType);
         db.tickUpgradeEnd = 0;
         db.remainUpgradeSeconds = 0;
@@ -157,8 +160,9 @@ public class Data_Castle_Building
         return db;
     }
 
-    public async UniTask UpgradeTimerBonusAsync(CastleObjectType _objectType, int _bonusTime)
+    public async UniTask UpgradeTimerBonusAsync(CastleObjectType _objectType, int _bonusTime, bool _isAd = false, int _timeStoneCount = 0)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await ShortenServerUpgradeAsync(_objectType, _isAd, _timeStoneCount); return; }
         await UniTask.Yield();
 
         var objectData = DataManager.castle.GetCaslteData(_objectType);

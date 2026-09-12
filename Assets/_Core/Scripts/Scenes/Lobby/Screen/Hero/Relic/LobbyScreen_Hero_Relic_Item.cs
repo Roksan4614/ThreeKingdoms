@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
+public partial class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
 {
     protected HeroInfoData m_heroInfoData;
 
@@ -16,6 +16,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
 
     async UniTask OnButtonAsync_Upgrade(UnityAction<HeroInfoData> _onCallback)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await UpgradeServerRelicAsync(_onCallback); return; }
         await UniTask.Yield();
 
         if (isRelicTab)
@@ -31,6 +32,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
 
     protected virtual async UniTask OnButtonAsync_Select(UnityAction<HeroInfoData> _onCallback)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await SelectServerTreasureAsync(_onCallback); return; }
         await UniTask.Yield();
 
         if (DataManager.stat.relic.dataTreasure.Count(x => x.isBatch == true) >= 3 && m_heroInfoData.isBatch == false)
@@ -52,8 +54,10 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
     {
         var myTreasureData = _dbBatchData.Where(x => x.key == _treasureData.key).FirstOrDefault();
 
-        m_heroInfoData = new(_treasureData.key);
-        m_element.btn_select.interactable = m_heroInfoData.isMine = _treasureData.key.IsActive();
+        m_heroInfoData = ThreeKingdoms.Client.Server.GameServer.Enabled ? new HeroInfoData { skin = _treasureData.key } : new(_treasureData.key);
+        m_element.btn_select.interactable = m_heroInfoData.isMine = ThreeKingdoms.Client.Server.GameServer.Enabled
+            ? ThreeKingdoms.Client.Server.ServerState.Characters?.Treasures.Any(x => x.TreasureKey == _treasureData.key) == true
+            : _treasureData.key.IsActive();
         m_heroInfoData.isBatch = m_heroInfoData.isMine && myTreasureData.isBatch;
 
         m_element.btn_enchant.gameObject.SetActive(false);
@@ -96,6 +100,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
             $"기본 능력치_+{(_heroInfoData.relicLevel * 10).AmountKMBT()}%\n<size=80%> ({_heroInfoData.className}_+{(_heroInfoData.relicLevel).AmountKMBT()}%)";
 
         m_element.txt_level.text = $"Lv.{_heroInfoData.relicLevel}";
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) SetServerRelicInfo(_heroInfoData);
         m_element.imgPanel.color = Color.white;
 
         if (_isUpdate == false)

@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
+public partial class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
 {
     enum UpgradeType
     {
@@ -80,7 +80,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
             m_element.btnConfirm.text = $"+{m_heroInfoData.enchantLevel}_{"성장"}";
             m_element.txtTitle.text = $"<size=90%>성장_성공_확률:</size> 100%";
         }
-
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) SetServerInfo(_type);
     }
 
     public void OnButton_UpgradeArrow(bool _isLeft)
@@ -91,6 +91,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
 
     async UniTask OnButtonAsync_Confirm()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await ConfirmServerAsync(); return; }
         m_element.btnConfirm.interactable = false;
 
         await UniTask.WaitForEndOfFrame();
@@ -158,6 +159,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
 
     public void Close(Ease _easeType = Ease.InBack)
     {
+        if (m_serverConfirming) return;
         m_element.dimm.interactable = false;
         var targetPosY = m_startPosY - m_element.panel.sizeDelta.y;
 

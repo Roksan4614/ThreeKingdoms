@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using static Data_BossRaid;
 
-public class BossRaidWorker : MonoSingleton<BossRaidWorker>
+public partial class BossRaidWorker : MonoSingleton<BossRaidWorker>
 {
     public enum BossRaidType
     {
@@ -24,6 +24,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
     public async UniTask InitializeAsync(BossRaidType _bossType)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled && !await DataManager.bossRaid.JoinServerAsync()) return;
         if (m_isDoing == false)
             m_isDoing = true;
 
@@ -59,6 +60,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
     public void StartBossRaid()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { StartServerBattleView(); return; }
         DataManager.bossRaid.Start_BossRaid();
 
         TeamManager.instance.StartStage();
@@ -76,6 +78,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
     public void Finish_Phase(CharacterComponent _boss)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
         isSuccessed = true;
         TeamManager.instance.AddBuff(BuffType.BUFF_NO_TAKEN_DAMAGE);
 
@@ -124,6 +127,7 @@ public class BossRaidWorker : MonoSingleton<BossRaidWorker>
 
     public void Finish_BossRaid(bool _isSuccessed)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { DataManager.bossRaid.RefreshServerAsync().Forget(); return; }
         isSuccessed = _isSuccessed;
 
         if (isRunning == true)

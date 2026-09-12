@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class PopupDailyDungeonResultComponent : BasePopupComponent
+public partial class PopupDailyDungeonResultComponent : BasePopupComponent
 {
     PopupDailyDungeonResultComponent() : base(PopupType.DailyDungeonResult) { }
 
     Data_DailyDungeon.DailyDungeonRecordData m_resultData;
     public StatusType result { get; private set; } = StatusType.Wait;
 
+    private bool m_closing;
+
     protected override void Awake()
     {
+        base.Awake();
         m_element.btnConfirm.onClick.AddListener(Close);
         m_element.btnRetry.onClick.AddListener(() => RetryAsync().Forget());
 
@@ -26,13 +29,20 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
     public override void OpenPopup(params object[] _args)
     {
         m_resultData = (Data_DailyDungeon.DailyDungeonRecordData)_args[0];
+        result = StatusType.Wait;
+        m_closing = false;
 
-        m_element.txtResult.text = m_resultData.isSweep ? "토벌_성공" : "처치_성공";
-        m_element.txtPercent.text = $"최종_결과: [{TableManager.stringTable.GetGradeType(m_resultData.gradeType, _isColor: true)}]";
-        if (m_resultData.isSweep == false)
-            m_element.txtPercent.text += $" ({(m_resultData.percent * 100):0.00}%)";
+        if (!IsServerResult)
+        {
+            m_element.txtResult.text = m_resultData.isSweep ? "토벌_성공" : "처치_성공";
+            m_element.txtPercent.text = $"최종_결과: [{TableManager.stringTable.GetGradeType(m_resultData.gradeType, _isColor: true)}]";
+            if (m_resultData.isSweep == false)
+                m_element.txtPercent.text += $" ({(m_resultData.percent * 100):0.00}%)";
+
+        }
 
         SetReward();
+        if (IsServerResult) SetServerResultText();
         SetCountText();
 
         m_element.txtCount.gameObject.SetActive(m_resultData.isSweep == false);
@@ -41,10 +51,11 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
 
     async UniTask RetryAsync()
     {
+        if (m_closing) return;
         if (DataManager.dailyDungeon.data.count > 0)
         {
-            await CloseAsync();
             result = StatusType.Success;
+            await CloseAsync();
         }
         else if (await DataManager.dailyDungeon.ShowAdsAsync() == true)
             SetCountText();
@@ -53,10 +64,17 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
     List<ItemData> m_rewards;
     void SetReward()
     {
-        m_rewards = TableManager.dailyDungeonGrade.GetReward(
+        m_rewards = m_resultData.serverRewards ?? TableManager.dailyDungeonGrade.GetReward(
             TableManager.dailyDungeonBoss.Get(m_resultData.weekday).dungeon_boss_class
             , m_resultData.gradeType
             , m_resultData.percent);
+
+        if (IsServerResult)
+        {
+            m_rewards = m_rewards.FindAll(item => item != null && item.count > 0);
+            m_element.pReward.gameObject.SetActive(m_rewards.Count > 0);
+            if (m_rewards.Count == 0) return;
+        }
 
         int i = 0;
 
@@ -107,15 +125,28 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
 
     async UniTask CloseAsync()
     {
-        List<UniTask> tasks = new();
-        for (int i = 0; i < m_rewards.Count; i++)
-            tasks.Add(RewardWorker.instance.RunAsync(m_element.pReward.GetChild(i).position, _itemData: m_rewards[i]));
-
-        await UniTask.WhenAll(tasks.ToArray());
-
-        await Utils.SetActivePunchAsync(m_element.panel, false);
-
-        base.Close();
+        if (m_closing) return;
+        m_closing = true;
+        m_element.btnConfirm.interactable = false;
+        m_element.btnRetry.interactable = false;
+        try
+        {
+            List<UniTask> tasks = new();
+            for (int i = 0; i < (m_rewards?.Count ?? 0); i++)
+                tasks.Add(m_resultData.serverRewards != null
+                    ? RewardWorker.instance.RunAsync(m_element.pReward.GetChild(i).position, m_rewards[i].key, m_rewards[i].count, _isPopup: true)
+                    : RewardWorker.instance.RunAsync(m_element.pReward.GetChild(i).position, _itemData: m_rewards[i]));
+            await UniTask.WhenAll(tasks.ToArray());
+            await Utils.SetActivePunchAsync(m_element.panel, false);
+        }
+        finally
+        {
+            if (this != null)
+            {
+                gameObject.SetActive(false);
+                base.Close();
+            }
+        }
     }
 
     #region VALIDATE

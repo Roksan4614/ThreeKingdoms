@@ -22,7 +22,11 @@ public class Scene_Boot : MonoBehaviour, IValidatable
 
     private void Start()
     {
-        StartAsync().Forget();
+        StartAsync().Forget(error =>
+        {
+            if (m_element.logo != null) m_element.logo.DOKill();
+            StartupFailurePanel.Show(this, error);
+        });
     }
 
     async UniTask StartAsync()
@@ -93,7 +97,7 @@ public class Scene_Boot : MonoBehaviour, IValidatable
             }
         }
 #endif
-        await UniTask.WhenAll(tasks.ToArray());
+        await StartupTasks.WaitAllAsync(tasks);
 #if !UNITY_EDITOR
         IngameLog.Add($"Boot: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
 #endif

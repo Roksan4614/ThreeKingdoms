@@ -104,6 +104,8 @@ public class TableHeroData
 [JsonObject(MemberSerialization.OptIn)]
 public class HeroInfoData
 {
+    [JsonProperty] public long serverCharacterId;
+    [JsonProperty] public long serverCombatPower;
     [JsonProperty] public string key;
     [JsonProperty] public string skin;
     [JsonProperty] public GradeType grade;
@@ -195,6 +197,7 @@ public class HeroInfoData
     {
         get
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled && serverCombatPower > 0) return serverCombatPower;
             long result = 0;
 
             var stat = resultStat;
@@ -230,5 +233,5 @@ public class HeroInfoData
 
     public void ResetResultStat() => m_resultStat = null;
 
-    public int countOpenTraits => grade < GradeType.General ? 0 : 3 - (GradeType.Legend - grade);
+    public int countOpenTraits => ThreeKingdoms.Client.Server.GameServer.Enabled && ThreeKingdoms.Client.Server.ServerState.Character(key) != null ? ThreeKingdoms.Client.Server.ServerState.Character(key).Traits.Count : grade < GradeType.General ? 0 : 3 - (GradeType.Legend - grade);
 }

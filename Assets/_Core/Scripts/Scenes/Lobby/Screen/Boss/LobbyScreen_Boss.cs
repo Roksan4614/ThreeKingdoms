@@ -20,7 +20,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         SetCountText();
         SlotDayChange();
 
-        Signal.instance.DayChange.connect = SlotDayChange;
+        Signal.instance.DayChange.connect = () => RefreshServerViewAsync().Forget();
     }
 
     protected override bool IsEscapeloseScreen()
@@ -71,9 +71,20 @@ public class LobbyScreen_Boss : LobbyScreen_Base
     public override void Open(LobbyScreenType _prevScreen)
     {
         base.Open(_prevScreen);
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) RefreshServerViewAsync().Forget();
 
         if (m_curWeekday == WeekdayType.None)
-            m_curWeekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
+            m_curWeekday = DataManager.dailyDungeon.CurrentWeekday;
+    }
+
+    async UniTask RefreshServerViewAsync()
+    {
+        try
+        {
+            await DataManager.dailyDungeon.RefreshServerAsync();
+            if (gameObject.activeInHierarchy) { SlotDayChange(); SetCountText(); }
+        }
+        catch (System.Exception error) { PopupManager.instance.AlertShow(error.Message); }
     }
 
     public override void Close(bool _isTween = true)
@@ -95,8 +106,8 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         SetDungeonInfo(_bossData);
 
         var gradeType = DataManager.dailyDungeon.GetRecordGradeType(m_curWeekday)?.gradeType;
-        if (gradeType > GradeType.Normal != m_element.btnSweep.gameObject.activeSelf)
-            m_element.btnSweep.gameObject.SetActive(gradeType > GradeType.Normal);
+        if (gradeType >= GradeType.Normal != m_element.btnSweep.gameObject.activeSelf)
+            m_element.btnSweep.gameObject.SetActive(gradeType >= GradeType.Normal);
 
         // 탭 현재 위치로
         int idxWeekday = (int)m_curWeekday;
@@ -115,7 +126,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
         var recordData = DataManager.dailyDungeon.GetRecordGradeType(_bossData.weekday);
 
-        bool isHasRecord = recordData ==null ? false : recordData.gradeType > GradeType.Normal || recordData.percent > 0;
+        bool isHasRecord = recordData ==null ? false : recordData.gradeType >= GradeType.Normal || recordData.percent > 0;
         m_element.txtRecord.text = $"최고_기록: [{(isHasRecord ? TableManager.stringTable.GetGradeType(recordData.gradeType) : "없음_")}]";
         if (isHasRecord)
             m_element.txtRecord.text += $"<size=90%><color=#555555> ({(recordData.percent * 100):0.#0}%)</color></size>";
@@ -149,7 +160,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
     void SlotDayChange()
     {
-        var weekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
+        var weekday = DataManager.dailyDungeon.CurrentWeekday;
         if (weekday == WeekdayType.Sunday)
             weekday = WeekdayType.Monday;
 
@@ -162,7 +173,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         if (gameObject.activeInHierarchy == false)
             return;
 
-        var weekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
+        var weekday = DataManager.dailyDungeon.CurrentWeekday;
         var dbDungeon = TableManager.dailyDungeonBoss.list.SortBy(x => (int)x.weekday);
         var content = m_element.scrollTab.content;
         for (int i = 0; i < dbDungeon.Count; i++)
@@ -172,7 +183,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
             slot.SetDungeonData(weekday, dbDungeon[i], _bossData => OnButton_Tab(_bossData));
 
-            m_dicTabSlot.Add(dbDungeon[i].weekday, slot);
+            m_dicTabSlot[dbDungeon[i].weekday] = slot;
         }
     }
 

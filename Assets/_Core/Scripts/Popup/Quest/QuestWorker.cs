@@ -13,6 +13,7 @@ public class QuestWorker
     const string c_key = "pp_quest_data";
 
     long m_tickCheck;
+    bool m_dayChangeConnected;
     const string c_key_tick = "pp_quest_data_check";
 
     public async UniTask InitializeAsync()
@@ -29,7 +30,11 @@ public class QuestWorker
 
         m_tickCheck = PPWorker.Get<long>(c_key_tick);
 
-        Signal.instance.DayChange.connect = SlotDayChange;
+        if (!m_dayChangeConnected)
+        {
+            Signal.instance.DayChange.connect = SlotDayChange;
+            m_dayChangeConnected = true;
+        }
     }
 
     public long SaveReddotTick()

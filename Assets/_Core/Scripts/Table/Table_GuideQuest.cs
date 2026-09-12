@@ -14,23 +14,30 @@ public class Table_GuideQuest : BaseTable<string, Table_GuideQuest.TableGuideQue
         => m_list.Find(x => x.key.ToUpper() == _guideType.ToString().ToUpper());
 
     public TableGuideQuestData GetOpenStageData(int _chater, int _stage)
-        => m_list.Find(x => x.startStage[0] == _chater && x.startStage[1] == _stage);
+        => m_list.Find(x => x.startStage.Length >= 2 && x.startStage[0] == _chater && x.startStage[1] == _stage);
 
     public class TableGuideQuestData
     {
         public string key;
         [JsonProperty] int? target_value;
 
-        string navigation;
+        [JsonProperty] string navigation;
         NavigationType[] m_navigation;
 
-        string start_stage;
+        [JsonProperty] string start_stage;
         int[] m_startStage;
 
         public ItemType reward_item;
         public int reward_count;
 
         public string open_guide_quest;
+
+        public static TableGuideQuestData FromIssue(string key, long target, string navigation, ItemData reward)
+            => new TableGuideQuestData
+            {
+                key = key, target_value = checked((int)target), navigation = navigation,
+                reward_item = reward.key, reward_count = checked((int)reward.count)
+            };
 
         //custom
         public int targetValue => target_value ?? 1;
@@ -64,7 +71,7 @@ public class Table_GuideQuest : BaseTable<string, Table_GuideQuest.TableGuideQue
                         var parts = navigation.Replace(" ", "").Split(',');
                         m_navigation = new NavigationType[parts.Length];
                         for (int i = 0; i < parts.Length; i++)
-                            Enum.TryParse(parts[i], out m_navigation[i]);
+                            if (!Enum.TryParse(parts[i], true, out m_navigation[i])) m_navigation[i] = NavigationType.NONE;
                     }
                     else
                         m_navigation = new NavigationType[0];

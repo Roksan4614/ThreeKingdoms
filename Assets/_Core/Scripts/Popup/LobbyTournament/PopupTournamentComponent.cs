@@ -68,9 +68,11 @@ public class PopupTournamentComponent : BasePopupComponent
     {
         m_element.panel.gameObject.SetActive(false);
 
-        await TournamentWorker.instance.InitailizeAsync();
+        try { await TournamentWorker.instance.InitailizeAsync(); }
+        catch (System.Exception error) { PopupManager.instance.AlertShow(error.Message); Close(); return; }
 
-        m_element.txtTier.text = $"[{TableManager.stringTable.GetGradeRankType(TournamentWorker.data.grade)}]";
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) m_element.txtTier.text = TournamentWorker.instance.ServerTierLabel;
+        else m_element.txtTier.text = $"[{TableManager.stringTable.GetGradeRankType(TournamentWorker.data.grade)}]";
         m_element.txtRank.text = "_현재순위\n<size=150%>";
         m_element.txtRank.text += TournamentWorker.data.rankData.rank == 0 ? "- 위" : $"{TournamentWorker.data.rankData.rank:#,0}_위";
         m_element.txtPoint.text = "_점수\n<size=150%>";
@@ -109,7 +111,7 @@ public class PopupTournamentComponent : BasePopupComponent
         if (tournamentData.isFreeRefresh == true)
             m_element.txtRefreshCount.text = $"{TournamentWorker.data.countRefresh}/3";
         else
-            m_element.txtRefreshCount.text = "1,200";
+            m_element.txtRefreshCount.text = ThreeKingdoms.Client.Server.GameServer.Enabled ? TournamentWorker.instance.ServerRefreshPrice.ToString("#,0") : "1,200";
 
         m_element.iconAsset.transform.parent.ForceRebuildLayout();
     }
@@ -117,10 +119,15 @@ public class PopupTournamentComponent : BasePopupComponent
     {
         var user = TournamentWorker.data.battleUserList;
         for (int i = 0; i < m_element.slots.Length; i++)
+        {
+            bool available = i < user.Length && user[i] != null;
+            m_element.slots[i].gameObject.SetActive(available);
+            if (!available) continue;
             m_element.slots[i].SetUserData(user[i],
-                null, //_userData => OnButtonAsync_Start(_userData.info).Forget(),
+                _userData => TournamentWorker.instance.EnterBattleAsync(_userData.info.uid).Forget(),
                 _userData => OnButtonAsync_OpenUserInfo(_userData).Forget()
                 );
+        }
     }
 
     async UniTask TimerAsync()
@@ -178,6 +185,14 @@ public class PopupTournamentComponent : BasePopupComponent
 
     async UniTask OnButtonAsync_Refresh()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            if (TournamentWorker.data.countRefresh <= 0 && await PopupManager.instance.OpenModalAsync($"Refresh costs {TournamentWorker.instance.ServerRefreshPrice} gold. Continue?") != StatusType.Success) return;
+            m_element.btnRefresh.interactable = false;
+            try { await TournamentWorker.instance.RefreshListAsync(); SetUserList(); SetRefreshCount(); }
+            finally { m_element.btnRefresh.interactable = true; }
+            return;
+        }
         if (TournamentWorker.data.countRefresh <= 0)
         {
             int cost = 1200;

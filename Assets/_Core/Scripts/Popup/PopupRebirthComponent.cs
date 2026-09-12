@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
-public class PopupRebirthComponent : BasePopupComponent
+public partial class PopupRebirthComponent : BasePopupComponent
 {
     PopupRebirthComponent() : base(PopupType.Rebirth) { }
 
@@ -61,10 +61,12 @@ public class PopupRebirthComponent : BasePopupComponent
 
         var point = stageData.level * 100 + stageData.chapterNumber * 10 + stageData.stageNumber;
         m_element.txtRewardCount.text = point.ToString("#,0");
+        SetServerRebirthInfo(isAvail);
     }
 
     async UniTask OnButtonAsync_Confirm()
     {
+        if (m_isLockClose) return;
         m_isLockClose = true;
 
         PopupManager.instance.CloseAll(popupType);
@@ -76,7 +78,8 @@ public class PopupRebirthComponent : BasePopupComponent
         m_element.panel.gameObject.SetActive(false);
 
         await UniTask.WaitUntil(() => PopupManager.instance.isDimm == false);
-        await RewardWorker.instance.RunAsync(m_element.panel.position, _itemData: TableManager.item.GetItemData(ItemType.time_stone, 100));
+        if (!ThreeKingdoms.Client.Server.GameServer.Enabled)
+            await RewardWorker.instance.RunAsync(m_element.panel.position, _itemData: TableManager.item.GetItemData(ItemType.time_stone, 100));
 
         gameObject.SetActive(false);
         dimm.SetActive(true);

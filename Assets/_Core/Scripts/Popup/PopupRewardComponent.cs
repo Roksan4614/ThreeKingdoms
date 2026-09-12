@@ -9,16 +9,18 @@ public class PopupRewardComponent : BasePopupComponent
 	PopupRewardComponent() : base(PopupType.Reward) { }
 
 	List<ItemData> m_rewards;
+	bool m_alreadyGranted;
 	bool m_isReadyClose = false;
 	bool m_isClose = false;
 
 	public override void OpenPopup(params object[] _args)
 	{
 		m_rewards = (List<ItemData>)_args[0];
+		m_alreadyGranted = _args.Length > 1 && _args[1] is bool granted && granted;
+		// PopupManager yields before supplying arguments; start presentation only after the payload is assigned.
+		StartAsync().Forget(error => { Debug.LogException(error); base.Close(); });
 	}
 
-	private void Start()
-		=> StartAsync().Forget();
 
 	bool m_isSkip;
 	async UniTask StartAsync()
@@ -76,7 +78,9 @@ public class PopupRewardComponent : BasePopupComponent
 
 		List<UniTask> tasks = new();
 		for (int i = 0; i < m_rewards.Count; i++)
-			tasks.Add(RewardWorker.instance.RunAsync(pReward.GetChild(i).position, _itemData: m_rewards[i]));
+			tasks.Add(m_alreadyGranted
+				? RewardWorker.instance.RunAsync(pReward.GetChild(i).position, m_rewards[i].key, m_rewards[i].count, _isPopup: true)
+				: RewardWorker.instance.RunAsync(pReward.GetChild(i).position, _itemData: m_rewards[i]));
 
 		await UniTask.WhenAll(tasks.ToArray());
 	}

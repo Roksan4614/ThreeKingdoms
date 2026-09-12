@@ -3,6 +3,7 @@ using Rev9.Post;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using System;
 
 public class DataManager
 {
@@ -50,19 +51,18 @@ public class DataManager
         tasks.Add(PostWorker.instance.InitializeAsync());
         tasks.Add(QuestWorker.instance.InitializeAsync());
 
-        await UniTask.WhenAll(tasks.ToArray());
+        await StartupTasks.WaitAllAsync(tasks);
     }
 
     public static void Release()
     {
-        if (m_instance != null)
-        {
-            m_instance.m_castle.Release();
-
-            m_instance = null;
-        }
-
-        bossRaid.ReleaseCTS();
+        var previous = m_instance;
+        if (previous == null) return;
+        var failures = new List<Exception>();
+        try { previous.m_castle.Release(); } catch (Exception error) { failures.Add(error); }
+        try { previous.m_bossRaid.ReleaseCTS(); } catch (Exception error) { failures.Add(error); }
+        finally { m_instance = null; }
+        if (failures.Count > 0) throw new AggregateException("Data cleanup failed", failures);
     }
 
     public bool isLobby => AddressableManager.instance.curSceneName.Contains("Lobby");

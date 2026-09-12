@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -31,19 +32,29 @@ public class PopupHeroInfo_Stat_Attribute_Slot : MonoBehaviour, IValidatable
         }
     }
 
+    bool m_locking;
     async UniTask OnButtonAsync_Lock(string _keyHero, HeroTraitsData _traitData)
     {
-        bool result = await DataManager.userInfo.API_TraitsLock(_keyHero, _traitData.index);
-
-        if (result == true)
+        if (m_locking) return;
+        m_locking = true;
+        m_element.btnLock.interactable = false;
+        try
         {
-            _traitData.isLock = !_traitData.isLock;
+            bool result = await DataManager.userInfo.API_TraitsLock(_keyHero, _traitData.index);
 
-            m_element.objLock.SetActive(_traitData.isLock);
-            m_element.txtName.color = m_element.txtValue.color = _traitData.isLock ? Color.white : Color.black;
+            if (result == true)
+            {
+                _traitData.isLock = ThreeKingdoms.Client.Server.GameServer.Enabled
+                    ? ThreeKingdoms.Client.Server.ServerState.Character(_keyHero).Traits.First(x => x.SlotIndex == _traitData.index).IsLocked
+                    : !_traitData.isLock;
 
-            onCallback_Reroll?.Invoke();
+                m_element.objLock.SetActive(_traitData.isLock);
+                m_element.txtName.color = m_element.txtValue.color = _traitData.isLock ? Color.white : Color.black;
+
+                onCallback_Reroll?.Invoke();
+            }
         }
+        finally { m_locking = false; m_element.btnLock.interactable = true; }
     }
 
     public void SetNotOpen(GradeType _gradeType)

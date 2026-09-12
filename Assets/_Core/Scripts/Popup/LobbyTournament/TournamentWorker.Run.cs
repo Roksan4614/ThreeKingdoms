@@ -23,6 +23,8 @@ namespace Rev9.Tournament
             if (m_data.countPlay == 0)
                 return;
 
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled && !await EnterServerBattleAsync(_uid, _idxRevenge)) return;
+
             await PopupManager.instance.ShowDimmAsync(true);
 
             m_idxRevenge = _idxRevenge;
@@ -34,7 +36,7 @@ namespace Rev9.Tournament
             PopupManager.instance.CloseAll();
 
             IngameLog.Add("Enter: " + _uid);
-            enterUserData = m_data.GetUserData(_uid);
+            if (!ThreeKingdoms.Client.Server.GameServer.Enabled) enterUserData = m_data.GetUserData(_uid);
 
             await UniTask.WaitUntil(() => PopupManager.instance.IsOpenPopup() == false);
 
@@ -43,6 +45,7 @@ namespace Rev9.Tournament
 
         public void Finished()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { FinishAndShowServerAsync().Forget(); return; }
             if (statusType == TournamentStatusType.Finished)
                 return;
 
@@ -56,6 +59,7 @@ namespace Rev9.Tournament
 
         public async UniTask SaveHistoryAsync()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await FinishServerBattleAsync(); return; }
             bool isWin = TournamentHeroInfoManager.instance.IsWin();
 
             await API_AddHistoryData(true, isWin, enterUserData, m_idxRevenge);
@@ -80,6 +84,7 @@ namespace Rev9.Tournament
 
         public int GetResultPoint(bool _isWin)
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return checked((int)(m_serverResult?.AttackerScoreDelta ?? (_isWin ? m_serverEntry?.WinScore : m_serverEntry?.LoseScore) ?? 0));
             int point = 0;
             for (int i = 0; i < m_data.battleUserList.Length; i++)
             {
@@ -95,6 +100,7 @@ namespace Rev9.Tournament
 
         public int GetResultRewardCount(bool _isWin)
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return checked((int)(m_serverResult?.PointDelta ?? (_isWin ? m_serverEntry?.PointWin : m_serverEntry?.PointLose) ?? 0));
             return _isWin ? 100 : 30;
         }
 

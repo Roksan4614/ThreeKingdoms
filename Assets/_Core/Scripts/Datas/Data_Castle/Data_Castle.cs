@@ -20,6 +20,7 @@ public partial class Data_Castle
 
     public async UniTask InitializeAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await InitializeServerAsync(); return; }
         InitializeWallyAsync().Forget();
 
         List<UniTask> lstTask = new()
@@ -70,6 +71,7 @@ public partial class Data_Castle
     CancellationToken m_ctsToken;
     public void OnUpdateClaim(bool _isInit = false)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
         Release_CTS();
         m_cts = new();
         m_ctsToken = m_cts.Token;
@@ -174,11 +176,13 @@ public partial class Data_Castle
 
     public void SaveData()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
         PPWorker.Set(c_key, m_db.Values.ToList());
     }
 
     public float GetAmountPerSecond(CastleData _data, bool _isWithProbity = true)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return ServerProductionRate(_data.type);
         if (_data.type != CastleObjectType.Farm &&
             _data.type != CastleObjectType.Market)
         {
@@ -241,6 +245,7 @@ public partial class Data_Castle
 
     public int GetMaxAmount(CastleData _data)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return ServerStorageCap(_data.type);
         if (_data.type != CastleObjectType.Farm &&
             _data.type != CastleObjectType.Market)
         {
@@ -277,6 +282,7 @@ public partial class Data_Castle
 
     public void GetSecondTimeStone(UnityAction<int, int> _callback)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { _callback((int)(ServerUpgrade?.SaveSecondsPerTimeStone ?? 1), (int)((ServerUpgrade?.SaveSecondsPerAd ?? 0) / 60)); return; }
         var palace = GetCaslteData(CastleObjectType.Palace);
         var effectData = TableManager.castleEffect[CastleObjectType.Palace].Get(palace.level);
         _callback(effectData.save_time_time_stone.Value, effectData.save_time_ad.Value);
@@ -309,6 +315,7 @@ public partial class Data_Castle
 
     public async UniTask SetBatchHeroAsync(CastleData _castleData, UnityAction<StatusType> _onComplete)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await SetServerCharactersAsync(_castleData, _onComplete); return; }
         await UniTask.NextFrame();
 
         // 기존 장수 삭제
@@ -343,6 +350,7 @@ public partial class Data_Castle
 
     public async UniTask ClaimAsync(CastleObjectType _objectType, UnityAction<StatusType> _onComplete)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await CollectServerAsync(_objectType, _onComplete); return; }
         await UniTask.NextFrame();
 
         var castleData = m_db[_objectType];
@@ -390,6 +398,7 @@ public partial class Data_Castle
         {
             get
             {
+                if (ThreeKingdoms.Client.Server.GameServer.Enabled) return DataManager.castle.CanServerUpgrade(type);
                 // 관아일 경우
                 if (type == CastleObjectType.Office)
                 {
@@ -450,6 +459,7 @@ public partial class Data_Castle
         }
         void CheckDate()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
             if (isDateChanged)
             {
                 today_claim_amount = 0;

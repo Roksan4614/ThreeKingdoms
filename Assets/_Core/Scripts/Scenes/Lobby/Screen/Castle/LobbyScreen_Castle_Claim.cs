@@ -82,6 +82,7 @@ public class LobbyScreen_Castle_Claim : MonoBehaviour, IValidatable
             return;
 
         var maxAmount = DataManager.castle.GetMaxAmount(_castleData);
+        if (maxAmount <= 0) { panel.gameObject.SetActive(false); return; }
         var process = _castleData.totalAmount / (float)maxAmount;
 
         if (process < 0.1f)

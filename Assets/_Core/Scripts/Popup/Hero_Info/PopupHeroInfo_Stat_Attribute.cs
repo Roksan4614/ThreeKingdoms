@@ -36,13 +36,13 @@ public class PopupHeroInfo_Stat_Attribute : MonoBehaviour, IValidatable
 
         for (; i < _heroData.countOpenTraits; i++)
         {
-            var gradeType = GradeType.General + i;
+            var gradeType = ThreeKingdoms.Client.Server.GameServer.Enabled ? ThreeKingdoms.Client.Server.CharacterActions.GradeForTraitSlot(i) : GradeType.General + i;
             m_element.slots[i].SetNotOpen(gradeType);
         }
 
         for (; i < m_element.slots.Length; i++)
         {
-            var gradeType = GradeType.General + i;
+            var gradeType = ThreeKingdoms.Client.Server.GameServer.Enabled ? ThreeKingdoms.Client.Server.CharacterActions.GradeForTraitSlot(i) : GradeType.General + i;
             m_element.slots[i].SetNotReady(gradeType);
         }
 
@@ -57,7 +57,7 @@ public class PopupHeroInfo_Stat_Attribute : MonoBehaviour, IValidatable
         //리롤 가능한 갯수
         var countReroll = _heroData.countOpenTraits - countLock;
 
-        var cost = 100 * Mathf.Min(3, (_heroData.countOpenTraits - countReroll + 1));
+        var cost = ThreeKingdoms.Client.Server.GameServer.Enabled ? ThreeKingdoms.Client.Server.CharacterActions.RerollCost(_heroData.key) : 100 * Mathf.Min(3, (_heroData.countOpenTraits - countReroll + 1));
         m_element.txtCost.text = cost.AmountKMBT(_isMBT: true);
 
         bool isValidReroll = countReroll > 0;

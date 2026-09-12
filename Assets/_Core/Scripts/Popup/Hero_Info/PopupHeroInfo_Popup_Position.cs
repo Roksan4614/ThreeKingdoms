@@ -41,6 +41,11 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
         gameObject.SetActive(true);
         await UniTask.WaitForEndOfFrame();
         m_heroKey = _heroKey;
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            try { await DataManager.heroPosition.RefreshServerAsync(); }
+            catch (System.Exception error) { PopupManager.instance.AlertShow(error.Message); gameObject.SetActive(false); return false; }
+        }
 
         m_element.scroll.velocity =
         m_element.scroll.content.anchoredPosition = Vector2.zero;

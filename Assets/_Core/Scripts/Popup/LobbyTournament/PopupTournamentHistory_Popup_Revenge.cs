@@ -44,8 +44,10 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
         m_element.slot.SetHistoryData(_historyData, null);
         m_element.userInfo.OpenAsync(_historyData.uid, _historyData.batchData).Forget();
 
-        m_element.txtPointWin.text = $"승리_시_<size=120%>+{_historyData.resultPoint * -1}p</size>";
-        m_element.txtPointLose.text = $"패배_시_<size=120%>{(int)(_historyData.resultPoint * UnityEngine.Random.Range(0.5f, 0.9f))}p</size>";
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) m_element.txtPointWin.text = "Reward is confirmed on entry.";
+        else m_element.txtPointWin.text = $"승리_시_<size=120%>+{_historyData.resultPoint * -1}p</size>";
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) m_element.txtPointLose.text = "";
+        else m_element.txtPointLose.text = $"패배_시_<size=120%>{(int)(_historyData.resultPoint * UnityEngine.Random.Range(0.5f, 0.9f))}p</size>";
 
         SetPlayCount();
 

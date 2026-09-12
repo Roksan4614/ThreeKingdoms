@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public class Data_BossRaid
+public partial class Data_BossRaid
 {
 #if UNITY_EDITOR
     const int c_timerRunning = 11;
@@ -34,6 +34,7 @@ public class Data_BossRaid
 
     public async UniTask InitializeAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await InitializeServerAsync(); return; }
         await UniTask.NextFrame();
 
         m_data = PPWorker.Get<BossRaidData>(c_key);
@@ -53,7 +54,10 @@ public class Data_BossRaid
     }
 
     public void ReleaseCTS()
-        => m_cts = m_cts.ReleaseCTS();
+    {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { ReleaseServer(); return; }
+        m_cts = m_cts.ReleaseCTS();
+    }
 
     async UniTask TimerAsync()
     {
@@ -94,12 +98,14 @@ public class Data_BossRaid
 
     public void Start_BossRaid()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { EmitServerPhase(); return; }
         m_raidStatus = BossRaidStatusType.FirstPhase;
         Signal.instance.BossRaidStatus.Emit(m_raidStatus);
     }
 
     public void Finish_FirstPhase()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { EmitServerPhase(); return; }
         m_raidStatus = BossRaidStatusType.Finish_FirstPhase;
         Signal.instance.BossRaidStatus.Emit(m_raidStatus);
 
@@ -109,12 +115,14 @@ public class Data_BossRaid
 
     public void Wait_SecondPhase()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { EmitServerPhase(); return; }
         m_raidStatus = BossRaidStatusType.Wait_SecondPhase;
         Signal.instance.BossRaidStatus.Emit(m_raidStatus);
     }
 
     public void Start_SecondPhase()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { EmitServerPhase(); return; }
         var dtNow = Utils.GetUTC();
         m_data.tickSecondPhase = dtNow.Ticks;
         //남은 시간 + 3분 일껄?
@@ -126,6 +134,7 @@ public class Data_BossRaid
 
     public void Finish_BossRaid()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { EmitServerPhase(); return; }
         m_raidStatus = BossRaidStatusType.Finished;
         Signal.instance.BossRaidStatus.Emit(m_raidStatus);
 
@@ -142,12 +151,14 @@ public class Data_BossRaid
 
     public void ExitBossRaid()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { ExitServerBattle(); return; }
         TimerAsync().Forget();
         m_rankNow.Clear();
     }
 
     public async UniTask DoLoadAsync_RankData()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await LoadServerRanksAsync(); return; }
         await UniTask.NextFrame();
 
         m_rankPoint.ranker = new();
@@ -221,6 +232,7 @@ public class Data_BossRaid
     CancellationTokenSource m_ctsTestDamage;
     public void TestAddTestUser()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
         m_ctsTestDamage = m_ctsTestDamage.ReleaseCTS(true);
         var token = m_ctsTestDamage.Token;
 
@@ -244,6 +256,7 @@ public class Data_BossRaid
 
     public void SendDamageBossAsync(long _damage)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { QueueServerDamage(_damage); return; }
         if (m_rankNow.Count == 0)
             return;
 
@@ -299,7 +312,9 @@ public class Data_BossRaid
     }
 
     void SaveData()
-        => PPWorker.Set(c_key, m_data);
+    {
+        if (!ThreeKingdoms.Client.Server.GameServer.Enabled) PPWorker.Set(c_key, m_data);
+    }
 
     [JsonObject(MemberSerialization.OptIn)]
     public class BossRaidData
@@ -379,6 +394,8 @@ public class RankerUserData : UserInfoData
     [JsonProperty] public int prevRank;
     [JsonProperty] public string skin;
     [JsonProperty] public long point;
+    public string serverDamage;
+    public double serverPercentile;
     [JsonProperty] public long power;
     [JsonProperty] int? tier;
 

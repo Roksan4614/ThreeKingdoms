@@ -36,6 +36,8 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
 
         m_batchData = _batchData == null ? await TournamentWorker.instance.API_LoadUserInfoData(_uid) : _batchData;
         await m_element.panelBatch.SetBatchDataAsync(m_batchData);
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled && m_batchData.heroes.Count == 0)
+            m_element.panel.GetComponent<TextMeshProUGUI>("Batch/Text").text = "Formation is revealed when battle starts.";
 
         SetTreasureAsync().Forget();
         SetInfo();
@@ -53,6 +55,8 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
     {
         var batchData = await TournamentWorker.instance.API_LoadUserInfoData(m_batchData.uid);
 
+        for (int i = 0; i < m_element.treasure.childCount; i++)
+            m_element.treasure.GetChild(i).gameObject.SetActive(i < batchData.treasure.Count);
         for (int i = 0; i < batchData.treasure.Count; i++)
         {
             var t = batchData.treasure[i];
@@ -96,7 +100,7 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
                 parentInfo.GetChild(i).gameObject.SetActive(false);
         }
 
-        m_element.power.text = totalPower.AmountKMBT(_isMBT: true);
+        m_element.power.text = (m_batchData.serverPower ?? totalPower).AmountKMBT(_isMBT: true);
 
         PPWorker.Set(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO, isOn ? 1 : 0, false);
     }

@@ -66,6 +66,7 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
         m_element.btnRevenge.onClick.RemoveAllListeners();
         m_element.btnRevenge.onClick.AddListener(() =>
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { _callback?.Invoke(_historyData); return; }
             var batchData = _historyData.batchData;
 
             if (_historyData.teamDefence == null)

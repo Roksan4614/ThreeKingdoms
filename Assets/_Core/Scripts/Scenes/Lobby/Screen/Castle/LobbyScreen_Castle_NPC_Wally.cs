@@ -4,7 +4,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class LobbyScreen_Castle_NPC_Wally : MonoBehaviour, IValidatable, IPointerDownHandler
+public partial class LobbyScreen_Castle_NPC_Wally : MonoBehaviour, IValidatable, IPointerDownHandler
 {
     LobbyScreen_Castle m_castle;
     CancellationTokenSource m_cts;
@@ -32,6 +32,7 @@ public class LobbyScreen_Castle_NPC_Wally : MonoBehaviour, IValidatable, IPointe
     {
         if (m_isShow == false)
             return;
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { CaptureServerAsync().Forget(); return; }
 
         Release_CTS();
         if (UnityEngine.Random.value < m_percentCatch)

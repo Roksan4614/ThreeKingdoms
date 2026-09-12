@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Rev9.ContentsMarket
 {
-    public class ContentsMarketWorker
+    public partial class ContentsMarketWorker
     {
         static ContentsMarketWorker m_instance;
         public static ContentsMarketWorker instance
@@ -29,6 +29,7 @@ namespace Rev9.ContentsMarket
 
         public async UniTask InitializeAsync()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await InitializeServerAsync(); return; }
             await UniTask.NextFrame();
 
             if (m_db == null)
@@ -178,6 +179,7 @@ namespace Rev9.ContentsMarket
 
         public async UniTask<bool> API_ProductBuy(ContentsMarketTabType _tabType, ContentsMarketProductData _productData, int _countProduct)
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return await BuyServerAsync(_tabType, _productData, _countProduct);
             await UniTask.NextFrame();
 
             var db = m_db[_tabType];

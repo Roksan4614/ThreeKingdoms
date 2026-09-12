@@ -1,13 +1,14 @@
 using DG.Tweening;
 using UnityEngine;
 
-public class Character_Enemy_RaidBoss : Character_Enemy
+public partial class Character_Enemy_RaidBoss : Character_Enemy
 {
 
     //Vector3 m_prevPos;
 
     public override void SetBossData(string _key = null)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { SetServerBossData(_key); return; }
         isBoss = true;
 
         if (_key.IsActive())
@@ -32,6 +33,7 @@ public class Character_Enemy_RaidBoss : Character_Enemy
 
     public override bool OnDamage(CharacterComponent _attacker, float _damage, bool _isCritical = false)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return ServerDamage(_attacker, _damage, _isCritical);
         if (isLive == false)
             return true;
 

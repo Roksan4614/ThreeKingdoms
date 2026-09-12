@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Data_Castle_Mission
+public partial class Data_Castle_Mission
 {
     List<CastleMissionData> m_data;
     //public IReadOnlyList<CastleMissionData> data => m_data.DeepClone();
@@ -20,6 +20,7 @@ public class Data_Castle_Mission
 
     public async UniTask InitializeAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { InitializeServerView(); return; }
         await UniTask.Yield();
 
         m_data = PPWorker.Get<List<CastleMissionData>>(c_key);
@@ -73,10 +74,11 @@ public class Data_Castle_Mission
         => m_data.DeepClone().Where(x => (x.tickStart == 0) == (_isRunning == false)).ToArray();
 
     public CastleMissionData[] GetFinishedMissions()
-        => m_data.DeepClone().Where(x => x.tickEnd > 0 && x.tickEnd < Utils.GetUTC().Ticks).ToArray();
+        => m_data.DeepClone().Where(x => ThreeKingdoms.Client.Server.GameServer.Enabled ? x.serverCompleted : x.tickEnd > 0 && x.tickEnd < Utils.GetUTC().Ticks).ToArray();
 
     public void RefreshMission()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { RefreshServerOffersAsync().Forget(); return; }
         while (true)
         {
             var m = m_data.Find(x => x.tickStart == 0);
@@ -113,6 +115,7 @@ public class Data_Castle_Mission
 
     public async UniTask StartMissionAsync(CastleMissionData _missionData, UnityAction<StatusType> _onComplete)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await StartServerMissionAsync(_missionData, _onComplete); return; }
         await UniTask.Yield();
 
         var idx = m_data.FindIndex(x => x.idx == _missionData.idx);
@@ -144,6 +147,7 @@ public class Data_Castle_Mission
 
     public async UniTask<List<ItemData>> CompleteMissionAsync(UnityAction<StatusType, int> _onComplete, params CastleMissionData[] _missionDatas)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return await ClaimServerMissionsAsync(_onComplete, _missionDatas);
         // 모두 받기
         if (_missionDatas.Length == 0)
             _missionDatas = m_data.FindAll(x => x.tickEnd > 0 && x.tickEnd < Utils.GetUTC().Ticks).ToArray();
@@ -187,6 +191,7 @@ public class Data_Castle_Mission
 
     public async UniTask<StatusType> TimerBonusAsync(int _idx, float _bonusSeconds)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { PopupManager.instance.AlertShow("Server office missions do not support time shortening."); return StatusType.Failed; }
         var result = StatusType.Wait;
         await UniTask.NextFrame();
 
@@ -239,6 +244,7 @@ public class Data_Castle_Mission
 
     public void SetUpgradeOffice()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
         var nextLevelInfo = TableManager.castleOfficeLevel.GetLevelInfo(m_levelInfo.level + 1);
 
         m_levelInfo.level++;
@@ -249,11 +255,13 @@ public class Data_Castle_Mission
 
     public void SaveData()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
         PPWorker.Set(c_key, m_data);
     }
 
     public void SaveLevelData()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
         PPWorker.Set(c_key + "_levelinfo", m_levelInfo);
     }
 
@@ -261,6 +269,12 @@ public class Data_Castle_Mission
     public class CastleMissionData
     {
         [JsonProperty] public int idx;
+        public string serverOfferId;
+        public string serverRunId;
+        public bool serverCompleted;
+        public int serverRequiredStat;
+        public int serverXp;
+        public int serverDuration;
         [JsonProperty] public string key;
         [JsonProperty] public List<string> heroes;
         [JsonProperty] public GradeType grade;
@@ -270,7 +284,7 @@ public class Data_Castle_Mission
         [JsonProperty] public List<string> rewardKey;
 
         public bool isRunning => tickStart > 0;
-        public bool isFinished => Utils.GetUTC().Ticks >= tickEnd;
+        public bool isFinished => ThreeKingdoms.Client.Server.GameServer.Enabled ? serverCompleted : Utils.GetUTC().Ticks >= tickEnd;
 
         public TableCastleMissionData dbData
             => TableManager.castleMission.Get(key);
@@ -285,9 +299,9 @@ public class Data_Castle_Mission
         public string missionNameStat => $"[{TableManager.stringTable.GetString($"CORESTAT_{dbData.statType.ToString().ToUpper()}")}] {missionName}";
         public string gradeName => TableManager.stringTable.GetGradeType(grade);
 
-        public int coreStatMax => dbGradeData.reqStatValue;
-        public int xp => dbGradeData.missionXp;
-        public int durationSeconds => dbGradeData.durationSeconds;
+        public int coreStatMax => ThreeKingdoms.Client.Server.GameServer.Enabled ? serverRequiredStat : dbGradeData.reqStatValue;
+        public int xp => ThreeKingdoms.Client.Server.GameServer.Enabled ? serverXp : dbGradeData.missionXp;
+        public int durationSeconds => ThreeKingdoms.Client.Server.GameServer.Enabled ? serverDuration : dbGradeData.durationSeconds;
     }
 
     public class CastleMissionLevelInfoData
@@ -319,6 +333,7 @@ public class Data_Castle_Mission
 
         void CheckDate()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
             if (isDateChanged)
             {
                 mission_count = TableManager.castleEffect[CastleObjectType.Office].Get(level).mission_count.Value;

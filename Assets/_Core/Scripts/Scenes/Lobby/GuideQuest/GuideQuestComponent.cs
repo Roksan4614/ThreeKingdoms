@@ -26,6 +26,8 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         m_element.img_circle.gameObject.SetActive(false);
 
         m_element.button.onClick.AddListener(OnButton_Quest);
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+            TutorialManager.instance.ServerIssueChanged += StartServerGuide;
 
         if (TutorialManager.instance.IsCompleteGuide(GuideQuestType.dash_use))
             ControllerManager.instance.SetActive_GuideQuestArrow(false, GuideQuestType.dash_use);
@@ -43,6 +45,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
 
     public void StartGuideQuest(bool _isInitialized = false)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { StartServerGuide(); return; }
         var tableData = TutorialManager.data.tableData;
 
         m_element.textTitle.text = TutorialManager.data.name;
@@ -72,6 +75,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
 
     public void UpdateStatus()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { StartServerGuide(); return; }
         m_element.textStatus.text = TutorialManager.data.statusMessage;
 
         bool isComplete = TutorialManager.data.isComplete;
@@ -84,6 +88,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
 
     public async UniTask RunAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { BeginServerGuideRun(); return; }
         await UniTask.WaitUntil(() => TeamManager.instance.mainHero == true);
 
         if (TutorialManager.data.isComplete == true)
@@ -142,6 +147,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
 
     void OnButton_Quest()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { OnServerGuideButton(); return; }
         if (TutorialManager.data.isComplete)
             RewardStartAsync().Forget();
         else
@@ -291,6 +297,7 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
 
     async UniTask RewardStartAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await RewardServerGuideAsync(); return; }
         await UniTask.NextFrame();
 
         List<ItemData> rewards = new();

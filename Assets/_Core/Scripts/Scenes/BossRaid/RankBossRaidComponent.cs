@@ -95,7 +95,9 @@ public class RankBossRaidComponent : Singleton<RankBossRaidComponent>, IValidata
 
     public void UpdateRanker()
     {
-        var dbRanker = DataManager.bossRaid.rankNow.SortByDescending(x => x.point);
+        var dbRanker = ThreeKingdoms.Client.Server.GameServer.Enabled
+            ? DataManager.bossRaid.rankNow.OrderBy(x => x.rank).ToList()
+            : DataManager.bossRaid.rankNow.SortByDescending(x => x.point);
 
         if (dbRanker.Count == 0)
             dbRanker.Add(new()

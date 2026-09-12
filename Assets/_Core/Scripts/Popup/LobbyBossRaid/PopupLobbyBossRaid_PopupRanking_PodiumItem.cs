@@ -31,6 +31,7 @@ public class PopupLobbyBossRaid_PopupRanking_PodiumItem : MonoBehaviour, IValida
             m_element.txtPoint.text = $"{_rankerData.point:#,0}p";
         else
             m_element.txtPoint.text = $"{_rankerData.point:#,0}";
+        if (_rankerData.serverDamage != null) m_element.txtPoint.text = _rankerData.serverDamage;
     }
 
     async UniTask InstantiateCharacterAsync(RankerUserData _rankerData)

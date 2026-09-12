@@ -85,6 +85,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
 
     async UniTask OnButtonAsync(ButtonType _type)
     {
+        if ((_type == ButtonType.Post || _type == ButtonType.Quest) && ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
         Close();
 
         await UniTask.WaitForSeconds(.1f);

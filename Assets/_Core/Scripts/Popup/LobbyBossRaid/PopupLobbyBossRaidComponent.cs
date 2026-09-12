@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PopupLobbyBossRaidComponent : BasePopupComponent
+public partial class PopupLobbyBossRaidComponent : BasePopupComponent
 {
     PopupLobbyBossRaidComponent() : base(PopupType.LobbyBossRaid) { }
 
@@ -38,6 +38,8 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         var dataRaid = DataManager.bossRaid.data;
         m_element.txtDifficult.text = $"[{TableManager.stringTable.GetGradeType(dataRaid.gradeMin)}~{TableManager.stringTable.GetGradeType(dataRaid.gradeMax)}]";
+
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) InitializeServerSummaryView();
 
         DoLoadBossCharacter().Forget();
         TimerAsync_Round().Forget();
@@ -88,6 +90,8 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         m_element.rtHero.anchoredPosition = anchorPos;
 
         // 이전 라운드 정보
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
+
         if (raidData.tickPrevRound == 0)
             m_element.txtInfoPrevRound.text = "이전_라운드_정보_없음";
         else
@@ -102,7 +106,12 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         await UniTask.WaitForSeconds(1f);
 
-        BossRaidWorker.instance.InitializeAsync(BossRaidWorker.BossRaidType.LuBu).Forget();
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            await BossRaidWorker.instance.InitializeAsync(BossRaidWorker.BossRaidType.LuBu);
+            m_element.btnStart.interactable = true;
+        }
+        else BossRaidWorker.instance.InitializeAsync(BossRaidWorker.BossRaidType.LuBu).Forget();
     }
 
     async UniTask OnUpdateSeasonTimerAsync()
@@ -125,6 +134,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
     async UniTask TimerAsync_Round()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await ServerRoundTimerAsync(); return; }
         m_element.btnStart.interactable = false;
 
         if (DataManager.bossRaid.data.tickNextRound == 0)

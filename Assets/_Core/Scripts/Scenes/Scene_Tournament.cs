@@ -79,7 +79,8 @@ namespace Rev9.Tournament
                     if (_isMe)
                     {
                         m_heroesMe.Add(hero);
-                        hero.SetHeroData(h.key);
+                        if (ThreeKingdoms.Client.Server.GameServer.Enabled) hero.SetHeroData_TournamentOther(h);
+                        else hero.SetHeroData(h.key);
                         hero.SetFaction(FactionType.Alliance);
                         hero.move.SetFlip(true);
                     }
@@ -156,7 +157,7 @@ namespace Rev9.Tournament
             m_cts = m_cts.ReleaseCTS(true);
             var token = m_cts.Token;
 
-            var dtEnd = DateTime.Now.AddSeconds(60);
+            var dtEnd = DateTime.Now.AddSeconds(TournamentWorker.instance.BattleDurationSeconds);
 
             TimeSpan ts;
             while (dtEnd >= DateTime.Now)

@@ -19,6 +19,7 @@ public class Data_Stat
 
     public TableStatData GetResultStat(HeroInfoData _heroInfoData)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled && _heroInfoData.statData != null) return _heroInfoData.statData.DeepClone();
         var result = TableManager.statHero.GetStatData(_heroInfoData);
 
         if (result == null)

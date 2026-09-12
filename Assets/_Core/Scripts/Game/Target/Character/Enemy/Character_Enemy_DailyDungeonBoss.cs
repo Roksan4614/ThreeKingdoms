@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class Character_Enemy_DailyDungeonBoss : Character_Enemy_Boss
 {
@@ -9,7 +10,7 @@ public class Character_Enemy_DailyDungeonBoss : Character_Enemy_Boss
         Signal.instance.DailyDungeonStatus.connectLambda = new(this, _status =>
         {
             if (_status == Data_DailyDungeon.DailyDungeonStatusType.Timeout)
-                DataManager.dailyDungeon.SaveResultData(m_stat.health / m_stat.healthMax);
+                DataManager.dailyDungeon.SaveResultData(m_stat.health, m_stat.healthMax);
         });
     }
 
@@ -29,11 +30,17 @@ public class Character_Enemy_DailyDungeonBoss : Character_Enemy_Boss
 
     public override bool OnDamage(CharacterComponent _attacker, float _damage, bool _isCritical = false)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled && DataManager.dailyDungeon.curGradeType >= GradeType.MAX) return false;
         base.OnDamage(_attacker, _damage, _isCritical);
 
         if (m_stat.health <= 1)
         {
             DataManager.dailyDungeon.curGradeType++;
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled && DataManager.dailyDungeon.curGradeType >= GradeType.MAX)
+            {
+                DataManager.dailyDungeon.TimeoutAsync().Forget();
+                return false;
+            }
 
             SetBossData(m_stat.key);
 

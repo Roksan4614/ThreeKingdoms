@@ -14,9 +14,9 @@ public class PopupTournament_Slot : MonoBehaviour, IValidatable
     private void Awake()
     {
         var btnConfirm = transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
-        btnConfirm.onClick.AddListener(() => m_onStart(m_rankerUserData));
+        btnConfirm.onClick.AddListener(() => m_onStart?.Invoke(m_rankerUserData));
 
-        transform.GetComponent<Button>("Panel/btn_info").onClick.AddListener(() => m_onOpenInfo(m_rankerUserData));
+        transform.GetComponent<Button>("Panel/btn_info").onClick.AddListener(() => m_onOpenInfo?.Invoke(m_rankerUserData));
     }
 
     public void ResetData()

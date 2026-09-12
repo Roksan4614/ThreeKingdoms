@@ -43,6 +43,7 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
     bool m_isDoing = false;
     public void OnButton_OpenScreen(LobbyScreenType _screenType)
     {
+        if (_screenType == LobbyScreenType.Summon && ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
         if (LobbyScreenManager.instance.isLock == true || m_isDoing == true)
             return;
 
