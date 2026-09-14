@@ -19,11 +19,11 @@ namespace ThreeKingdoms.Client.Server
     public sealed class ServerIntegrationSettings
     {
         public bool UseServer = true;
-        public string ApiBaseUrl = "http://127.0.0.1:11080";
-        public string TableBaseUrl = "http://127.0.0.1:11080/table_data/json/";
-        public string RaidUrl = "ws://127.0.0.1:11083/";
-        public long TestUid;
-        public string ApiSecretKey;
+        public string ApiBaseUrl = "http://106.251.241.130:11080";
+        public string TableBaseUrl = "https://dev-static.kingz.app/table_data/json/";
+        public string RaidUrl = "ws://106.251.241.130:11083/";
+        public long TestUid = 1001;
+        public string ApiSecretKey = "ca59cb33efb0c49719f3e815d7c530ef78d8f08d20d6e87979fe0f68bace46c0";
     }
 
     public sealed class GameServerException : Exception
