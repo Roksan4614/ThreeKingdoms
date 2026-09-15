@@ -13,6 +13,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         NONE = -1,
 
         Setting,
+        Pass,
         Noti,
         Inventory,
         Post,
@@ -97,6 +98,14 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
                 {
                     if (m_popups.ContainsKey(_type) == false)
                         m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupSettingComponent>(PopupType.Setting));
+                    else
+                        m_popups[_type].OpenPopup();
+                }
+                break;
+            case ButtonType.Pass:
+                {
+                    if (m_popups.ContainsKey(_type) == false)
+                        m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupPassComponent>(PopupType.Pass));
                     else
                         m_popups[_type].OpenPopup();
                 }
@@ -229,7 +238,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField, HideInInspector]
+    [SerializeField]
     ElementData m_element;
 
     [System.Serializable]

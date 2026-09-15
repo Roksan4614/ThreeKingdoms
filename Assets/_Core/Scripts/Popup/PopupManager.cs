@@ -37,6 +37,7 @@ public enum PopupType
     Setting,
     Quest,
     Rebirth,
+    Pass,
 
     Reward,
     Reward_Idle,

@@ -1,10 +1,13 @@
 using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
 using Rev9.Tournament;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class TableManager
@@ -59,7 +62,7 @@ public class TableManager
     Table_CastleMission_Reward m_castleMissionReward;
     public static Table_Castle_Office_Level castleOfficeLevel => instance.m_castleOfficeLevel;
     Table_Castle_Office_Level m_castleOfficeLevel;
-    
+
     public static Table_DailyDungeon_Grade dailyDungeonGrade => instance.m_dailyDungeonGrade;
     Table_DailyDungeon_Grade m_dailyDungeonGrade;
     public static Table_DailyDungeon_Boss dailyDungeonBoss => instance.m_dailyDungeonBoss;
@@ -92,7 +95,7 @@ public class TableManager
 
     public static Table_TournamentReward tournamentReward => instance.m_tournamentReward;
     Table_TournamentReward m_tournamentReward;
-    
+
     public static Table_Traits traits => instance.m_traits;
     Table_Traits m_traits;
     public static Table_TraitsValue traitsValue => instance.m_traitsValue;
@@ -103,6 +106,8 @@ public class TableManager
 
     public async UniTask InitializeAsync()
     {
+        await InitializeAsync_CDN();
+
         await AddressableManager.instance.LoadAssetAsync<TextAsset>(true, _result =>
         {
             m_hero = new(LoadList<TableHeroData>(_result, "s_character"));
@@ -176,9 +181,139 @@ public class TableManager
         }
     }
 
+    List<T> LoadList<T>(string _key)
+    {
+        var jsonData = GetTable(_key);
+        if (jsonData.IsActive())
+        {
+            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(jsonData);
+            return result;
+        }
+        return new();
+    }
+
+    static string m_baseUrl = "https://dev-static.kingz.app/table_data/json/";
+    public static void SetBaseURL(string _url) => m_baseUrl = _url;
+    public string GetJsonURL(string _fileName) => $"{m_baseUrl}{_fileName}.json";
+
+    string m_pathCache;
+
+    async UniTask<bool> InitializeAsync_CDN()
+    {
+        if (m_baseUrl.IsActive() == false)
+            return false;
+
+        await LoadCategoryAsync();
+
+        if (m_category.isActive == false)
+            return false;
+
+        m_pathCache = Path.Combine(Application.persistentDataPath, "TableCache");
+
+        ReadLocalHashCache();
+
+        bool isUpdated = false;
+        List<UniTask> tasks = new();
+        foreach (var remoteTable in m_category.tables)
+            tasks.Add(DownloadTablesAsync(remoteTable.Key, remoteTable.Value, () => isUpdated = true));
+
+        await UniTask.WhenAll(tasks);
+
+        if (isUpdated)
+            SaveLocalHashCache();
+
+        return true;
+    }
+
+    CategoryHashData m_category;
+    CategoryHashData m_localCache;
+
+    async UniTask LoadCategoryAsync()
+    {
+        if (m_category.isActive == false)
+        {
+            UnityWebRequest req = UnityWebRequest.Get(GetJsonURL("table_hash"));
+            await req.SendWebRequest().ToUniTask();
+
+            if (req.result == UnityWebRequest.Result.Success)
+            {
+                m_category = JsonConvert.DeserializeObject<CategoryHashData>(req.downloadHandler.text);
+
+                if (m_category.tables == null || m_category.tables.Count == 0)
+                    IngameLog.AddError("GetCategoryAsync: FILE NULL");
+            }
+            else
+                IngameLog.AddError($"GetCategoryAsync: FAIL DOWN - {req.url}");
+        }
+    }
+
+    async UniTask DownloadTablesAsync(string _key, string _hash, Action _onUpdated)
+    {
+        // 해시가 같다면 넘어가자
+        if (m_localCache.tables.ContainsKey(_key) && m_localCache.tables[_key] == _hash)
+            return;
+
+        UnityWebRequest req = UnityWebRequest.Get($"{GetJsonURL(_key)}?t={DateTimeOffset.UtcNow.ToUnixTimeSeconds()}");
+        await req.SendWebRequest().ToUniTask();
+
+        if (req.result == UnityWebRequest.Result.Success)
+        {
+            string cachePath = Path.Combine(m_pathCache, $"{_key}.json");
+            File.WriteAllText(cachePath, req.downloadHandler.text);
+
+            m_localCache.tables[_key] = _hash;
+            _onUpdated();
+        }
+        else
+            IngameLog.Add($"DownloadTablesAsync: FAILED: {_key}: {req.error}");
+    }
+
+    void ReadLocalHashCache()
+    {
+        if (Directory.Exists(m_pathCache) == false)
+            Directory.CreateDirectory(m_pathCache);
+
+        string hashCachePath = Path.Combine(m_pathCache, "hash_cache.json");
+        if (File.Exists(hashCachePath))
+        {
+            string hashJson = File.ReadAllText(hashCachePath);
+            m_localCache.tables = JsonConvert.DeserializeObject<Dictionary<string, string>>(hashJson);
+        }
+
+        if (m_localCache.tables == null)
+            m_localCache.tables = new();
+    }
+
+    void SaveLocalHashCache()
+    {
+        string hashCachePath = Path.Combine(m_pathCache, "hash_cache.json");
+        string hashJson = JsonConvert.SerializeObject(m_localCache.tables, Formatting.Indented);
+        File.WriteAllText(hashCachePath, hashJson);
+    }
+
+    string GetTable(string _key)
+    {
+        string cachePath = Path.Combine(m_pathCache, $"{_key}.json");
+
+        if (File.Exists(cachePath))
+            return File.ReadAllText(cachePath);
+
+        IngameLog.Add("GetTable: Not Founded: " + _key);
+        return null;
+    }
+
     [Serializable]
     public class SerializeData<T>
     {
         public T[] Data;
+    }
+
+    [Serializable]
+    public struct CategoryHashData
+    {
+        public string total_hash;
+        public Dictionary<string, string> tables;
+
+        public bool isActive => total_hash.IsActive();
     }
 }
