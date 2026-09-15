@@ -51,6 +51,7 @@ public partial class InfoStage_Boss
 
     void SlotBossRaidStatus(BossRaidStatusType _status)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { ApplyServerRaidHud(); return; }
         if (_status == BossRaidStatusType.Finish_FirstPhase)
         {
             m_ctsTimer = m_ctsTimer.ReleaseCTS();
@@ -89,6 +90,7 @@ public partial class InfoStage_Boss
 
     async UniTask TimerAsync(double _ramainTotalMinute, System.DateTime _dtEnd)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled && BossRaidWorker.instance.isRunning) { await ServerRaidTimerAsync(); return; }
         m_ctsTimer = m_ctsTimer.ReleaseCTS(true);
         var token = m_ctsTimer.Token;
 

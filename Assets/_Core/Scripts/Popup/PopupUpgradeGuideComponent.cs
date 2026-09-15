@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
-public class PopupUpgradeGuideComponent : BasePopupComponent, IValidatable
+public partial class PopupUpgradeGuideComponent : BasePopupComponent, IValidatable
 {
     PopupUpgradeGuideComponent() : base(PopupType.UpgradeGuide) { }
 
@@ -20,6 +20,7 @@ public class PopupUpgradeGuideComponent : BasePopupComponent, IValidatable
 
             var button = (idx == parent.childCount ? Instantiate(baseButton, parent) : parent.GetChild(idx)).GetComponent<ButtonHelper>();
             button.onClick.AddListener(() => OnButton(type));
+            if (SetServerActionLabel(type, button)) continue;
 
             button.text = TableManager.stringTable.GetString($"UPGRADE_GUIDE_{type}_TITLE");
             button.text += "\n<color=#6f6f6f><size=55%>" + TableManager.stringTable.GetString($"UPGRADE_GUIDE_{type}_DESC") + "</size></color>";
@@ -29,6 +30,7 @@ public class PopupUpgradeGuideComponent : BasePopupComponent, IValidatable
     bool m_isDoing = false;
     void OnButton(UpgradeGuideType _type)
     {
+        if (_type == UpgradeGuideType.GACHA && ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
         if (m_isDoing == true)
             return;
 
@@ -58,6 +60,7 @@ public class PopupUpgradeGuideComponent : BasePopupComponent, IValidatable
     async UniTask TimeLoopAsync()
     {
         await UniTask.Yield();
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) StageManager.instance.RestartStage();
     }
 
     public override void Close()

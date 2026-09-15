@@ -56,6 +56,7 @@ public class PopupLobbyBossRaid_PopupRanking_Item : MonoBehaviour, IValidatable
             m_element.txtPoint.text = $"{_rankerData.point:#,0}p";
         else
             m_element.txtPoint.text = $"{_rankerData.point:#,0}";
+        if (_rankerData.serverDamage != null) m_element.txtPoint.text = _rankerData.serverDamage;
     }
 
     #region VALIDATE

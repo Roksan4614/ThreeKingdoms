@@ -160,6 +160,7 @@ namespace Rev9.Quest
 
         async UniTask OnButtonAsync_Confirm(PopupQuest_Slot _slot, QuestInfoData _questData)
         {
+            if (ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
             if (_questData.isComplete == true)
             {
                 if (await QuestWorker.instance.API_ReceiveReward(_questData) == true)
@@ -313,6 +314,7 @@ namespace Rev9.Quest
 
         async UniTask OnButtonAsync_GaugeReward(TableQuestData _tableRewardData)
         {
+            if (ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
             int countComplete = QuestWorker.instance.GetCountComplete(m_curTab);
 
             if (_tableRewardData.target_value > countComplete)

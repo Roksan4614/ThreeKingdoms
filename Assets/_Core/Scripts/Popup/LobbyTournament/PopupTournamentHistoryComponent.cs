@@ -13,6 +13,7 @@ public class PopupTournamentHistoryComponent : BasePopupComponent
         base.Awake();
 
         var btnRevenge = transform.GetComponent<ButtonHelper>("Panel/btn_add_revenge");
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) btnRevenge.gameObject.SetActive(false);
 #if SERVICE_DEV
         btnRevenge.onClick.AddListener(() =>
         {
@@ -68,6 +69,7 @@ public class PopupTournamentHistoryComponent : BasePopupComponent
 
     public void OpenPopup_Rebirth(params object[] _args)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) StartAsync().Forget();
         gameObject.SetActive(true);
         Utils.SetActivePunch(m_element.panel, true);
         m_element.scroll.content.anchoredPosition = Vector2.zero;

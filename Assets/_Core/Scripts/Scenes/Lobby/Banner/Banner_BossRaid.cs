@@ -4,7 +4,7 @@ using System.Threading;
 using TMPro;
 using UnityEngine;
 
-public class Banner_BossRaid : MonoBehaviour, IValidatable
+public partial class Banner_BossRaid : MonoBehaviour, IValidatable
 {
     CancellationTokenSource m_cts;
 
@@ -24,6 +24,7 @@ public class Banner_BossRaid : MonoBehaviour, IValidatable
 
     async UniTask TimerAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await ServerBannerTimerAsync(); return; }
         m_cts = m_cts.ReleaseCTS(true);
         var token = m_cts.Token;
 

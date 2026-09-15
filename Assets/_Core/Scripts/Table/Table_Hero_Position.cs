@@ -8,9 +8,10 @@ public class Table_Hero_Position : BaseTable<HeroPositionType, TableHeroPosition
 {
     Dictionary<CategoryType_HeroPositon, List<TableHeroPositionData>> m_group;
 
-    public Table_Hero_Position(List<TableHeroPositionData> _table) : base(_table)
+    public Table_Hero_Position(List<TableHeroPositionData> _table) : base(ThreeKingdoms.Client.Server.CharacterPositionCatalog.PresentationRows(_table))
     {
-        m_group = _table.GroupBy(x => x.category).ToDictionary(x => x.Key, x => x.ToList());
+        m_group = m_list.GroupBy(x => x.category).ToDictionary(x => x.Key, x => x.ToList());
+        SetDictionary(x => x.type);
     }
 
     public List<TableHeroPositionData> GetPositionds(CategoryType_HeroPositon _category)
@@ -29,7 +30,7 @@ public struct TableHeroPositionData
 
     // CUSTOM
     public bool isActive => key.IsActive();
-    public HeroPositionType type => System.Enum.Parse<HeroPositionType>(key);
+    public HeroPositionType type => ThreeKingdoms.Client.Server.CharacterPositionCatalog.FromServerKey(key);
 
     List<BattleStatData> m_statData;
     public List<BattleStatData> statData
@@ -53,7 +54,7 @@ public struct TableHeroPositionData
         }
     }
 
-    public string name => TableManager.stringTable.GetHeroPositionType(key);
+    public string name => ThreeKingdoms.Client.Server.CharacterPositionCatalog.DisplayName(key);
     public string stringAttribute
     {
         get

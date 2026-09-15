@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CastleData = Data_Castle.CastleData;
 
-public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
+public partial class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 {
     bool m_isClose = false;
 
@@ -216,7 +216,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     void OnButton_Upgrade()
     {
-        if (m_logUpgrade.IsActive() == true)
+        if (!ThreeKingdoms.Client.Server.GameServer.Enabled && m_logUpgrade.IsActive() == true)
         {
             PopupManager.instance.AlertShow(m_logUpgrade, -100);
             return;
@@ -237,7 +237,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         await UniTask.WaitUntil(() => m_popupTimeStone.statusType != StatusType.Wait);
 
         if (m_popupTimeStone.statusType == StatusType.Success)
-            DataManager.castle.building.UpgradeTimerBonusAsync(m_castleData.type, m_popupTimeStone.timeBonus).Forget();
+            DataManager.castle.building.UpgradeTimerBonusAsync(m_castleData.type, m_popupTimeStone.timeBonus, m_popupTimeStone.IsAd, m_popupTimeStone.TimeStoneCount).Forget();
 
         await rtScroll.DOAnchorPosY(prevPos, 0.1f).AsyncWaitForCompletion();
 
@@ -271,6 +271,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
     void SetCoreStatInfo()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { SetServerCoreStatInfo(); return; }
         var dbCastle = TableManager.castle.GetCastleData(m_castleData.type);
         var dbCastleRise = m_castleData.dbRise;
 

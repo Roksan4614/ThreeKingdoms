@@ -41,7 +41,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
     public void SetMissionInfo(CastleMissionData _missionData)
     {
-        if (m_missionData != null && m_missionData.idx == _missionData.idx && m_missionData.tickEnd == _missionData.tickEnd)
+        if (m_missionData != null && m_missionData.idx == _missionData.idx && m_missionData.tickEnd == _missionData.tickEnd && m_missionData.serverCompleted == _missionData.serverCompleted)
             return;
 
         m_missionData = _missionData;
@@ -168,6 +168,11 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
             ts = endTime - Utils.GetUTC();
         }
 
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled && !m_missionData.isFinished)
+        {
+            m_element.btn_batch.text = "Server confirmation...";
+            return;
+        }
         size.y = 70;
         m_element.btn_batch.rt.sizeDelta = size;
 

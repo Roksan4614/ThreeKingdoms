@@ -4,15 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class Scene_Login : SceneBase
 {
     private void Start()
     {
-        PopupManager.instance.ShowDimm(true, false);
-        PopupManager.instance.SetCanvasCamera();
+        try
+        {
+            PopupManager.instance.ShowDimm(true, false);
+            PopupManager.instance.SetCanvasCamera();
+            StartAsync().Forget(OnStartupFailed);
+        }
+        catch (Exception error) { OnStartupFailed(error); }
+    }
 
-        StartAsync().Forget();
+    void OnStartupFailed(Exception error)
+    {
+        var circle = transform.Find("Canvas/Circle");
+        if (circle != null) { circle.DOKill(); circle.gameObject.SetActive(false); }
+        StartupFailurePanel.Show(this, error);
     }
 
     async UniTask StartAsync()
@@ -22,6 +33,7 @@ public class Scene_Login : SceneBase
         var circle = transform.Find("Canvas/Circle");
 
         circle.transform.DORotate(new Vector3(0f, 0f, 360f), 20f, RotateMode.FastBeyond360)
+            .SetLink(circle.gameObject)
             .SetLoops(-1, LoopType.Restart)
             .SetEase(Ease.Linear).Forget();
 
@@ -56,20 +68,24 @@ public class Scene_Login : SceneBase
 
         IngameLog.AddBuild("LOGIN START");
 
-        // TODO: Login
-        await TutorialManager.instance.InitializeAsync();
-        await DataManager.userInfo.API_Login();
-        await DataManager.instance.InitializeAsync();
+        Exception initializationFailure = null;
+        try
+        {
+            // Login first, then restore tutorials and initialize the account's gameplay models.
+            await DataManager.userInfo.API_Login();
+            await TutorialManager.instance.InitializeAsync();
+            await DataManager.instance.InitializeAsync();
 
-        TimeManager.instance.InitializeAsync().Forget();
+            TimeManager.instance.InitializeAsync().Forget();
 
-        if (DataManager.userInfo.myHero.Count == 0)
-            tasks.Add(PopupManager.instance.LoadAsset(PopupType.SelectRegion));
+            if (DataManager.userInfo.myHero.Count == 0)
+                tasks.Add(PopupManager.instance.LoadAsset(PopupType.SelectRegion));
 
-        tasks.Add(AddressableManager.instance.DownloadAsync(true, null, "02_Lobby"));
-        tasks.Add(LoadLobbyScreenAsync());
-
-        await UniTask.WhenAll(tasks.ToArray());
+            tasks.Add(AddressableManager.instance.DownloadAsync(true, null, "02_Lobby"));
+            tasks.Add(LoadLobbyScreenAsync());
+        }
+        catch (Exception error) { initializationFailure = error; }
+        await StartupTasks.WaitAllAsync(tasks, initializationFailure);
         IngameLog.AddBuild($"Login: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");
 
         var time = Time.realtimeSinceStartup - timeStart;

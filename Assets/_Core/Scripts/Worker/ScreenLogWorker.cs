@@ -15,6 +15,12 @@ public class ScreenLogWorker : Singleton<ScreenLogWorker>, IValidatable
 
     private void LateUpdate()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            m_logQueue.Clear();
+            foreach (var text in m_lstText) text.gameObject.SetActive(false);
+            return;
+        }
         int i = 0;
         while (m_logQueue.Count > 0)
         {

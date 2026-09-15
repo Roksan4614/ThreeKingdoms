@@ -120,6 +120,7 @@ public partial class Data_Castle
 
     public void HitWally()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { CaptureServerThiefAsync().Forget(); return; }
         // TODO 보상을 주자
 
         var dtStart = new DateTime(m_wallyData.tickSpawn, DateTimeKind.Utc);
@@ -141,6 +142,7 @@ public partial class Data_Castle
 
     void SaveData_Wally()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
         PPWorker.Set(c_keyWally, m_wallyData);
     }
 

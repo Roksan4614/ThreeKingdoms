@@ -10,6 +10,7 @@ namespace Rev9.Tournament
     {
         async UniTask API_LoadBattleListAsync()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await ReloadServerSnapshotAsync(); return; }
             await UniTask.NextFrame();
 
             m_data.battleUserList = new TournamentRankerUserData[4];
@@ -46,6 +47,12 @@ namespace Rev9.Tournament
 
         public async UniTask<TournamentBatchData> API_LoadUserInfoData(int _uid)
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+            {
+                if (m_dbRankUserInfoData.TryGetValue(_uid, out var known)) return known;
+                var candidate = m_data.battleUserList.FirstOrDefault(x => x.info.uid == _uid);
+                return candidate?.batchData ?? EmptyTeam(_uid);
+            }
             if (m_dbRankUserInfoData.ContainsKey(_uid))
                 return m_dbRankUserInfoData[_uid];
 
@@ -124,6 +131,7 @@ namespace Rev9.Tournament
         Dictionary<PopupLobbyBossRaid_PopupRanking.TabType, RankerData> m_dbRankData = new();
         public async UniTask<RankerData> API_LoadRankerData(PopupLobbyBossRaid_PopupRanking.TabType _tabType)
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return await LoadServerRankingAsync(_tabType);
             if (m_dbRankData.ContainsKey(_tabType))
                 return m_dbRankData[_tabType];
 
@@ -211,6 +219,7 @@ namespace Rev9.Tournament
 
         public async UniTask API_UpdateTeamData(bool _isAttackType, TournamentBatchData _batchData, UnityAction _callback = null)
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await SaveTeamServerAsync(_isAttackType, _batchData); _callback?.Invoke(); return; }
             await UniTask.NextFrame();
 
 #if SERVICE_DEV
@@ -230,6 +239,7 @@ namespace Rev9.Tournament
         string c_keyHistory = "PP_TOURNAMENT_HISTORY";
         public async UniTask API_AddHistoryData(bool _isAttackType, bool _isWin, TournamentRankerUserData _userData, int _idxRevenge = -1)
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) throw new System.InvalidOperationException("Tournament history is supplied by the server.");
             if (m_history == null)
                 await API_LoadHistoryData();
 
@@ -278,6 +288,7 @@ namespace Rev9.Tournament
 
         public async UniTask<List<TournamentHistoryData>> API_LoadHistoryData()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return await LoadServerHistoryAsync();
             await UniTask.NextFrame();
 
             if (m_history == null)
@@ -296,6 +307,7 @@ namespace Rev9.Tournament
 
         public async UniTask<RankerUserData> API_Result()
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) return await FinishServerBattleAsync();
             bool isWin = TournamentHeroInfoManager.instance.IsWin();
 
             RankerUserData result = m_data.rankData;

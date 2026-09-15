@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Data_HeroPosition : MonoBehaviour
+public partial class Data_HeroPosition
 {
     //public Dictionary<CategoryType_HeroPositon, List<HeroPositionData>> data { get; private set; } = new();
 
@@ -15,6 +15,7 @@ public class Data_HeroPosition : MonoBehaviour
     public async UniTask InitializeAsync()
     {
         await UniTask.Yield();
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await RefreshServerAsync(); return; }
 
         data = PPWorker.Get<List<HeroPositionData>>(c_key);
 
@@ -37,6 +38,7 @@ public class Data_HeroPosition : MonoBehaviour
 
     public async UniTask<bool> API_BindPosition(string _heroKey, HeroPositionType _type)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return await BindServerAsync(_heroKey, _type);
         await UniTask.NextFrame();
 
         // 같은 장수를 다른곳에 배치한곳이 있으면 삭제해주자.
@@ -136,7 +138,12 @@ public enum HeroPositionType
     chief_military_adviser,                        // 군사중랑장
     dragon_fighter,                                // 용의 전사
 
-    MAX
+    // Appended canonical positions preserve the legacy playable values 0..13.
+    general_of_the_mid = 14,
+    military_sima = 15,
+    general_of_the_cavalry = 16,
+
+    MAX = 17
 }
 
 [JsonObject(MemberSerialization.OptIn)]

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryWorker
+public partial class InventoryWorker
 {
     static InventoryWorker m_instance;
     public static InventoryWorker instance => m_instance ??= new();
@@ -27,6 +27,7 @@ public class InventoryWorker
 
     public async UniTask InitializeAsync()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { ThreeKingdoms.Client.Server.ServerState.UpdateInventory(); await UniTask.CompletedTask; return; }
         m_data = PPWorker.Get<List<InventoryItemData>>(c_key);
 
         if (m_data == null)
@@ -47,7 +48,7 @@ public class InventoryWorker
     }
 
     public long GetItemCount(ItemData _itemData)
-        => m_data.Find(x => x.key == _itemData.key && x.value == _itemData.value)?.count ?? 0;
+        => (_itemData.serverItemId > 0 ? m_data.Find(x => x.serverItemId == _itemData.serverItemId) : m_data.Find(x => x.key == _itemData.key && x.value == _itemData.value))?.count ?? 0;
 
 
     public static void AddItem(ItemType _itemType, int _count, string _value = null, bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default)
@@ -56,6 +57,11 @@ public class InventoryWorker
     }
     public static void AddItem(bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default, params ItemData[] _itemData)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            if (_isRewardAction) RewardWorker.instance.RunAsync(_actionPosition, _itemData: _itemData).Forget();
+            return;
+        }
         if (_isRewardAction)
             RewardWorker.instance.RunAsync(_actionPosition, _itemData: _itemData).Forget();
         else
@@ -152,14 +158,14 @@ public class InventoryWorker
 [JsonObject(MemberSerialization.OptIn)]
 public class ItemData : TableItemData
 {
+    [JsonProperty] public long serverItemId;
     //custom 
     [JsonProperty] public bool isNew;
     [JsonProperty] public long count;
 
     public bool EqaulsItemData(ItemData _itemData)
     {
-        if (key == _itemData.key &&
-            value.IsActive() == _itemData.value.IsActive())
+        if ((serverItemId > 0 || _itemData.serverItemId > 0) ? serverItemId > 0 && serverItemId == _itemData.serverItemId : key == _itemData.key && string.Equals(value, _itemData.value, System.StringComparison.Ordinal))
             return true;
         return false;
     }

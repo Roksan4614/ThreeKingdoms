@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using static Data_BossRaid;
 
-public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
+public partial class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
 {
     float m_durationChange = 1.5f;
     float m_distanceKnockback = 7f;
@@ -25,6 +25,7 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
             return;
 #endif
 
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { InitializeServerBossView(); return; }
         m_element.boss.gameObject.SetActive(DataManager.bossRaid.raidStatus < BossRaidStatusType.Wait_SecondPhase);
         m_element.bossJIN.gameObject.SetActive(DataManager.bossRaid.raidStatus >= BossRaidStatusType.Wait_SecondPhase);
 
@@ -37,7 +38,11 @@ public class BossRaid_BossSlotComponent : MonoBehaviour, IValidatable
         => ArrowNaviComponent.instance?.SetParent(boss.element.parentCanvas);
 
     private void OnDestroy()
-        => m_cts = m_cts.ReleaseCTS();
+    {
+        DataManager.bossRaid.ServerRaidChanged -= ApplyServerBossView;
+        m_cts = m_cts.ReleaseCTS();
+        m_ctsAction = m_ctsAction.ReleaseCTS();
+    }
 
     void SlotBossRaidStatus(BossRaidStatusType _status)
     {

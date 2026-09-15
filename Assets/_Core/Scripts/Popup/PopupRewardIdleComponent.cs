@@ -83,6 +83,7 @@ public class PopupRewardIdleComponent : BasePopupComponent
 
     async UniTask OnButtonAsync_Confirm(bool _isAD)
     {
+        if (ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
         var rewards = await DataManager.userInfo.API_ReceiveIdleReward();
 
         if (rewards.Count == 0)

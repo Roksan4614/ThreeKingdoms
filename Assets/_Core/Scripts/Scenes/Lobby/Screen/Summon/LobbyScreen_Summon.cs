@@ -141,6 +141,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
     public async UniTask StartAsync()
     {
+        if (ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
         LobbyScreenManager.instance.isLock = true;
 
         StartAsync_HostAction().Forget();

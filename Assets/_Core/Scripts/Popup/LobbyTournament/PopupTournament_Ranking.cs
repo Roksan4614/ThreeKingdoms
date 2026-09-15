@@ -3,11 +3,17 @@ using Rev9.Tournament;
 using System.Linq;
 using UnityEngine;
 
-public class PopupTournament_Ranking : PopupLobbyBossRaid_PopupRanking
+public partial class PopupTournament_Ranking : PopupLobbyBossRaid_PopupRanking
 {
     bool m_isClose;
     public async UniTask OpenPopupAsync()
     {
+        m_isClose = false;
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            for (int i = 0; i < m_element.tabs.Length; i++) m_element.tabs[i].gameObject.SetActive(i == 0);
+            m_curTabType = TabType.NONE;
+        }
         Utils.SetActivePunch(transform, true);
 
         m_element.scroll.content.anchoredPosition = Vector2.zero;
@@ -24,7 +30,9 @@ public class PopupTournament_Ranking : PopupLobbyBossRaid_PopupRanking
 
     protected override async UniTask SetRankingAsync()
     {
-        var rankerData = (await TournamentWorker.instance.API_LoadRankerData(m_curTabType));
+        RankerData rankerData;
+        try { rankerData = await TournamentWorker.instance.API_LoadRankerData(m_curTabType); }
+        catch (System.Exception error) { PopupManager.instance.AlertShow(error.Message); return; }
 
         rankerData.ranker = GetRankerUserRange(rankerData);
 

@@ -53,6 +53,12 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
     public virtual void OpenPopup()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            m_element.tabs[0].text = "Current raid";
+            m_element.tabs[1].text = "Last joined raid";
+            m_curTabType = TabType.NONE;
+        }
         Utils.SetActivePunch(transform, true);
 
         m_element.scroll.content.anchoredPosition = Vector2.zero;
@@ -101,7 +107,10 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
     {
         // 포디움 세우자
         for (int i = 0; i < 3; i++)
-            m_element.podiums[i].SetRankerInfo(m_curTabType, _rankerData.ranker[i], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget());
+        {
+            m_element.podiums[i].gameObject.SetActive(i < _rankerData.ranker.Count);
+            if (i < _rankerData.ranker.Count) m_element.podiums[i].SetRankerInfo(m_curTabType, _rankerData.ranker[i], _rankerData => OnButtonAsync_UserInfo(_rankerData).Forget());
+        }
 
 
         m_element.scroll.Initialize<PopupLobbyBossRaid_PopupRanking_Item>(_rankerData.ranker.Count,
@@ -142,6 +151,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
     bool m_isOpenUserInfo;
     protected async UniTask OnButtonAsync_UserInfo(RankerUserData _rankerData)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { PopupManager.instance.AlertShow("Player details are not available in the raid prototype."); return; }
         if (m_isOpenUserInfo == true || _rankerData.uid == DataManager.userInfo.uid)
             return;
         m_isOpenUserInfo = true;

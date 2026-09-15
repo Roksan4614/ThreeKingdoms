@@ -103,6 +103,7 @@ public class TableManager
 
     public async UniTask InitializeAsync()
     {
+        await ThreeKingdoms.Client.Server.GameServer.InitializeAsync();
         await AddressableManager.instance.LoadAssetAsync<TextAsset>(true, _result =>
         {
             m_hero = new(LoadList<TableHeroData>(_result, "s_character"));

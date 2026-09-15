@@ -7,6 +7,13 @@ public class RankBossRaid_Slot : MonoBehaviour, IValidatable
 
     public void SetRankData(RankerUserData _userData)
     {
+        if (_userData.serverDamage != null)
+        {
+            m_element.txtRank.text = _userData.rank + " (" + _userData.serverPercentile.ToString("0.00") + "%)";
+            m_element.txtNickname.text = _userData.nickname;
+            m_element.txtPoint.text = _userData.serverDamage;
+            return;
+        }
         int _countMax = DataManager.bossRaid.rankNow.Count;
 
         m_element.txtRank.text = $"{(_userData.point == 0 ? "-" : _userData.rank)}\n<color=#{(_userData.uid == DataManager.userInfo.uid ? "CBCBCB" : "5C5C5C")}><size=70%>({(_userData.point == 0 ? 100 : (_userData.rank - 1) / (float)_countMax * 100):0.00}%)</size></color>";

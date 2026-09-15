@@ -102,6 +102,7 @@ namespace Rev9.Post
 
         async UniTask OnButtonAsync_Confirm(PopupPost_Slot _slot)
         {
+            if (ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
             // 아이템을 이미 받았다면 팝업을 열어주고, 아니면 받기가 실행되도록 하자            
             if (_slot.isReceivedRewards)
             {
@@ -115,6 +116,7 @@ namespace Rev9.Post
 
         async UniTask OnButtonAsync_ReceiveAll()
         {
+            if (ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
             if (await PostWorker.instance.API_ReceivePost() == true)
                 await LoadDataAsync();
         }

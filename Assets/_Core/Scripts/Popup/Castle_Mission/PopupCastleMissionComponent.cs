@@ -45,6 +45,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
         foreach (var tab in m_element.dbTab)
             tab.Value.onClick.AddListener(() => OnButton_Tab(tab.Key));
 
+        DataManager.castle.mission.ServerOfficeChanged += OnServerOfficeChanged;
         m_element.btnRefresh.onClick.AddListener(() =>
         {
             DataManager.castle.mission.RefreshMission();
@@ -222,6 +223,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
     public async UniTask<bool> OpenUseTimeStoneAsync(CastleMissionData _missionData, Action<PopupUseTimeStoneComponent> _callbackPopup = null)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { PopupManager.instance.AlertShow("Office missions complete at the server scheduled time."); return false; }
         m_popupTimeStone = await PopupManager.instance.OpenPopupAsync<PopupUseTimeStoneComponent>(PopupType.UseTimeStone, _missionData.idx);
 
         var endTime = new DateTime(_missionData.tickEnd, DateTimeKind.Utc);
@@ -242,6 +244,15 @@ public class PopupCastleMissionComponent : BasePopupComponent
         m_popupTimeStone = null;
         return _isSuccessed;
     }
+
+    void OnServerOfficeChanged()
+    {
+        if (!gameObject.activeInHierarchy) return;
+        UpdateLevelInfo();
+        RefreshRemainCount();
+        SetMissionList(m_curTab == TabType.RunningList);
+    }
+    void OnDestroy() { DataManager.castle.mission.ServerOfficeChanged -= OnServerOfficeChanged; }
 
     void OnUpdateTimer(int _idxMission, TimeSpan _ts)
     {

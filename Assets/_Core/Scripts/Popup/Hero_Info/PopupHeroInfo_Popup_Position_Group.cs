@@ -70,6 +70,12 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
     void RefreshData(HeroPositionType _type, ButtonPositionData _data)
     {
         var hpData = DataManager.heroPosition.GetHeroPositionData(_type);
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            var server = DataManager.heroPosition.ServerPosition(_type);
+            _data.button.interactable = server != null && (server.Status == ThreeKingdoms.Shared.Enums.CharacterPositionStatus.Unlocked || server.CharacterId.HasValue);
+            _data.txtName.text = TableManager.heroPosition.GetData(_type).name + DataManager.heroPosition.ServerStatusLabel(_type);
+        }
 
         bool isActive_Hero = hpData != null;
         _data.check.SetActive(isActive_Hero);

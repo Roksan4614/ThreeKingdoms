@@ -2,24 +2,27 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Data_Stat_Relic
+public partial class Data_Stat_Relic
 {
     const string key_Treasure = "PP_Stat_Relic_Treasure";
 
 
     Dictionary<HeroClassType, float> m_bonusClassBonus = new();
-    public IReadOnlyDictionary<HeroClassType, float> bonusClassBonus => m_bonusClassBonus;
+    public IReadOnlyDictionary<HeroClassType, float> bonusClassBonus { get { if (ThreeKingdoms.Client.Server.GameServer.Enabled) RefreshServerProjection(); return m_bonusClassBonus; } }
 
 
     List<TreasureBatchData> m_dataTreasure;
-    public IReadOnlyList<TreasureBatchData> dataTreasure => m_dataTreasure;
+    public IReadOnlyList<TreasureBatchData> dataTreasure { get { if (ThreeKingdoms.Client.Server.GameServer.Enabled) RefreshServerProjection(); return m_dataTreasure; } }
 
     Dictionary<BattleStatType, BattleStatData> m_bonusTreasureBonus = new();
-    public IReadOnlyDictionary<BattleStatType, BattleStatData> bonusTreasureBonus => m_bonusTreasureBonus;
+    public IReadOnlyDictionary<BattleStatType, BattleStatData> bonusTreasureBonus { get { if (ThreeKingdoms.Client.Server.GameServer.Enabled) RefreshServerProjection(); return m_bonusTreasureBonus; } }
 
     public async UniTask InitializeAsync()
     {
         await UniTask.Yield();
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { RefreshServerProjection(); return; }
+        m_bonusClassBonus.Clear();
+        m_bonusTreasureBonus.Clear();
 
         // 히어로 유물 관련
         {
@@ -56,12 +59,13 @@ public class Data_Stat_Relic
     }
 
     public TreasureBatchData GetTreasureData(string _key)
-        => m_dataTreasure.Find(x => x.key == _key);
+        => dataTreasure.FirstOrDefault(x => x.key == _key);
     public int GetRelicLevel(string _key)
         => DataManager.userInfo.GetHeroInfoData(_key)?.relicLevel ?? 0;
 
     public void Upgrade_HeroRelic(HeroInfoData _heroInfoData)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) throw new System.InvalidOperationException("Use CharacterActions.EnhanceRelicAsync in server mode.");
         var heroData = DataManager.userInfo.GetHeroInfoData(_heroInfoData.key);
         var classType = _heroInfoData.classType;
 
@@ -76,6 +80,7 @@ public class Data_Stat_Relic
 
     public void SetTreasureStatus(string _key, bool _isBatch)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) throw new System.InvalidOperationException("Use CharacterActions.SetTreasureAsync in server mode.");
         var idx = m_dataTreasure.FindIndex(x => x.key == _key);
 
         if (_isBatch == true && m_dataTreasure.Count(x => x.isBatch) >= 3)

@@ -7,6 +7,7 @@ public partial class Data_UserInfo
 {
     public async UniTask API_Login()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) { await ServerLoginAsync(); return; }
         await UniTask.NextFrame();
 
         if (PPWorker.HasKey(PlayerPrefsType.USER_DATA))
@@ -95,6 +96,7 @@ public partial class Data_UserInfo
 
     public async UniTask<HeroInfoData> API_TraitsChange(string _keyHero)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return await ThreeKingdoms.Client.Server.CharacterActions.RerollTraitsAsync(_keyHero);
         var hero = m_element.myHero.Find(x => x.key == _keyHero);
 
         if (hero.traits == null)
@@ -131,6 +133,17 @@ public partial class Data_UserInfo
 
     public async UniTask<bool> API_TraitsLock(string _keyHero, int _index)
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled)
+        {
+            try
+            {
+                var current = ThreeKingdoms.Client.Server.ServerState.Character(_keyHero)?.Traits.FirstOrDefault(x => x.SlotIndex == _index)
+                    ?? throw new System.InvalidOperationException("Trait slot is not open.");
+                await ThreeKingdoms.Client.Server.CharacterActions.SetTraitLockAsync(_keyHero, _index, !current.IsLocked);
+                return true;
+            }
+            catch (System.Exception error) { PopupManager.instance.AlertShow(error.Message); return false; }
+        }
         var trait = m_element.myHero.Find(x => x.key == _keyHero)?.traits.Find(x => x.index == _index);
 
         if (trait == null)
@@ -148,6 +161,7 @@ public partial class Data_UserInfo
 
     public async UniTask<bool> API_SetUserData(string _nickname, string _desc)
     {
+        if (ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return false;
         m_element.userInfoData.nickname = _nickname;
         m_element.userInfoData.desc = _desc;
         SaveData();

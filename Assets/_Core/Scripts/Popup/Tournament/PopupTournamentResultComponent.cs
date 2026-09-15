@@ -28,13 +28,13 @@ public class PopupTournamentResultComponent : BasePopupComponent
 
     async UniTask StartAsync()
     {
-        bool isWin = TournamentHeroInfoManager.instance.IsWin();
+        bool isWin = ThreeKingdoms.Client.Server.GameServer.Enabled ? TournamentWorker.instance.ServerResultIsWin : TournamentHeroInfoManager.instance.IsWin();
 
         m_element.title.gameObject.SetActive(false);
         m_element.panel.gameObject.SetActive(false);
         m_element.btnExit.gameObject.SetActive(false);
 
-        var prevRankerData = TournamentWorker.instance.rankData.DeepClone();
+        var prevRankerData = (ThreeKingdoms.Client.Server.GameServer.Enabled ? TournamentWorker.instance.PreviousResultRank : TournamentWorker.instance.rankData).DeepClone();
         var rankerData = await TournamentWorker.instance.API_Result();
 
         await UniTask.WaitForSeconds(.5f);
@@ -87,6 +87,7 @@ public class PopupTournamentResultComponent : BasePopupComponent
     bool m_isTierUp;
     private void Update()
     {
+        if (ThreeKingdoms.Client.Server.GameServer.Enabled) return;
         if (Input.GetKeyDown(KeyCode.Q))
         {
             m_element.popupTierUP.Close();

@@ -90,6 +90,7 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
         => OnButtonAsync_Edit(_isEditButton).Forget();
     async UniTask OnButtonAsync_Edit(bool _isEditButton)
     {
+        if (_isEditButton && ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
         m_isEditMode = !m_isEditMode;
 
         foreach (var e in m_elementMy.objsEdits)

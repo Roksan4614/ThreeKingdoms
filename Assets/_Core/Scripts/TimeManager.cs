@@ -24,6 +24,7 @@ public class TimeManager
     public void Release()
     {
         instance = null;
-        m_cts = m_cts.ReleaseCTS();
+        Stop();
     }
+    public void Stop() => m_cts = m_cts.ReleaseCTS();
 }

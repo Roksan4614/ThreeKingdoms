@@ -109,6 +109,7 @@ namespace Rev9.Post
 
         async UniTask OnButtonAsync_Receive()
         {
+            if (ThreeKingdoms.Client.Server.PrototypeContentNotice.ShowIfServer()) return;
             if (isReceiveRewards == false && await PostWorker.instance.API_ReceivePost(postData) == true)
                 m_status = StatusType.Success;
 

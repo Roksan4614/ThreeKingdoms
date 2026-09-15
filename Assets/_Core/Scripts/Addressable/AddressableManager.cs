@@ -32,6 +32,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
     public string bundleUrl { get; set; }
 
     Dictionary<string, AsyncOperationHandle<SpriteAtlas>> m_loadedAtlas = new();
+    bool m_atlasHandlerRegistered;
 
     protected override void OnAwake()
     {
@@ -58,6 +59,8 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
         await DownloadAsync(true, null, AddressableLabelType.L_Core, AddressableLabelType.L_SpriteAtlas);
 
+        if (m_atlasHandlerRegistered) return;
+        m_atlasHandlerRegistered = true;
         SpriteAtlasManager.atlasRequested += (string _tag, Action<SpriteAtlas> _callback) =>
         {
             if (m_loadedAtlas.ContainsKey(_tag))

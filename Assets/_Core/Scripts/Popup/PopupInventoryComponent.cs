@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Rev9.Inventory
 {
-    public class PopupInventoryComponent : BasePopupComponent
+    public partial class PopupInventoryComponent : BasePopupComponent
     {
         ItemCategoryType m_curCategory;
 
@@ -17,6 +17,7 @@ namespace Rev9.Inventory
         protected override void Awake()
         {
             base.Awake();
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) ThreeKingdoms.Client.Server.ServerState.Changed += OnServerInventoryChanged;
 
             var sortCategory = InventoryWorker.instance.sortCategory;
             var content = m_element.scrollTab.content;
@@ -49,6 +50,7 @@ namespace Rev9.Inventory
 
             m_curCategory = ItemCategoryType.NONE - 1;
             SetTab(ItemCategoryType.NONE);
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) RefreshServerInventoryAsync().Forget();
 
             gameObject.SetActive(true);
             Utils.SetActivePunch(m_element.panel, true);
@@ -70,19 +72,16 @@ namespace Rev9.Inventory
 
         void SetItemList()
         {
-            var dbInventory = InventoryWorker.data;
+            var dbInventory = InventoryWorker.data ?? new List<InventoryItemData>();
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) dbInventory = dbInventory.FindAll(item => item.count > 0);
 
             if (m_curCategory > ItemCategoryType.NONE)
                 dbInventory = dbInventory.FindAll(x => x.category == m_curCategory);
 
             var content = m_element.scrollList.content;
 
-            int i = 0;
-            for (; i < dbInventory.Count; i++)
-            {
-                if (i > 0)
-                    Instantiate(content.GetChild(0), content);
-            }
+            while (content.childCount < dbInventory.Count) Instantiate(content.GetChild(0), content);
+            int i = dbInventory.Count;
 
             for (; i < content.childCount; i++)
                 content.GetChild(i).gameObject.SetActive(false);
@@ -98,6 +97,7 @@ namespace Rev9.Inventory
 
                 var btn = slot.transform.GetComponent<Button>();
                 btn.onClick.RemoveAllListeners();
+                btn.interactable = !ThreeKingdoms.Client.Server.GameServer.Enabled || CanOpenServerContainer(slot.data);
                 btn.onClick.AddListener(() => OnButton_Item(slot.data));
             }
 
@@ -105,11 +105,14 @@ namespace Rev9.Inventory
         }
         void OnButton_Item(ItemData _itemData)
         {
+            if (ThreeKingdoms.Client.Server.GameServer.Enabled) { OpenServerContainer(_itemData); return; }
             IngameLog.Add($"OnButton: {_itemData.nameValue}");
         }
 
         public override void Close()
         {
+            if (m_openingContainer) return;
+            if (m_containerDialog != null && m_containerDialog.activeSelf) { CloseContainerDialog(); return; }
             Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
         }
 
