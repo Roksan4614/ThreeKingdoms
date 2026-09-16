@@ -33,24 +33,9 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("type", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.ItemDetailType Type { get; set; } = default!;
         /// <summary>
-        /// 전용 영혼석 대상 s_character.key. 다른 아이템은 빈 문자열
+        /// 전용 영혼석 = s_character.key 참조 클래스 영혼석 = table_enum.character_class member key 참조 주머니 또는 랜덤박스 = s_bundle.key 참조 보물 완제품 또는 조각 = s_treasure.key 참조
         /// </summary>
-        [JsonProperty("character_key", NullValueHandling = NullValueHandling.Include)]
-        public string CharacterKey { get; set; } = default!;
-        /// <summary>
-        /// 클래스 영혼석 대상 table_enum.character_class member key. 다른 아이템은 빈 문자열
-        /// </summary>
-        [JsonProperty("character_class_key", NullValueHandling = NullValueHandling.Include)]
-        public string CharacterClassKey { get; set; } = default!;
-        /// <summary>
-        /// 보물 완제품 또는 조각 대상 s_treasure.key. 다른 아이템은 빈 문자열
-        /// </summary>
-        [JsonProperty("treasure_key", NullValueHandling = NullValueHandling.Include)]
-        public string TreasureKey { get; set; } = default!;
-        /// <summary>
-        /// 주머니 또는 랜덤박스 대상 s_bundle.key 참조 다른 아이템은 빈 문자열
-        /// </summary>
-        [JsonProperty("bundle_key", NullValueHandling = NullValueHandling.Include)]
-        public string BundleKey { get; set; } = default!;
+        [JsonProperty("value", NullValueHandling = NullValueHandling.Include)]
+        public string Value { get; set; } = default!;
     }
 }
