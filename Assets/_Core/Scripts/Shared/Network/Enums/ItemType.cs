@@ -38,10 +38,14 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 연회권
         /// </summary>
-        GatchaTicket = 6,
+        GachaTicket = 6,
         /// <summary>
         /// 보물
         /// </summary>
         Treasure = 7,
+        /// <summary>
+        /// 입장권
+        /// </summary>
+        ContentsTicket = 8,
     }
 }

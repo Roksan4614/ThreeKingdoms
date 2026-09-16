@@ -27,7 +27,7 @@ namespace ThreeKingdoms.Shared.Types
         private long _TestUid = default!;
         [JsonIgnore] public bool TestUidSpecified { get; private set; }
         /// <summary>
-        /// DEV 전용 테스트 로그인. firebase_token이 없을 때 기존 계정 uid로 Firebase 검증 없이 같은 로그인 흐름을 탄다. 가입은 하지 않으며 development 외 환경·미존재 uid는 INVALID_REQUEST다.
+        /// DEV 전용 테스트 로그인. firebase_token이 없을 때 이 uid로 Firebase 검증 없이 같은 로그인 흐름을 탄다. 없는 uid는 요청한 번호 그대로 게스트 계정을 만들어 is_new_account=true로 응답한다. development 외 환경은 INVALID_REQUEST다.
         /// </summary>
         [JsonProperty("test_uid", NullValueHandling = NullValueHandling.Include)]
         public long TestUid { get => _TestUid; set { _TestUid = value; TestUidSpecified = true; } }

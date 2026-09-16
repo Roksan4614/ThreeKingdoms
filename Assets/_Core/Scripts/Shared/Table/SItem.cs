@@ -28,6 +28,11 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("category", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.ItemType Category { get; set; } = default!;
         /// <summary>
+        /// 아이템 상세 타입 리소스 분류를 위한 타입이다.
+        /// </summary>
+        [JsonProperty("type", NullValueHandling = NullValueHandling.Include)]
+        public global::ThreeKingdoms.Shared.Enums.ItemDetailType Type { get; set; } = default!;
+        /// <summary>
         /// 전용 영혼석 대상 s_character.key. 다른 아이템은 빈 문자열
         /// </summary>
         [JsonProperty("character_key", NullValueHandling = NullValueHandling.Include)]
