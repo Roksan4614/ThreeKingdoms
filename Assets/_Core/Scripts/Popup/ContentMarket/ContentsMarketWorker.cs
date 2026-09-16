@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 namespace Rev9.ContentsMarket
@@ -40,7 +41,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        key = ItemType.rice,
+                        key = "rice",
                         cost = 1000,
                         count = 100,
                         countMax = 5
@@ -48,7 +49,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        key = ItemType.gold,
+                        key = "gold",
                         cost = 1000,
                         count = 100,
                         countMax = 5
@@ -56,7 +57,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        key = ItemType.rice,
+                        key = "rice",
                         peroidType = PeroidType.Week,
                         cost = 7000,
                         count = 1000,
@@ -65,7 +66,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        key = ItemType.gold,
+                        key = "gold",
                         peroidType = PeroidType.Week,
                         cost = 7000,
                         count = 1000,
@@ -76,14 +77,14 @@ namespace Rev9.ContentsMarket
                     {
                         lstData.Add(new()
                         {
-                            key = ItemType.time_stone,
+                            key = "time_stone",
                             cost = 2000,
                             count = 10,
                             countMax = 3
                         });
                         lstData.Add(new()
                         {
-                            key = ItemType.dedicated_soul_stone,
+                            key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
                             cost = 2000,
                             count = 10,
                             countMax = 3
@@ -93,7 +94,7 @@ namespace Rev9.ContentsMarket
                     {
                         lstData.Add(new()
                         {
-                            key = ItemType.tournament_point,
+                            key = "point_tournament",
                             peroidType = PeroidType.Week,
                             cost = 2500,
                             count = 10,
@@ -102,7 +103,7 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            key = ItemType.public_soul_stone,
+                            key = "public_soul_stone",
                             peroidType = PeroidType.Week,
                             cost = 2500,
                             count = 10,
@@ -114,7 +115,7 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            key = ItemType.public_soul_stone,
+                            key = "public_soul_stone",
                             peroidType = PeroidType.Week,
                             cost = 3500,
                             count = 10,
@@ -122,9 +123,8 @@ namespace Rev9.ContentsMarket
                         });
                         lstData.Add(new()
                         {
-                            key = ItemType.dedicated_soul_stone,
+                            key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
                             peroidType = PeroidType.Season,
-                            value = CharacterName.LiuBei.ToString(),
                             cost = 4500,
                             count = 5,
                             countMax = 3
@@ -132,18 +132,16 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            key = ItemType.dedicated_soul_stone,
+                            key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.CaoCao.ToString())}",
                             peroidType = PeroidType.Season,
-                            value = CharacterName.CaoCao.ToString(),
                             cost = 4500,
                             count = 5,
                             countMax = 3
                         });
                         lstData.Add(new()
                         {
-                            key = ItemType.dedicated_soul_stone,
+                            key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.SunQuan.ToString())}",
                             peroidType = PeroidType.Season,
-                            value = CharacterName.SunQuan.ToString(),
                             cost = 4500,
                             count = 5,
                             countMax = 3
@@ -154,7 +152,7 @@ namespace Rev9.ContentsMarket
                     {
                         var d = lstData[j];
                         d.idx = j;
-                        d.costType = i == ContentsMarketTabType.Tournament ? ItemType.tournament_point : i == ContentsMarketTabType.Raid ? ItemType.raid_point : ItemType.gold;
+                        d.costType = i == ContentsMarketTabType.Tournament ? ItemDetailType.PointTournament : i == ContentsMarketTabType.Raid ? ItemDetailType.PointRaid : ItemDetailType.Gold;
                         lstData[j] = d;
                     }
 
@@ -195,7 +193,7 @@ namespace Rev9.ContentsMarket
     public class ContentsMarketProductData
     {
         [JsonProperty] public int idx;
-        [JsonProperty] public ItemType key;
+        [JsonProperty] public string key;
         [JsonProperty] public int count;
         [JsonProperty] public string value;
 
@@ -211,10 +209,10 @@ namespace Rev9.ContentsMarket
             set => peroid_type = value;
         }
 
-        ItemType? cost_type;
-        public ItemType costType
+        ItemDetailType? cost_type;
+        public ItemDetailType costType
         {
-            get => cost_type ?? ItemType.gold;
+            get => cost_type ?? ItemDetailType.Gold;
             set => cost_type = value;
         }
 

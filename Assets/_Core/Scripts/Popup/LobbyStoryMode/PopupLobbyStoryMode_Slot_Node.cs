@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -234,7 +235,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                 if (DataManager.userInfo.HasHero(key) == false)
                     DataManager.userInfo.AddHero(key);
                 else
-                    InventoryWorker.AddItem(ItemType.dedicated_soul_stone, 10, key, _isRewardAction: false);
+                    InventoryWorker.AddItem($"dedicated_soul_stone_{Utils.ToSnakeCase(key)}", 10, _isRewardAction: false);
 
                 newHero.Add(key);
             }
@@ -268,10 +269,10 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         }
         else if (storyNode.reward_currency_type.IsActive())
         {
-            if (Enum.TryParse(storyNode.reward_currency_type, out ItemType currency))
+            if (Enum.TryParse(storyNode.reward_currency_type, out ItemDetailType currency))
             {
-                RewardWorker.instance.AddAsset(currency == ItemType.gold ?
-                    storyNode.rewardCurrencyAmount : 0, currency == ItemType.rice ? storyNode.rewardCurrencyAmount : 0,
+                RewardWorker.instance.AddAsset(currency == ItemDetailType.Gold ?
+                    storyNode.rewardCurrencyAmount : 0, currency == ItemDetailType.Rice ? storyNode.rewardCurrencyAmount : 0,
                     m_element.objBadge.transform, false);
             }
         }

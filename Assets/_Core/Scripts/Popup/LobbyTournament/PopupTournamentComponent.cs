@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using Rev9.ContentsMarket;
 using Rev9.Tournament;
 using System.Threading;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -191,7 +192,7 @@ public class PopupTournamentComponent : BasePopupComponent
             var result = await PopupManager.instance.OpenModalAsync("재화를_사용해서_갱신하시겠습니까?");
 
             if (result == StatusType.Success)
-                DataManager.userInfo.AddAsset(ItemType.rice, -cost);
+                DataManager.userInfo.AddAsset(ItemDetailType.Rice, -cost);
             else
                 return;
         }

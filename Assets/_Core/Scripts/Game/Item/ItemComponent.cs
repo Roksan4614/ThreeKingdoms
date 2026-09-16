@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,9 +38,9 @@ public class ItemComponent : MonoBehaviour, IValidatable
         //m_element.panel.gameObject.SetActive(false);
         m_iconSoulStone?.gameObject.SetActive(false);
 
-        if (_itemData.category == ItemCategoryType.Soul_Stone)
+        if (_itemData.category == ItemType.SoulStone)
         {
-            if (_itemData.key == ItemType.dedicated_soul_stone)
+            if (_itemData.type == ItemDetailType.DedicatedSoulStone)
             {
                 SetIconAsync(_itemData.value, true, _iconHero =>
                 {
@@ -59,7 +60,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
                     }
                 }).Forget();
             }
-            else if (_itemData.key == ItemType.class_soul_stone)
+            else if (_itemData.type == ItemDetailType.ClassSoulStone)
                 SetIconAsync($"{_itemData.key}_{_itemData.value}", false).Forget();
             else
                 SetIconAsync(_itemData.key.ToString(), false).Forget();
@@ -160,6 +161,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
     public void SetCountText(long _count, bool _isRange = false)
         => txtCount = _count <= 1 ? "" : $"{(_isRange ? "~ " : "")}{_count.AmountKMBT()}";
 
+    public string badgeText { set => m_element.badge.transform.SetText("Text", value); }
     public void SetActivePanel(bool _isActive)
         => m_element.panel.gameObject.SetActive(_isActive);
     public void SetActiveBadge(bool _isActive)

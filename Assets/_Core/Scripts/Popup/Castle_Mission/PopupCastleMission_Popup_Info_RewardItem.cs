@@ -48,7 +48,6 @@ public class PopupCastleMission_Popup_Info_RewardItem : MonoBehaviour, IValidata
 
             ItemData itemData = new();
             itemData.key = rewardData.reward_key;
-            itemData.value = rewardData.reward_value;
             item.SetItemData(itemData);
 
             bool isLock = _percent < rewardData.unlock_pct;

@@ -65,27 +65,27 @@ public partial class Data_UserInfo
 
             idleRewardData.rewards = new()
             {
-                TableManager.item.GetItemData(ItemType.gold, count),
-                TableManager.item.GetItemData(ItemType.rice, (int)(count * 1.2f)),
+                TableManager.item.GetItemData("gold", count),
+                TableManager.item.GetItemData("rice", (int)(count * 1.2f)),
             };
 
-            var item = TableManager.item.GetItemData(ItemType.time_stone, (int)(count * 0.5f));
+            var item = TableManager.item.GetItemData("time_stone", (int)(count * 0.5f));
             if (item.count > 0)
                 idleRewardData.rewards.Add(item);
 
-            item = TableManager.item.GetItemData(ItemType.gold, (int)(count * 0.2f));
+            item = TableManager.item.GetItemData("gold", (int)(count * 0.2f));
             if (item.count > 0)
                 idleRewardData.rewards.Add(item);
 
-            item = TableManager.item.GetItemData(ItemType.time_stone, (int)(count * 0.3f), HeroClassType.Champion.ToString());
+            item = TableManager.item.GetItemData("time_stone", (int)(count * 0.3f), HeroClassType.Champion.ToString());
             if (item.count > 0)
                 idleRewardData.rewards.Add(item);
 
-            item = TableManager.item.GetItemData(ItemType.rice, (int)(count * 0.3f), HeroClassType.Vanguard.ToString());
+            item = TableManager.item.GetItemData("rice", (int)(count * 0.3f), HeroClassType.Vanguard.ToString());
             if (item.count > 0)
                 idleRewardData.rewards.Add(item);
 
-            item = TableManager.item.GetItemData(ItemType.time_stone, (int)(count * 0.3f), HeroClassType.Strategist.ToString());
+            item = TableManager.item.GetItemData("time_stone", (int)(count * 0.3f), HeroClassType.Strategist.ToString());
             if (item.count > 0)
                 idleRewardData.rewards.Add(item);
 

@@ -314,13 +314,11 @@ public class Data_BossRaid
         [JsonProperty] public GradeType gradeMin;
         [JsonProperty] public GradeType gradeMax;
 
-        [JsonProperty] public long tickEndSeason;
         [JsonProperty] public long tickPrevRound;
         [JsonProperty] public long tickNextRound;
         [JsonProperty] public long tickSecondPhase;
         [JsonProperty] public long tickEndRound;
 
-        public System.DateTime dtEndSeason => Utils.GetDateTime(tickEndSeason);
         public System.DateTime dtPrevRound => Utils.GetDateTime(tickPrevRound);
         public System.DateTime dtNextRound => Utils.GetDateTime(tickNextRound);
         public System.DateTime dtEndRound => Utils.GetDateTime(tickEndRound);
@@ -345,7 +343,6 @@ public class Data_BossRaid
             prevGrade = GradeType.Normal;
             tickPrevRound = System.DateTime.UtcNow.AddHours(-3).Ticks;
             tickNextRound = System.DateTime.UtcNow.AddSeconds(10).Ticks;
-            tickEndSeason = Utils.GetNextMonthMidnight(1).Ticks;
 
             gradeMin = GradeType.Normal;
             gradeMax = GradeType.Normal;

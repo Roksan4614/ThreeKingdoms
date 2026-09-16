@@ -373,4 +373,29 @@ public static class Utils
 
         return targetDate;
     }
+
+    public static string ToSnakeCase(string _input)
+    {
+        int maxLen = _input.Length * 2;
+        Span<char> destination = maxLen <= 256
+            ? stackalloc char[maxLen]
+            : new char[maxLen];
+        int destIndex = 0;
+
+        for (int i = 0; i < _input.Length; i++)
+        {
+            char c = _input[i];
+
+            if (char.IsUpper(c))
+            {
+                if (i > 0)
+                    destination[destIndex++] = '_';
+                destination[destIndex++] = char.ToLowerInvariant(c);
+            }
+            else
+                destination[destIndex++] = c;
+        }
+
+        return destination[..destIndex].ToString();
+    }
 }

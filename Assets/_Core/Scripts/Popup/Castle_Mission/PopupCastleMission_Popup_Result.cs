@@ -107,7 +107,7 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
     //void ActionReward(params Data_Castle_Mission.CastleMissionData[] _missionDatas)
     //{
     //    // 보상 연출 해주자
-    //    //Dictionary<ItemType, TableItemData> dbRewards = new();
+    //    //Dictionary<ItemDetailType, TableItemData> dbRewards = new();
     //    var rewards = new List<RewardWorker.RewardItemData>();
     //    foreach (var m in _missionDatas)
     //    {
@@ -116,8 +116,8 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
     //            rewards.Add(new(r.reward_key, Random.Range(r.reward_min, r.reward_max + 1)));
     //    }
 
-    //    var totalGold = rewards.FindAll(x => x.itemType == ItemType.gold).Sum(x => x.count);
-    //    var totalRice = rewards.FindAll(x => x.itemType == ItemType.rice).Sum(x => x.count);
+    //    var totalGold = rewards.FindAll(x => x.itemType == ItemDetailType.Gold).Sum(x => x.count);
+    //    var totalRice = rewards.FindAll(x => x.itemType == ItemDetailType.Rice).Sum(x => x.count);
     //    DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
 
     //    foreach (var r in rewards)

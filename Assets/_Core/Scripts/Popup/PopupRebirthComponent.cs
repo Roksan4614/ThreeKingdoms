@@ -76,7 +76,7 @@ public class PopupRebirthComponent : BasePopupComponent
         m_element.panel.gameObject.SetActive(false);
 
         await UniTask.WaitUntil(() => PopupManager.instance.isDimm == false);
-        await RewardWorker.instance.RunAsync(m_element.panel.position, _itemData: TableManager.item.GetItemData(ItemType.time_stone, 100));
+        await RewardWorker.instance.RunAsync(m_element.panel.position, _itemData: TableManager.item.GetItemData("time_stone", 100));
 
         gameObject.SetActive(false);
         dimm.SetActive(true);

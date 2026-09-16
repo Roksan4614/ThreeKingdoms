@@ -107,7 +107,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
     async UniTask OnUpdateSeasonTimerAsync()
     {
-        var dtEnd = DataManager.bossRaid.data.dtEndSeason;
+        var dtEnd = SeasonWorker.instance.dtEnd;
 
         while (true)
         {

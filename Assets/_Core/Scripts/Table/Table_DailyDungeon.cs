@@ -80,28 +80,10 @@ public class TableDailyDungeonGradeData
         if (m_rewards == null)
         {
             m_rewards = new() {
-                new()
-                {
-                    category = ItemCategoryType.Soul_Stone,
-                    key = ItemType.class_soul_stone,
-                    value = _classType.ToString(),
-                    count = _isWithCount ? soul_stone_count : 0
-                },
-                new()
-                {
-                    key = ItemType.time_stone,
-                    count = _isWithCount ? time_stone_count : 0
-                },
-                new()
-                {
-                    key = ItemType.gold,
-                    count = _isWithCount ? gold : 0
-                },
-                new()
-                {
-                    key = ItemType.rice,
-                    count = _isWithCount ? rice : 0
-                }
+                TableManager.item.GetItemData($"class_soul_stone_{_classType.ToString().ToLower()}", _isWithCount ? soul_stone_count : 0),
+				TableManager.item.GetItemData($"time_stone", _isWithCount ? time_stone_count: 0),
+				TableManager.item.GetItemData($"gold", _isWithCount ? gold: 0),
+				TableManager.item.GetItemData($"rice", _isWithCount ? rice: 0),
             };
         }
         return m_rewards;

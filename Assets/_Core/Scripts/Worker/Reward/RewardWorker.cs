@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class RewardWorker : Singleton<RewardWorker>, IValidatable
@@ -34,9 +35,9 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         Vector3 posFrom = _fromTarget == null ? CameraManager.posPointer : _fromTarget.position;
 
         if (_gold > 0)
-            Run(posFrom, ItemType.gold, _gold, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
+            Run(posFrom, "gold", _gold, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
         if (_rice > 0)
-            Run(posFrom, ItemType.rice, _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
+            Run(posFrom, "rice", _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
     }
 
     public void Run(Vector3 _posFrom, bool _isPopup = true, bool _isStartPunch = false, params ItemData[] _itemData)
@@ -73,13 +74,13 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
     /// <param name="_durationWait">기다리는 시간</param>
     /// <param name="_isTargetPunch">방향으로 흐터질거야</param>
     /// <param name="_posTargetPunch">흐터지는 위치</param>
-    public void Run(Vector3 _posFrom, ItemType _itemType, long _count = 1, bool _isStartPunch = true
+    public void Run(Vector3 _posFrom, string _itemKey, long _count = 1, bool _isStartPunch = true
         , bool _isFXStart = false, float _distMax = 0
         , bool _isField = false, bool _isScreen = false, bool _isPopup = false,
         float _durationWait = -1, bool _isTargetPunch = false, Vector3 _posTargetPunch = default)
-        => RunAsync(_posFrom, _itemType, _count, _isStartPunch, _isFXStart, _distMax, _isField, _isScreen, _isPopup, _durationWait, _isTargetPunch, _posTargetPunch).Forget();
+        => RunAsync(_posFrom, _itemKey, _count, _isStartPunch, _isFXStart, _distMax, _isField, _isScreen, _isPopup, _durationWait, _isTargetPunch, _posTargetPunch).Forget();
 
-    public async UniTask RunAsync(Vector3 _posFrom, ItemType _itemType, long _count = 1, bool _isStartPunch = true
+    public async UniTask RunAsync(Vector3 _posFrom, string _itemKey, long _count = 1, bool _isStartPunch = true
         , bool _isFXStart = false, float _distMax = 0
         , bool _isField = false, bool _isScreen = false, bool _isPopup = false,
         float _durationWait = -1, bool _isTargetPunch = false, Vector3 _posTargetPunch = default)
@@ -88,7 +89,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         rewardData.startPos = _posFrom;
         rewardData.rewards = new()
         {
-            new(_itemType, _count)
+            new(_itemKey, _count)
         };
 
         m_actionData.distInstantiateMAX = _distMax > 0 ? _distMax : m_actionData.distInstantiateMAX;
@@ -200,8 +201,8 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
 
     public Transform GetThrowTarget(RewardItemData _rewardItemData)
     {
-        Transform target = _rewardItemData.isGoldRice ? TopComponent.instance?.GetAssetIcon(_rewardItemData.itemType) :
-            BottomComponent.instance?.GetIconScreen(_rewardItemData.itemType);
+        Transform target = _rewardItemData.isGoldRice ? TopComponent.instance?.GetAssetIcon(_rewardItemData.data.type) :
+            BottomComponent.instance?.GetIconScreen(_rewardItemData.data.type);
 
         if (target == null)
             target = m_mainHero?.transform;
@@ -249,19 +250,16 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
 
     public class RewardItemData
     {
-        public ItemType itemType;
-        public long count;
+        public ItemData data;
 
-        public RewardItemData(ItemType _itemType, long _count = 1)
+        public RewardItemData(string _key, long _count = 1)
         {
-            itemType = _itemType;
-            count = _count;
-            //  spawnType = _spawnType;
+            data = TableManager.item.GetItemData(_key, (int)_count);
         }
 
-        public bool isGoldRice => itemType == ItemType.gold || itemType == ItemType.rice;
+        public bool isGoldRice => data.type == ItemDetailType.Gold || data.type == ItemDetailType.Rice;
 
-        public string name => TableManager.stringTable.GetString($"ITEM_NAME_{itemType.ToString().ToUpper()}");
+        public string name => TableManager.stringTable.GetString($"ITEM_NAME_{data.type.ToString().ToUpper()}");
     }
 
     private void OnValidate()

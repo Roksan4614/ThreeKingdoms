@@ -105,7 +105,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
             case ButtonType.Pass:
                 {
                     if (m_popups.ContainsKey(_type) == false)
-                        m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<PopupPassComponent>(PopupType.Pass));
+                        m_popups.Add(_type, await PopupManager.instance.OpenPopupAsync<Rev9.Pass.PopupPassComponent>(PopupType.Pass));
                     else
                         m_popups[_type].OpenPopup();
                 }

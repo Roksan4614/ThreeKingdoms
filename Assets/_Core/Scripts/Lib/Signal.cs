@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine.Events;
 
 
@@ -279,7 +280,7 @@ public class Signal
     public SignalObject<(CharacterComponent owenr, CharacterComponent attacker, long _damage)> UpdateHP = new();
     public SignalObject UpdateTeamPosition = new();
     public SignalObject<(float percent, float hpMax)> UpdageBossHP = new();
-    public SignalObject<(bool isTween, ItemType itemType)> UpdateAsset = new();
+    public SignalObject<(bool isTween, ItemDetailType itemType)> UpdateAsset = new();
 
     public SignalObject<StageManager.LoadData_Stage> StartStage = new();
     public SignalObject<int> StartPhase = new(); // Phase index

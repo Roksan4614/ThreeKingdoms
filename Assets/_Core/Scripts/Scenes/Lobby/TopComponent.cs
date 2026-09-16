@@ -4,13 +4,14 @@ using Rev9.Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TopComponent : Singleton<TopComponent>, IValidatable
 {
-    Dictionary<ItemType, AssetData> m_assets = new();
+    Dictionary<ItemDetailType, AssetData> m_assets = new();
 
     //PopupInventoryComponent m_inventory;
 
@@ -37,7 +38,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
         Signal.instance.UpdateAsset.connectLambda = new(this,
             _data =>
             {
-                if (_data.itemType == ItemType.NONE)
+                if (_data.itemType == ItemDetailType.None)
                 {
                     for (int i = 0; i < m_element.assets.Count; i++)
                         UpdateAsset(m_element.assets[i].type, -1, _data.isTween);
@@ -99,10 +100,10 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
 
     public bool isSwitchUpdateAsset { get; set; } = true;
 
-    public Transform GetAssetIcon(ItemType _type)
+    public Transform GetAssetIcon(ItemDetailType _type)
         => m_assets[_type].icon;
 
-    public void UpdateAsset(ItemType _type, long _amount = -1, bool _isTween = true)
+    public void UpdateAsset(ItemDetailType _type, long _amount = -1, bool _isTween = true)
     {
         if (isSwitchUpdateAsset == false)
             return;
@@ -126,7 +127,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
             SetAmountData(_type, amount);
     }
 
-    void SetAmountData(ItemType _type, long _amount)
+    void SetAmountData(ItemDetailType _type, long _amount)
     {
         var data = m_assets[_type];
         data.amount = _amount;
@@ -158,7 +159,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
 
         public void Initialize(Transform _transform)
         {
-            List<ItemType> assetTypes = new() { ItemType.gold, ItemType.rice };
+            List<ItemDetailType> assetTypes = new() { ItemDetailType.Gold, ItemDetailType.Rice };
 
             assets = new();
             foreach (var t in assetTypes)
@@ -183,7 +184,7 @@ public class TopComponent : Singleton<TopComponent>, IValidatable
     [Serializable]
     public class AssetData
     {
-        public ItemType type;
+        public ItemDetailType type;
         public ButtonHelper button;
         public Transform icon;
         public long amount;

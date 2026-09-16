@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using Rev9.Pass;
 using Rev9.Tournament;
 using System;
 using System.Collections.Generic;
@@ -92,6 +93,10 @@ public class TableManager
     public static Table_String_Base questString => instance.m_questString;
     Table_String_Base m_questString;
 
+    public static Table_PassReward passReward => instance.m_passReward;
+    Table_PassReward m_passReward;
+    public static Table_PassQuest passQuest => instance.m_passQuest;
+    Table_PassQuest m_passQuest;
 
     public static Table_TournamentReward tournamentReward => instance.m_tournamentReward;
     Table_TournamentReward m_tournamentReward;
@@ -117,8 +122,7 @@ public class TableManager
             m_traits = new(LoadList<TableTraitsData>(_result, "s_traits_pool"));
             m_traitsValue = new(LoadList<TableTraitsValueData>(_result, "s_traits_value_pool"));
 
-
-            m_item = new(LoadList<TableItemData>(_result, "ItemData"));
+            m_item = new(LoadList<TableItemData>(_result, "s_item"));
             m_region = new(LoadList<TableRegionData>(_result, "RegionData"));
 
             m_stringTable = new(LoadList<TableStringData>(_result, "String"));
@@ -158,6 +162,9 @@ public class TableManager
             m_quest = new(LoadList<TableQuestData>(_result, "s_quest"));
             m_questReward = new(LoadList<TableQuestData>(_result, "s_quest_reward"));
             m_questString = new(LoadList<TableStringData>(_result, "String_Quest"));
+
+            m_passReward = new(LoadList<TablePassRewardData>(_result, "s_pass_reward"));
+            m_passQuest = new(LoadList<TablePassQuestData>(_result, "s_pass_quest"));
 
             m_tournamentReward = new(new());
 

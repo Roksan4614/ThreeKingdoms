@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Rev9.Pass;
 using Rev9.Post;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ public class DataManager
     Data_BossRaid m_bossRaid = new();
     Data_DailyDungeon m_dailyDungeon = new();
     Data_StoryMode m_storyMode = new();
+    Data_Pass m_pass = new();
 
     public static Data_UserInfo userInfo => instance.m_userInfo;
     public static Data_Option option => instance.m_option;
@@ -35,6 +37,7 @@ public class DataManager
     public static Data_BossRaid bossRaid => instance.m_bossRaid;
     public static Data_DailyDungeon dailyDungeon => instance.m_dailyDungeon;
     public static Data_StoryMode storyMode => instance.m_storyMode;
+    public static Data_Pass pass => instance.m_pass;
 
     public async UniTask InitializeAsync()
     {

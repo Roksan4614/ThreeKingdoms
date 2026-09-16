@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,11 +9,16 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     float m_moveValueY;
     int m_countItem;
 
+    public ScrollRect scroll => m_element.scroll;
     public RectTransform content => m_element.scroll.content;
     public Transform empty => m_element.empty;
 
+    bool isAwaked = false;
     private void Awake()
     {
+        if (m_element.scroll.viewport.rect.height == 0)
+            return;
+
         float availableHeight = m_element.scroll.viewport.rect.height - m_element.layout.padding.top - m_element.layout.padding.bottom;
         float spacing = m_element.layout.spacing;
         int visibleCount = Mathf.CeilToInt((availableHeight + spacing) / (m_element.rtBaseItem.rect.height + spacing)) + 2;
@@ -23,10 +29,8 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
 
         m_moveValueY = visibleCount * m_element.rtBaseItem.rect.height + (m_element.layout.spacing * visibleCount);
         m_element.layout.enabled = false;
-    }
 
-    private void Start()
-    {
+        isAwaked = true;
         ////m_element.scroll.content.ForceRebuildLayout();
         ////m_element.layout.enabled = false;
     }
@@ -37,8 +41,18 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     /// <typeparam name="T"></typeparam>
     /// <param name="_count">데이타가 몇개야??</param>
     /// <param name="_onUpdate">아이템이랑, 데이타 인덱스</param>
+    /// 
     public void Initialize<T>(int _count, UnityAction<T, int> _onUpdate)
+        => InitializeAsync(_count, _onUpdate).Forget();
+
+    async UniTask InitializeAsync<T>(int _count, UnityAction<T, int> _onUpdate)
     {
+        if(isAwaked == false)
+        {
+            await UniTask.WaitUntil(() => m_element.scroll.viewport.rect.height > 0);
+            Awake();
+        }
+
         m_curIndex = 0;
         m_countItem = _count;
 

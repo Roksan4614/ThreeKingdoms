@@ -175,7 +175,6 @@ public class Data_Castle_Mission
             foreach (var r in reward)
             {
                 var item = TableManager.item.GetItemData(r.reward_key, Random.Range(r.reward_min, r.reward_max + 1));
-                item.value = r.reward_value;
                 item.isNew = true;
 
                 rewards.Add(item);

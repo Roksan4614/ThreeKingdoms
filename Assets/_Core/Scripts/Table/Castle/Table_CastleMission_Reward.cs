@@ -47,8 +47,7 @@ public class TableCastleMissionRewardData
     public string key;
     public GradeType grade;
     public int unlock_pct;
-    public ItemType reward_key;
-    public string reward_value;
+    public string reward_key;
     public int reward_min;
     public int reward_max;
     public float drop_rate;
@@ -70,12 +69,7 @@ public class TableCastleMissionRewardData
         get
         {
             if (m_itemData == null)
-                m_itemData = new()
-                {
-                    key = reward_key,
-                    count = reward_max,
-                    value = reward_value
-                };
+                m_itemData = TableManager.item.GetItemData(reward_key, int.MaxValue);
             return m_itemData;
         }
     }

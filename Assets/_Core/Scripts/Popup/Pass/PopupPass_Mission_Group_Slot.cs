@@ -1,16 +1,9 @@
 using UnityEngine;
 
-public class PopupPass_Mission_Group_Slot : MonoBehaviour
+namespace Rev9.Pass
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class PopupPass_Mission_Group_Slot : MonoBehaviour
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public PassQuestData data { get; private set; }
     }
 }

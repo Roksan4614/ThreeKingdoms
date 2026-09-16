@@ -41,7 +41,7 @@ namespace Rev9.Tournament
             {
                 if (m_rewards == null)
                 {
-                    var key = reward_key.Replace(" ", "").Split(",").Select(x => System.Enum.Parse<ItemType>(x)).ToArray();
+                    var key = reward_key.Replace(" ", "").Split(",");
                     var count = reward_count.Replace(" ", "").Split(",").Select(x => int.Parse(x)).ToArray();
 
                     m_rewards = new();

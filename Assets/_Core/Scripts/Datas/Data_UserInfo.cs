@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public partial class Data_UserInfo
@@ -264,8 +265,8 @@ public partial class Data_UserInfo
     }
 
     #region ASSETS
-    public long GetAssetAmount(ItemType _itemType)
-        => _itemType switch { ItemType.gold => m_element.gold, ItemType.rice => m_element.rice, _ => -1 };
+    public long GetAssetAmount(ItemDetailType _itemType)
+        => _itemType switch { ItemDetailType.Gold => m_element.gold, ItemDetailType.Rice => m_element.rice, _ => -1 };
 
 
     //public void AddHeroSoul(string _key, int _count)
@@ -290,8 +291,8 @@ public partial class Data_UserInfo
             _rice != 0 ? m_element.rice + _rice : -1,
             _isUpdate, _isTween);
     }
-    public void AddAsset(ItemType _itemType, long _amount, bool _isUpdate = true, bool _isTween = true)
-        => AddAsset(_itemType == ItemType.gold ? _amount : 0, _itemType == ItemType.rice ? _amount : 0, _isUpdate, _isTween);
+    public void AddAsset(ItemDetailType _itemType, long _amount, bool _isUpdate = true, bool _isTween = true)
+        => AddAsset(_itemType == ItemDetailType.Gold ? _amount : 0, _itemType == ItemDetailType.Rice ? _amount : 0, _isUpdate, _isTween);
 
     //public void SetProvision(long _amount, bool _isUpdate = true, bool _isTween = true)
     //    => SetAsset(-1, _amount, _isUpdate, _isTween);
@@ -299,23 +300,23 @@ public partial class Data_UserInfo
     //    => SetAsset(_amount, -1, _isUpdate, _isTween);
     public void SetAsset(long _gold, long _rice, bool _isUpdate = true, bool _isTween = true)
     {
-        ItemType itemType = ItemType.gold;
+        ItemDetailType itemType = ItemDetailType.Gold;
 
         if (_gold > -1 && _rice > -1)
         {
             m_element.gold = _gold;
             m_element.rice = _rice;
-            itemType = ItemType.NONE;
+            itemType = ItemDetailType.None;
         }
         else if (_gold > -1)
         {
             m_element.gold = _gold;
-            itemType = ItemType.gold;
+            itemType = ItemDetailType.Gold;
         }
         else if (_rice > -1)
         {
             m_element.rice = _rice;
-            itemType = ItemType.rice;
+            itemType = ItemDetailType.Rice;
         }
 
         if (_isUpdate)

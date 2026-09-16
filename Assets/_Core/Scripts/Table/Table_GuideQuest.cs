@@ -27,7 +27,7 @@ public class Table_GuideQuest : BaseTable<string, Table_GuideQuest.TableGuideQue
         string start_stage;
         int[] m_startStage;
 
-        public ItemType reward_item;
+        public string reward_item;
         public int reward_count;
 
         public string open_guide_quest;

@@ -991,11 +991,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8654683058845642405, guid: d4fa0058d178c774385a7d576a8aeb6a, type: 3}
       propertyPath: m_element.colorParts.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8654683058845642405, guid: d4fa0058d178c774385a7d576a8aeb6a, type: 3}
       propertyPath: m_element.partsRenders.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8654683058845642405, guid: d4fa0058d178c774385a7d576a8aeb6a, type: 3}
       propertyPath: m_element.colorParts.Array.data[0].b
@@ -1026,11 +1026,19 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8654683058845642405, guid: d4fa0058d178c774385a7d576a8aeb6a, type: 3}
+      propertyPath: m_element.colorParts.Array.data[4].a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654683058845642405, guid: d4fa0058d178c774385a7d576a8aeb6a, type: 3}
       propertyPath: 'm_element.partsRenders.Array.data[2]'
+      value: 
+      objectReference: {fileID: 6840671525380308228}
+    - target: {fileID: 8654683058845642405, guid: d4fa0058d178c774385a7d576a8aeb6a, type: 3}
+      propertyPath: 'm_element.partsRenders.Array.data[3]'
       value: 
       objectReference: {fileID: 6767581582930404366}
     - target: {fileID: 8654683058845642405, guid: d4fa0058d178c774385a7d576a8aeb6a, type: 3}
-      propertyPath: 'm_element.partsRenders.Array.data[3]'
+      propertyPath: 'm_element.partsRenders.Array.data[4]'
       value: 
       objectReference: {fileID: 2301722584015724681}
     m_RemovedComponents: []
@@ -1054,6 +1062,11 @@ Transform:
 --- !u!4 &5408070486524057598 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8302906298514483278, guid: d4fa0058d178c774385a7d576a8aeb6a, type: 3}
+  m_PrefabInstance: {fileID: 4050013963331927984}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &6840671525380308228 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7411368901288215220, guid: d4fa0058d178c774385a7d576a8aeb6a, type: 3}
   m_PrefabInstance: {fileID: 4050013963331927984}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6983901058311404751
@@ -1407,6 +1420,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3584069585807504991, guid: ac597ba39c54cdc47b85c5b6bbfa277e, type: 3}
   m_PrefabInstance: {fileID: 7529789729281268627}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &6896276379395370605 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4020396191554926078, guid: ac597ba39c54cdc47b85c5b6bbfa277e, type: 3}
+  m_PrefabInstance: {fileID: 7529789729281268627}
+  m_PrefabAsset: {fileID: 0}
 --- !u!58 &7273701192092443790 stripped
 CircleCollider2D:
   m_CorrespondingSourceObject: {fileID: 904747915223809821, guid: ac597ba39c54cdc47b85c5b6bbfa277e, type: 3}
@@ -1483,11 +1501,13 @@ MonoBehaviour:
     partsRenders:
     - {fileID: 2414219334620784249}
     - {fileID: 7862365433741530323}
+    - {fileID: 6896276379395370605}
     - {fileID: 2210088915634451424}
     - {fileID: 6296970419806466790}
     colorParts:
     - {r: 1, g: 1, b: 1, a: 1}
     - {r: 1, g: 1, b: 1, a: 1}
+    - {r: 0.61960787, g: 0, b: 0, a: 1}
     - {r: 1, g: 1, b: 1, a: 1}
     - {r: 1, g: 1, b: 1, a: 1}
     mount: {fileID: 6032889051678241907}

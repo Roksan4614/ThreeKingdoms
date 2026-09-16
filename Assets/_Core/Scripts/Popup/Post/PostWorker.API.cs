@@ -22,8 +22,8 @@ namespace Rev9.Post
                     content = "아침 접속 보상입니다. 즐거운 하루 보내세요.",
                     rewards = new()
                     {
-                        TableManager.item.GetItemData(ItemType.gold, 100),
-                        TableManager.item.GetItemData(ItemType.rice, 100),
+                        TableManager.item.GetItemData("gold", 100),
+                        TableManager.item.GetItemData("rice", 100),
                     }
                 });
                 m_data.posts.Add(new()
@@ -43,11 +43,11 @@ namespace Rev9.Post
                     content = "시간석 영혼석 같은 거 테스트",
                     rewards = new()
                     {
-                        TableManager.item.GetItemData(ItemType.public_soul_stone, 10),
-                        TableManager.item.GetItemData(ItemType.dedicated_soul_stone, 100, "CaoCao"),
-                        TableManager.item.GetItemData(ItemType.time_stone, 100000),
-                        TableManager.item.GetItemData(ItemType.gold, 100),
-                        TableManager.item.GetItemData(ItemType.rice, 100),
+                        TableManager.item.GetItemData("public_soul_stone", 10),
+                        TableManager.item.GetItemData("soul_stone_dedicated", 100, "CaoCao"),
+                        TableManager.item.GetItemData("time_stone", 100000),
+                        TableManager.item.GetItemData("gold", 100),
+                        TableManager.item.GetItemData("rice", 100),
                     },
                     tick_end = Utils.GetUTC().AddHours(26).Ticks
                 });

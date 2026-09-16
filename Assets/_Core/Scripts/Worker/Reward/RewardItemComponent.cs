@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -38,7 +39,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
         });
     }
 
-    List<ItemType> m_ignoreLog = new();
+    List<ItemDetailType> m_ignoreLog = new();
     public bool Initialize(RewardWorker.RewardItemData _itemData, RewardSpawnType _spawnType, bool _isFXStart, Transform _target)
     {
         m_target = _target;
@@ -65,13 +66,13 @@ public class RewardItemComponent : TargetComponent, IValidatable
         for (int i = 0; i < m_element.panel.childCount; i++)
             m_element.panel.GetChild(i).gameObject.SetActive(false);
 
-        var obj = m_element.GetObject(_itemData.itemType);
+        var obj = m_element.GetObject(_itemData.data.type);
         if (obj == null)
         {
-            if (m_ignoreLog.Contains(_itemData.itemType) == false)
+            if (m_ignoreLog.Contains(_itemData.data.type) == false)
             {
-                IngameLog.Add("RewardItemComponent: Initialize: FAILED: " + _itemData.itemType);
-                m_ignoreLog.Add(_itemData.itemType);
+                IngameLog.Add("RewardItemComponent: Initialize: FAILED: " + _itemData.data.type);
+                m_ignoreLog.Add(_itemData.data.type);
             }
             return false;
         }
@@ -79,8 +80,8 @@ public class RewardItemComponent : TargetComponent, IValidatable
         obj.SetActive(true);
         m_element.txtCount.text = _itemData.name;
         m_element.txtCount.gameObject.SetActive(true);
-        if (_itemData.count > 1)
-            m_element.txtCount.text = $"x{_itemData.count.AmountKMBT()}";
+        if (_itemData.data.count > 1)
+            m_element.txtCount.text = $"x{_itemData.data.count.AmountKMBT()}";
 
 
         return true;
@@ -133,7 +134,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
 
         // 금화와 군량일 경우 올려주는 연출
         if (m_data.isGoldRice)
-            Signal.instance.UpdateAsset.Emit((true, m_data.itemType));
+            Signal.instance.UpdateAsset.Emit((true, m_data.data.type));
 
         FinishedAsync().Forget();
     }
@@ -190,7 +191,7 @@ public class RewardItemComponent : TargetComponent, IValidatable
             panel = character.Find("Panel");
 
             objectData = new();
-            for (var itemType = ItemType.NONE + 1; itemType < ItemType.MAX; itemType++)
+            for (var itemType = ItemDetailType.None + 1; itemType < ItemDetailType.Max; itemType++)
             {
                 var item = panel.Find(itemType.ToString());
                 if (item != null)
@@ -206,14 +207,14 @@ public class RewardItemComponent : TargetComponent, IValidatable
                 IngameLog.Add($"{_transform.name}: layerError: layerCharacter{layerCharacter} / layserPopup{layerPopup}");
         }
 
-        public GameObject GetObject(ItemType _itemType)
+        public GameObject GetObject(ItemDetailType _itemType)
             => objectData.Find(x => x.type == _itemType).obj;
     }
 
     [Serializable]
     struct ItemObjectData
     {
-        public ItemType type;
+        public ItemDetailType type;
         public GameObject obj;
     }
     #endregion

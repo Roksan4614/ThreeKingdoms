@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,11 +9,11 @@ namespace Rev9.Inventory
 {
     public class PopupInventoryComponent : BasePopupComponent
     {
-        ItemCategoryType m_curCategory;
+        ItemType m_curCategory;
 
         PopupInventoryComponent() : base(PopupType.Inventory) { }
 
-        Dictionary<ItemCategoryType, ButtonHelper> m_tabs = new();
+        Dictionary<ItemType, ButtonHelper> m_tabs = new();
 
         protected override void Awake()
         {
@@ -47,14 +48,14 @@ namespace Rev9.Inventory
             m_element.scrollList.content.anchoredPosition =
             m_element.scrollTab.content.anchoredPosition = Vector2.zero;
 
-            m_curCategory = ItemCategoryType.NONE - 1;
-            SetTab(ItemCategoryType.NONE);
+            m_curCategory = ItemType.None - 1;
+            SetTab(ItemType.None);
 
             gameObject.SetActive(true);
             Utils.SetActivePunch(m_element.panel, true);
         }
 
-        void SetTab(ItemCategoryType _category)
+        void SetTab(ItemType _category)
         {
             if (m_curCategory == _category)
                 return;
@@ -72,7 +73,7 @@ namespace Rev9.Inventory
         {
             var dbInventory = InventoryWorker.data;
 
-            if (m_curCategory > ItemCategoryType.NONE)
+            if (m_curCategory > ItemType.None)
                 dbInventory = dbInventory.FindAll(x => x.category == m_curCategory);
 
             var content = m_element.scrollList.content;

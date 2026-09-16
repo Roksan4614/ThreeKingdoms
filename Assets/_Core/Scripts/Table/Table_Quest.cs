@@ -85,7 +85,7 @@ public class TableQuestData
     public QuestType key;
     public QuestCategoryType type;
     public int target_value;
-    public ItemType reward_item_key;
+    public string reward_item_key;
     public int reward_count;
 
     ItemData m_itemData;

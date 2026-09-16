@@ -176,8 +176,9 @@ namespace Rev9.ContentsMarket
                 endTime = utc.Date.AddDays(1).AddHours(addHours);
             else if (m_curTab == ContentsMarketTabType.Tournament)
                 endTime = Utils.GetNextMidnight(DayOfWeek.Monday);
+            //else if (m_curTab == ContentsMarketTabType.Raid)
             else
-                endTime = Utils.GetNextMonthMidnight(1);
+                endTime = SeasonWorker.instance.dtEnd;
 
             TimeSpan ts = endTime - Utils.GetUTC();
             int prevSec = -1;

@@ -45,11 +45,14 @@ public class PPWorker
     public static T Get<T>(PlayerPrefsType _type, bool _isUserData = true)
     {
         string key = PPKey(_type, _isUserData);
-        return Get<T>(key);
+        return Get<T>(key, false);
     }
 
-    public static T Get<T>(string _key)
+    public static T Get<T>(string _key, bool _isUserData = true)
     {
+        if (_isUserData)
+            _key += $"_{DataManager.userInfo.uid}";
+
         if (HasKey(_key) == false)
             return default;
 
@@ -62,7 +65,7 @@ public class PPWorker
         else if (typeof(T) == typeof(string))
             result = PlayerPrefs.GetString(_key);
         else
-            result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(Get<string>(_key));
+            result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(Get<string>(_key, false));
 
         return (T)result;
     }
@@ -74,9 +77,12 @@ public class PPWorker
     public static float GetFloat(PlayerPrefsType _type, bool _isUserData = true)
         => PlayerPrefs.GetFloat(PPKey(_type, _isUserData));
     public static void Set(PlayerPrefsType _type, object _value, bool _isUserData = true, bool _isAutoSave = true)
-        => Set(PPKey(_type, _isUserData), _value, _isAutoSave);
-    public static void Set(string _key, object _value, bool _isAutoSave = true)
+        => Set(PPKey(_type, _isUserData), _value, false, _isAutoSave);
+    public static void Set(string _key, object _value, bool _isUserData = true, bool _isAutoSave = true)
     {
+        if(_isUserData == true)
+            _key += $"_{DataManager.userInfo.uid}";
+
         var type = _value.GetType();
 
         if (type == typeof(string))

@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class InventoryWorker
@@ -14,16 +15,15 @@ public class InventoryWorker
     public static List<InventoryItemData> data => instance.m_data;
     const string c_key = "pp_inventory";
 
-    List<ItemCategoryType> m_sortCategory = new()
+    List<ItemType> m_sortCategory = new()
         {
-            ItemCategoryType.NONE,
-            ItemCategoryType.Currency,
-            ItemCategoryType.Point,
-            ItemCategoryType.Ticket,
-            ItemCategoryType.Soul_Stone,
-            ItemCategoryType.MAX,
+			ItemType.None,
+            ItemType.Currency,
+            ItemType.GachaTicket,
+            ItemType.SoulStone,
+			ItemType.Max,
         };
-    public IReadOnlyList<ItemCategoryType> sortCategory => m_sortCategory;
+    public IReadOnlyList<ItemType> sortCategory => m_sortCategory;
 
     public async UniTask InitializeAsync()
     {
@@ -50,9 +50,9 @@ public class InventoryWorker
         => m_data.Find(x => x.key == _itemData.key && x.value == _itemData.value)?.count ?? 0;
 
 
-    public static void AddItem(ItemType _itemType, int _count, string _value = null, bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default)
+    public static void AddItem(string _itemKey, int _count, bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default)
     {
-        AddItem(_isUpdate, _isTween, _isRewardAction, _actionPosition, TableManager.item.GetItemData(_itemType, _count, _value));
+        AddItem(_isUpdate, _isTween, _isRewardAction, _actionPosition, TableManager.item.GetItemData(_itemKey, _count));
     }
     public static void AddItem(bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default, params ItemData[] _itemData)
     {
@@ -62,11 +62,11 @@ public class InventoryWorker
         {
             foreach (var item in _itemData)
             {
-                switch (item.key)
+                switch (item.type)
                 {
-                    case ItemType.rice:
-                    case ItemType.gold:
-                        DataManager.userInfo.AddAsset(item.key, item.count, _isUpdate, _isTween);
+                    case ItemDetailType.Rice:
+                    case ItemDetailType.Gold:
+                        DataManager.userInfo.AddAsset(item.type, item.count, _isUpdate, _isTween);
                         break;
                     default:
                         var d = data.Find(x => x.key == item.key && x.value == item.value);
@@ -80,7 +80,7 @@ public class InventoryWorker
                             d.count += item.count;
 
                         //// 장수 영혼석인데 보유하지 않았다면
-                        //if (item.key == ItemType.dedicated_soul_stone && DataManager.userInfo.HasHero(d.value) == false)
+                        //if (item.key == ItemDetailType.DedicatedSoulStone && DataManager.userInfo.HasHero(d.value) == false)
                         //{
                         //    var grade = TableManager.hero.GetGradeFromSoulCount(d.count);
                         //    if (grade > GradeType.NONE)
@@ -107,7 +107,7 @@ public class InventoryWorker
         int result = 0;
 
         // 영혼석
-        if (x.key == ItemType.dedicated_soul_stone && y.key == ItemType.dedicated_soul_stone)
+        if (x.type == ItemDetailType.DedicatedSoulStone && y.type == ItemDetailType.DedicatedSoulStone)
         {
             var heroX = DataManager.userInfo.GetHeroInfoData(x.value);
             var heroY = DataManager.userInfo.GetHeroInfoData(y.value);
@@ -122,7 +122,7 @@ public class InventoryWorker
             if (result != 0) return result;
         }
         // 클래스영혼
-        else if (x.key == ItemType.class_soul_stone && y.key == ItemType.class_soul_stone)
+        else if (x.type == ItemDetailType.ClassSoulStone && y.type == ItemDetailType.ClassSoulStone)
         {
             HeroClassType classTypeX = System.Enum.Parse<HeroClassType>(x.value);
             HeroClassType classTypeY = System.Enum.Parse<HeroClassType>(y.value);

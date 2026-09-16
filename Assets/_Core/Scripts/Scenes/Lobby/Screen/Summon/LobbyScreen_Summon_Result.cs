@@ -5,385 +5,384 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using ThreeKingdoms.Shared.Enums;
 
 public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 {
-    public enum ResultStepType
-    {
-        NONE,
+	public enum ResultStepType
+	{
+		NONE,
 
-        ReceiveEnd,
+		ReceiveEnd,
 
-        MAX
-    }
+		MAX
+	}
 
-    bool m_isSkip = false;
-    bool m_isNextStep = false;
+	bool m_isSkip = false;
+	bool m_isNextStep = false;
 
-    public ResultStepType step { get; private set; }
-    public void AllSkip() => m_isSkip = true;
-    public bool isSkip
-    {
-        get
-        {
-            if (m_isSkip)
-                return true;
-            else if (m_isNextStep || ControllerManager.isClick)
-            {
-                m_isNextStep = false;
-                return true;
-            }
-            return false;
-        }
-    }
+	public ResultStepType step { get; private set; }
+	public void AllSkip() => m_isSkip = true;
+	public bool isSkip
+	{
+		get
+		{
+			if (m_isSkip)
+				return true;
+			else if (m_isNextStep || ControllerManager.isClick)
+			{
+				m_isNextStep = false;
+				return true;
+			}
+			return false;
+		}
+	}
 
-    List<ItemComponent> m_itemComps = new();
-    List<Vector3> m_prevPos;
+	List<ItemComponent> m_itemComps = new();
+	List<Vector3> m_prevPos;
 
-    private void Awake()
-    {
-        for (int i = 0; i < 10; i++)
-        {
-            m_itemComps.Add(i == 0 ? m_element.baseItem : Instantiate(m_element.baseItem, transform));
-            m_itemComps[i].gameObject.SetActive(false);
-        }
+	private void Awake()
+	{
+		for (int i = 0; i < 10; i++)
+		{
+			m_itemComps.Add(i == 0 ? m_element.baseItem : Instantiate(m_element.baseItem, transform));
+			m_itemComps[i].gameObject.SetActive(false);
+		}
 
-        for (int i = 0; i < m_element.pHero.childCount; i++)
-            m_element.pHero.GetChild(i).gameObject.SetActive(false);
+		for (int i = 0; i < m_element.pHero.childCount; i++)
+			m_element.pHero.GetChild(i).gameObject.SetActive(false);
 
-        m_element.newHero.gameObject.SetActive(false);
-    }
+		m_element.newHero.gameObject.SetActive(false);
+	}
 
-    public async UniTask StartAsync(RegionType _regionType, string _hostKey, bool _isSkip)
-    {
-        step = ResultStepType.NONE;
-        transform.localScale = Vector3.one;
+	public async UniTask StartAsync(RegionType _regionType, string _hostKey, bool _isSkip)
+	{
+		step = ResultStepType.NONE;
+		transform.localScale = Vector3.one;
 
-        await UniTask.WaitForEndOfFrame();
+		await UniTask.WaitForEndOfFrame();
 
-        m_isNextStep = m_isSkip = _isSkip;
-        gameObject.SetActive(true);
+		m_isNextStep = m_isSkip = _isSkip;
+		gameObject.SetActive(true);
 
-        InitializePos();
+		InitializePos();
 
-        await Request_Summon(_regionType, _hostKey);
+		await Request_Summon(_regionType, _hostKey);
 
-        await ReceiveActionAsync();
+		await ReceiveActionAsync();
 
-        await SetResultDataAsync();
+		await SetResultDataAsync();
 
-        m_element.SetText_btnStart("_마무리_");
+		m_element.SetText_btnStart("_마무리_");
 
-        m_isNextStep = false;
-        await UniTask.WaitUntil(() => m_isNextStep || ControllerManager.isClick);
+		m_isNextStep = false;
+		await UniTask.WaitUntil(() => m_isNextStep || ControllerManager.isClick);
 
-        await Utils.SetActivePunchAsync(transform, false);
+		await Utils.SetActivePunchAsync(transform, false);
 
-        gameObject.SetActive(false);
-        for (int i = 0; i < 10; i++)
-            m_itemComps[i].gameObject.SetActive(false);
+		gameObject.SetActive(false);
+		for (int i = 0; i < 10; i++)
+			m_itemComps[i].gameObject.SetActive(false);
 
-        await UniTask.WaitUntil(() => ControllerManager.isClick == false);
-        await UniTask.WaitForEndOfFrame();
-        step = ResultStepType.NONE;
-    }
+		await UniTask.WaitUntil(() => ControllerManager.isClick == false);
+		await UniTask.WaitForEndOfFrame();
+		step = ResultStepType.NONE;
+	}
 
-    async UniTask Request_Summon(RegionType _regionType, string _hostKey)
-    {
-        List<ItemData> result = new();
+	async UniTask Request_Summon(RegionType _regionType, string _hostKey)
+	{
+		List<ItemData> result = new();
 
-        #region 영웅 불러오기
-        {
-            await UniTask.WaitForEndOfFrame();
-            List<TableHeroData> dbHeroes = TableManager.hero.list
-                .Where(x => x.key.Equals(_hostKey) == false && x.isLockSummon == false && x.is_lock_active == false).ToList();
+		#region 영웅 불러오기
+		{
+			await UniTask.WaitForEndOfFrame();
+			List<TableHeroData> dbHeroes = TableManager.hero.list
+				.Where(x => x.key.Equals(_hostKey) == false && x.isLockSummon == false && x.is_lock_active == false).ToList();
 
-            // 특정 국가면 하나 더 넣자
-            if (_regionType > RegionType.NONE)
-                dbHeroes.AddRange(TableManager.hero.list
-                    .Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false && x.isLockSummon == false && x.is_lock_active == false).ToList());
+			// 특정 국가면 하나 더 넣자
+			if (_regionType > RegionType.NONE)
+				dbHeroes.AddRange(TableManager.hero.list
+					.Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false && x.isLockSummon == false && x.is_lock_active == false).ToList());
 
-            int i = 0;
-            // 호스트 넣기
-            {
-                ItemData itemData = TableManager.item.GetItemData(ItemType.dedicated_soul_stone,
-                    TableManager.hero.GetNeedSoul(GradeType.Normal));
-                itemData.value = _hostKey;
-                itemData.category = ItemCategoryType.Soul_Stone;
-                result.Add(itemData);
-                i++;
-            }
+			int i = 0;
+			// 호스트 넣기
+			{
+				ItemData itemData = TableManager.item.GetItemData($"soul_stone_dedicated",
+					TableManager.hero.GetNeedSoul(GradeType.Normal));
+				itemData.value = _hostKey;
+				itemData.category = ItemType.SoulStone;
+				result.Add(itemData);
+				i++;
+			}
 
-            //일단 영웅 뽑기
-            for (; i < 10; i++)
-            {
-                if (UnityEngine.Random.value > m_element.dbRate[i])
-                    break;
+			//일단 영웅 뽑기
+			for (; i < 10; i++)
+			{
+				if (UnityEngine.Random.value > m_element.dbRate[i])
+					break;
 
-                ItemData itemData = TableManager.item.GetItemData(ItemType.dedicated_soul_stone);
+				var randomIdx = UnityEngine.Random.Range(0, dbHeroes.Count);
+				ItemData itemData = TableManager.item.GetItemData($"dedicated_soul_stone_{Utils.ToSnakeCase(dbHeroes[randomIdx].key)}");
+				dbHeroes.RemoveAt(randomIdx);
 
-                var randomIdx = UnityEngine.Random.Range(0, dbHeroes.Count);
-                itemData.value = dbHeroes[randomIdx].key;
-                dbHeroes.RemoveAt(randomIdx);
+				GradeType grade = GradeType.Normal;
+				while (UnityEngine.Random.value <= m_element.dbRate[i + 1] && grade < GradeType.MAX - 1)
+					grade++;
 
-                GradeType grade = GradeType.Normal;
-                while (UnityEngine.Random.value <= m_element.dbRate[i + 1] && grade < GradeType.MAX - 1)
-                    grade++;
+				itemData.count = TableManager.hero.GetNeedSoul(grade);
+				itemData.category = ItemType.SoulStone;
+				result.Add(itemData);
+			}
 
-                itemData.count = TableManager.hero.GetNeedSoul(grade);
-                itemData.category = ItemCategoryType.Soul_Stone;
-                result.Add(itemData);
-            }
+			for (; i < 10; i++)
+			{
+				ItemData itemData = TableManager.item.GetItemData(UnityEngine.Random.value > 0.5f ? "gold" : "rice");
+				itemData.value = itemData.key.ToString();
+				itemData.count = UnityEngine.Random.Range(1, 10) * 10;
+				result.Add(itemData);
+			}
+		}
+		#endregion 영웅 불러오기
 
-            for (; i < 10; i++)
-            {
-                ItemData itemData = TableManager.item.GetItemData(UnityEngine.Random.value > 0.5f ? ItemType.gold : ItemType.rice);
-                itemData.value = itemData.key.ToString();
-                itemData.count = UnityEngine.Random.Range(1, 10) * 10;
-                result.Add(itemData);
-            }
-        }
-        #endregion 영웅 불러오기
+		// 정렬하자
+		result = result
+			.OrderByDescending(x =>
+			{
+				if (x.type == ItemDetailType.DedicatedSoulStone)
+					// 새 영웅일 경우 맨 뒤로
+					return _hostKey.Equals(x.value) ? 1 : DataManager.userInfo.GetHeroInfoData(x.value)?.isMine ?? false ? 2 : 3;
+				else
+					return 0;
+			})
+			.ThenByDescending(x => x.count)
+			.ThenByDescending(x => x.type == ItemDetailType.Gold)
+			.ToList();
 
-        // 정렬하자
-        result = result
-            .OrderByDescending(x =>
-            {
-                if (x.key == ItemType.dedicated_soul_stone)
-                    // 새 영웅일 경우 맨 뒤로
-                    return _hostKey.Equals(x.value) ? 1 : DataManager.userInfo.GetHeroInfoData(x.value)?.isMine ?? false ? 2 : 3;
-                else
-                    return 0;
-            })
-            .ThenByDescending(x => x.count)
-            .ThenByDescending(x => x.key == ItemType.gold)
-            .ToList();
+		var keyHero = result.FindAll(x => x.type == ItemDetailType.DedicatedSoulStone).Select(x => x.value).ToArray();
 
-        var keyHero = result.FindAll(x => x.key == ItemType.dedicated_soul_stone).Select(x => x.value).ToArray();
+		//AddressableManager.instance.Load_HeroCharacterAsync(keyHero).Forget();
+		//await AddressableManager.instance.Load_HeroIconAsync(keyHero);
+		SetItemDataAsync(result).Forget();
+	}
+	async UniTask SetItemDataAsync(List<ItemData> _result)
+	{
+		long totalGold = 0, totalRice = 0;
 
-        //AddressableManager.instance.Load_HeroCharacterAsync(keyHero).Forget();
-        //await AddressableManager.instance.Load_HeroIconAsync(keyHero);
-        SetItemDataAsync(result).Forget();
-    }
-    async UniTask SetItemDataAsync(List<ItemData> _result)
-    {
-        long totalGold = 0, totalRice = 0;
+		var keyItem = _result.FindAll(x => x.type != ItemDetailType.DedicatedSoulStone).Select(x => x.value).ToArray();
+		await AddressableManager.instance.Load_ItemIconAsync(keyItem);
 
-        var keyItem = _result.FindAll(x => x.key != ItemType.dedicated_soul_stone).Select(x => x.value).ToArray();
-        await AddressableManager.instance.Load_ItemIconAsync(keyItem);
+		Dictionary<string, long> resultSoul = new();
+		for (int i = 0; i < _result.Count; i++)
+		{
+			var data = _result[i];
 
-        Dictionary<string, long> resultSoul = new();
-        for (int i = 0; i < _result.Count; i++)
-        {
-            var data = _result[i];
+			if (data.type == ItemDetailType.Gold)
+				totalGold += data.count;
+			else if (data.type == ItemDetailType.Rice)
+				totalRice += data.count;
+			else if (data.type == ItemDetailType.DedicatedSoulStone)
+			{
+				if (resultSoul.ContainsKey(data.value))
+					resultSoul[data.value] += data.count;
+				else
+				{
+					data.isNew = DataManager.userInfo.GetHeroInfoData(data.value) == null;
+					resultSoul.Add(data.value, data.count);
 
-            if (data.key == ItemType.gold)
-                totalGold += data.count;
-            else if (data.key == ItemType.rice)
-                totalRice += data.count;
-            else if (data.key == ItemType.dedicated_soul_stone)
-            {
-                if (resultSoul.ContainsKey(data.value))
-                    resultSoul[data.value] += data.count;
-                else
-                {
-                    data.isNew = DataManager.userInfo.GetHeroInfoData(data.value) == null;
-                    resultSoul.Add(data.value, data.count);
+					m_itemComps[i].SetActiveBadge(data.isNew);
+				}
+			}
 
-                    m_itemComps[i].SetActiveBadge(data.isNew);
-                }
-            }
-
-            m_itemComps[i].SetItemData(data);
+			m_itemComps[i].SetItemData(data);
 #if UNITY_EDITOR
-            m_itemComps[i].name = $"{data.value}_x{data.count}";
+			m_itemComps[i].name = $"{data.value}_x{data.count}";
 #endif
-        }
+		}
 
-        // SAVEDATA 재화 데이타 저장
-        DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
-        foreach (var soul in resultSoul)
-        {
-            var count = (int)soul.Value;
-            if (DataManager.userInfo.HasHero(soul.Key) == false)
-            {
-                var grade = TableManager.hero.GetGradeFromSoulCount(count);
-                DataManager.userInfo.AddHero(soul.Key, grade);
-            }
-            else
-                InventoryWorker.AddItem(ItemType.dedicated_soul_stone, count, soul.Key, _isRewardAction: false);
-        }
-    }
-    void InitializePos()
-    {
-        if (m_prevPos == null)
-        {
-            m_prevPos = new();
+		// SAVEDATA 재화 데이타 저장
+		DataManager.userInfo.AddAsset(totalGold, totalRice, false, false);
+		foreach (var soul in resultSoul)
+		{
+			var count = (int)soul.Value;
+			if (DataManager.userInfo.HasHero(soul.Key) == false)
+			{
+				var grade = TableManager.hero.GetGradeFromSoulCount(count);
+				DataManager.userInfo.AddHero(soul.Key, grade);
+			}
+			else
+				InventoryWorker.AddItem($"dedicated_soul_stone_{Utils.ToSnakeCase(soul.Key)}", count, _isRewardAction: false);
+		}
+	}
+	void InitializePos()
+	{
+		if (m_prevPos == null)
+		{
+			m_prevPos = new();
 
-            m_element.layout.enabled = true;
-            for (int i = 0; i < m_itemComps.Count; i++)
-                m_itemComps[i].gameObject.SetActive(true);
+			m_element.layout.enabled = true;
+			for (int i = 0; i < m_itemComps.Count; i++)
+				m_itemComps[i].gameObject.SetActive(true);
 
-            transform.ForceRebuildLayout();
+			transform.ForceRebuildLayout();
 
-            for (int i = 0; i < m_itemComps.Count; i++)
-                m_prevPos.Add(m_itemComps[i].transform.localPosition);
+			for (int i = 0; i < m_itemComps.Count; i++)
+				m_prevPos.Add(m_itemComps[i].transform.localPosition);
 
-            m_element.layout.enabled = false;
-        }
+			m_element.layout.enabled = false;
+		}
 
-        for (int i = 0; i < m_itemComps.Count; i++)
-        {
-            m_itemComps[i].transform.position = m_element.pCenter.position;
-            m_itemComps[i].SetActivePanel(false);
-        }
-    }
+		for (int i = 0; i < m_itemComps.Count; i++)
+		{
+			m_itemComps[i].transform.position = m_element.pCenter.position;
+			m_itemComps[i].SetActivePanel(false);
+		}
+	}
 
-    async UniTask ReceiveActionAsync()
-    {
-        float duration = 1f;
+	async UniTask ReceiveActionAsync()
+	{
+		float duration = 1f;
 
-        for (int i = m_itemComps.Count - 1; i >= 0; i--)
-        {
-            int idx = i;
-            var item = m_itemComps[i].transform;
+		for (int i = m_itemComps.Count - 1; i >= 0; i--)
+		{
+			int idx = i;
+			var item = m_itemComps[i].transform;
 
-            item.SetParent(transform);
-            if (m_isSkip == true)
-            {
-                item.localPosition = m_prevPos[m_prevPos.Count - idx - 1];
+			item.SetParent(transform);
+			if (m_isSkip == true)
+			{
+				item.localPosition = m_prevPos[m_prevPos.Count - idx - 1];
 
-                var itemData = m_itemComps[idx].data;
-                if (itemData.key == ItemType.dedicated_soul_stone)
-                {
-                    if (itemData.isNew == true)
-                    {
-                        m_itemComps[idx].SetSoulCount(0);
+				var itemData = m_itemComps[idx].data;
+				if (itemData.type == ItemDetailType.DedicatedSoulStone)
+				{
+					if (itemData.isNew == true)
+					{
+						m_itemComps[idx].SetSoulCount(0);
 
-                        GradeType grade = TableManager.hero.GetGradeFromSoulCount(itemData.count);
-                        m_itemComps[idx].SetHeroDataAsync(grade).Forget();
-                    }
-                }
+						GradeType grade = TableManager.hero.GetGradeFromSoulCount(itemData.count);
+						m_itemComps[idx].SetHeroDataAsync(grade).Forget();
+					}
+				}
 
-                m_itemComps[idx].MoveFinished();
-            }
-            else
-            {
-                if (m_itemComps[i].data.key == ItemType.dedicated_soul_stone)
-                    // 영웅 등장!!
-                    await HeroActionAsync(idx);
+				m_itemComps[idx].MoveFinished();
+			}
+			else
+			{
+				if (m_itemComps[i].data.type == ItemDetailType.DedicatedSoulStone)
+					// 영웅 등장!!
+					await HeroActionAsync(idx);
 
-                m_itemComps[i].SetActiveRewardEffect(true);
-                item.DOLocalMove(m_prevPos[m_prevPos.Count - idx - 1], duration).SetEase(Ease.InCubic)
-                    .OnComplete(() =>
-                    {
-                        m_itemComps[idx].MoveFinished();
-                    }).Forget();
+				m_itemComps[i].SetActiveRewardEffect(true);
+				item.DOLocalMove(m_prevPos[m_prevPos.Count - idx - 1], duration).SetEase(Ease.InCubic)
+					.OnComplete(() =>
+					{
+						m_itemComps[idx].MoveFinished();
+					}).Forget();
 
-                duration = Math.Max(0.1f, duration * 0.7f);
-                await UniTask.WaitForSeconds(duration);
-            }
-        }
-    }
-    async UniTask HeroActionAsync(int _idx)
-    {
-        var itemComp = m_itemComps[_idx];
-        var dbHeroData = TableManager.hero.Get(itemComp.data.value);
-        string key = itemComp.data.value;
+				duration = Math.Max(0.1f, duration * 0.7f);
+				await UniTask.WaitForSeconds(duration);
+			}
+		}
+	}
+	async UniTask HeroActionAsync(int _idx)
+	{
+		var itemComp = m_itemComps[_idx];
+		var dbHeroData = TableManager.hero.Get(itemComp.data.value);
+		string key = itemComp.data.value;
 
-        #region NEW HERO!!
-        if (itemComp.data.isNew)
-        {
-            Utils.Shake(LobbyScreenManager.instance.GetScreenSummon().transform, true);
-            PopupManager.instance.AlertShow("새로운_영웅이_방문하였습니다");
+		#region NEW HERO!!
+		if (itemComp.data.isNew)
+		{
+			Utils.Shake(LobbyScreenManager.instance.GetScreenSummon().transform, true);
+			PopupManager.instance.AlertShow("새로운_영웅이_방문하였습니다");
 
-            m_element.newHero.Show();
+			m_element.newHero.Show();
 
-            m_element.SetText_btnStart("획득하기_");
-            await AfterNextStepAsync(2f);
-            m_element.SetText_btnStart("진행중_");
+			m_element.SetText_btnStart("획득하기_");
+			await AfterNextStepAsync(2f);
+			m_element.SetText_btnStart("진행중_");
 
-            PopupManager.instance.AlertDisable();
+			PopupManager.instance.AlertDisable();
 
-            await m_element.newHero.OutAsync();
+			await m_element.newHero.OutAsync();
 
-            if (PopupManager.instance.isAlerting)
-                await UniTask.WaitUntil(() => PopupManager.instance.isAlerting == false);
+			if (PopupManager.instance.isAlerting)
+				await UniTask.WaitUntil(() => PopupManager.instance.isAlerting == false);
 
-            await AfterNextStepAsync(.5f);
-            await PopupManager.instance.AlertShowAsync($"{dbHeroData.talk}\n- {dbHeroData.name} -", -300, true, 2f);
-        }
-        #endregion NEW HERO!!!
+			await AfterNextStepAsync(.5f);
+			await PopupManager.instance.AlertShowAsync($"{dbHeroData.talk}\n- {dbHeroData.name} -", -300, true, 2f);
+		}
+		#endregion NEW HERO!!!
 
-        if (m_isSkip)
-            return;
+		if (m_isSkip)
+			return;
 
-        CharacterComponent hero = null;
-        // LOAD HERO
-        {
-            for (int i = 0; i < m_element.pHero.childCount; i++)
-            {
-                var obj = m_element.pHero.GetChild(i).gameObject;
-                obj.SetActive(obj.name.Equals(key));
+		CharacterComponent hero = null;
+		// LOAD HERO
+		{
+			for (int i = 0; i < m_element.pHero.childCount; i++)
+			{
+				var obj = m_element.pHero.GetChild(i).gameObject;
+				obj.SetActive(obj.name.Equals(key));
 
-                if (obj.activeSelf)
-                    hero = obj.GetComponent<CharacterComponent>();
-            }
+				if (obj.activeSelf)
+					hero = obj.GetComponent<CharacterComponent>();
+			}
 
-            if (hero == null)
-            {
-                var obj = await AddressableManager.instance.GetHeroCharacterAsync(key);
-                if (obj != null)
-                    hero = Instantiate(obj, m_element.pHero).GetComponent<CharacterComponent>();
-            }
+			if (hero == null)
+			{
+				var obj = await AddressableManager.instance.GetHeroCharacterAsync(key);
+				if (obj != null)
+					hero = Instantiate(obj, m_element.pHero).GetComponent<CharacterComponent>();
+			}
 
-            if (hero == null)
-                return;
+			if (hero == null)
+				return;
 
-            hero.transform.localPosition = Vector3.zero;
-        }
+			hero.transform.localPosition = Vector3.zero;
+		}
 
-        hero.transform.localPosition += new Vector3(UnityEngine.Random.value > .5f ? 5f : -5f, 0, 0); ;
-        var prevLocalPos = hero.transform.localPosition;
+		hero.transform.localPosition += new Vector3(UnityEngine.Random.value > .5f ? 5f : -5f, 0, 0); ;
+		var prevLocalPos = hero.transform.localPosition;
 
-        if (hero.move.isFlip != hero.transform.localPosition.x < 0)
-            hero.move.SetFlip(!hero.move.isFlip);
+		if (hero.move.isFlip != hero.transform.localPosition.x < 0)
+			hero.move.SetFlip(!hero.move.isFlip);
 
-        hero.anim.AttackMotionFirstFrame();
-        await hero.transform.DOLocalMoveX(0, 0.1f).SetEase(Ease.InCubic).AsyncWaitForCompletion();
-        hero.anim.SetSpeed(1f);
-        hero.attack.ShowSlashEffect(true);
+		hero.anim.AttackMotionFirstFrame();
+		await hero.transform.DOLocalMoveX(0, 0.1f).SetEase(Ease.InCubic).AsyncWaitForCompletion();
+		hero.anim.SetSpeed(1f);
+		hero.attack.ShowSlashEffect(true);
 
-        if (itemComp.data.isNew)
-        {
-            itemComp.SetSoulCount(0);
+		if (itemComp.data.isNew)
+		{
+			itemComp.SetSoulCount(0);
 
-            GradeType grade = TableManager.hero.GetGradeFromSoulCount(itemComp.data.count);
-            itemComp.SetHeroDataAsync(grade).Forget();
+			GradeType grade = TableManager.hero.GetGradeFromSoulCount(itemComp.data.count);
+			itemComp.SetHeroDataAsync(grade).Forget();
 
-            Utils.Shake(LobbyScreenManager.instance.GetScreenSummon().transform, true);
+			Utils.Shake(LobbyScreenManager.instance.GetScreenSummon().transform, true);
 
-            await AfterNextStepAsync(1f);
+			await AfterNextStepAsync(1f);
 
-            var stringGrade = TableManager.stringTable.GetGradeType(grade);
+			var stringGrade = TableManager.stringTable.GetGradeType(grade);
 
-            PopupManager.instance.AlertShow(
-                $"[{stringGrade}] {dbHeroData.name.WithJosa()} 진영에 합류합니다.", 55);
+			PopupManager.instance.AlertShow(
+				$"[{stringGrade}] {dbHeroData.name.WithJosa()} 진영에 합류합니다.", 55);
 
-            PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
-            popupHeroInfo.AutoCloseAsync(5f).Forget();
+			PopupHeroInfo popupHeroInfo = await PopupManager.instance.OpenPopupAsync<PopupHeroInfo>(PopupType.Hero_HeroInfo);
+			popupHeroInfo.AutoCloseAsync(5f).Forget();
 
-            var heroInfoData = DataManager.userInfo.GetHeroInfoData(itemComp.data.value);
+			var heroInfoData = DataManager.userInfo.GetHeroInfoData(itemComp.data.value);
 
-            if (heroInfoData.IsActive() == false)
-                heroInfoData = new(itemComp.data.value, grade);
+			if (heroInfoData.IsActive() == false)
+				heroInfoData = new(itemComp.data.value, grade);
 
-            await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true, true);
-            await UniTask.WaitUntil(() => popupHeroInfo == null, cancellationToken: destroyCancellationToken);
+			await popupHeroInfo.SetHeroInfoDataAsync(heroInfoData, true, true);
+			await UniTask.WaitUntil(() => popupHeroInfo == null, cancellationToken: destroyCancellationToken);
 
-            await UniTask.WaitForSeconds(.5f, cancellationToken: destroyCancellationToken);
+			await UniTask.WaitForSeconds(.5f, cancellationToken: destroyCancellationToken);
 
-            /*
+			/*
             GradeType grade = GradeType.Normal;
             var soulCount = TableManager.hero.GetNeedSoul(grade);
 
@@ -433,129 +432,129 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
                 await PopupManager.instance.AlertDisableAsync();
             }
             */
-        }
-        else
-            itemComp.SetSoulCount(itemComp.data.count);
+		}
+		else
+			itemComp.SetSoulCount(itemComp.data.count);
 
-        if (m_isSkip == false && itemComp.data.isNew == false)
-            await UniTask.WaitForSeconds(1f, cancellationToken: destroyCancellationToken);
+		if (m_isSkip == false && itemComp.data.isNew == false)
+			await UniTask.WaitForSeconds(1f, cancellationToken: destroyCancellationToken);
 
-        hero.anim.Play(CharacterAnimType.Dash);
-        hero.transform.DOLocalMoveX(prevLocalPos.x * -1, 0.3f).SetEase(Ease.OutCubic).Forget();
-    }
+		hero.anim.Play(CharacterAnimType.Dash);
+		hero.transform.DOLocalMoveX(prevLocalPos.x * -1, 0.3f).SetEase(Ease.OutCubic).Forget();
+	}
 
-    async UniTask SetResultDataAsync()
-    {
-        step = ResultStepType.ReceiveEnd;
+	async UniTask SetResultDataAsync()
+	{
+		step = ResultStepType.ReceiveEnd;
 
-        // 밖에서 호스트가 날라와서 칼질하는 시간을 벌자
-        await UniTask.WaitForSeconds(.2f);
+		// 밖에서 호스트가 날라와서 칼질하는 시간을 벌자
+		await UniTask.WaitForSeconds(.2f);
 
-        Dictionary<ItemType, ItemData> result = new();
-        Dictionary<string, int> resultSoul = new();
+		Dictionary<ItemDetailType, ItemData> result = new();
+		Dictionary<string, int> resultSoul = new();
 
-        for (int i = 0; i < 10; i++)
-        {
-            var comp = m_itemComps[i];
-            var itemData = comp.data;
+		for (int i = 0; i < 10; i++)
+		{
+			var comp = m_itemComps[i];
+			var itemData = comp.data;
 
-            if (result.ContainsKey(comp.data.key))
-            {
-                var data = result[comp.data.key];
-                data.count += itemData.count;
-                result[itemData.key] = data;
-            }
-            else
-                result.Add(itemData.key, itemData);
-        }
+			if (result.ContainsKey(comp.data.type))
+			{
+				var data = result[comp.data.type];
+				data.count += itemData.count;
+				result[itemData.type] = data;
+			}
+			else
+				result.Add(itemData.type, itemData);
+		}
 
-        int idx = 0;
-        foreach (var i in result)
-        {
-            RewardWorker.instance.Run(
-                m_element.pHost.position + new Vector3(2f, 1f)
-                , i.Key, i.Value.count, _distMax: 0.5f, _isScreen: true
-                , _isTargetPunch: true
-                , _durationWait: 1.5f
-                , _posTargetPunch: transform.position + new Vector3(
-                    UnityEngine.Random.Range(0.5f, 2f) * (idx++ % 2 == 0 ? 1 : -1),
-                    UnityEngine.Random.Range(4f, 6f)));
+		int idx = 0;
+		foreach (var i in result)
+		{
+			RewardWorker.instance.Run(
+				m_element.pHost.position + new Vector3(2f, 1f)
+				, i.Value.key, i.Value.count, _distMax: 0.5f, _isScreen: true
+				, _isTargetPunch: true
+				, _durationWait: 1.5f
+				, _posTargetPunch: transform.position + new Vector3(
+					UnityEngine.Random.Range(0.5f, 2f) * (idx++ % 2 == 0 ? 1 : -1),
+					UnityEngine.Random.Range(4f, 6f)));
 
-            await UniTask.WaitForSeconds(UnityEngine.Random.Range(.05f, .1f));
-        }
+			await UniTask.WaitForSeconds(UnityEngine.Random.Range(.05f, .1f));
+		}
 
-        await UniTask.WaitForSeconds(.5f);
-    }
-    async UniTask WaitSkipAsync()
-    {
-        m_isNextStep = false;
-        await UniTask.WaitUntil(() => isSkip);
-    }
-    void AfterNextStep(float _duration) => AfterNextStepAsync(_duration).Forget();
-    async UniTask AfterNextStepAsync(float _duration)
-    {
-        var dt = DateTime.Now.AddSeconds(_duration);
+		await UniTask.WaitForSeconds(.5f);
+	}
+	async UniTask WaitSkipAsync()
+	{
+		m_isNextStep = false;
+		await UniTask.WaitUntil(() => isSkip);
+	}
+	void AfterNextStep(float _duration) => AfterNextStepAsync(_duration).Forget();
+	async UniTask AfterNextStepAsync(float _duration)
+	{
+		var dt = DateTime.Now.AddSeconds(_duration);
 
-        m_isNextStep = false;
-        bool isSkipPush = isSkip;
-        while (dt > DateTime.Now && isSkipPush == false)
-        {
-            await UniTask.WaitForEndOfFrame();
-            isSkipPush = isSkip;
-        }
+		m_isNextStep = false;
+		bool isSkipPush = isSkip;
+		while (dt > DateTime.Now && isSkipPush == false)
+		{
+			await UniTask.WaitForEndOfFrame();
+			isSkipPush = isSkip;
+		}
 
-        if (isSkipPush == false)
-            m_isNextStep = true;
-    }
+		if (isSkipPush == false)
+			m_isNextStep = true;
+	}
 
-    #region VALIDATE
-    public void OnManualValidate() => m_element.Initialize(transform);
+	#region VALIDATE
+	public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField]
-    ElementData m_element;
+	[SerializeField]
+	ElementData m_element;
 
-    [Serializable]
-    struct ElementData
-    {
-        public ItemComponent baseItem;
-        public GridLayoutGroup layout;
+	[Serializable]
+	struct ElementData
+	{
+		public ItemComponent baseItem;
+		public GridLayoutGroup layout;
 
-        public Transform pHero;
-        public Transform pHost;
-        public Transform pCenter;
+		public Transform pHero;
+		public Transform pHost;
+		public Transform pCenter;
 
-        public List<float> dbRate;
+		public List<float> dbRate;
 
-        public NewHeroComponent newHero;
+		public NewHeroComponent newHero;
 
-        [SerializeField] ButtonHelper btnStart;
+		[SerializeField] ButtonHelper btnStart;
 
-        public void Initialize(Transform _transform)
-        {
-            var panelSummon = _transform.parent.parent.parent;
+		public void Initialize(Transform _transform)
+		{
+			var panelSummon = _transform.parent.parent.parent;
 
-            baseItem = _transform.GetComponentInChildren<ItemComponent>(true);
-            layout = _transform.GetComponent<GridLayoutGroup>();
-            pHero = panelSummon.Find("Back_Hero/Hero");
-            pCenter = _transform.parent.Find("Center");
-            pHost = panelSummon.Find("Host");
+			baseItem = _transform.GetComponentInChildren<ItemComponent>(true);
+			layout = _transform.GetComponent<GridLayoutGroup>();
+			pHero = panelSummon.Find("Back_Hero/Hero");
+			pCenter = _transform.parent.Find("Center");
+			pHost = panelSummon.Find("Host");
 
-            newHero = pHero.parent.GetComponent<NewHeroComponent>("NewHero");
-            btnStart = panelSummon.GetComponent<ButtonHelper>("btn_start");
+			newHero = pHero.parent.GetComponent<NewHeroComponent>("NewHero");
+			btnStart = panelSummon.GetComponent<ButtonHelper>("btn_start");
 
-            SetRateValue();
-        }
+			SetRateValue();
+		}
 
-        public void SetText_btnStart(string _text)
-            => btnStart.text = _text;
+		public void SetText_btnStart(string _text)
+			=> btnStart.text = _text;
 
-        void SetRateValue()
-        {
-            dbRate = new();
-            float rate = 1f;
-            for (int i = 0; i < 11; i++, rate *= .5f)
-                dbRate.Add(rate);
-        }
-    }
-    #endregion VALIDATA
+		void SetRateValue()
+		{
+			dbRate = new();
+			float rate = 1f;
+			for (int i = 0; i < 11; i++, rate *= .5f)
+				dbRate.Add(rate);
+		}
+	}
+	#endregion VALIDATA
 }

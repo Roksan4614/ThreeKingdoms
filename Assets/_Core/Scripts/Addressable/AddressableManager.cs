@@ -50,6 +50,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         InventoryWorker.Release();
         PostWorker.Release();
         QuestWorker.Release();
+        SeasonWorker.Release();
     }
 
     public async UniTask InitializeAsync()
