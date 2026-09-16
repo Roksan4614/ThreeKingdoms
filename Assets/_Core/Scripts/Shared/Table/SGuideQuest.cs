@@ -28,7 +28,7 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("sort_no", NullValueHandling = NullValueHandling.Include)]
         public int SortNo { get; set; } = default!;
         /// <summary>
-        /// 등장 스테이지 (도달) 스테이지에 도달 하지 못하여 출력할 퀘스트가 없을 시에만  s_guide_quest_repeat 퀘스트를 진행한다.
+        /// 등장 스테이지 (도달) 스테이지에 도달 하지 못하여 출력할 퀘스트가 없을 시에만 s_guide_quest_repeat 퀘스트를 진행한다.
         /// </summary>
         [JsonProperty("start_stage", NullValueHandling = NullValueHandling.Include)]
         public string StartStage { get; set; } = default!;
