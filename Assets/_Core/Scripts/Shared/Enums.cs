@@ -525,15 +525,15 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 공용 영혼석
         /// </summary>
-        SoulStonePublic = 13,
+        PublicSoulStone = 13,
         /// <summary>
         /// 전용 영혼석
         /// </summary>
-        SoulStoneDedicated = 14,
+        DedicatedSoulStone = 14,
         /// <summary>
         /// 클래스 영혼석
         /// </summary>
-        SoulStoneClass = 15,
+        ClassSoulStone = 15,
         /// <summary>
         /// 보물 마일리지
         /// </summary>
