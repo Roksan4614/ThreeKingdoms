@@ -12,8 +12,15 @@ namespace Rev9.Pass
 
         private void Start()
         {
-            var db = TableManager.passReward.list;
+            InitializeScroll();
+            SetPositionOpen();
 
+            m_element.slotStep.actionReward = (_slot, _isPaid) => OnButtonAsync_Reward(_slot, _isPaid).Forget();
+        }
+
+        void InitializeScroll()
+        {
+            var db = TableManager.passReward.list;
             var content = m_element.scroll.content;
 
             m_element.scroll.Initialize<PopupPass_Reward_Slot>(db.Count - 1, (_slot, _idxData) =>
@@ -21,16 +28,17 @@ namespace Rev9.Pass
                 _slot.SetRewardData(db[_idxData]);
                 if (_slot.actionReward == null)
                 {
-                    _slot.actionReward = (_slot, _isPaid) => OnButtonAsync_Reward(_slot, _isPaid).Forget();
+                    _slot.actionReward = (__slot, _isPaid) => OnButtonAsync_Reward(__slot, _isPaid).Forget();
 
                     if (m_heightSlot == 0)
                         m_heightSlot = _slot.rt.rect.height;
                 }
 
-                OnValueChanged();
+            }, () =>
+            {
+                m_element.scroll.scroll.onValueChanged.AddListener(_ => OnValueChanged());
+                SetPositionOpen();
             });
-
-            SetPositionOpen();
         }
 
         private void OnEnable()
@@ -56,17 +64,24 @@ namespace Rev9.Pass
             var pos = m_element.scroll.scroll.content.anchoredPosition;
             int level = (int)((pos.y + m_paddigTop + m_heightSlot) / m_heightSlot) + 3;
 
-            var stepLevel = (Mathf.Max(level, DataManager.pass.level) + 10) / 10 * 10;
-            if (m_stepLevel != stepLevel)
+            if (m_stepLevel != level)
             {
-                m_stepLevel = stepLevel;
+                m_stepLevel = level;
+
+                var stepLevel = (Mathf.Max(level, DataManager.pass.level) + 10) / 10 * 10;
                 m_element.slotStep.SetRewardData(TableManager.passReward.GetRewardData(stepLevel));
             }
         }
 
         async UniTask OnButtonAsync_Reward(PopupPass_Reward_Slot _slot, bool _isPaid)
         {
-            IngameLog.Add($"OnButtonAsync_Reward: {_slot.rewardData.level}: {_isPaid}");
+            if (await DataManager.pass.API_ReceiveReward(_slot, _isPaid) == true)
+            {
+                var prevPos = m_element.scroll.content.anchoredPosition;
+                InitializeScroll();
+                m_element.scroll.content.anchoredPosition = prevPos;
+                m_element.scroll.scroll.onValueChanged.Invoke(default);
+            }
         }
 
         #region VALIDATE

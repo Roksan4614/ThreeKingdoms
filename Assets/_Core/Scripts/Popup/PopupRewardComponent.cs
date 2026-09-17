@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,109 +7,121 @@ using UnityEngine.UI;
 
 public class PopupRewardComponent : BasePopupComponent
 {
-	PopupRewardComponent() : base(PopupType.Reward) { }
+    PopupRewardComponent() : base(PopupType.Reward) { }
 
-	List<ItemData> m_rewards;
-	bool m_isReadyClose = false;
-	bool m_isClose = false;
+    List<ItemData> m_rewards = new();
+    bool m_isReadyClose = false;
+    bool m_isClose = false;
 
-	public override void OpenPopup(params object[] _args)
-	{
-		m_rewards = (List<ItemData>)_args[0];
-	}
+    public override void OpenPopup(params object[] _args)
+    {
+        var rewards = (List<ItemData>)_args[0];
 
-	private void Start()
-		=> StartAsync().Forget();
+        foreach (var reward in rewards)
+        {
+            var idx = m_rewards.FindIndex(x => x.key == reward.key);
+            if (idx == -1)
+                m_rewards.Add(reward.DeepClone());
+            else
+                m_rewards[idx].count += reward.count;
+        }
 
-	bool m_isSkip;
-	async UniTask StartAsync()
-	{
-		m_isSkip = false;
-		m_isClose = m_isReadyClose = false;
-		var pReward = transform.Find("Panel/Reward");
-		var panel = pReward.parent;
+        StartAsync().Forget();
+    }
 
-		for (int i = 0; i < m_rewards.Count; i++)
-		{
-			var slot = i < pReward.childCount ? pReward.GetChild(i) : Instantiate(pReward.GetChild(0), pReward);
-		}
+    bool m_isSkip;
+    async UniTask StartAsync()
+    {
+        m_isSkip = false;
+        m_isClose = m_isReadyClose = false;
+        var pReward = transform.Find("Panel/Reward");
+        var panel = pReward.parent;
 
-		pReward.ForceRebuildLayout(1);
+        for (int i = 0; i < m_rewards.Count; i++)
+        {
+            var slot = i < pReward.childCount ? pReward.GetChild(i) : Instantiate(pReward.GetChild(0), pReward);
+        }
 
-		panel.GetComponent<ContentSizeFitter>().enabled = false;
-		panel.GetComponent<VerticalLayoutGroup>().enabled = false;
+        pReward.ForceRebuildLayout(1);
 
-		pReward.GetComponent<ContentSizeFitter>().enabled = false;
-		pReward.GetComponent<GridLayoutGroup>().enabled = false;
+        panel.GetComponent<ContentSizeFitter>().enabled = false;
+        panel.GetComponent<VerticalLayoutGroup>().enabled = false;
 
-		for (int i = 0; i < m_rewards.Count; i++)
-			pReward.GetChild(i).gameObject.SetActive(false);
+        pReward.GetComponent<ContentSizeFitter>().enabled = false;
+        pReward.GetComponent<GridLayoutGroup>().enabled = false;
 
-		var txtDesc = transform.GetComponent<TextMeshProUGUI>("Panel/txt_desc");
-		txtDesc.text = "";
+        for (int i = 0; i < m_rewards.Count; i++)
+            pReward.GetChild(i).gameObject.SetActive(false);
 
-		await UniTask.WaitForSeconds(.1f);
+        var txtDesc = transform.GetComponent<TextMeshProUGUI>("Panel/txt_desc");
+        txtDesc.text = "";
 
-		//await UniTask.NextFrame();
+        await UniTask.WaitForSeconds(.1f);
 
-		var title = transform.Find("Panel/Title");
-		await Utils.SetActivePunchAsync(title, true);
-		await UniTask.WaitForSeconds(.5f);
+        //await UniTask.NextFrame();
 
-		for (int i = 0; i < m_rewards.Count; i++)
-		{
-			var slot = pReward.GetChild(i).GetComponent<ItemComponent>();
-			slot.SetItemData(m_rewards[i]);
-			await Utils.SetActivePunchAsync(slot.transform, true);
-			if (m_isSkip == false)
-			{
-				await UniTask.WaitForSeconds(.5f);
-			}
-		}
+        var title = transform.Find("Panel/Title");
+        await Utils.SetActivePunchAsync(title, true);
+        await UniTask.WaitForSeconds(.5f);
 
-		await UniTask.WaitForSeconds(.5f);
-		txtDesc.text = "ºó_°÷À»_´­·¯_´Ý±â";
+        DateTime dtTimer;
+        for (int i = 0; i < m_rewards.Count; i++)
+        {
+            var slot = pReward.GetChild(i).GetComponent<ItemComponent>();
+            slot.SetItemData(m_rewards[i]);
+            await Utils.SetActivePunchAsync(slot.transform, true);
 
-		m_isReadyClose = true;
-		await UniTask.WaitUntil(() => m_isClose == true);
+            dtTimer = DateTime.Now.AddSeconds(.5f);
+            while (m_isSkip == false && DateTime.Now < dtTimer)
+                await UniTask.NextFrame();
+        }
 
-		Utils.SetActivePunch(txtDesc.transform.parent, false, _callback: base.Close);
+        dtTimer = DateTime.Now.AddSeconds(.5f);
+        while (m_isSkip == false && DateTime.Now < dtTimer)
+            await UniTask.NextFrame();
 
-		List<UniTask> tasks = new();
-		for (int i = 0; i < m_rewards.Count; i++)
-			tasks.Add(RewardWorker.instance.RunAsync(pReward.GetChild(i).position, _itemData: m_rewards[i]));
+        txtDesc.text = "ºó_°÷À»_´­·¯_´Ý±â";
 
-		await UniTask.WhenAll(tasks.ToArray());
-	}
+        m_isReadyClose = true;
+        await UniTask.WaitUntil(() => m_isClose == true);
 
-	private void Update()
-	{
-		if (m_isSkip == false && ControllerManager.isClick)
-			m_isSkip = true;
-	}
+        Utils.SetActivePunch(txtDesc.transform.parent, false, _callback: base.Close);
 
-	public override void Close()
-	{
-		if (m_isReadyClose == false)
-			return;
+        List<UniTask> tasks = new();
+        for (int i = 0; i < m_rewards.Count; i++)
+            tasks.Add(RewardWorker.instance.RunAsync(pReward.GetChild(i).position, _itemData: m_rewards[i]));
 
-		m_isClose = true;
-	}
+        await UniTask.WhenAll(tasks.ToArray());
+    }
 
-	#region VALIDATE
-	public override void OnManualValidate() => m_element.Initialize(transform);
+    private void Update()
+    {
+        if (m_isSkip == false && ControllerManager.isClick)
+            m_isSkip = true;
+    }
 
-	//[SerializeField, HideInInspector]
-	[SerializeField]
-	ElementData m_element;
+    public override void Close()
+    {
+        if (m_isReadyClose == false)
+            return;
 
-	[System.Serializable]
-	struct ElementData
-	{
-		public void Initialize(Transform _transform)
-		{
-		}
-	}
-	#endregion VALIDATE
+        m_isClose = true;
+    }
+
+    #region VALIDATE
+    public override void OnManualValidate() => m_element.Initialize(transform);
+
+    //[SerializeField, HideInInspector]
+    [SerializeField]
+    ElementData m_element;
+
+    [System.Serializable]
+    struct ElementData
+    {
+        public void Initialize(Transform _transform)
+        {
+        }
+    }
+    #endregion VALIDATE
 
 }

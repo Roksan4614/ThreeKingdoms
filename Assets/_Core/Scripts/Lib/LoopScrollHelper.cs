@@ -16,6 +16,7 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     bool isAwaked = false;
     private void Awake()
     {
+        m_element.rtBaseItem.gameObject.SetActive(false);
         if (m_element.scroll.viewport.rect.height == 0)
             return;
 
@@ -42,12 +43,12 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
     /// <param name="_count">데이타가 몇개야??</param>
     /// <param name="_onUpdate">아이템이랑, 데이타 인덱스</param>
     /// 
-    public void Initialize<T>(int _count, UnityAction<T, int> _onUpdate)
-        => InitializeAsync(_count, _onUpdate).Forget();
+    public void Initialize<T>(int _count, UnityAction<T, int> _onUpdate, UnityAction _onComplete = null)
+        => InitializeAsync(_count, _onUpdate, _onComplete).Forget();
 
-    async UniTask InitializeAsync<T>(int _count, UnityAction<T, int> _onUpdate)
+    async UniTask InitializeAsync<T>(int _count, UnityAction<T, int> _onUpdate, UnityAction _onComplete)
     {
-        if(isAwaked == false)
+        if (isAwaked == false)
         {
             await UniTask.WaitUntil(() => m_element.scroll.viewport.rect.height > 0);
             Awake();
@@ -90,8 +91,10 @@ public class LoopScrollHelper : MonoBehaviour, IValidatable
             });
         });
 
-        if(m_element.empty == true)
+        if (m_element.empty == true)
             m_element.empty.gameObject.SetActive(_count == 0);
+
+        _onComplete?.Invoke();
     }
 
     int m_curIndex = 0;

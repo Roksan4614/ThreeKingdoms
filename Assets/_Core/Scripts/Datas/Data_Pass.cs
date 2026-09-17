@@ -13,6 +13,7 @@ namespace Rev9.Pass
 
         public int level => m_data.level;
         public int exp => m_data.exp;
+        public bool isPaid => m_data.isPaid;
 
         public async UniTask InitializeAsync()
         {
@@ -25,7 +26,7 @@ namespace Rev9.Pass
                     RefreshSeason();
 
                     //test
-                    m_data.level = 5;
+                    m_data.level = 11;
                     m_data.exp = 100;
 
                     await API_RefreshQuest();
@@ -99,27 +100,56 @@ namespace Rev9.Pass
             SaveData();
         }
 
-        public async UniTask<ItemData> API_ReceiveReward(int _level, bool _isPaid)
+        public async UniTask<bool> API_ReceiveReward(PopupPass_Reward_Slot _slot, bool _isPaid)
         {
+            if (_slot.rewardData.level > m_data.level)
+                return false;
+
             await UniTask.NextFrame();
+            var level = _slot.rewardData.level;
 
             if (_isPaid && m_data.isPaid == false)
             {
                 PopupManager.instance.AlertShow("특사_활성화_후에_획득_가능합니다.");
-                return null;
+                return false;
             }
 
             var receiveData = _isPaid ? m_data.receiveLevel_Paid : m_data.receiveLevel;
-            if (receiveData.Contains(_level))
+            if (receiveData.Contains(level))
             {
-                PopupManager.instance.AlertShow("이미_보상을_받았습니다.");
-                return null;
+                //PopupManager.instance.AlertShow("이미_보상을_받았습니다.");
+                return false;
             }
 
-            receiveData.Add(_level);
+            level = m_data.level;
+            List<ItemData> resultRewards = new();
+
+            while (level > 0)
+            {
+                if (m_data.receiveLevel.Contains(level) == false)
+                {
+                    resultRewards.Add(TableManager.passReward.GetRewardItem(level, false));
+                    m_data.receiveLevel.Add(level);
+                }
+
+                if (m_data.isPaid && m_data.receiveLevel_Paid.Contains(level) == false)
+                {
+                    resultRewards.Add(TableManager.passReward.GetRewardItem(level, true));
+                    m_data.receiveLevel_Paid.Add(level);
+                }
+
+                level--;
+            }
+
+            if (resultRewards.Count == 1)
+                RewardWorker.instance.Run(_slot.transform.position, _itemData: resultRewards[0]);
+            else
+                RewardWorker.OpenRewardPopup(resultRewards.ToArray());
+
             SaveData();
 
-            return TableManager.passReward.GetRewardItem(_level, _isPaid);
+            return true;
+            //return TableManager.passReward.GetRewardItem(_level, _isPaid);
         }
 
     }
