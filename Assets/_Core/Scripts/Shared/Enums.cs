@@ -470,6 +470,7 @@ namespace ThreeKingdoms.Shared.Enums
     /// </summary>
     public enum ItemDetailType
     {
+        None = -1,
         /// <summary>
         /// 군량
         /// </summary>
@@ -550,6 +551,10 @@ namespace ThreeKingdoms.Shared.Enums
         /// 토너먼트 티켓
         /// </summary>
         TicketTournament = 19,
+        /// <summary>
+        /// 토너먼트 티켓
+        /// </summary>
+        Max = 20,
     }
 
     /// <summary>
@@ -584,6 +589,7 @@ namespace ThreeKingdoms.Shared.Enums
     /// </summary>
     public enum ItemType
     {
+        None = -1,
         /// <summary>
         /// 재화
         /// </summary>
@@ -616,6 +622,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// 입장권
         /// </summary>
         ContentsTicket = 8,
+        Max = 9,
     }
 
     /// <summary>
@@ -883,6 +890,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// 주간
         /// </summary>
         Weekly = 1,
+        Season = 2,
     }
 
     /// <summary>
