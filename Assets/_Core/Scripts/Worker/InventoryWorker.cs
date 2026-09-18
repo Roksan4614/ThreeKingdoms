@@ -46,9 +46,11 @@ public class InventoryWorker
         PPWorker.Set(c_key, m_data);
     }
 
+    public long GetItemCount(string _key, string _value = null)
+        => m_data.Find(x => x.key == _key && x.value == _value)?.count ?? 0;
+
     public long GetItemCount(ItemData _itemData)
         => m_data.Find(x => x.key == _itemData.key && x.value == _itemData.value)?.count ?? 0;
-
 
     public static void AddItem(string _itemKey, int _count, bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default)
     {

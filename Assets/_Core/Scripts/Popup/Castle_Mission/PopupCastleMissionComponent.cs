@@ -157,10 +157,9 @@ public class PopupCastleMissionComponent : BasePopupComponent
         {
             if (DataManager.castle.mission.levelInfo.missionCount == 0)
             {
+                PopupManager.instance.AlertShow_Table("CASTLE_MISSION_OVER_COUNT");
 #if UNITY_EDITOR
-                PopupManager.instance.AlertShow("더이상_임무_보낼_수_없지만_테스트니까ㄱ");
 #else
-                PopupManager.instance.AlertShow("더이상_임무를_보낼_수_없습니다.");
                 return;
 #endif
             }
@@ -169,7 +168,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
                 .Count();
             if (countNoBatch == 0)
             {
-                PopupManager.instance.AlertShow("임무_보낼_장수가_없습니다.");
+                PopupManager.instance.AlertShow_Table("CASTLE_MISSION_NO_HERO");
                 return;
             }
 
@@ -204,7 +203,7 @@ public class PopupCastleMissionComponent : BasePopupComponent
     {
         if (_missionData.Length == 0)
         {
-            PopupManager.instance.AlertShow("완료할_미션이_없습니다.");
+            PopupManager.instance.AlertShow_Table("CASTLE_MISSION_RESULT_NO_COMPLETE");
             return;
         }
 

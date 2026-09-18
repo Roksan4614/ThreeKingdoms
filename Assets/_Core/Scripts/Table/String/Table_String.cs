@@ -48,14 +48,17 @@ public class Table_String_Hero : Table_String_Base
         ? $"<color=#{Palette.GetHexa_GradeText(_gradeType)}>{GetGradeType(_gradeType, _isDifficult)}</color>"
         : $"{GetString($"GRADE_{(_isDifficult ? "DIFFICULT_" : "")}{_gradeType.ToString().ToUpper()}")}";
 
-    public string GetHeroName(CharacterName _name)
-        => GetHeroName(_name.ToString());
+    public string GetName(CharacterName _name)
+        => GetName(_name.ToString());
 
-    public string GetHeroName(string _key)
+    public string GetName(string _key)
         => TableManager.hero.Get(_key).name;
 
-    public string GetHeroPositionType(HeroPositionType _positionType)
+    public string GetPositionType(HeroPositionType _positionType)
         => _positionType.ToString().ToUpper().Split("_").Last(); //GetString("HERO_POSITION_" + _positionType.ToString().ToUpper());
+
+    public string GetClassType(HeroClassType _heroClassType)
+        => GetString($"CLASSTYPE_{_heroClassType.ToString().ToUpper()}");
 }
 
 public class Table_String_GuideQuest : Table_String_Base

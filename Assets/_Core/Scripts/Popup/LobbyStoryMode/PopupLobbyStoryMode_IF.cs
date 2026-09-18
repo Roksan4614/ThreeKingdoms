@@ -15,7 +15,8 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
         if (DataManager.storyMode.lastHistory.key == _nodeData.node_key)
         {
             DataManager.storyMode.lastHistory = default;
-            PopupManager.instance.AlertShow("시간이_어긋나_버렸습니다");
+            //시간이_어긋나_버렸습니다
+            PopupManager.instance.AlertShow_Table("STORYMOVE_BREAK_TIMELINE");
             Utils.SetActivePunch(m_element.panel, true);
         }
 
@@ -51,16 +52,20 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
 
         if (nextData.next_node_key.IsActive() == false && nextData.node_key == DataManager.storyMode.lastHistory.key)
         {
-            PopupManager.instance.AlertShow("어긋난_시간선의_끝에_도달했습니다.");
+            //어긋난_시간선의_끝에_도달했습니다.
+            PopupManager.instance.AlertShow_Table("STORYMOVE_IF_FINISHED");
             DataManager.storyMode.lastHistory = default;
         }
 
         bool isCompleteLastNode = nextData.next_node_key.IsActive() == false && DataManager.storyMode.IsComplete(nextData.node_key);
 
-        m_element.txtDesc.text = isCompleteLastNode ?
-             "시간을_돌려_되돌아갑니다." : "시간이_어긋나_있습니다.";
+        //"시간을_돌려_되돌아갑니다." : "시간이_어긋나_있습니다."
+        m_element.txtDesc.text =
+            TableManager.alertString.GetString(isCompleteLastNode ? "STORYMODE_IF_OUT" : "STORYMODE_BREAK_RUN");
 
-        m_element.btnConfirm.text = isCompleteLastNode ? "돌아가기_" : "포기하기_";
+        //"돌아가기_" : "포기하기_"
+        m_element.btnConfirm.text =
+            TableManager.stringTable.GetString(isCompleteLastNode ? "BUTTON_BACK" : "BUTTON_GIVE_UP");
         m_element.btnConfirm.onClick.RemoveAllListeners();
         m_element.btnConfirm.onClick.AddListener(() =>
         {
@@ -70,24 +75,27 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
             m_element.btnConfirm.interactable = false;
             if (nextData.next_node_key.IsActive())
             {
-                PopupManager.instance.OpenModalAsync("포기하시겠습니까??_", _callback: _result =>
-                {
-                    if (_result == StatusType.Success)
+                PopupManager.instance.OpenModalAsync(TableManager.alertString.GetString("MODAL_GIVE_UP")
+                    , _callback: _result =>
                     {
-                        PopupManager.instance.AlertShow("시간을_돌려_되돌아갑니다.");
+                        if (_result == StatusType.Success)
+                        {
+                            //시간을_돌려_되돌아갑니다
+                            PopupManager.instance.AlertShow_Table("STORYMODE_IF_OUT.");
 
-                        Utils.SetActivePunch(m_element.panel, false);
-                        Utils.SetActivePunch(transform.parent, true);
+                            Utils.SetActivePunch(m_element.panel, false);
+                            Utils.SetActivePunch(transform.parent, true);
 
-                        DataManager.storyMode.ResetIFMode(_nodeData.node_key);
-                    }
-                    else
-                        m_element.btnConfirm.interactable = true;
-                }).Forget();
+                            DataManager.storyMode.ResetIFMode(_nodeData.node_key);
+                        }
+                        else
+                            m_element.btnConfirm.interactable = true;
+                    }).Forget();
             }
             else
             {
-                PopupManager.instance.AlertShow("시간을_돌려_되돌아갑니다.");
+                //시간을_돌려_되돌아갑니다.
+                PopupManager.instance.AlertShow_Table("STORYMODE_IF_OUT");
 
                 Utils.SetActivePunch(m_element.panel, false);
                 Utils.SetActivePunch(transform.parent, true);

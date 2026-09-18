@@ -148,7 +148,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
                 }
                 break;
             default:
-                PopupManager.instance.AlertShow("아직_준비중입니다.");
+                PopupManager.instance.AlertShow_Table("NOT_YET_READY");
                 break;
         }
 

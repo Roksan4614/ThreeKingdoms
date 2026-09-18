@@ -38,6 +38,7 @@ public enum PopupType
     Quest,
     Rebirth,
     Pass,
+    Buy,
 
     Reward,
     Reward_Idle,
@@ -302,6 +303,9 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     CancellationTokenSource m_ctsAlert;
     public void AlertShow(string _message, float _addPosY = 0, bool _isTyping = false, float _duration = 3f)
         => AlertShowAsync(_message, _addPosY, _isTyping, _duration).Forget();
+
+    public void AlertShow_Table(string _key, float _addPosY = 0, bool _isTyping = false, float _duration = 3f)
+        => AlertShowAsync(TableManager.alertString.GetString(_key), _addPosY, _isTyping, _duration).Forget();
 
     public async UniTask AlertShowAsync(string _message, float _addPosY = 0, bool _isTyping = false, float _duration = 3f)
     {

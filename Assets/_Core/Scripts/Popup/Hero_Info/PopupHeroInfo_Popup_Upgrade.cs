@@ -101,11 +101,11 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         if (isUpgradeType)
         {
             alertMessage += KoreanHelper.AppendJosa(m_heroInfoData.gradeName, KoreanHelper.JosaType.EuroroRo, " [{0}]");
-            alertMessage += "_승급합니다.";
+            alertMessage += TableManager.alertString.GetString("UPGRADE_GRADE");// "_승급합니다.";
         }
         else
         {
-            alertMessage += $"+{m_heroInfoData.enchantLevel}로 강화합니다.";
+            alertMessage += TableManager.alertString.GetStringFormat("UPGRADE_LEVEL", m_heroInfoData.enchantLevel.ToString());// $"+{m_heroInfoData.enchantLevel}로 강화합니다.";
         }
 
         PopupManager.instance.AlertShow(alertMessage);

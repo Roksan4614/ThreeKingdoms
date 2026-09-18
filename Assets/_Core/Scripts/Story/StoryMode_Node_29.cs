@@ -194,7 +194,7 @@ public class StoryMode_Node_29 : StoryModeBaseComponent
 
         await UniTask.WaitUntil(() => guanYu.move.isMoving == false);
 
-        PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+        PopupManager.instance.AlertShow_Table("STORYMODE_COMPLETE");
         await WaitForSeconds(1f);
 
         //관우	"몸을 추스리시오.        다녀와서 그대의 술잔을 받도록 하지."

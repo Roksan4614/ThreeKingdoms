@@ -37,10 +37,10 @@ public class PopupSettingComponent : BasePopupComponent
             });
         }
 
-        m_element.btnConnectAccount.onClick.AddListener(() => PopupManager.instance.AlertShow("준비_중입니다."));
+        m_element.btnConnectAccount.onClick.AddListener(() => PopupManager.instance.AlertShow_Table("NOT_YET_READY"));
 
         foreach(var b in m_element.buttons)
-            b.onClick.AddListener(() => PopupManager.instance.AlertShow("준비_중입니다: " + b.name));
+            b.onClick.AddListener(() => PopupManager.instance.AlertShow_Table("NOT_YET_READY"));
 
         Utils.WaitEscape(this, () =>
         {

@@ -123,12 +123,8 @@ public class HeroIconComponent : MonoBehaviour, IPointerDownHandler, IPointerUpH
             if (prefab != null)
             {
                 var icon = Instantiate(prefab, m_element.icon);
-
-                var rtParent = icon.transform.parent as RectTransform;
-                await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0, cancellationToken: destroyCancellationToken);
-
-                if (icon != null)
-                    icon.AutoResizeParent().name = _data.skin;
+                icon.AutoResizeParent();
+                icon.name = _data.skin;
             }
             else
                 SetActiveName(true);

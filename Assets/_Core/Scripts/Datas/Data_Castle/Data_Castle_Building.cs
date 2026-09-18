@@ -99,7 +99,7 @@ public class Data_Castle_Building
             await UniTask.WaitForEndOfFrame(cancellationToken: token);
         }
 
-        PopupManager.instance.AlertShow($"건물 업그레이드 완료: [{TableManager.stringTable.GetString($"CASTLE_OBJECT_{_objectType.ToString().ToUpper()}")}]");
+        PopupManager.instance.AlertShow($"{TableManager.alertString.GetStringFormat("CASTLE_UPGRADE_COMPLETE")}: [{TableManager.stringTable.GetString($"CASTLE_OBJECT_{_objectType.ToString().ToUpper()}")}]");
 
         castleData = CompleteUpgrade(_objectType).DeepClone();
         Signal.instance.CompleteCaslteBuildingUpgrade.Emit(castleData);
@@ -113,13 +113,13 @@ public class Data_Castle_Building
 
         if (db.level == 10)
         {
-            PopupManager.instance.AlertShow("이미_최고 레벨입니다.");
+            PopupManager.instance.AlertShow_Table("ALREADY_MAX_LEVEL");
             return;
         }
 
         if (db.isDoingUpgrade == true)
         {
-            PopupManager.instance.AlertShow("이미_업그레이드가_진행중입니다.");
+            PopupManager.instance.AlertShow_Table("ALREADY_RUN_UPGRADE");
             return;
         }
 
@@ -167,7 +167,7 @@ public class Data_Castle_Building
 
         UpdateBuildingUpgrade(_objectType);
 
-        PopupManager.instance.AlertShow($"시간이_단축되었습니다");
+        PopupManager.instance.AlertShow_Table($"REDUCED_TIME");
     }
 
     public void Release_CTS(CastleObjectType _objectType)

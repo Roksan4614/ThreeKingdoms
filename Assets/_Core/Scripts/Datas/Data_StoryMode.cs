@@ -239,7 +239,7 @@ public class Data_StoryMode
         {
             IngameLog.Add($"해금된 스토리: {nextStory.name}");
             m_nextOpenOrderNumber = 0;
-            PopupManager.instance.AlertShow("해금된_스토리가_있습니다.");
+            PopupManager.instance.AlertShow_Table("STORYMODE_HAVE_OPEN_STORY");
             return true;
         }
 

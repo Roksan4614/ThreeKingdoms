@@ -14,6 +14,12 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
         m_element.btnInfo.onClick.AddListener(() => Close(StatusType.Success));
         m_element.btnSetting.onClick.AddListener(() => Close(StatusType.Failed));
         m_element.btnEtc.onClick.AddListener(() => Close(StatusType.Cancel));
+
+        //setlocalization
+        {
+            m_element.btnInfo.text = TableManager.stringTable.GetString("CASTLE_MENU_INFO");
+            m_element.btnSetting.text = TableManager.stringTable.GetString("CASTLE_MENU_SETTING");
+        }
     }
 
     public void Open(RectTransform _button, CastleObjectType _type)
@@ -25,11 +31,9 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
         m_element.btnEtc.gameObject.SetActive(true);
         switch (_type)
         {
-            case CastleObjectType.Merchant:
-                m_element.btnEtc.text = "상 점";
-                break;
             case CastleObjectType.Office:
-                m_element.btnEtc.text = "미 션";
+            case CastleObjectType.Merchant:
+                m_element.btnEtc.text = TableManager.stringTable.GetString($"CASTLE_MENU_{_type.ToString().ToUpper()}");
                 break;
             default:
                 m_element.btnEtc.gameObject.SetActive(false);

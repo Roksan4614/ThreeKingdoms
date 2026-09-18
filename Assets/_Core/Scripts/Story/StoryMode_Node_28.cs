@@ -273,7 +273,7 @@ public class StoryMode_Node_28 : StoryModeBaseComponent
 		xiahouDun.talkbox.isSwitch_IgnoreRoundScreen = true;
 		TalkAutoClose(0, false);
 
-		PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+		PopupManager.instance.AlertShow_Table("STORYMODE_COMPLETE");
 		await WaitPointerDown();
 
 	}

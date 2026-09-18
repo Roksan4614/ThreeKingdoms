@@ -81,7 +81,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
             {
                 var type = (HeroClassType)i;
                 var btn = (idx == panel.childCount ? Instantiate(panel.GetChild(0), panel) : panel.GetChild(idx)).GetComponent<ButtonHelper>();
-                btn.text = type == HeroClassType.NONE ? m_stringAll : TableManager.stringHero.GetString($"CLASSTYPE_{type.ToString().ToUpper()}");
+                btn.text = type == HeroClassType.NONE ? m_stringAll : TableManager.stringHero.GetClassType(type);
                 btn.onClick.AddListener(() => OnButton_Class(type));
 
                 m_dicClass.Add(type, btn);

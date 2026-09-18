@@ -16,6 +16,9 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         m_element.btnDimm.onClick.AddListener(() => CloseAsync().Forget());
         m_element.btnClose.onClick.AddListener(() => CloseAsync().Forget());
         m_element.btnConfirm.onClick.AddListener(() => OnButton_ConfirmAsync().Forget());
+
+        transform.SetTextTable("Panel/txt_title", "POPUP_REGION_CHARACTERS");
+        m_element.btnConfirm.text = TableManager.stringTable.GetString("UI_START");
     }
 
     CancellationTokenSource m_cts;
@@ -123,7 +126,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
     public void OnManualValidate()
         => m_element.Initialize(transform);
 
-    [SerializeField, HideInInspector]
+    [SerializeField]
     ElementData m_element;
 
     [Serializable]
@@ -133,7 +136,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
         public Transform posCharacter;
 
         public Button btnClose;
-        public Button btnConfirm;
+        public ButtonHelper btnConfirm;
 
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtTalk;
@@ -148,7 +151,7 @@ public class PopupSelectRegion_HeroInfo : MonoBehaviour, IValidatable
             posCharacter = _transform.Find("Panel/PosCharacter");
 
             btnClose = _transform.GetComponent<Button>("Panel/btn_close");
-            btnConfirm = _transform.GetComponent<Button>("Panel/Buttons/btn_start");
+            btnConfirm = _transform.GetComponent<ButtonHelper>("Panel/Buttons/btn_start");
 
             var front = _transform.Find("Panel/FrontPanel");
             txtName = front.GetComponent<TextMeshProUGUI>("txt_name");

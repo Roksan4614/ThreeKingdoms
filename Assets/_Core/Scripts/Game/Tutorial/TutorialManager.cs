@@ -44,7 +44,7 @@ public partial class TutorialManager
             GuideQuestComponent.instance.UpdateStatus();
 
             if (m_data.isComplete == true)
-                PopupManager.instance.AlertShow("길잡이_퀘스트_완료");
+                PopupManager.instance.AlertShow_Table("GUIDEQUEST_COMPLETE");
             else
                 return false;
         }

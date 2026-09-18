@@ -4,8 +4,8 @@ public class LobbyScreen_Castle_Popup_Setting_Palace : MonoBehaviour, IValidatab
 {
     private void Start()
     {
-        m_element.market.textTitle = "±ÝÈ­_È¹µæ·®";
-        m_element.farm.textTitle = "±º·®_È¹µæ·®";
+        m_element.market.textTitle = TableManager.stringTable.GetString("CASTLE_SET_PAL_MARKET");
+        m_element.farm.textTitle = TableManager.stringTable.GetString("CASTLE_SET_PAL_FARM");
 
         m_element.market.fillAmount = m_element.farm.fillAmount = 1;
     }

@@ -14,6 +14,11 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
 
     bool isRelicTab => m_heroInfoData != null;
 
+    void Awake()
+    {
+        m_element.btn_enchant.text = TableManager.stringTable.GetString("UI_UPGRADE");
+    }
+
     async UniTask OnButtonAsync_Upgrade(UnityAction<HeroInfoData> _onCallback)
     {
         await UniTask.Yield();
@@ -35,7 +40,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
 
         if (DataManager.stat.relic.dataTreasure.Count(x => x.isBatch == true) >= 3 && m_heroInfoData.isBatch == false)
         {
-            PopupManager.instance.AlertShow("최대_3개까지만_장착_가능합니다.");
+            PopupManager.instance.AlertShow_Table("RELIC_USE_MAX");
             return;
         }
 
@@ -43,7 +48,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         DataManager.stat.relic.SetTreasureStatus(m_heroInfoData.skin, m_heroInfoData.isBatch);
 
         m_element.btn_select.SetDrawSelect(m_heroInfoData.isBatch);
-        m_element.btn_select.text = m_heroInfoData.isBatch ? "_선택중_" : "선택_하기";
+        m_element.btn_select.text = TableManager.stringTable.GetString(m_heroInfoData.isBatch ? "BUTTON_CHOICE_RUN" : "BUTTON_CHOICE");
 
         _onCallback(m_heroInfoData);
     }
@@ -73,12 +78,12 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         {
             m_element.txt_stat.text = _treasureData.GetStringEffect();
             m_element.imgPanel.color = myTreasureData.isBatch == true ? Color.gray8 : Color.white;
-            m_element.btn_select.text = myTreasureData.isBatch ? "_선택중_" : "선택_하기";
+            m_element.btn_select.text = TableManager.stringTable.GetString(myTreasureData.isBatch ? "BUTTON_CHOICE_RUN" : "BUTTON_CHOICE");
         }
         else
         {
             m_element.txt_stat.text = "?";
-            m_element.btn_select.text = "_잠김_";
+            m_element.btn_select.text = TableManager.stringTable.GetString("UI_LOCK"); ;
         }
 
         m_element.btn_select.SetDrawSelect(myTreasureData.isBatch);
@@ -93,7 +98,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
         //능력치 +000.00%\n< size = 80 %> (지휘관 + 000.00 %)
         var statValue = _heroInfoData.relicLevel * 0.01f;
         m_element.txt_stat.text =
-            $"기본 능력치_+{(_heroInfoData.relicLevel * 10).AmountKMBT()}%\n<size=80%> ({_heroInfoData.className}_+{(_heroInfoData.relicLevel).AmountKMBT()}%)";
+            $"{TableManager.stringTable.GetString("UI_BASE_STAT")} +{(_heroInfoData.relicLevel * 10).AmountKMBT()}%\n<size=80%> ({_heroInfoData.className} +{(_heroInfoData.relicLevel).AmountKMBT()}%)";
 
         m_element.txt_level.text = $"Lv.{_heroInfoData.relicLevel}";
         m_element.imgPanel.color = Color.white;
@@ -138,11 +143,8 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
             if (prefab != null)
             {
                 var icon = Instantiate(prefab, p);
-
-                var rtParent = icon.transform.parent as RectTransform;
-                await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0, cancellationToken: destroyCancellationToken);
-
-                icon.AutoResizeParent().name = _key;
+                icon.AutoResizeParent();
+                icon.name = _key;
             }
         }
     }

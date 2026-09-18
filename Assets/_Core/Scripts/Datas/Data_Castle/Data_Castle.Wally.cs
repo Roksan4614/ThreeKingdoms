@@ -44,7 +44,7 @@ public partial class Data_Castle
                 {
                     var utc = Utils.GetUTC();
 
-                    PopupManager.instance.AlertShow("영지에_도적이_출몰했습니다!");
+                    PopupManager.instance.AlertShow_Table("CASTLE_START_THIEF");
 
                     var gateData = GetCaslteData(CastleObjectType.Gate);
                     var durationNPCSec = TableManager.castleEffect[CastleObjectType.Gate].Get(gateData.level).npc_duration_sec.Value;
@@ -98,7 +98,7 @@ public partial class Data_Castle
                         await UniTask.WaitUntil(() => m_isUISpawn == false, cancellationToken: token);
 
                         m_wallyData.tickSpawn = m_wallyData.tickEndSpawn = 0;
-                        PopupManager.instance.AlertShow("영지에서_도적이_도망쳤습니다!");
+                        PopupManager.instance.AlertShow_Table("CASTLE_FINISH_THIEF");
                         Signal.instance.CastleWally_Failed.Emit();
 
                         break;
@@ -136,7 +136,7 @@ public partial class Data_Castle
 
         m_wallyData.steelAmount_Gold = m_wallyData.steelAmount_Rice = 0;
         m_wallyData.tickSpawn = m_wallyData.tickEndSpawn = 0;
-        PopupManager.instance.AlertShow("도적을_잡았습니다!");
+        PopupManager.instance.AlertShow_Table("CASTLE_CATCH_THIEF");
     }
 
     void SaveData_Wally()

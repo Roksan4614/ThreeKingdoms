@@ -246,8 +246,9 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                 var heroKey = rewards[i];
                 await UniTask.WaitForSeconds(.5f, cancellationToken: destroyCancellationToken);
 
-                var heroName = KoreanHelper.AppendJosa(TableManager.stringHero.GetHeroName(heroKey), KoreanHelper.JosaType.EulLeul, "[{0}]");
-                PopupManager.instance.AlertShow($"{heroName}_얻었습니다.", 70);
+                var stringGrade = TableManager.stringTable.GetGradeType(GradeType.Normal);
+                var heroName = KoreanHelper.AppendJosa(TableManager.stringHero.GetName(heroKey), KoreanHelper.JosaType.IgA);
+                PopupManager.instance.AlertShow(TableManager.alertString.GetStringFormat("SUMMON_NEW_HERO", stringGrade, heroName), 70);
 
                 var heroInfoData = DataManager.userInfo.GetHeroInfoData(heroKey);
 
@@ -263,7 +264,8 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                 }
                 else
                 {
-                    await PopupManager.instance.AlertShowAsync($"[{heroName}]의_영혼석을_획득했습니다.");
+                    await PopupManager.instance.AlertShowAsync(TableManager.alertString.GetStringFormat("RECEIVE_SOUL_STONE", heroName));
+                    //$"[{heroName}]의_영혼석을_획득했습니다.");
                 }
             }
         }
@@ -280,7 +282,8 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         DataManager.storyMode.isLockUI = false;
 
         await UniTask.WaitUntil(() => PopupManager.instance.isAlerting == false, cancellationToken: destroyCancellationToken);
-        PopupManager.instance.AlertShow("보상을_모두_수령했습니다.");
+        //보상을_모두_수령했습니다.
+        PopupManager.instance.AlertShow_Table("ALL_RECEIVE_REWARD");
     }
 
     #region VALIDATE

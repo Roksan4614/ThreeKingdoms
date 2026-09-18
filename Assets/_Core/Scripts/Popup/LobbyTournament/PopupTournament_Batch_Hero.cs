@@ -163,7 +163,9 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         }
         else if (m_batchData_Attack.isUpdated == true || m_batchData_Defence.isUpdated == true)
         {
-            var status = await PopupManager.instance.OpenModalAsync("변경사항이_있습니다.\n닫겠습니까?");
+            //"변경사항이_있습니다.\n닫겠습니까?");
+            var status = await PopupManager.instance.OpenModalAsync(
+                TableManager.alertString.GetString("MODAL_TOURNAMENT_CLOSE_NO_SAVE"));
             if (status != StatusType.Success)
                 return;
         }
@@ -377,7 +379,8 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         {
             if (batchData.heroes.Count == 1)
             {
-                PopupManager.instance.AlertShow("최소_1명은_배치해야_합니다.");
+                //최소_1명은_배치해야_합니다.
+                PopupManager.instance.AlertShow_Table("TOURNAMENT_BATCH_MIN");
                 return;
             }
 
@@ -389,7 +392,8 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         {
             if (batchData.heroes.Count == 4)
             {
-                PopupManager.instance.AlertShow("최대_4명까지_배치할_수_있습니다.");
+                //최대_4명까지_배치할_수_있습니다.
+                PopupManager.instance.AlertShow_Table("TOURNAMENT_BATCH_MAX");
                 return;
             }
 

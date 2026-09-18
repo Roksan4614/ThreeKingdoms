@@ -63,7 +63,8 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
     {
         if (m_element.slot.isTimeourRevenge == true)
         {
-            PopupManager.instance.AlertShow("시간이_초과_되었습니다.");
+            //시간이_초과_되었습니다.
+            PopupManager.instance.AlertShow_Table("OVER_TIME");
             return;
         }
 
@@ -73,7 +74,8 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
         m_isDoing = true;
         if (TournamentWorker.data.countPlay <= 0)
         {
-            PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
+            //플레이_가능_횟수가_초과되었습니다.
+            PopupManager.instance.AlertShow_Table("OVER_PLAY_COUNT");
 
             m_isDoing = false;
             return;
@@ -98,7 +100,7 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
 
     void SetPlayCount()
     {
-        m_element.txtPlayCount.text = $"일일_입장_가능_횟수: {TournamentWorker.data.countPlay}";
+        m_element.txtPlayCount.text = TableManager.stringTable.GetStringFormat("UI_ENTER_LIMIT_DAILY", TournamentWorker.data.countPlay.ToString());
         m_element.btnAD.text = $"{TournamentWorker.data.countAD}/3";
 
         PopupManager.instance.GetPopup<PopupTournamentComponent>(PopupType.LobbyTournament).SetPlayCount();

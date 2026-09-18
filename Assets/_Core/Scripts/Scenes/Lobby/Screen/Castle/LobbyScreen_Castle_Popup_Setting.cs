@@ -68,7 +68,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
             SetBatchHero(false);
             SetCoreStatInfo();
-            m_element.txtTitle.text = $"Lv.{m_castleData.level} {_castleData.name}: {(m_isInfoVersion ? "_개요" : "_관리")}";
+            m_element.txtTitle.text = $"Lv.{m_castleData.level} {_castleData.name}: {TableManager.stringTable.GetString($"CASTLE_MENU_{(m_isInfoVersion ? "INFO" : "SETTING")}")}";
 
             m_element.btnUpgrade.gameObject.SetActive(true);
             m_element.btnUpgradeTimer.gameObject.SetActive(false);
@@ -85,7 +85,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             var upgradeData = DataManager.castle.building.GetUpgradeData(m_castleData);
 
             var ts = upgradeData.ts;
-            m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{ts.ToRemainTime(30)}\n남은_시간";
+            m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{ts.ToRemainTime(30)}\n{TableManager.stringTable.GetString("UI_REMAIN_TIME")}";
             //if (ts.Minutes > 0)
             //    m_element.btnUpgradeTimer.text = $"<color=#{Palette.htmlString_Up}>{Utils.MSpace($"{ts.TotalHours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
             //else
@@ -110,7 +110,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         m_castleData = DataManager.castle.GetCaslteData(_type);
         m_isInfoVersion = _isInfo;
 
-        m_element.btnChange.text = _isInfo ? "_관리" : "_개요";
+        m_element.btnChange.text = TableManager.stringTable.GetString($"CASTLE_MENU_{(_isInfo ? "INFO" : "SETTING")}");
 
         if (_isInfo)
         {
@@ -142,7 +142,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         }
         m_element.scroll.content.ForceRebuildLayout();
 
-        m_element.txtTitle.text = $"Lv.{m_castleData.level} {m_castleData.name}: {(_isInfo ? "_개요" : "_관리")}";
+        m_element.txtTitle.text = $"Lv.{m_castleData.level} {m_castleData.name}: {m_element.btnChange.text}";
 
         m_element.scroll.content.anchoredPosition = Vector2.zero;
         m_element.scroll.enabled = true;
@@ -205,7 +205,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         }
 
         var ts = _upgradeData.ts;
-        m_element.btnUpgradeTimer.text = $"{ts.ToRemainTime(30)}\n남은_시간";
+        m_element.btnUpgradeTimer.text = $"{ts.ToRemainTime(30)}\n{TableManager.stringTable.GetString("UI_REMAIN_TIME")}";
         //if (ts.TotalMinutes > 0)
         //    m_element.btnUpgradeTimer.text = $"{Utils.MSpace($"{ts.Hours:00}:{ts.ToString(@"mm\:ss")}", 30)}\n남은_시간";
         //else
@@ -264,7 +264,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         for (; i < m_element.pHeroIcon.childCount; i++)
             m_element.pHeroIcon.GetChild(i).gameObject.SetActive(false);
 
-        m_element.btnAdd.text = $"{m_castleData.heroes.Count}/{6}";
+        m_element.btnAdd.text = $"{m_castleData.heroes.Count}/{m_castleData.dbRise.character_slot_max}";
 
         m_element.pHeroIcon.ForceRebuildLayout(1);
     }
@@ -279,9 +279,9 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         if (m_castleData.type == CastleObjectType.Office)
         {
             var levelInfo = DataManager.castle.mission.levelInfo;
-            m_element.txtBatchStat[0].text = $"경험치_:_<color=#{(levelInfo.nowExp >= levelInfo.maxExp ? Palette.htmlString_Up : Palette.htmlString_Down)}>{levelInfo.nowExp}/{levelInfo.maxExp}";
+            m_element.txtBatchStat[0].text = $"{TableManager.stringTable.GetString("UI_EXP")} : <color=#{(levelInfo.nowExp >= levelInfo.maxExp ? Palette.htmlString_Up : Palette.htmlString_Down)}>{levelInfo.nowExp}/{levelInfo.maxExp}";
 
-            m_logUpgrade = levelInfo.isUpgradable ? "" : "경험치가_부족합니다.";
+            m_logUpgrade = levelInfo.isUpgradable ? "" : TableManager.alertString.GetString("CATLE_UPGRADE_INVALID_EXP");
             m_element.txtBatchStat[1].gameObject.SetActive(false);
         }
         else
@@ -305,7 +305,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                     {
                         color = $"<color=#{Palette.htmlString_Down}>";
                         colorBack = "</color>";
-                        m_logUpgrade = "요구_능력치가_부족합니다.";
+                        m_logUpgrade = TableManager.alertString.GetString("CATLE_UPGRADE_INVALID_STAT_LOW");
                     }
 
                     txt.text = $"{TableManager.stringTable.GetString($"CORESTAT_{coreStat.ToString().ToUpper()}")} : {color}{total}/{max}{colorBack} ";
@@ -315,18 +315,11 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
                         switch (m_castleData.type)
                         {
-                            case CastleObjectType.Palace:
-                                format += "(고유_능력치_감소_{0})";
-                                break;
-                            case CastleObjectType.Market:
                             case CastleObjectType.Farm:
-                                format += i == 0 ? "(획득량_{0})" : "(최대치_{0})";
+                                format += TableManager.stringTable.GetString($"CASTLE_STAT_EFF_MARKET{(i == 0 ? "" : "_SEC")}");
                                 break;
-                            case CastleObjectType.Merchant:
-                                format += i == 0 ? "(할인율_{0})" : "(판매_개수_{0})";
-                                break;
-                            case CastleObjectType.Gate:
-                                format += i == 0 ? "(청렴도_{0})" : "(치안율_{0})";
+                            default:
+                                format += TableManager.stringTable.GetString($"CASTLE_STAT_EFF_{m_castleData.type.ToString().ToUpper()}{(i == 0 ? "" : "_SEC")}");
                                 break;
                         }
 
@@ -361,7 +354,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                         {
                             if (m_castleData.level != DataManager.castle.GetCaslteData(type).level)
                             {
-                                m_logUpgrade = "다른_건물의_레벨이_낮습니다.";
+                                m_logUpgrade = TableManager.alertString.GetString("CATLE_UPGRADE_PALACE_INVALID");
                                 break;
                             }
                         }
@@ -369,18 +362,22 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                     else
                     {
                         var palaceLevel = DataManager.castle.GetCaslteData(CastleObjectType.Palace).level;
-                        m_logUpgrade = m_castleData.level < palaceLevel ? "" : "궁성의_레벨보다_높을_수_없습니다.";
+
+                        //궁성의 레벨보다 높을 수 없습니다.
+                        m_logUpgrade = m_castleData.level < palaceLevel ? "" : TableManager.alertString.GetString("CATLE_UPGRADE_PALACE_LEVEL_LOW");
                     }
                 }
             }
         }
 
-        m_element.btnUpgrade.text = m_logUpgrade.IsActive() == false ? "증축_시작" : "조건_미달성";
+//        m_element.btnUpgrade.text = m_logUpgrade.IsActive() == false ? "증축_시작" : "조건_미달성";
+
+        m_element.btnUpgrade.text = TableManager.stringTable.GetString($"CASTLE_SETTING_UPGRADE_{(m_logUpgrade.IsActive() == false ? "VALID" : "INVALID")}");
 
         m_element.txtBatchStat[0].transform.parent.ForceRebuildLayout();
 
         if (m_element.gauge.gameObject.activeSelf == true)
-            m_element.txtPerSecond.text = $"시간당_획득량: {DataManager.castle.GetAmountPerSecond(m_castleData).AmountKMBT()}";
+            m_element.txtPerSecond.text = $"{TableManager.stringTable.GetString("CASTLE_SETTING_CLAIM_PER_SECOND")}: {DataManager.castle.GetAmountPerSecond(m_castleData).AmountKMBT()}";
     }
 
     public bool CloseEscape()
@@ -431,7 +428,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
 
         if (maxAmount == 0)
         {
-            m_element.gauge.textAmount = $"_비활성화";
+            m_element.gauge.textAmount = TableManager.stringTable.GetString("UI_DEACTIVATE");
             m_element.gauge.fillAmount = 0;
         }
         else

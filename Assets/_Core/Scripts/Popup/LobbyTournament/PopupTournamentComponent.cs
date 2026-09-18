@@ -159,7 +159,8 @@ public class PopupTournamentComponent : BasePopupComponent
         m_isEnter = true;
         if (TournamentWorker.data.countPlay <= 0)
         {
-            PopupManager.instance.AlertShow("플레이_가능_횟수가_초과되었습니다.");
+            //플레이_가능_횟수가_초과되었습니다.
+            PopupManager.instance.AlertShow_Table("OVER_PLAY_COUNT");
 
             if (await TournamentWorker.instance.ShowAdsAsync())
                 PopupManager.instance.GetPopup<PopupTournamentComponent>(PopupType.LobbyTournament).SetPlayCount();
@@ -185,11 +186,13 @@ public class PopupTournamentComponent : BasePopupComponent
 
             if (DataManager.userInfo.rice < cost)
             {
-                PopupManager.instance.AlertShow("재화가_부족합니다.");
+                //재화가_부족합니다.
+                PopupManager.instance.AlertShow_Table("NOT_ENOUGH_CURRENCY");
                 return;
             }
 
-            var result = await PopupManager.instance.OpenModalAsync("재화를_사용해서_갱신하시겠습니까?");
+            // "재화를_사용해서_갱신하시겠습니까?"
+            var result = await PopupManager.instance.OpenModalAsync(TableManager.stringTable.GetString("MODAL_REFRESH_BY_CURRENCY"));
 
             if (result == StatusType.Success)
                 DataManager.userInfo.AddAsset(ItemDetailType.Rice, -cost);

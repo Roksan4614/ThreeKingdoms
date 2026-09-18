@@ -133,7 +133,7 @@ public class PopupHeroInfo : BasePopupComponent
         m_element.txtName.text = $"{TableManager.stringHero.GetString("NAME_" + key)}<size=80%><color=#888888> {TableManager.stringHero.GetString("COURTESY_" + key)}";
         m_element.txtDescTalk.text = _data.talk;
         m_element.txtEnchantLevel.text = _data.enchantLevel == 0 ? "" : $"(+{_data.enchantLevel})";
-        SetHeroInfoText($"등급_:_{_data.gradeClass}");
+        SetHeroInfoText($"{TableManager.stringTable.GetString("UI_GRADE")}: {_data.gradeClass}");
         SetPositionType();
 
         // 고유 능력치
@@ -199,7 +199,7 @@ public class PopupHeroInfo : BasePopupComponent
 
         if (heroInfoData.key == CharacterName.SunJian.ToString())
         {
-            PopupManager.instance.AlertShow("시스템에_의해_차단되었습니다.");
+            PopupManager.instance.AlertShow_Table("SYSTEM_BAN");
             return;
         }
 
@@ -209,11 +209,11 @@ public class PopupHeroInfo : BasePopupComponent
 
             if (heroInfoData.grade >= GradeType.MAX)
             {
-                PopupManager.instance.AlertShow("이미_최대_등급입니다.");
+                PopupManager.instance.AlertShow_Table("ALREADY_MAX_GRADE");
                 return;
             }
 
-            SetHeroInfoText($"등급_:_<color=#BA0700>{heroInfoData.gradeClass}");
+            SetHeroInfoText($"{TableManager.stringTable.GetString("UI_GRADE")}: <color=#BA0700>{heroInfoData.gradeClass}");
         }
         else
         {
@@ -221,7 +221,7 @@ public class PopupHeroInfo : BasePopupComponent
 
             if (heroInfoData.enchantLevel > 20)
             {
-                PopupManager.instance.AlertShow("이미_최대_레벨입니다.");
+                PopupManager.instance.AlertShow_Table("ALREADY_MAX_LEVEL");
                 return;
             }
 
@@ -251,7 +251,7 @@ public class PopupHeroInfo : BasePopupComponent
         SetHeroInfo_CoreStat(m_heroInfoData);
 
         if (_isUpgrade)
-            SetHeroInfoText($"등급_:_{m_heroInfoData.gradeClass}");
+            SetHeroInfoText($"{TableManager.stringTable.GetString("UI_GRADE")}: {m_heroInfoData.gradeClass}");
         else
             m_element.txtEnchantLevel.text = $"(+{m_heroInfoData.enchantLevel})";
     }
@@ -265,25 +265,27 @@ public class PopupHeroInfo : BasePopupComponent
         SetHeroInfo_CoreStat(heroInfoData, true);
         m_element.statBattle.SetCompareData(heroInfoData);
 
-        SetHeroInfoText($"등급_:_<color=#BA0700>{heroInfoData.gradeClass}");
+        SetHeroInfoText($"{TableManager.stringTable.GetString("UI_GRADE")}: <color=#BA0700>{heroInfoData.gradeClass}");
     }
 
     void SetHeroInfoText(string _gradeInfo)
     {
         m_element.txtInfo.text = _gradeInfo;
-        m_element.txtInfo.text += $"\n소속_:_{TableManager.stringTable.GetRegionType(m_heroInfoData.regionType, true)}";
+        m_element.txtInfo.text += $"\n{TableManager.stringTable.GetString("UI_REGION")}: {TableManager.stringTable.GetRegionType(m_heroInfoData.regionType, true)}";
     }
 
     async UniTask OnButtonAsync_TraitsReroll()
     {
         if (m_heroInfoData.countOpenTraits == 0)
         {
-            PopupManager.instance.AlertShow("명장부터_특성_부여가_가능합니다.");
+            //명장부터_특성_부여가_가능합니다.
+            PopupManager.instance.AlertShow_Table("TRAIT_INVALID_GRADE");
             return;
         }
         else if (m_heroInfoData.traits != null && m_heroInfoData.traits.Count(x => x.isLock == false) == 0 && m_heroInfoData.countOpenTraits == m_heroInfoData.traits.Count)
         {
-            PopupManager.instance.AlertShow("모두_잠겨서_진행이_불가합니다.");
+            //모두_잠겨서_진행이_불가합니다.
+            PopupManager.instance.AlertShow_Table("TRAIT_INVALID_ALL_LOCK");
             return;
         }
 
@@ -315,14 +317,14 @@ public class PopupHeroInfo : BasePopupComponent
     {
         var pd = DataManager.heroPosition.GetHeroPosition(m_heroInfoData.key);
         if (pd == null)
-            m_element.btnPosition.text = "없음";
+            m_element.btnPosition.text = TableManager.stringTable.GetString("UI_NONE");
         else
             m_element.btnPosition.text = pd.positionData.name;
     }
 
     public async UniTask AutoCloseAsync(float _duration)
     {
-        string key = "{0}초후_닫힘._터치하면_취소됩니다.";
+        string key = TableManager.stringTable.GetString("POPUP_HERO_INFO_AUTO_CLOSE");// "{0}초후_닫힘._터치하면_취소됩니다.";
 
         DateTime dtClose = DateTime.Now.AddSeconds(_duration);
         while (dtClose > DateTime.Now)

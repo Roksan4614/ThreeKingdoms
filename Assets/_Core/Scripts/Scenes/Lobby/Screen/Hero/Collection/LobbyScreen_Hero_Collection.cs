@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -14,6 +15,8 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
         TotalStatData baseData = new();
         baseData.Create(m_element.pTotalStat.GetChild(0));
         m_totalStat.Add(baseData);
+
+
     }
 
     private void Start()
@@ -33,9 +36,16 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
     {
         if (m_isNeedUpdate == true)
         {
-            UpdateLayout();
-            m_isNeedUpdate = false;
+            OnEnableAsync().Forget();
         }
+    }
+
+    async UniTask OnEnableAsync()
+    {
+        await UniTask.Yield();
+
+        UpdateLayout();
+        m_isNeedUpdate = false;
     }
 
     public override bool IsCloseScreen()
@@ -102,7 +112,7 @@ public class LobbyScreen_Hero_Collection : LobbyScreen_Hero_TabBase, IValidatabl
         for (; i < m_totalStat.Count; i++)
             m_totalStat[i].SetActive(false);
 
-        pTotalStat.ForceRebuildLayout();
+        pTotalStat.ForceRebuildLayout(1);
         RebuildLayout();
     }
 

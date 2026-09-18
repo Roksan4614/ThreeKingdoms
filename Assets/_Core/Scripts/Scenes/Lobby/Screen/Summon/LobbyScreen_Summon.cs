@@ -48,9 +48,12 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
         // setlocalization
         {
-            m_element.btnStart.text = "시작하기_";
-            m_element.btnSkip.text = "건너띄기_";
+            transform.SetText("Panel/Top/txt_title", TableManager.stringTable.GetString("SUMMON_TITLE"));
+            m_element.btnStart.text = TableManager.stringTable.GetString("UI_START");
+            m_element.btnSkip.text = TableManager.stringTable.GetString("UI_SKIP");
         }
+
+        UpdateTicketCount();
     }
 
     protected override bool IsEscapeloseScreen()
@@ -129,7 +132,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         }
 
         m_hostData.comp.element.collider.enabled = false;
-        m_element.txtHostInfo.text = $"_주최자:{TableManager.hero.Get(m_hostData.key).name}\n<color=#636363><size=80%>영혼석 10개 획득 100%";
+        m_element.txtHostInfo.text = $"{TableManager.stringTable.GetString("SUMMON_HOST")} : {TableManager.hero.Get(m_hostData.key).name}\n<color=#636363><size=80%>{TableManager.stringTable.GetString("SUMMON_DESC_REWARD_INFO")}";
 
         return m_hostData;
     }
@@ -141,17 +144,18 @@ public class LobbyScreen_Summon : LobbyScreen_Base
 
     public async UniTask StartAsync()
     {
+        UpdateTicketCount();
         LobbyScreenManager.instance.isLock = true;
 
         StartAsync_HostAction().Forget();
-        m_element.btnStart.text = "진행중_";
+        m_element.btnStart.text = TableManager.stringTable.GetString("UI_RUNNING");
 
         await Utils.SetActivePunchAsync(package.transform, false);
         package.gameObject.SetActive(false);
 
         await m_element.result.StartAsync(package.curRegion, m_hostData.key, m_isSkipAction);
 
-        m_element.btnStart.text = "시작하기_";
+        m_element.btnStart.text = TableManager.stringTable.GetString("UI_START");
 
         package.gameObject.SetActive(true);
         Utils.SetActivePunch(package.transform, true);
@@ -204,6 +208,10 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         m_element.btnSkip.isCheck = m_isSkipAction;
     }
 
+    void UpdateTicketCount()
+        => m_element.txtTicketCount.text = TableManager.stringTable.GetStringFormat("SUMMON_TICKET_COUNT", InventoryWorker.instance.GetItemCount("normal_gacha_ticket").ToString());
+
+
     #region VALIDATE
     public override void OnManualValidate()
     {
@@ -211,7 +219,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         m_element.Initialize(transform);
     }
 
-    [SerializeField, HideInInspector]
+    [SerializeField]
     ElementData m_element;
 
     [Serializable]
@@ -229,6 +237,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
         public ButtonHelper btnStart;
         public ButtonHelper btnSkip;
         public TextMeshProUGUI txtHostInfo;
+        public TextMeshProUGUI txtTicketCount;
 
         public GameObject hostDash;
 
@@ -247,6 +256,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
             btnSkip = panel.GetComponent<ButtonHelper>("btn_skip");
 
             txtHostInfo = panel.GetComponent<TextMeshProUGUI>("txt_hostInfo");
+            txtTicketCount = panel.GetComponent<TextMeshProUGUI>("Ticket/txt_amount");
 
             hostDash = room.Find("Dash").gameObject;
         }

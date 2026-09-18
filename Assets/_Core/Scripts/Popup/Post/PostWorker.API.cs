@@ -89,7 +89,8 @@ namespace Rev9.Post
             if (rewards.Count > 0)
                 RewardWorker.OpenRewardPopup(rewards.ToArray());
             else
-                PopupManager.instance.AlertShow("받을_보상이_없습니다.");
+                //받을_보상이_없습니다.
+                PopupManager.instance.AlertShow_Table("NO_REWARDS");
 
             return isSuccessed;
         }
@@ -118,7 +119,7 @@ namespace Rev9.Post
                 }
             }
 
-            PopupManager.instance.AlertShow(isSuccessed ? "삭제_완료" : "삭제할_우편이_없습니다.");
+            PopupManager.instance.AlertShow_Table(isSuccessed ? "POST_DELETE_COMPLETE" : "POST_NO_HAVE_DELETE_POST");
 
             SaveData();
 

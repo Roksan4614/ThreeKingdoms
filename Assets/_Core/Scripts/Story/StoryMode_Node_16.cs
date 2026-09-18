@@ -350,7 +350,7 @@ public class StoryMode_Node_16 : StoryModeBaseComponent
                 await TalkStartAsync();
             }
 
-            PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+            PopupManager.instance.AlertShow_Table("STORYMODE_COMPLETE");
 
             //1.유비	    관우.. 살아 있었구나..
             //2.관우      흐음.. 갑자기 형님이 그립군..

@@ -44,6 +44,8 @@ public class LobbyScreen_Castle : LobbyScreen_Base
 
         m_element.claimMarket.Initialize(CastleObjectType.Market);
         m_element.claimFarm.Initialize(CastleObjectType.Farm);
+
+        transform.SetTextTable("Panel/txt_title", "L_BOT_CASTLE");
     }
 
     protected override void OnEnable()

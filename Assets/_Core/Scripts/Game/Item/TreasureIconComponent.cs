@@ -41,7 +41,8 @@ public class TreasureIconComponent : ItemComponent
                 return;
 
             var icon = Instantiate(result, m_element.iconPanel);
-            icon.AutoResizeParent().name = _key;
+            icon.AutoResizeParent();
+            icon.name = _key;
         }
 
     }

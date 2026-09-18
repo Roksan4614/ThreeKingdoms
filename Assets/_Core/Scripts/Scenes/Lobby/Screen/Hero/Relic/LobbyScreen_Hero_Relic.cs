@@ -33,9 +33,12 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
     const string c_keyHeroCountType = "pp_HeroCountType";
 
     List<TotalRelicData> m_totalRelic = new();
+    string m_strMax;
 
     protected override void Awake()
     {
+        m_strMax = TableManager.stringTable.GetString("UI_MAX");
+
         TotalRelicData baseData = new();
         baseData.Create(m_element.pTotalTreasure.GetChild(0));
         m_totalRelic.Add(baseData);
@@ -44,6 +47,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         {
             var tab = i;
             m_element.btnTabs[(int)i].onClick.AddListener(() => SetActiveTab(tab));
+            m_element.btnTabs[(int)i].text = TableManager.stringTable.GetString($"UI_TREASURE_{tab.ToString().ToUpper()}");
         }
 
         var countType = HeroCountType.type_1 + PPWorker.Get<int>(c_keyHeroCountType);
@@ -153,7 +157,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             HeroCountType.type_1 => "+1",
             HeroCountType.type_10 => "+10",
             HeroCountType.type_100 => "+100",
-            _ => "_최대_"
+            _ => m_strMax
         };
 
     List<HeroInfoData> m_sortHeroData;
@@ -189,7 +193,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
         var txt = m_element.txtTotalClass[(int)_classType];
         var amount = db.ContainsKey(_classType) ? db[_classType] : 0;
 
-        txt.text = $"{TableManager.stringHero.GetString("CLASSTYPE_" + _classType.ToString().ToUpper())}_<color=#BA0700>+{amount.AmountKMBT()}%";
+        txt.text = $"{TableManager.stringHero.GetClassType(_classType)}_<color=#BA0700>+{amount.AmountKMBT()}%";
     }
 
     protected virtual void UpdateTreasure_TotalStat(bool _isOnClick = false)
@@ -247,7 +251,7 @@ public class LobbyScreen_Hero_Relic : LobbyScreen_Hero_TabBase, IValidatable
             DataManager.stat.relic.dataTreasure.Count(x => x.isBatch == true) :
             TournamentWorker.data.GetTeam().treasure.Count();
 
-        m_element.txtTreasureCount.text = $"선택한_보물: ({countBatchTreasure}/3)";
+        m_element.txtTreasureCount.text = $"{TableManager.stringTable.GetString("L_HERO_RELIC_CHOICE_COUNT")}: ({countBatchTreasure}/3)";
         if (countBatchTreasure > 0)
         {
             m_element.pTotalTreasure.gameObject.SetActive(true);

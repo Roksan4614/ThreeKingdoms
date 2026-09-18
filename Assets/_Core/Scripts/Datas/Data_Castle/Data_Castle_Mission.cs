@@ -137,7 +137,7 @@ public class Data_Castle_Mission
         m_levelInfo.missionCount = m_levelInfo.missionCount - 1;
         SaveLevelData();
 
-        PopupManager.instance.AlertShow("미션_임무를_시작합니다.", -390);
+        PopupManager.instance.AlertShow_Table("CASTLE_MISSION_START", -390);
 
         _onComplete(StatusType.Success);
     }
@@ -162,7 +162,7 @@ public class Data_Castle_Mission
         SaveData();
 
         if (prevExp < m_levelInfo.maxExp && m_levelInfo.nowExp >= m_levelInfo.maxExp)
-            PopupManager.instance.AlertShow("관아 업그레이드 준비완료!");
+            PopupManager.instance.AlertShow_Table("CASLTE_READY_UPGRADE_OFFICE");
 
         _onComplete(StatusType.Success, m_levelInfo.nowExp - prevExp);
 
@@ -199,7 +199,7 @@ public class Data_Castle_Mission
         m_data[idx] = data;
         SaveData();
 
-        PopupManager.instance.AlertShow($"시간이_단축되었습니다");
+        PopupManager.instance.AlertShow_Table("REDUCED_TIME");
 
         return result;
     }

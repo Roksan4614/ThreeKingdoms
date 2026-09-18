@@ -17,11 +17,23 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
 
     bool m_isPush;
 
+    string m_strReminTimePrev;
+
     private void Awake()
     {
+        m_strReminTimePrev = TableManager.stringTable.GetString("SUMMON_REMAIN_TIME_HOST_CHANGE");
+
         SetDBButton();
         m_element.scroll.onValueChanged.AddListener(_pos => m_isPush = true);
         m_element.txtRemainTime.text = "";
+
+        foreach (var btn in m_dbButton)
+        {
+            if (btn.Key == RegionType.NONE)
+                btn.Value.transform.SetText("Text", TableManager.stringTable.GetString("SUMMON_TYPE_ALL"));
+            else
+                btn.Value.transform.SetText("Text", TableManager.stringTable.GetStringFormat("SUMMON_TYPE_COUNTRY", $"{TableManager.stringTable.GetStringFormat($"REGION_NAME_FULL_{btn.Key.ToString().ToUpper()}")}"));
+        }
 
         SetButtonSort();
     }
@@ -135,7 +147,8 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
         {
             m_lastRemainTimeValue = lastValue;
 
-            m_element.txtRemainTime.text = $"_주최자 변경까지 남은시간: " + _ts.ToRemainTime(23, _isStringMode: true);
+            //주최자 변경까지 남은시간
+            m_element.txtRemainTime.text = $"{m_strReminTimePrev}: " + _ts.ToRemainTime(23, _isStringMode: true);
         }
     }
 

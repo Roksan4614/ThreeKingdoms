@@ -287,7 +287,7 @@ public class StoryMode_Node_31 : StoryModeBaseComponent
         liuBei.move.SetFlip(true);
         await TalkStartAsync(2);
 
-        PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+        PopupManager.instance.AlertShow_Table("STORYMODE_COMPLETE");
         await WaitForSeconds(.5f);
 
         //유비  "응?? 아수라를 한번      상대해보겠다고 ?? "

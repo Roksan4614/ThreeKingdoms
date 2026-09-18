@@ -77,9 +77,9 @@ public partial class HeroInfoComponent : MonoBehaviour, IValidatable
 
             if (prefab != null)
             {
-                Instantiate(prefab, m_element.icon)
-                    .AutoResizeParent()
-                    .name = key;
+                var icon = Instantiate(prefab, m_element.icon);
+                icon.AutoResizeParent();
+                icon.name = key;
             }
         }
 

@@ -200,7 +200,7 @@ public class StoryMode_Node_27 : StoryModeBaseComponent
         //조조 그..그렇게 하시오..
         await TalkStartAsync(1, false);
 
-        PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+        PopupManager.instance.AlertShow_Table("STORYMODE_COMPLETE");
 
         {
             // 조금 아래로 갔다가 오른쪽으로 빠져주자. 조조 앞으로 나오기 위해

@@ -118,13 +118,15 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
                     break;
                 case GuideQuestType.storymode_play:
                     BannerComponent.instance.SetActive_GuideArrow(true, guideType);
-                    HostTalkboxStart("스토리_모드를_진행해서\n동료를_얻자!", true);
+                    //"스토리_모드를_진행해서\n동료를_얻자!"
+                    HostTalkboxStart(guideType, true);
                     await StoryModePlayAsync();
                     BannerComponent.instance.SetActive_GuideArrow(false);
                     break;
                 case GuideQuestType.character_deploy:
                     if (TeamManager.instance.members.Count == 1)
-                        HostTalkboxStart("얻은 장수를 ", true);
+                        //얻은 장수를 배치하자!
+                        HostTalkboxStart(guideType, true);
                     await CharacterDeployAsync();
                     break;
             }
@@ -176,36 +178,19 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
             }
             else if (TutorialManager.data.isGuide)
             {
+                bool isMobile = Configure.isPC == false;
                 var talkbox = TeamManager.instance.mainHero.talkbox;
                 switch (TutorialManager.data.guideType)
                 {
+                    //"[W,A,S,D]를_눌러\n이동해보자." : "화면을_터치해_이동해보자.");
                     case GuideQuestType.move:
-                        {
-                            HostTalkboxStart(Configure.isPC ?
-                                "[W,A,S,D]를_눌러\n이동해보자." :
-                                "화면을_터치해_이동해보자.");
-                        }
-                        break;
+                    //"[X]키를_눌러_공격해보자.\n화면을_터치해도_가능해." : "공격_버튼을_눌러보자."
                     case GuideQuestType.normal_attack:
-                        {
-                            HostTalkboxStart(Configure.isPC ?
-                                    "[X]키를_눌러_공격해보자.\n화면을_터치해도_가능해." :
-                                    "공격_버튼을_눌러보자.");
-                        }
-                        break;
+                    //"[C]키를_누른_후_좌클릭해봐.\n버튼을_눌러서도_가능해." : "스킬_버튼을_눌러보자.");
                     case GuideQuestType.main_skill_use:
-                        {
-                            HostTalkboxStart(Configure.isPC ?
-                                    "[C]키를_누른_후_좌클릭해봐.\n버튼을_눌러서도_가능해." :
-                                    "스킬_버튼을_눌러보자.");
-                        }
-                        break;
+                    //"[SpaceBar]키를_눌러보자.\n버튼을_눌러서도_가능해." : "대쉬_버튼을_눌러보자.");
                     case GuideQuestType.dash_use:
-                        {
-                            HostTalkboxStart(Configure.isPC ?
-                                "[SpaceBar]키를_눌러보자.\n버튼을_눌러서도_가능해." :
-                                "대쉬_버튼을_눌러보자.");
-                        }
+                        HostTalkboxStart(TutorialManager.data.guideType, _isMobile: isMobile);
                         break;
                     case GuideQuestType.storymode_play:
                         BannerComponent.instance.story.OnButtonAsync_OpenPopup().Forget();
@@ -221,11 +206,23 @@ public partial class GuideQuestComponent : Singleton<GuideQuestComponent>, IVali
         }
     }
 
+    void HostTalkboxStart(GuideQuestType _type, bool _isLoop = false, bool _isMobile = false)
+    {
+        string key = $"GUIDE_{_type.ToString().ToUpper()}_DESC";
+        if (_isMobile)
+            key += "_MOBILE";
+
+        HostTalkboxStartAsync(TableManager.guideQuestString.GetString(key), _isLoop).Forget();
+    }
+
     void HostTalkboxStart(string _message, bool _isLoop = false)
         => HostTalkboxStartAsync(_message, _isLoop).Forget();
     CancellationTokenSource m_ctsTalk;
     async UniTask HostTalkboxStartAsync(string _message, bool _isLoop = false)
     {
+        if (_message.IsActive() == false)
+            return;
+
         if (m_guide.gameObject.activeSelf == false)
         {
             m_element.img_circle.gameObject.SetActive(true);

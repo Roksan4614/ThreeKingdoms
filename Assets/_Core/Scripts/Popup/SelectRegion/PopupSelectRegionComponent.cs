@@ -33,7 +33,7 @@ public class PopupSelectRegionComponent : BasePopupComponent
     {
         if (TableManager.region.Get(_region).isActive == false)
         {
-            PopupManager.instance.AlertShow("아직 준비중입니다.");
+            PopupManager.instance.AlertShow_Table("NOT_YET_READY");
             return;
         }
 

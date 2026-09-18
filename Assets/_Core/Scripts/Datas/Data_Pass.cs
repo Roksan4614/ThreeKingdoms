@@ -110,7 +110,7 @@ namespace Rev9.Pass
 
             if (_isPaid && m_data.isPaid == false)
             {
-                PopupManager.instance.AlertShow("특사_활성화_후에_획득_가능합니다.");
+                PopupManager.instance.AlertShow_Table("PASS_CAN_AFTER_PAID");
                 return false;
             }
 

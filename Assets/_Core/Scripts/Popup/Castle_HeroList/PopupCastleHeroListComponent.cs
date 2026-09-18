@@ -44,6 +44,17 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             }).Forget();
         });
         m_element.btnCancel.onClick.AddListener(Close);
+
+        //setlocalization
+        {
+            var panelTop = m_element.btnCoreStat[0].transform.parent;
+            panelTop.SetTextTable("txt_name", "L_HERO_TITLE_HERO");
+            panelTop.SetTextTable("txt_job", "CASTLE_JOB");
+            panelTop.SetTextTable("txt_batch", "UI_BATCH");
+
+            m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
+            m_element.btnCancel.text = TableManager.stringTable.GetString("BUTTON_CANCEL");
+        }
     }
 
     public override void OpenPopup(params object[] _args)
@@ -57,7 +68,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         m_castleData.heroes = new();
         m_castleData.heroes.AddRange(prev);
 
-        m_element.txtTitle.text = $"장수_목록: {m_castleData.name}";
+        m_element.txtTitle.text = $"{TableManager.stringTable.GetString("UI_CHARACTER_LIST")}: {m_castleData.name}";
         //m_element.txtTitle.text = $"장수_목록: Lv.{m_castleData.level} {DataManager.castle.GetObjectName(m_castleData.type)}";
 
         for (int i = 0; i < m_element.gauges.Length; i++)
@@ -132,7 +143,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
     void SetCoreStatStatus(bool _isInit = false)
     {
         var dbRise = m_castleData.dbRise;
-        var coreStat = Array.FindAll( TableManager.castle.GetCastleData(m_castleData.type).coreStat, x => x != CoreStatType.NONE);
+        var coreStat = Array.FindAll(TableManager.castle.GetCastleData(m_castleData.type).coreStat, x => x != CoreStatType.NONE);
 
         int i = 0;
         for (; i < coreStat.Length; i++)
@@ -143,7 +154,8 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             var condition = m_castleData.type == CastleObjectType.Palace ? dbRise.orinValue01 : dbRise.maxCoreStat[i];
 
             var percent = Mathf.Min(1f, now / (float)condition);
-            m_element.gauges[i].textTitle = $"필요_{TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}")}_수치 ({percent * 100:0.##}%)";
+
+            m_element.gauges[i].textTitle = $"{TableManager.stringTable.GetStringFormat("CASTLE_NEED_VALUE_STAT", TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}"))} ({percent * 100:0.##}%)";
             m_element.gauges[i].textAmount = $"{now}/{condition}";
             m_element.gauges[i].doFillAmount = percent;
         }

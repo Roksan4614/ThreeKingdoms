@@ -237,13 +237,14 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         caoRen.anim.PlayAttack();
         await TalkStartAsync();
 
-        PopupManager.instance.AlertShow("조인이_진영에_합류했습니다.");
+        PopupManager.instance.AlertShow(TableManager.alertString.GetStringFormat("STORYMODE_RECEIVE_HEROE", 
+            KoreanHelper.AppendJosa( caoRen.info.name, KoreanHelper.JosaType.IgA, "[{0}]")));
         await UniTask.WaitForSeconds(.5f);
 
         // 일어나시게ㅋ 이제 곧 큰 싸움이 일어날텐데, 자효 그대의 활약을 기대하겠네.
         await TalkStartAsync();
 
-        PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+        PopupManager.instance.AlertShow_Table("STORYMODE_COMPLETE");
         // 주공!!
         await TalkStartAsync();
     }

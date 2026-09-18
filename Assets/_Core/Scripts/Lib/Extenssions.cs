@@ -31,17 +31,21 @@ public static class Extenssions
         }
     }
 
-    public static GameObject AutoResizeParent(this Transform _obj, bool _isFull = false)
+    public static void AutoResizeParent(this Transform _obj, bool _isFull = false)
         => AutoResizeParent(_obj.gameObject, _isFull);
 
-    public static GameObject AutoResizeParent(this GameObject _obj, bool _isFull = false)
+    public static void AutoResizeParent(this GameObject _obj, bool _isFull = false)
+        => AutoResizeParentAsync(_obj, _isFull).Forget();
+    static async UniTask AutoResizeParentAsync(this GameObject _obj, bool _isFull = false)
     {
         var rt = _obj.transform as RectTransform;
 
         if (rt == null || rt.parent == null)
-            return null;
+            return;
 
         var rtParent = (RectTransform)rt.parent;
+
+        await UniTask.WaitUntil(() => rtParent.rect.width > 0);
 
         if (_isFull)
         {
@@ -76,10 +80,10 @@ public static class Extenssions
             if (h > ph)
                 rt.localScale *= (ph / h);
         }
-        return _obj;
     }
-
-    public static Transform SetText(this Transform _trns, string _path, object _text, string _default = "", bool _isEnableError = true)
+    public static Transform SetTextTable(this Transform _trns, string _path, string _key, string _default = "", bool _isEnableError = true)
+        => _trns.SetText(_path, TableManager.stringTable.GetString(_key), _default, _isEnableError);
+    public static Transform SetText(this Transform _trns, string _path, string _text, string _default = "", bool _isEnableError = true)
     {
         Transform trns = string.IsNullOrEmpty(_path) == false ? _trns.Find(_path) : _trns;
         if (_text == null)
@@ -88,7 +92,7 @@ public static class Extenssions
         var meshPro = trns?.GetComponent<TextMeshProUGUI>();
         if (meshPro != null)
         {
-            meshPro.text = string.IsNullOrEmpty(_text.ToString()) ? _default : _text.ToString();
+            meshPro.text = string.IsNullOrEmpty(_text) ? _default : _text;
             return meshPro.transform;
         }
         else
@@ -96,7 +100,7 @@ public static class Extenssions
             var text = trns?.GetComponent<Text>();
             if (text != null)
             {
-                text.text = string.IsNullOrEmpty(_text.ToString()) ? _default : _text.ToString();
+                text.text = string.IsNullOrEmpty(_text) ? _default : _text;
                 return text.transform;
             }
         }
@@ -119,21 +123,21 @@ public static class Extenssions
         return path;
     }
 
-    public static string WithJosa(this string _string, bool _isSubject = true)
-    {
-        if (DataManager.option.language != LanguageType.Korean || _string.IsActive() == false)
-            return _string;
+    //public static string WithJosa(this string _string, bool _isSubject = true)
+    //{
+    //    if (DataManager.option.language != LanguageType.Korean || _string.IsActive() == false)
+    //        return _string;
 
-        char lastChar = _string[_string.Length - 1];
+    //    char lastChar = _string[_string.Length - 1];
 
-        // «—±€ π¸¿ß »Æ¿Œ (∞°: 0xAC00, ∆R: 0xD7A3)
-        if (lastChar < 0xAC00 || lastChar > 0xD7A3) return _string + (_isSubject ? "¿Ã" : "¿ª");
+    //    // «—±€ π¸¿ß »Æ¿Œ (∞°: 0xAC00, ∆R: 0xD7A3)
+    //    if (lastChar < 0xAC00 || lastChar > 0xD7A3) return _string;
 
-        // (±€¿⁄ - ∞°) % 28
-        int tailIndex = (lastChar - 0xAC00) % 28;
+    //    // (±€¿⁄ - ∞°) % 28
+    //    int tailIndex = (lastChar - 0xAC00) % 28;
 
-        return _string + (_isSubject ? (tailIndex == 0 ? "∞°" : "¿Ã") : (tailIndex == 0 ? "∏¶" : "¿ª"));
-    }
+    //    return _string + (_isSubject ? (tailIndex == 0 ? "∞°" : "¿Ã") : (tailIndex == 0 ? "∏¶" : "¿ª"));
+    //}
     public static bool IsActive(this string _string)
         => string.IsNullOrWhiteSpace(_string) == false;
     public static bool IsEquals(this string _string, string _value)
@@ -257,10 +261,10 @@ public static class Extenssions
                 result = $"{Mathf.FloorToInt((float)_ts.TotalHours):00}:{_ts.ToString(@"mm\:ss")}";
             else
                 result = $"{Mathf.FloorToInt((float)_ts.TotalDays)}d {_ts.ToString(@"hh\:mm\:ss")}";
-
-            if (_mspace > -1)
-                result = Utils.MSpace(result, _mspace);
         }
+
+        if (_mspace > -1)
+            result = Utils.MSpace(result, _mspace);
 
         return result;
     }

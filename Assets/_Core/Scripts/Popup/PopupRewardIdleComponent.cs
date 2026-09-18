@@ -87,7 +87,8 @@ public class PopupRewardIdleComponent : BasePopupComponent
 
         if (rewards.Count == 0)
         {
-            PopupManager.instance.AlertShow("받은_보상이_없습니다.");
+            //받은_보상이_없습니다.
+            PopupManager.instance.AlertShow_Table("NO_REWARDS");
             return;
         }
 

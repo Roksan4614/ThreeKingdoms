@@ -349,7 +349,8 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
     async UniTask WaitLobby_OpenUpgradeGuideAsync()
     {
-        PopupManager.instance.AlertShow("잠시 후퇴!!_전량상_후퇴일뿐입니다.");
+        //잠시 후퇴!!_전량상_후퇴일뿐입니다.
+        PopupManager.instance.AlertShow_Table("STAGE_FAILED");
 
         await UniTask.WaitUntil(() =>
             LobbyScreenManager.instance.curScreen == LobbyScreenType.None &&

@@ -6,13 +6,13 @@ using UnityEngine.UI;
 
 namespace Rev9.ContentsMarket
 {
-    public class PopupContentsMarket_Popup_Buy : MonoBehaviour, IValidatable
+    public class PopupContentsMarket_Popup_Buy : PopupBuyComponent
     {
         ContentsMarketProductData m_productData;
         ContentsMarketTabType m_tabType;
         int m_buyCount = 0;
 
-        private void Awake()
+        private void Start()
         {
             transform.GetComponent<Button>("Dimm").onClick.AddListener(Close);
             transform.GetComponent<Button>("Panel/btn_close").onClick.AddListener(Close);
@@ -29,8 +29,8 @@ namespace Rev9.ContentsMarket
             btnMax.onClick.AddListener(() => OnButton_MinMax(false));
 
             //setlocalization
-            btnMin.text = "_최소_";
-            btnMax.text = "_최대_";
+            btnMin.text = TableManager.stringTable.GetString("UI_MIN");
+            btnMax.text = TableManager.stringTable.GetString("UI_MAX");
         }
 
         public bool CloseEscape()
@@ -52,11 +52,11 @@ namespace Rev9.ContentsMarket
             m_productData = _productData;
 
             gameObject.SetActive(true);
-            Utils.SetActivePunch(m_element.panel, true);
+            Utils.SetActivePunch(m_elementContentMarket.panel, true);
 
-            m_element.rewardItem.SetItemData(_productData.itemData);
+            m_elementContentMarket.rewardItem.SetItemData(_productData.itemData);
             string peroidType = TableManager.stringTable.GetString("PEROID_TYPE_" + _productData.peroidType.ToString().ToUpper());
-            m_element.txtLimitCount.text = $"({peroidType} {_productData.strRemainCount})";
+            m_elementContentMarket.txtLimitCount.text = $"({peroidType} {_productData.strRemainCount})";
 
             OnButton_MinMax(true);
         }
@@ -68,13 +68,13 @@ namespace Rev9.ContentsMarket
             else
                 m_buyCount = Mathf.Min(m_productData.countMax, m_buyCount + 1);
 
-            m_element.txtCount.text = $"{m_buyCount:#,0}";
+            m_elementContentMarket.txtCount.text = $"{m_buyCount:#,0}";
         }
 
         void OnButton_MinMax(bool _isMin)
         {
             m_buyCount = _isMin ? 1 : m_productData.countMax;
-            m_element.txtCount.text = $"{m_buyCount:#,0}";
+            m_elementContentMarket.txtCount.text = $"{m_buyCount:#,0}";
         }
 
         async UniTask OnButtonAsync_Confirm()
@@ -92,20 +92,24 @@ namespace Rev9.ContentsMarket
                 Close();
             }
             else
-                PopupManager.instance.AlertShow("_구매 실패_");
+                PopupManager.instance.AlertShow_Table("BUY_FAILED");
         }
 
         void Close()
         {
-            Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
+            Utils.SetActivePunch(m_elementContentMarket.panel, false, _callback: () => gameObject.SetActive(false));
         }
 
         #region VALIDATE
-        public void OnManualValidate() => m_element.Initialize(transform);
+        public override void OnManualValidate()
+        {
+            base.OnManualValidate();
+            m_elementContentMarket.Initialize(transform);
+        }
 
         //[SerializeField, HideInInspector]
         [SerializeField]
-        ElementData m_element;
+        ElementData m_elementContentMarket;
 
         [System.Serializable]
         struct ElementData

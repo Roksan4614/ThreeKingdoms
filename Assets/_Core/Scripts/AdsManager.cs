@@ -13,7 +13,7 @@ public class AdsManager
 
         await UniTask.WaitForSeconds(1f);
 
-        PopupManager.instance.AlertShow("광고_시청_완료");
+        PopupManager.instance.AlertShow_Table("AD_COMPLETE");
 
         PopupManager.instance.ShowDimm(false);
 

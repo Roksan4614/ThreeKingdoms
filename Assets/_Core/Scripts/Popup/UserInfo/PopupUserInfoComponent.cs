@@ -23,7 +23,7 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
 
     protected virtual void OnButtonCopy()
     {
-        PopupManager.instance.AlertShow("복사_완료");
+        PopupManager.instance.AlertShow_Table("COPY_COMPLETE");
         Utils.CopyText(m_uid.ToString());
     }
 

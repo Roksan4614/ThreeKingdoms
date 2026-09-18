@@ -122,7 +122,7 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
                 m_missionData.heroes.Add(_heroInfoData.key);
             else
             {
-                PopupManager.instance.AlertShow("배치_인원이_이미_모두_찼습니다.");
+                PopupManager.instance.AlertShow_Table("CASTLE_FULL_BATCH_HERO");
                 return;
             }
         }

@@ -50,12 +50,13 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         // 공통
         {
             // 고유 능력 요구치
-            SetAddItem(i++, " 고유_능력_요구치",
+            SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SETTING_STAT_MAX")}",
                 (m_castleData.type == CastleObjectType.Palace ? m_nowData.orinValue01 : m_nowData.value01).ToString(),
                 (m_castleData.type == CastleObjectType.Palace ? m_nextData.orinValue01 : m_nextData.value01).ToString());
 
             // 장수배치 수
-            SetAddItem(i++, " 배치_장수_수", m_nowData.character_slot_max.ToString(), m_nextData.character_slot_max.ToString());
+            SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SETTING_BATCH_COUNT")}",
+                m_nowData.character_slot_max.ToString(), m_nextData.character_slot_max.ToString());
 
             // 업그레이드 시간
             // 업그레이드 중이면 안보여주자.. 보여주까??
@@ -63,7 +64,9 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
             {
                 var dt = DateTime.Now;
                 var ts = dt.AddSeconds(m_castleData.dbRise.upgradeSeconds) - dt;
-                SetAddItem(i++, " 증축_시간", m_castleData.dbRise.upgradeSeconds == 0 ? "_즉시" :
+                SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SETTING_UPGRADE_VALID")}",
+                    m_castleData.dbRise.upgradeSeconds == 0 ?
+                    TableManager.stringTable.GetString("UI_RIGHT_NOW") :
                     ts.ToRemainTime(_isStringMode: true), null);
             }
         }
@@ -96,25 +99,28 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
 
         var probity = DataManager.castle.GetGateProbityRate();
 
-        SetAddItem(i++, " 건물_레벨_상한선", $"{nowData.level_cap ?? -1}", $"{nextData.level_cap ?? -1}");
-        SetAddItem(i++, " 시간석_개당_단축", $"{(nowData.save_time_time_stone * probity ?? -1):0.##}s",
+        SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_PAL_LEVEL_MAX")}",
+            $"{nowData.level_cap ?? -1}", $"{nextData.level_cap ?? -1}");
+        SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_PAL_TIME_STONE_RATE")}", //" 시간석_개당_단축",
+            $"{(nowData.save_time_time_stone * probity ?? -1):0.##}s",
             $"{(nextData.save_time_time_stone * probity ?? -1):0.##}s");
-        SetAddItem(i++, " 광고_회당_단축", $"{nowData.save_time_ad ?? -1}s", $"{nextData.save_time_ad ?? -1}s");
+        SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_PAL_AD_MINUS_RATE")}", //" 광고_회당_단축",
+            $"{nowData.save_time_ad ?? -1}s", $"{nextData.save_time_ad ?? -1}s");
 
         return i;
     }
     int SetInfo_FarmMarket()
     {
-        var nextCastleData = m_castleData;
+        var nextCastleData = m_castleData.DeepClone();
         nextCastleData.level += 1;
 
         int i = 1;
 
-        SetAddItem(i++, " 초당_획득량",
+        SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SETTING_CLAIM_PER_SECOND")}", //" 초당_획득량",
             $"{DataManager.castle.GetAmountPerSecond(m_castleData).AmountKMBT()}/s",
             $"{DataManager.castle.GetAmountPerSecond(nextCastleData).AmountKMBT()}/s");
 
-        SetAddItem(i++, " 보유량_한도",
+        SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SETTING_MAX")}", //" 보유량_한도",
             $"{DataManager.castle.GetMaxAmount(m_castleData).AmountKMBT()}",
             $"{DataManager.castle.GetMaxAmount(nextCastleData).AmountKMBT()}");
 
@@ -127,7 +133,7 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         int i = 0;
         var nextLevel = m_castleData.level + 1;
 
-        SetAddItem(i++, " 도적_유지_시간",
+        SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_GATE_AD_MINUS_RATE")}",// " 도적_유지_시간",
             $"{TableManager.castleEffect[m_castleData.type].Get(m_castleData.level).npc_duration_sec}/s",
             $"{TableManager.castleEffect[m_castleData.type].Get(nextLevel).npc_duration_sec}/s");
         return i;
@@ -160,32 +166,38 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
 
         int i = 0;
 
-        SetAddItem(i++, "<size=110%><color=#000000>청렴도 영향</color></size>", null, null);
+        //청렴도 영향
+        SetAddItem(i++, $"<size=110%><color=#000000>{TableManager.stringTable.GetString("CASTLE_SET_GATE_TITLE")}</color></size>", null, null);
         // 궁성
         {
             var levelPalace = DataManager.castle.GetCaslteData(CastleObjectType.Palace).level;
             var timeStoneSec = TableManager.castleEffect[CastleObjectType.Palace].Get(levelPalace).save_time_time_stone ?? -1;
-            SetAddItem(i++, " 시간석_개당_단축", $"{timeStoneSec}s", probity == 1 ? null : $"{(timeStoneSec * probity):0.##}s", false);
+            SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_PAL_TIME_STONE_RATE")}", //" 시간석_개당_단축",
+                $"{timeStoneSec}s", probity == 1 ? null : $"{(timeStoneSec * probity):0.##}s", false);
         }
         // 상점
         {
-            SetAddItem(i++, " 군량/금화_수령시_획득량", $"<color=#{(probity < 1 ? Palette.htmlString_Down : Palette.htmlString_Up)}>{(probity) * 100: 0.##}%", null);
+            SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_GATE_CLAIM")}", //" 군량/금화_수령시_획득량",
+                $"<color=#{(probity < 1 ? Palette.htmlString_Down : Palette.htmlString_Up)}>{(probity) * 100: 0.##}%", null);
         }
         // 행상
         {
             // todo
             var discountRate = 0.1f;
-            SetAddItem(i++, " 상점 할인율", $"{discountRate * 100: 0.##}%", probity == 1 ? null : $"{discountRate * probity * 100: 0.##}%", false);
+            SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_GATE_DC_RATE")}", //" 상점 할인율",
+                $"{discountRate * 100: 0.##}%", probity == 1 ? null : $"{discountRate * probity * 100: 0.##}%", false);
         }
         // 관아
         {
             if (probity < 1)
             {
                 var orinProbity = DataManager.castle.GetGateProbityRate(true);
-                SetAddItem(i++, " 높은 등급 등장 확률 감소", $"<color=#{Palette.htmlString_Down}>-{(1 - orinProbity) * 100: 0.##}%", null);
+                SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_GATE_HIGH_GRADE_RATE")}", //" 높은 등급 등장 확률 감소",
+                    $"<color=#{Palette.htmlString_Down}>-{(1 - orinProbity) * 100: 0.##}%", null);
             }
             else
-                SetAddItem(i++, " 높은 등급 등장 확률 감소", $"0%", null);
+                SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_GATE_HIGH_GRADE_RATE")}", //" 높은 등급 등장 확률 감소",
+                    $"0%", null);
         }
 
         for (; i < m_element.panel.childCount; i++)

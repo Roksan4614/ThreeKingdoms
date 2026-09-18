@@ -38,10 +38,29 @@ public class TableItemData
     [JsonProperty] public string value;
     [JsonProperty] public ItemType category;
 
-
-    public string stringKey => "NAME_" + key.ToString().ToUpper();
-    public string name => TableManager.stringItem.GetString(stringKey);
-    public string nameValue => TableManager.stringItem.GetString(stringKey + (value.IsActive() == false ? "" : $"_{value.ToUpper()}"));
-    public string iconKey => $"{key}{(value == null ? "" : $"_{value}")}";
+    public string name
+        => TableManager.stringItem.GetItemName(this);
 }
 
+public class Table_String_Item : Table_String_Base
+{
+    public Table_String_Item(List<TableStringData> _table) : base(_table)
+    {
+        SetDictionary(x => x.key);
+    }
+
+    public string GetItemName(TableItemData _itemData)
+    {
+        string key = "";
+        if (_itemData.type == ItemDetailType.ClassSoulStone)
+        {
+            return TableManager.stringItem.GetStringFormat("NAME_SOUL_STONE", TableManager.stringHero.GetString(_itemData.value));
+        }
+        else
+            key = $"NAME_{key.ToUpper()}";
+        return TableManager.stringItem.GetString(key);
+    }
+
+    public string GetItemName(string _key)
+        => GetString($"NAME_{_key.ToUpper()}");
+}

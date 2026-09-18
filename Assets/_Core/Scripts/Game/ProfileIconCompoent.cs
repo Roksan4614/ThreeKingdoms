@@ -26,7 +26,10 @@ public class ProfileIconCompoent : MonoBehaviour, IValidatable
             await UniTask.WaitUntil(() => rtParent.rect.width > 0 || rtParent.rect.height > 0);
 
             if (icon != null)
-                icon.AutoResizeParent().name = _skin;
+            {
+                icon.AutoResizeParent();
+                icon.name = _skin;
+            }
         }
     }
 

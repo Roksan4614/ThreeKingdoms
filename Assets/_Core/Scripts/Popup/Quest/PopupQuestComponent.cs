@@ -295,7 +295,7 @@ namespace Rev9.Quest
                     slot.rt.anchoredPosition =
                     ((RectTransform)line).anchoredPosition = rt;
 
-                    line.SetText("Text", rewardData.target_value);
+                    line.SetText("Text", rewardData.target_value.ToString());
 
                     m_btnReward.Add(slot.transform.GetComponent<Button>());
                     m_btnReward[i].onClick.AddListener(()

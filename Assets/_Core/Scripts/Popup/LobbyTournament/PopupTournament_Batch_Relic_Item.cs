@@ -14,7 +14,8 @@ public class PopupTournament_Batch_Relic_Item : LobbyScreen_Hero_Relic_Item
 
         if (batchData.treasure.Count >= 3 && m_heroInfoData.isBatch == false)
         {
-            PopupManager.instance.AlertShow("최대_3개까지만_장착_가능합니다.");
+            //최대_3개까지만_장착_가능합니다.
+            PopupManager.instance.AlertShow_Table("RELIC_USE_MAX");
             return;
         }
 
@@ -23,7 +24,7 @@ public class PopupTournament_Batch_Relic_Item : LobbyScreen_Hero_Relic_Item
         TournamentWorker.instance.SetTreasureStatus(m_heroInfoData.skin, m_heroInfoData.isBatch);
 
         m_element.btn_select.SetDrawSelect(m_heroInfoData.isBatch);
-        m_element.btn_select.text = m_heroInfoData.isBatch ? "_선택중_" : "선택_하기";
+        m_element.btn_select.text = TableManager.stringTable.GetString("BUTTON_CHOICE" + (m_heroInfoData.isBatch ? "_RUN":""));
 
         _onCallback(m_heroInfoData);
     }

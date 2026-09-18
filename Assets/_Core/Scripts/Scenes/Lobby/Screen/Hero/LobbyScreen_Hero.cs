@@ -28,7 +28,9 @@ public class LobbyScreen_Hero : LobbyScreen_Base
             m_tabs.Add(i, m_element.tabs[(int)i]);
 
             var tab = i;
-            m_element.btnTabs[(int)i].onClick.AddListener(() => SetActiveTab(tab));
+            var btn = m_element.btnTabs[(int)i];
+            btn.onClick.AddListener(() => SetActiveTab(tab));
+            btn.text = TableManager.stringTable.GetString($"L_HERO_TITLE_{tab.ToString().ToUpper()}");
         }
 
         SetActiveTab(m_tabType);
@@ -56,7 +58,7 @@ public class LobbyScreen_Hero : LobbyScreen_Base
             m_element.btnTabs[(int)i].SetDrawSelect(i == _tabType);
         }
 
-        m_txtTitle.text = _tabType.ToString().ToUpper();
+        m_txtTitle.text = TableManager.stringTable.GetString($"L_HERO_TITLE_{_tabType.ToString().ToUpper()}");
     }
 
     protected override bool IsEscapeloseScreen()
@@ -90,8 +92,7 @@ public class LobbyScreen_Hero : LobbyScreen_Base
         m_element.Initialize(transform);
     }
 
-    [SerializeField, HideInInspector]
-    //[SerializeField]
+    [SerializeField]
     ElementData m_element;
     [Serializable]
     struct ElementData

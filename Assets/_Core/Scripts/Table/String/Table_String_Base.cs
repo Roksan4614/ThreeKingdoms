@@ -37,12 +37,15 @@ public class TableStringData
     public string key;
     public string kr;
     public string en;
+    public string cn;
+
     public string target;
 
     public string message =>
         DataManager.option.language switch
         {
             LanguageType.English => en,
+            LanguageType.Chinese => cn,
             _ => kr
         };
 

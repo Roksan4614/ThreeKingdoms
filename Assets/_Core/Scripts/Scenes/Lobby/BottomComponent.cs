@@ -22,7 +22,8 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
 			screen.button.onClick
 				.AddListener(() => OnButton_OpenScreen(screen.type));
 
-			screen.txtName.text = screen.button.name = screen.type.ToString().ToUpper();
+            screen.button.name = screen.type.ToString().ToUpper();
+			screen.txtName.text = TableManager.stringTable.GetString($"L_BOT_{screen.button.name}");
 		}
 
 		m_element.panel.ForceRebuildLayout();

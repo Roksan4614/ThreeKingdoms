@@ -360,7 +360,9 @@ public partial class Data_Castle
         SaveData();
         OnUpdateClaim();
 
-        PopupManager.instance.AlertShow($"{(itemType == ItemDetailType.Gold ? "금화를" : "군량을")}_{count.AmountKMBT()}개_수령했습니다.");
+        string itemName = TableManager.stringItem.GetString($"NAME_{itemType.ToString().ToUpper()}");
+        itemName = KoreanHelper.AppendJosa(itemName, KoreanHelper.JosaType.EulLeul);
+        PopupManager.instance.AlertShow(TableManager.alertString.GetStringFormat("CASTLE_CLAIM", itemName, count.AmountKMBT()));
 
         // SAVEDATA 재화 데이타 저장
         DataManager.userInfo.AddAsset(itemType, count, false, false);
@@ -376,7 +378,7 @@ public partial class Data_Castle
     {
         [JsonProperty] public CastleObjectType type;
         [JsonProperty] public List<string> heroes;
-        [JsonProperty] public int level;
+        [JsonProperty] public int level { get; set; }
 
         [JsonProperty] public long tickClaim;          // 회수한 시간
         [JsonProperty] public float totalAmount;       // 회수할 수 있는 총 재화량

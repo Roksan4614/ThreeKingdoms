@@ -156,7 +156,7 @@ public class HeroInfoData
     public string regionKey => $"{m_regionType}_{key}".ToUpper();
     public string name => TableManager.stringHero.GetString($"NAME_{regionKey}");
     public string gradeName => TableManager.stringTable.GetGradeType(grade);
-    public string className => TableManager.stringHero.GetString($"CLASSTYPE_" + m_classType.ToString().ToUpper());
+    public string className => TableManager.stringHero.GetClassType(m_classType);
     public string gradeClass => $"{gradeName} {className}";
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
     public string fullNameGradeLevel => $"[{gradeName}] {name}{(enchantLevel == 0 ? "" : $"+{enchantLevel}")}";

@@ -18,9 +18,10 @@ public class SeasonWorker
     {
         m_data = PPWorker.Get<SeasonData>(c_key, false);
 
-        if( m_data == null)
+        if (m_data == null)
         {
             await UniTask.NextFrame();
+            m_data = new();
             m_data.idx = 1;
             m_data.tickEnd = Utils.GetNextMonthMidnight(1).Ticks;
             m_data.tickStart = m_data.dtEnd.AddMonths(-1).Ticks;

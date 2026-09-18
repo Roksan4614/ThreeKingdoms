@@ -119,7 +119,8 @@ namespace Rev9.Post
         {
             if (postData.rewards.Count > 0 && postData.isReceiveReward == false)
             {
-                PopupManager.instance.AlertShow("아직_받을_보상이_있습니다.");
+                //아직_받을_보상이_있습니다.
+                PopupManager.instance.AlertShow_Table("HAS_REWARDS");
                 return;
             }
 

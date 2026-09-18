@@ -222,7 +222,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
 
         if (m_missionData.percentStat < 10)
         {
-            PopupManager.instance.AlertShow("요구_능력치를_10%이상_달성해줘!");
+            PopupManager.instance.AlertShow_Table("CASTLE_MISSION_STAT_LIMIT_PER");
             return;
         }
 

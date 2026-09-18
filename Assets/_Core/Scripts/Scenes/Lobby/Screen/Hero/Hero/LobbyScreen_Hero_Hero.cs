@@ -86,6 +86,14 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         Signal.instance.UpdateHeroStat.connectLambda = new(this, _
             => m_isNeedUpdateLayout = true);
+
+        // setlocalization
+        {
+            transform.SetTextTable("Batch/txt_title", "UI_BATCH");
+            transform.SetTextTable("List/txt_title", "UI_CHARACTER_LIST");
+            m_element.btnMainPosition.transform.SetTextTable("txt_title", "UI_MAIN_POSITION");
+            m_element.btnFilter.text = TableManager.stringTable.GetString("UI_FILTER");
+        }
     }
 
     protected virtual void Start()
@@ -277,7 +285,8 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     void OnButton_TeamPosition()
     {
         m_teamPosition = m_teamPosition == TeamPositionType.Front ? TeamPositionType.Back : TeamPositionType.Front;
-        m_element.txtMainPosition.text = m_teamPosition == TeamPositionType.Front ? "전열" : "후열";
+        m_element.txtMainPosition.text =
+            TableManager.stringTable.GetString($"UI_POSITION_{(m_teamPosition == TeamPositionType.Front ? "FRONT" : "BACK")}");
 
         var line = m_itemBatch[0].transform.parent.Find("Line");
         if (m_teamPosition == TeamPositionType.Front)
@@ -680,16 +689,15 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         m_element.Initialize(transform);
     }
 
-    [SerializeField, HideInInspector]
-    //[SerializeField]
+    [SerializeField]
     protected ElementData m_element;
     [Serializable]
     protected struct ElementData
     {
-        public Button btnFilter;
+        public ButtonHelper btnFilter;
         public Button btnSort;
         public Image imgSort;
-        public Button btnMainPosition;
+        public ButtonHelper btnMainPosition;
 
         public TextMeshProUGUI txtMainPosition;
         public TextMeshProUGUI txtPower;
@@ -701,10 +709,10 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         public void Initialize(Transform _transform)
         {
-            btnFilter = _transform.GetComponent<Button>("List/btn_filter");
+            btnFilter = _transform.GetComponent<ButtonHelper>("List/btn_filter");
             btnSort = _transform.GetComponent<Button>("List/btn_sort");
             imgSort = _transform.GetComponent<Image>("List/btn_sort/Image");
-            btnMainPosition = _transform.GetComponent<Button>("Batch/btn_position");
+            btnMainPosition = _transform.GetComponent<ButtonHelper>("Batch/btn_position");
 
             txtMainPosition = btnMainPosition?.GetComponentInChildren<TextMeshProUGUI>();
             txtPower = _transform.GetComponent<TextMeshProUGUI>("Batch/txt_power");

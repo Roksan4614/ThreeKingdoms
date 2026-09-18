@@ -135,7 +135,7 @@ public partial class Data_UserInfo
 
         if (trait == null)
         {
-            PopupManager.instance.AlertShow("특성을_찾을_수_없습니다.");
+            PopupManager.instance.AlertShow_Table("TRAIT_CANT_FIND");
             return false;
         }
 

@@ -21,6 +21,10 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         SlotDayChange();
 
         Signal.instance.DayChange.connect = SlotDayChange;
+
+        transform.SetText("Panel/Top/txt_title", TableManager.stringTable.GetString("SCREEN_DD_TITLE"));
+        transform.SetText("Panel/Front/Reward/txt_title", TableManager.stringTable.GetString("UI_VALID_REWARD_LIST"));
+        m_element.btnStart.text = TableManager.stringTable.GetString("UI_ENTER");
     }
 
     protected override bool IsEscapeloseScreen()
@@ -38,10 +42,10 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
         if (DataManager.dailyDungeon.data.count <= 0)
         {
-            var result = await PopupManager.instance.OpenModalAsync("광고보기??_");
+            var result = await PopupManager.instance.OpenModalAsync(TableManager.alertString.GetString("MODAL_AD_SHOW"));
 
             if (result == StatusType.Success && await ShowAdsAsync() == false)
-                PopupManager.instance.AlertShow("입장할_수_없습니다.");
+                PopupManager.instance.AlertShow_Table("INVALID_ENTER");
         }
         else if (_isSweep)
             await DataManager.dailyDungeon.SweepAsync(m_curWeekday, SetCountText);
@@ -64,7 +68,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
     void SetCountText()
     {
-        m_element.txtCount.text = $"일일_입장_가능_횟수: {DataManager.dailyDungeon.data.count}";
+        m_element.txtCount.text = TableManager.stringTable.GetStringFormat("UI_ENTER_LIMIT_DAILY", DataManager.dailyDungeon.data.count.ToString());
         m_element.btnAD.text = $"{DataManager.dailyDungeon.data.adCount}/3";
     }
 
@@ -94,9 +98,13 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
         SetDungeonInfo(_bossData);
 
-        var gradeType = DataManager.dailyDungeon.GetRecordGradeType(m_curWeekday)?.gradeType;
+        var gradeType = DataManager.dailyDungeon.GetRecordGradeType(m_curWeekday)?.gradeType ?? GradeType.NONE;
         if (gradeType > GradeType.Normal != m_element.btnSweep.gameObject.activeSelf)
+        {
             m_element.btnSweep.gameObject.SetActive(gradeType > GradeType.Normal);
+            if (gradeType > GradeType.Normal)
+                m_element.btnSweep.text = $"[{TableManager.stringTable.GetGradeType(gradeType, true)}]" + TableManager.stringTable.GetString("UI_SWEEP");
+        }
 
         // 탭 현재 위치로
         int idxWeekday = (int)m_curWeekday;
@@ -115,8 +123,8 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
         var recordData = DataManager.dailyDungeon.GetRecordGradeType(_bossData.weekday);
 
-        bool isHasRecord = recordData ==null ? false : recordData.gradeType > GradeType.Normal || recordData.percent > 0;
-        m_element.txtRecord.text = $"최고_기록: [{(isHasRecord ? TableManager.stringTable.GetGradeType(recordData.gradeType) : "없음_")}]";
+        bool isHasRecord = recordData == null ? false : recordData.gradeType > GradeType.Normal || recordData.percent > 0;
+        m_element.txtRecord.text = $"{TableManager.stringTable.GetString("UI_MOST_RECORD")}: [{(isHasRecord ? TableManager.stringTable.GetGradeType(recordData.gradeType) : TableManager.stringTable.GetString("UI_NONE"))}]";
         if (isHasRecord)
             m_element.txtRecord.text += $"<size=90%><color=#555555> ({(recordData.percent * 100):0.#0}%)</color></size>";
         SetRewardData(_bossData);

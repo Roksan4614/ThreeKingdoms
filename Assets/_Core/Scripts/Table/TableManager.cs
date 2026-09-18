@@ -30,11 +30,13 @@ public class TableManager
 
     public static Table_Item item => instance.m_item;
     Table_Item m_item;
-    public static Table_String_Base stringItem => instance.m_stringItem;
-    Table_String_Base m_stringItem;
+    public static Table_String_Item stringItem => instance.m_stringItem;
+    Table_String_Item m_stringItem;
 
     public static Table_String stringTable => instance.m_stringTable;
     Table_String m_stringTable;
+    public static Table_String alertString => instance.m_alertString;
+    Table_String m_alertString;
     public static Table_String_Hero stringHero => instance.m_stringHero;
     Table_String_Hero m_stringHero;
     public static Table_String_Talk scenarioTalk => instance.m_scenarioTalk;
@@ -126,6 +128,7 @@ public class TableManager
             m_region = new(LoadList<TableRegionData>(_result, "RegionData"));
 
             m_stringTable = new(LoadList<TableStringData>(_result, "String"));
+            m_alertString = new(LoadList<TableStringData>(_result, "String_Alert"));
             m_stringHero = new(LoadList<TableStringData>(_result, "String_Hero"));
             m_scenarioTalk = new(LoadList<TableStringData>(_result, "String_ScenarioTalk"));
             m_stringMission = new(LoadList<TableStringData>(_result, "String_Mission"));

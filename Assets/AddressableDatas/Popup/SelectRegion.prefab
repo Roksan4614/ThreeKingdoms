@@ -56,7 +56,7 @@ MonoBehaviour:
     btnDimm: {fileID: 6806531056520685048}
     posCharacter: {fileID: 7907507306237963977}
     btnClose: {fileID: 4211127144727260027}
-    btnConfirm: {fileID: 1923420902854358352}
+    btnConfirm: {fileID: 5283514700764666778}
     txtName: {fileID: 3072410514719795449}
     txtTalk: {fileID: 4412109019956265111}
     txtDesc: {fileID: 8378449367629462685}
@@ -195,9 +195,9 @@ MonoBehaviour:
   m_fontSize: 50
   m_fontSizeBase: 50
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 50
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -2119,7 +2119,7 @@ MonoBehaviour:
     \uAC83\uC774\uB2E4.\""
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2998ed1f59a9fb548a0056a5b7846534, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: ac02337f2f1c8e245b0093af0b4a6773, type: 2}
+  m_sharedMaterial: {fileID: -8230767721390268291, guid: 2998ed1f59a9fb548a0056a5b7846534, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2146,9 +2146,9 @@ MonoBehaviour:
   m_fontSize: 50
   m_fontSizeBase: 50
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 50
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2360,7 +2360,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 21, y: -109.20997}
-  m_SizeDelta: {x: 0, y: 105.27}
+  m_SizeDelta: {x: -11.8427, y: 105.27}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &524468038612770793
 CanvasRenderer:
@@ -2420,9 +2420,9 @@ MonoBehaviour:
   m_fontSize: 100
   m_fontSizeBase: 100
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 100
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 1024
@@ -2611,6 +2611,7 @@ GameObject:
   - component: {fileID: 6112413491432664039}
   - component: {fileID: 9064486695090848838}
   - component: {fileID: 1923420902854358352}
+  - component: {fileID: 5283514700764666778}
   m_Layer: 5
   m_Name: btn_start
   m_TagString: Untagged
@@ -2720,6 +2721,29 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5283514700764666778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6639893500052118152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08be4068aba223343ac6976ab55a83fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHelper
+  m_element:
+    rt: {fileID: 1031842816635474658}
+    localScale: {x: 1, y: 1, z: 1}
+    button: {fileID: 1923420902854358352}
+    image: {fileID: 9064486695090848838}
+    txtName: {fileID: 2104314383138512288}
+    collider: {fileID: 0}
+    objCheck: {fileID: 0}
+  m_prevColorData:
+    button: {r: 0, g: 0, b: 0, a: 0}
+    text: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &6806959027595490037
 GameObject:
   m_ObjectHideFlags: 0

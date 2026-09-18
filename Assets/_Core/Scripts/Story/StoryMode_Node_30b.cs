@@ -141,7 +141,10 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
                 await TalkStartAsync(talkQueston.Dequeue());
         }
 
-        PopupManager.instance.AlertShow("관우와_장비가_진영에_합류했습니다.");
+        // "관우와_장비가_진영에_합류했습니다.");
+        PopupManager.instance.AlertShow(TableManager.alertString.GetStringFormat("STORYMODE_RECEIVE_HEROES"
+            , KoreanHelper.AppendJosa(guanYu.info.name, KoreanHelper.JosaType.GwaWa)
+            , KoreanHelper.AppendJosa(zhangFei.info.name, KoreanHelper.JosaType.IgA)));
 
         // 유비  고맙소. 태어난 날은 다르나 한날 한시에 죽을 것을 맹세합시다.
         await TalkStartAsync();
@@ -161,7 +164,7 @@ public class StoryMode_Node_30b : StoryModeBaseComponent
 
         await WaitForSeconds(.5f);
 
-        PopupManager.instance.AlertShow("스토리를_완료했습니다.");
+        PopupManager.instance.AlertShow_Table("STORYMODE_COMPLETE");
         await WaitPointerDown();
 
     }

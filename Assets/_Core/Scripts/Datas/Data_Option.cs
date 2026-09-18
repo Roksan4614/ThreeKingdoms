@@ -26,6 +26,7 @@ public enum LanguageType
 {
     Korean,
     English,
+    Chinese
 }
 
 public class Data_Option

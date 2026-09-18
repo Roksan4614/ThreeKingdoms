@@ -35,13 +35,15 @@ public class Scene_StoryMode : SceneBase
     {
         if (StageManager.instance.slotStory.resultTalkIdx == -1 && TableManager.storyChoice.GetChoices(DataManager.storyMode.curNodeKey).Length > 0)
         {
-            PopupManager.instance.AlertShow("건너띄기할_수_없습니다.");
+            //건너띄기할_수_없습니다.
+            PopupManager.instance.AlertShow_Table("CAN_NOT_SKIP");
             return;
         }
 
         m_element.btnSkip.interactable = false;
 
-        var result = await PopupManager.instance.OpenModalAsync("건너띄겠습니까?");
+        // "건너띄겠습니까?"
+        var result = await PopupManager.instance.OpenModalAsync(TableManager.alertString.GetString("MODAL_SKIP"));
 
         _callback?.Invoke(result);
 
@@ -57,7 +59,7 @@ public class Scene_StoryMode : SceneBase
         DataManager.storyMode.SetPlayingMode(isPlaying);
 
         m_element.btnPlay.SetDrawSelect(isPlaying);
-        m_element.btnPlay.text = isPlaying ? "재생중" : "재생하기";
+        m_element.btnPlay.text = TableManager.stringTable.GetString(isPlaying ? "BUTTON_PLAY_RUN" : "BUTTON_PLAY");
 
         m_element.btnPlay.transform.ForceRebuildLayout(1);
     }

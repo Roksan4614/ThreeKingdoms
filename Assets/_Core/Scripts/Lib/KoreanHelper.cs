@@ -6,7 +6,8 @@ public static class KoreanHelper
     {
         IgA,        // 이/가
         EulLeul,    // 을/를
-        EuroroRo // 으로/로
+        EuroroRo,   // 으로/로
+        GwaWa       // 과/와
     }
 
     public static string AppendJosa(string _word, JosaType _josaType, string _format = null)
@@ -35,12 +36,12 @@ public static class KoreanHelper
         {
             case JosaType.IgA:
                 return hasBatchim ? _word + "이" : _word + "가";
-
             case JosaType.EulLeul:
                 return hasBatchim ? _word + "을" : _word + "를";
-
             case JosaType.EuroroRo:
                 return hasBatchim ? _word + "으로" : _word + "로";
+            case JosaType.GwaWa:
+                return hasBatchim ? _word + "과" : _word + "와";
 
             default:
                 return _word;

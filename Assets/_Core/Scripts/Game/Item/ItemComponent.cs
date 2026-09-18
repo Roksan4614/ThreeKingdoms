@@ -97,7 +97,8 @@ public class ItemComponent : MonoBehaviour, IValidatable
             await UniTask.Yield();
 
             icon.transform.SetAsFirstSibling();
-            icon.AutoResizeParent().name = _key;
+            icon.AutoResizeParent();
+            icon.name = _key;
 
             _onComplete?.Invoke(icon.transform);
         }

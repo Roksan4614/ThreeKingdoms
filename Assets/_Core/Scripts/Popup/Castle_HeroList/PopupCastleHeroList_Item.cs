@@ -51,12 +51,14 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
                     {
                         if (m_heroList.isFullBatch == true)
                         {
-                            PopupManager.instance.AlertShow("배치_인원이_이미_모두_찼습니다.");
+                            PopupManager.instance.AlertShow_Table("CASTLE_FULL_BATCH_HERO");
                             return;
                         }
 
+                        //"이미_임무_중인_장수입니다.\n새로운_임무를_부여하겠습니까?"
                         PopupManager.instance.OpenModalAsync(
-                            "이미_임무_중인_장수입니다.\n새로운_임무를_부여하겠습니까?", _callback: _statusType =>
+                            TableManager.alertString.GetString("MODAL_CASTLE_HERO_JOB_CHANGE")
+                            , _callback: _statusType =>
                             {
                                 if (_statusType == StatusType.Success)
                                 {
@@ -80,7 +82,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
             {
                 if (m_heroList.isFullBatch == true)
                 {
-                    PopupManager.instance.AlertShow("배치_인원이_이미_모두_찼습니다.");
+                    PopupManager.instance.AlertShow_Table("CASTLE_FULL_BATCH_HERO");
                     return;
                 }
             }

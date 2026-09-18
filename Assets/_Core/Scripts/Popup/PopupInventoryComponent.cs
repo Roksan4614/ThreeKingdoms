@@ -106,7 +106,7 @@ namespace Rev9.Inventory
         }
         void OnButton_Item(ItemData _itemData)
         {
-            IngameLog.Add($"OnButton: {_itemData.nameValue}");
+            IngameLog.Add($"OnButton: {_itemData.name}");
         }
 
         public override void Close()

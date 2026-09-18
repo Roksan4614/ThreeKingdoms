@@ -41,6 +41,8 @@ public class DataManager
 
     public async UniTask InitializeAsync()
     {
+        await SeasonWorker.instance.InitailizeAsync();
+
         List<UniTask> tasks = new();
         tasks.Add(m_stat.InitializeAsync());
         tasks.Add(m_heroPosition.InitializeAsync());
