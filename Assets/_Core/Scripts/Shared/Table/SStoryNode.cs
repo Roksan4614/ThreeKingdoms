@@ -68,7 +68,7 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("reward_character", NullValueHandling = NullValueHandling.Include)]
         public string RewardCharacter { get; set; } = default!;
         /// <summary>
-        /// 조건부 획득 선택지 번호  (0=노드 클리어 시 무조건 지급)
+        /// 조건부 획득 선택지 번호 (0=노드 클리어 시 무조건 지급)
         /// </summary>
         [JsonProperty("required_choice_seq", NullValueHandling = NullValueHandling.Include)]
         public int RequiredChoiceSeq { get; set; } = default!;

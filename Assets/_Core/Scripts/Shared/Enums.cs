@@ -551,8 +551,10 @@ namespace ThreeKingdoms.Shared.Enums
         /// 토너먼트 티켓
         /// </summary>
         TicketTournament = 19,
-
-        Max
+        /// <summary>
+        /// 토너먼트 티켓
+        /// </summary>
+        Max = 20,
     }
 
     /// <summary>
@@ -620,7 +622,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// 입장권
         /// </summary>
         ContentsTicket = 8,
-        Max
+        Max = 9,
     }
 
     /// <summary>
