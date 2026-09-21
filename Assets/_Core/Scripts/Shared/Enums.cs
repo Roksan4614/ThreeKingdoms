@@ -1076,6 +1076,10 @@ namespace ThreeKingdoms.Shared.Enums
         /// 매력
         /// </summary>
         Charisma = 4,
+        /// <summary>
+        /// 최대
+        /// </summary>
+        Max = 5,
     }
 
     /// <summary>
