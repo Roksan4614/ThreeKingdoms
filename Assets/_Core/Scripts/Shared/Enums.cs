@@ -898,6 +898,7 @@ namespace ThreeKingdoms.Shared.Enums
     /// </summary>
     public enum QuestType
     {
+        None = -1,
         /// <summary>
         /// 로그인
         /// </summary>
@@ -950,6 +951,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// 아이템 사용하기
         /// </summary>
         ItemUse = 12,
+        Max = 13,
     }
 
     /// <summary>
