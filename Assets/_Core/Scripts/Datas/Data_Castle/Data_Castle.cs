@@ -209,7 +209,7 @@ public partial class Data_Castle
         // √÷¿˙ √ª∑≈µµ
         float minPercent = 0.5f;
 
-        var totalLeaderShip = GetTotalCoreStat(gateData, CoreStatType.Leadership);
+        var totalLeaderShip = GetTotalCoreStat(gateData, StatType.Leadership);
         var dbMaxLeaderShip = gateData.dbRise.value01;
 
         float percent = Mathf.Min(1f, totalLeaderShip / (float)dbMaxLeaderShip);
@@ -224,7 +224,7 @@ public partial class Data_Castle
     {
         var gateData = GetCaslteData(CastleObjectType.Gate);
 
-        var total = GetTotalCoreStat(gateData, CoreStatType.Strength);
+        var total = GetTotalCoreStat(gateData, StatType.Strength);
         var dbMax = gateData.dbRise.value02;
 
         float percent = Mathf.Min(1f, total / (float)dbMax);
@@ -235,7 +235,7 @@ public partial class Data_Castle
     public float GetPalaceCharismaRate()
     {
         var palaceData = GetCaslteData(CastleObjectType.Palace);
-        var totalCharisma = GetTotalCoreStat(palaceData, CoreStatType.Charisma);
+        var totalCharisma = GetTotalCoreStat(palaceData, StatType.Charisma);
         float percent = Mathf.Min(1f, totalCharisma / (float)palaceData.dbRise.orinValue01);
         return percent;
     }
@@ -262,7 +262,7 @@ public partial class Data_Castle
         return result;
     }
 
-    public int GetTotalCoreStat(CastleData _data, CoreStatType _coreStatType)
+    public int GetTotalCoreStat(CastleData _data, StatType _coreStatType)
     {
         int totalStat = 0;
         for (int i = 0; i < _data.heroes.Count; i++)
@@ -406,7 +406,7 @@ public partial class Data_Castle
                     {
                         var coreStat = dbCastle.coreStat[i];
 
-                        if (coreStat == CoreStatType.NONE)
+                        if (coreStat == StatType.None)
                             continue;
 
                         var total = DataManager.castle.GetTotalCoreStat(this, coreStat);

@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Linq;
 using System.Threading;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using CastleMissionData = Data_Castle_Mission.CastleMissionData;
@@ -128,7 +129,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         var parent = m_element.pHeroIcon;
         int i = 0;
 
-        CoreStatType coreStat = m_missionData.dbData.statType;
+        StatType coreStat = m_missionData.dbData.statType;
         int totalCoreStat = 0;
         for (; i < myHeroes.Count; i++)
         {

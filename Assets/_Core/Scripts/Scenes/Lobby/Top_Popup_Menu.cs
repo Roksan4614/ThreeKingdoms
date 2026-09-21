@@ -50,7 +50,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
 #if SERVICE_DEV
         {
             var btn = Instantiate(m_buttons[ButtonType.Rebirth], transform);
-            btn.text = "길잡이 초기화";
+            btn.text = "Re G.Quest";
             btn.onClick.AddListener(() =>
             {
                 TutorialManager.instance.TestResetData();
@@ -59,16 +59,21 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         }
         {
             var btn = Instantiate(m_buttons[ButtonType.Rebirth], transform);
-            btn.text = "스토리 해금";
+            btn.text = "Next LV";
             btn.onClick.AddListener(OnButton_Cheat_StoryMode);
         }
 #endif
 
-        var btnRebirth = m_buttons[ButtonType.Rebirth];
-        btnRebirth.text = DataManager.instance.isLobby ? "_회귀" : "_나가기";
+        for( var i = ButtonType.NONE + 1; i < ButtonType.MAX; i++)
+        {
+            var type = i;
+            m_buttons[i].onClick.AddListener(() => OnButtonAsync(type).Forget());
+            if( i != ButtonType.Rebirth)
+                m_buttons[i].text = TableManager.stringTable.GetString($"MENU_{type.ToString().ToUpper()}");
+        }
 
-        foreach (var b in m_buttons)
-            b.Value.onClick.AddListener(() => OnButtonAsync(b.Key).Forget());
+        var btnRebirth = m_buttons[ButtonType.Rebirth];
+        btnRebirth.text = TableManager.stringTable.GetString(DataManager.instance.isLobby ? "MENU_REBIRTH" : "BUTTON_EXIT");
     }
 
     void OnDestroy()

@@ -17,6 +17,13 @@ public class PopupRewardIdleComponent : BasePopupComponent
 
         m_element.btnAD.onClick.AddListener(() => OnButtonAsync_Confirm(true).Forget());
         m_element.btnConfirm.onClick.AddListener(() => OnButtonAsync_Confirm(false).Forget());
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/txt_title", "UI_AFK_TITLE");
+            m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_RECEIVE");
+            m_element.btnAD.text = $"x1.5 {m_element.btnConfirm.text}";
+        }
     }
 
     public override void OpenPopup(params object[] _args)
@@ -121,7 +128,8 @@ public class PopupRewardIdleComponent : BasePopupComponent
         => m_cts = m_cts.ReleaseCTS();
 
     public override void Close()
-        => Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
+        //=> Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
+        => Utils.SetActivePunch(m_element.panel, false, _callback: base.Close);
 
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);

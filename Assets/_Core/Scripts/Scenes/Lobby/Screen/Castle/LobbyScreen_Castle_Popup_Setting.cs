@@ -291,7 +291,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                 var coreStat = dbCastle.coreStat[i];
                 var txt = m_element.txtBatchStat[i];
 
-                if (coreStat == CoreStatType.NONE)
+                if (coreStat == ThreeKingdoms.Shared.Enums.StatType.None)
                     txt.gameObject.SetActive(false);
                 else
                 {

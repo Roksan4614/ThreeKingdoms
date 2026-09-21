@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -33,7 +34,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
         m_heroList = _heroList;
     }
 
-    public void SetHeroInfoData(Data_Castle.CastleData _castleData, HeroInfoData _heroInfoData, UnityAction<PopupCastleHeroList_Item> _onClick, params CoreStatType[] _coreStatType)
+    public void SetHeroInfoData(Data_Castle.CastleData _castleData, HeroInfoData _heroInfoData, UnityAction<PopupCastleHeroList_Item> _onClick, params StatType[] _coreStatType)
     {
         m_castleData = _castleData;
 
@@ -56,8 +57,7 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
                         }
 
                         //"이미_임무_중인_장수입니다.\n새로운_임무를_부여하겠습니까?"
-                        PopupManager.instance.OpenModalAsync(
-                            TableManager.alertString.GetString("MODAL_CASTLE_HERO_JOB_CHANGE")
+                        PopupManager.instance.OpenModalAsync_Table("MODAL_CASTLE_HERO_JOB_CHANGE"
                             , _callback: _statusType =>
                             {
                                 if (_statusType == StatusType.Success)
@@ -118,14 +118,14 @@ public class PopupCastleHeroList_Item : MonoBehaviour, IValidatable
         m_element.GetText(TextType.job).text = name;
     }
 
-    void SetCoreStat(HeroInfoData _heroInfoData, CoreStatType[] _coreStatType)
+    void SetCoreStat(HeroInfoData _heroInfoData, StatType[] _coreStatType)
     {
         TableCastleRiseData dbRise = TableManager.castleRise.GetRiseData(m_castleData.type, m_castleData.level);
 
         var coreStat = _heroInfoData.resultCoreStat;
         for (int i = 0; i < coreStat.Count; i++)
         {
-            CoreStatType coreStatType = (CoreStatType)i;
+            StatType coreStatType = (StatType)i;
             TextType txtType = TextType.leadership + i;
             var value = coreStat[coreStatType];
             var txt = m_element.GetText(txtType);

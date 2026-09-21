@@ -41,6 +41,12 @@ namespace Rev9.Inventory
             {
                 Close();
             });
+
+            // setlocalization
+            {
+                transform.SetTextTable("Panel/txt_title", "UI_INVEN_TITLE");
+                m_element.txtEmpty.text = TableManager.stringTable.GetString("UI_INVEN_EMPTY");
+            }
         }
 
         public override void OpenPopup(params object[] _args)

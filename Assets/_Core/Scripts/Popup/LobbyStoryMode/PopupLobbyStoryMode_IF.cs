@@ -75,7 +75,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
             m_element.btnConfirm.interactable = false;
             if (nextData.next_node_key.IsActive())
             {
-                PopupManager.instance.OpenModalAsync(TableManager.alertString.GetString("MODAL_GIVE_UP")
+                PopupManager.instance.OpenModalAsync_Table("MODAL_GIVE_UP"
                     , _callback: _result =>
                     {
                         if (_result == StatusType.Success)

@@ -49,6 +49,9 @@ namespace Rev9.Tournament
                 m_slotPosY.Add(m_slot[i].transform.localPosition.y);
 
             m_element.gauge.SlotUpdateBossHP((1f, m_hpMax));
+
+            //setlocalization
+            m_element.txtBoardTitle.text = TableManager.stringTable.GetString("UI_DAMAGE_AMOUNT");
         }
 
         public void TakenDamage(long _damage)
@@ -112,6 +115,7 @@ namespace Rev9.Tournament
             public UIPowerHelper power;
 
             public TextMeshProUGUI txtNickname;
+            public TextMeshProUGUI txtBoardTitle;
 
             public void Initialize(Transform _transform)
             {
@@ -120,6 +124,7 @@ namespace Rev9.Tournament
                 tierPoint = _transform.GetComponent<UITierPointHelper>("TierPoint");
                 power = _transform.GetComponent<UIPowerHelper>("Power");
                 txtNickname = _transform.GetComponent<TextMeshProUGUI>("txt_nickname");
+                txtBoardTitle = _transform.GetComponent<TextMeshProUGUI>("txt_board");
             }
         }
         #endregion VALIDATE

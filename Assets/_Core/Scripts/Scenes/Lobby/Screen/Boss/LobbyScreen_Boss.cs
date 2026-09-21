@@ -42,7 +42,7 @@ public class LobbyScreen_Boss : LobbyScreen_Base
 
         if (DataManager.dailyDungeon.data.count <= 0)
         {
-            var result = await PopupManager.instance.OpenModalAsync(TableManager.alertString.GetString("MODAL_AD_SHOW"));
+            var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_AD_SHOW");
 
             if (result == StatusType.Success && await ShowAdsAsync() == false)
                 PopupManager.instance.AlertShow_Table("INVALID_ENTER");

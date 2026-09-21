@@ -13,8 +13,14 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
         transform.GetComponent<Button>("Panel/btn_close").onClick.AddListener(Close);
         transform.GetComponent<Button>("Dimm").onClick.AddListener(Close);
 
-        transform.GetComponent<Button>("Panel/Button/btn_start").onClick.AddListener(() => OnButtonAsync_Start().Forget());
+        m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Start().Forget());
         m_element.btnAD.onClick.AddListener(() => OnButtonAsync_AD().Forget());
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/txt_title", "UI_TOUR_HIST_REVENGE");
+            m_element.btnStart.text = TableManager.stringTable.GetString("UI_CHALLENGE_FULL");
+        }
     }
 
     public bool CloseEscape()
@@ -44,8 +50,8 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
         m_element.slot.SetHistoryData(_historyData, null);
         m_element.userInfo.OpenAsync(_historyData.uid, _historyData.batchData).Forget();
 
-        m_element.txtPointWin.text = $"승리_시_<size=120%>+{_historyData.resultPoint * -1}p</size>";
-        m_element.txtPointLose.text = $"패배_시_<size=120%>{(int)(_historyData.resultPoint * UnityEngine.Random.Range(0.5f, 0.9f))}p</size>";
+        m_element.txtPointWin.text = $"{TableManager.stringTable.GetString("UI_TOUR_HIST_REVENGE_POINT_WIN")} <size=120%>+{_historyData.resultPoint * -1}p</size>";
+        m_element.txtPointLose.text = $"{TableManager.stringTable.GetString("UI_TOUR_HIST_REVENGE_POINT_LOSE")} <size=120%>{(int)(_historyData.resultPoint * UnityEngine.Random.Range(0.5f, 0.9f))}p</size>";
 
         SetPlayCount();
 
@@ -109,8 +115,7 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField, HideInInspector]
-    //[SerializeField]
+    [SerializeField]
     ElementData m_element;
 
     [System.Serializable]
@@ -125,6 +130,7 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
         public TextMeshProUGUI txtPointLose;
         public TextMeshProUGUI txtPlayCount;
 
+        public ButtonHelper btnStart;
         public ButtonHelper btnAD;
 
         public void Initialize(Transform _transform)
@@ -134,10 +140,11 @@ public class PopupTournamentHistory_Popup_Revenge : MonoBehaviour, IValidatable
             slot = _transform.GetComponent<PopupTournamentHistory_Slot>("Panel/Slot");
             userInfo = _transform.GetComponent<PopupTournament_UserInfo>("Panel/UserInfo");
 
-            txtPointWin = _transform.GetComponent<TextMeshProUGUI>("Panel/Result/txt_point_win");
-            txtPointLose = _transform.GetComponent<TextMeshProUGUI>("Panel/Result/txt_point_lose");
+            txtPointWin = _transform.GetComponent<TextMeshProUGUI>("Panel/Result/Win/Text");
+            txtPointLose = _transform.GetComponent<TextMeshProUGUI>("Panel/Result/Lose/Text");
             txtPlayCount = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_count");
 
+            btnStart = _transform.GetComponent<ButtonHelper>("Panel/Button/btn_start");
             btnAD = _transform.GetComponent<ButtonHelper>("Panel/Button/btn_ad");
         }
 

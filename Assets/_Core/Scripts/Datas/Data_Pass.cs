@@ -15,6 +15,8 @@ namespace Rev9.Pass
         public int exp => m_data.exp;
         public bool isPaid => m_data.isPaid;
 
+        public List<PassQuestData> quests => m_data.quests;
+
         public async UniTask InitializeAsync()
         {
             if (m_data == null)

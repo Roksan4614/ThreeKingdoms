@@ -32,7 +32,8 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
         #region 정렬
         {
             var sort = content.Find("Sort/Content");
-            sort.parent.GetComponent<TextMeshProUGUI>("txt_title").text = "정렬_";
+            sort.parent.GetComponent<TextMeshProUGUI>("txt_title").text =
+                TableManager.stringTable.GetString("UI_FILTER_SORT");
             int max = (int)HeroSortType.MAX;
             for (int i = 0; i < max; i++)
             {
@@ -52,7 +53,8 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
         #region 국가
         {
             var panel = content.Find("Region/Content");
-            panel.parent.GetComponent<TextMeshProUGUI>("txt_title").text = "국가_";
+            panel.parent.GetComponent<TextMeshProUGUI>("txt_title").text =
+                TableManager.stringTable.GetString("UI_FILTER_REGION");
             int max = (int)RegionType.MAX;
             int idx = 0;
             for (int i = -1; i < max; i++, idx++)
@@ -74,7 +76,8 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
         #region 역할
         {
             var panel = content.Find("Class/Content");
-            panel.parent.GetComponent<TextMeshProUGUI>("txt_title").text = "역할_";
+            panel.parent.GetComponent<TextMeshProUGUI>("txt_title").text =
+                TableManager.stringTable.GetString("UI_FILTER_CLASS");
             int max = (int)HeroClassType.MAX;
             int idx = 0;
             for (int i = -1; i < max; i++, idx++)
@@ -96,7 +99,8 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
         #region 등급
         {
             var panel = content.Find("Grade/Content");
-            panel.parent.GetComponent<TextMeshProUGUI>("txt_title").text = "등급_";
+            panel.parent.GetComponent<TextMeshProUGUI>("txt_title").text =
+                TableManager.stringTable.GetString("UI_FILTER_GRADE");
             int max = (int)GradeType.MAX;
             int idx = 0;
             for (int i = -1; i < max; i++, idx++)
@@ -113,7 +117,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
             m_filterGrade.AddRange(DataManager.userInfo.sortData.filter_grade);
             SetFilterUpdate_Grade();
         }
-        #endregion 국가
+        #endregion 등급
 
         content.ForceRebuildLayout();
 

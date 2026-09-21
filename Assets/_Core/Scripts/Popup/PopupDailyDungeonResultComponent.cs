@@ -15,7 +15,7 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
         m_element.btnConfirm.onClick.AddListener(Close);
         m_element.btnRetry.onClick.AddListener(() => RetryAsync().Forget());
 
-        m_element.txtTitle.text = "_결과_";
+        m_element.txtTitle.text = TableManager.stringTable.GetString("UI_RESULT_TITLE");
     }
 
     private void Start()
@@ -27,8 +27,10 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
     {
         m_resultData = (Data_DailyDungeon.DailyDungeonRecordData)_args[0];
 
-        m_element.txtResult.text = m_resultData.isSweep ? "토벌_성공" : "처치_성공";
-        m_element.txtPercent.text = $"최종_결과: [{TableManager.stringTable.GetGradeType(m_resultData.gradeType, _isColor: true)}]";
+        m_element.txtResult.text = TableManager.stringTable.GetString(m_resultData.isSweep
+            ? "UI_DD_SUCCESS_SWEEP"
+            : "UI_DD_SUCCESS_BATTLE");// m_resultData.isSweep ? "토벌_성공" : "처치_성공";
+        m_element.txtPercent.text = $"{TableManager.stringTable.GetString("UI_FINAL_RESULT")}: [{TableManager.stringTable.GetGradeType(m_resultData.gradeType, _isColor: true)}]";
         if (m_resultData.isSweep == false)
             m_element.txtPercent.text += $" ({(m_resultData.percent * 100):0.00}%)";
 
@@ -78,18 +80,20 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
     {
         var data = DataManager.dailyDungeon.data;
 
-        m_element.txtCount.text = $"일일_입장_가능_횟수: {data.count}";
+        m_element.txtCount.text = TableManager.stringTable.GetStringFormat("UI_ENTER_LIMIT_DAILY", data.count.ToString());
 
         if (m_resultData.isSweep == false)
         {
             if (data.count > 0)
             {
-                m_element.btnRetry.text = m_resultData.isSweep ? "토벌_하기" : "다시_하기";
+                m_element.btnRetry.text = TableManager.stringTable.GetString(m_resultData.isSweep
+                    ? "BUTTON_SWEEP" 
+                    : "BUTTON_RESTART");
                 m_element.txtCountAD.text = "";
             }
             else
             {
-                m_element.btnRetry.text = "광고_보기";
+                m_element.btnRetry.text = TableManager.stringTable.GetString("BUTTON_ADS");// "광고_보기";
                 m_element.txtCountAD.text = $"({data.adCount}/3)";
             }
         }

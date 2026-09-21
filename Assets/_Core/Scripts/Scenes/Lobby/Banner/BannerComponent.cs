@@ -16,6 +16,13 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
         m_element.btnIdleReward.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.Reward_Idle));
 
         Signal.instance.UnlockStoryMode.connect = SlotUnlockStoryMode;
+
+        //setlocalization
+        {
+            m_element.btnIdleReward.text = TableManager.stringTable.GetString("UI_AFK_TITLE");
+            m_element.btnTournament.text = TableManager.stringTable.GetString("UI_TOURNAMENT_TITLE");
+            m_element.story.transform.SetTextTable("Text", "UI_BANNER_STORY");            
+        }
     }
 
     public void AddListenerSkip(UnityAction _onClick)

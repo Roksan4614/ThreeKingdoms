@@ -19,7 +19,7 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
 
         m_elementMy.btnEdit.onClick.AddListener(() => OnButton_Edit(true));
 
-        m_element.infNickname.onSelect.AddListener(_txt => m_elementMy.objsEdits[0].gameObject.SetActive(false));
+        m_element.infNickname.onSelect.AddListener(_txt => m_elementMy.btnEdits[0].gameObject.SetActive(false));
         m_element.infNickname.onValueChanged.AddListener(_txt =>
         {
             if (string.IsNullOrEmpty(_txt)) return;
@@ -44,14 +44,14 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
             if (hasInvalidChar)
                 m_element.infNickname.text = m_stringBuilder.ToString();
         });
-        m_element.infNickname.onEndEdit.AddListener(_txt => m_elementMy.objsEdits[0].gameObject.SetActive(true));
+        m_element.infNickname.onEndEdit.AddListener(_txt => m_elementMy.btnEdits[0].gameObject.SetActive(true));
 
         m_element.infDesc.onSelect.AddListener(_txt
-            => m_elementMy.objsEdits[1].gameObject.SetActive(false));
+            => m_elementMy.btnEdits[1].gameObject.SetActive(false));
         m_element.infDesc.onEndEdit.AddListener(_txt =>
         {
             m_element.infDesc.text = $"\"{_txt.Trim('"')}\"";
-            m_elementMy.objsEdits[1].gameObject.SetActive(true);
+            m_elementMy.btnEdits[1].gameObject.SetActive(true);
         });
 
         m_element.panel.gameObject.SetActive(false);
@@ -67,6 +67,15 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
             }
             OnButtonClose();
         });
+    }
+
+    protected override void SetLocalization()
+    {
+        m_elementMy.btnEdit.text = TableManager.stringTable.GetString("BUTTON_EDIT");
+        foreach (var b in m_elementMy.btnEdits)
+            b.text = m_elementMy.btnEdit.text;
+
+        transform.SetTextTable("Panel/Record/txt_title", "UI_RECORD");
     }
 
     public override void OpenPopup(params object[] _args)
@@ -92,7 +101,7 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
     {
         m_isEditMode = !m_isEditMode;
 
-        foreach (var e in m_elementMy.objsEdits)
+        foreach (var e in m_elementMy.btnEdits)
             e.gameObject.SetActive(m_isEditMode);
 
         m_element.infNickname.interactable =
@@ -175,7 +184,7 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
     struct ElementData_My
     {
         public ButtonHelper btnEdit;
-        public List<GameObject> objsEdits;
+        public List<ButtonHelper> btnEdits;
 
         public ScrollRect scrollRecord;
         public Button btnProfile;
@@ -184,10 +193,10 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
         {
             btnEdit = _transform.GetComponent<ButtonHelper>("Panel/btn_edit");
 
-            objsEdits = new();
-            objsEdits.Add(_transform.Find("Panel/FrontPanel/inf_nickname/Edit").gameObject);
-            objsEdits.Add(_transform.Find("Panel/FrontPanel/inf_desc/Edit").gameObject);
-            objsEdits.Add(_transform.Find("Panel/FrontPanel/Slot_Profile/Edit").gameObject);
+            btnEdits = new();
+            btnEdits.Add(_transform.GetComponent<ButtonHelper>("Panel/FrontPanel/inf_nickname/Edit"));
+            btnEdits.Add(_transform.GetComponent<ButtonHelper>("Panel/FrontPanel/inf_desc/Edit"));
+            btnEdits.Add(_transform.GetComponent<ButtonHelper>("Panel/FrontPanel/Slot_Profile/Edit"));
 
             scrollRecord = _transform.GetComponent<ScrollRect>("Panel/Record");
             btnProfile = _transform.GetComponent<Button>("Panel/FrontPanel/Slot_Profile");

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class PopupHeroInfo_Stat_Attribute_Slot : MonoBehaviour, IValidatable
+public class PopupHeroInfo_Stat_Traits_Slot : MonoBehaviour, IValidatable
 {
     public UnityAction onCallback_Reroll { get; set; }
 
@@ -105,3 +105,4 @@ public class PopupHeroInfo_Stat_Attribute_Slot : MonoBehaviour, IValidatable
     #endregion VALIDATE
 
 }
+

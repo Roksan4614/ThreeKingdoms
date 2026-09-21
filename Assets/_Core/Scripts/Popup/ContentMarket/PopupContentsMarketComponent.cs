@@ -64,6 +64,11 @@ namespace Rev9.ContentsMarket
             });
 
             StartAsync().Forget();
+
+            //setlocalization
+            {
+                transform.SetTextTable("Panel/txt_title", "UI_CONTENTMARKET_TITLE");
+            }
         }
 
         async UniTask StartAsync()
@@ -187,14 +192,14 @@ namespace Rev9.ContentsMarket
                 if (ts.TotalSeconds <= 10f || prevSec != ts.Seconds)
                 {
                     prevSec = ts.Seconds;
-                    m_element.txtTimer.text = $"남은시간_: <color=#000000>{ts.ToRemainTime(28)}";
+                    m_element.txtTimer.text = $"{TableManager.stringTable.GetString("UI_REMAIN_TIME")}: <color=#000000>{ts.ToRemainTime(28)}";
                 }
 
                 await UniTask.NextFrame(token);
                 ts = endTime - Utils.GetUTC();
             }
 
-            m_element.txtTimer.text = "_정산중_";
+            m_element.txtTimer.text = TableManager.stringTable.GetString("UI_CALCULATING");
         }
 
         public void SetProductLayout()

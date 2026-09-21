@@ -13,6 +13,15 @@ public class PopupRewardComponent : BasePopupComponent
     bool m_isReadyClose = false;
     bool m_isClose = false;
 
+    private void Start()
+    {
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/Title/Text", "UI_REWARD_SUCCESS");
+            m_element.txtDesc.text = TableManager.stringTable.GetString("UI_CLOSE_PUSH_OUTLINE");// "ºó_°÷À»_´­·¯_´Ý±â";
+        }
+    }
+
     public override void OpenPopup(params object[] _args)
     {
         var rewards = (List<ItemData>)_args[0];
@@ -53,8 +62,7 @@ public class PopupRewardComponent : BasePopupComponent
         for (int i = 0; i < m_rewards.Count; i++)
             pReward.GetChild(i).gameObject.SetActive(false);
 
-        var txtDesc = transform.GetComponent<TextMeshProUGUI>("Panel/txt_desc");
-        txtDesc.text = "";
+        m_element.txtDesc.gameObject.SetActive(false);
 
         await UniTask.WaitForSeconds(.1f);
 
@@ -80,12 +88,12 @@ public class PopupRewardComponent : BasePopupComponent
         while (m_isSkip == false && DateTime.Now < dtTimer)
             await UniTask.NextFrame();
 
-        txtDesc.text = "ºó_°÷À»_´­·¯_´Ý±â";
+        m_element.txtDesc.gameObject.SetActive(true);
 
         m_isReadyClose = true;
         await UniTask.WaitUntil(() => m_isClose == true);
 
-        Utils.SetActivePunch(txtDesc.transform.parent, false, _callback: base.Close);
+        Utils.SetActivePunch(m_element.txtDesc.transform.parent, false, _callback: base.Close);
 
         List<UniTask> tasks = new();
         for (int i = 0; i < m_rewards.Count; i++)
@@ -118,8 +126,10 @@ public class PopupRewardComponent : BasePopupComponent
     [System.Serializable]
     struct ElementData
     {
+        public TextMeshProUGUI txtDesc;
         public void Initialize(Transform _transform)
         {
+            txtDesc = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_desc");
         }
     }
     #endregion VALIDATE

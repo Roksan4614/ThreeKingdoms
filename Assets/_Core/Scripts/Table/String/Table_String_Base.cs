@@ -1,13 +1,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 public class Table_String_Base : BaseTable<string, TableStringData>
 {
     public Table_String_Base(List<TableStringData> _table) : base(_table)
     {
-        SetDictionary(x => x.key);
+        m_dictionary = m_list.ToDictionary(x => x.key, x => x, StringComparer.Ordinal);
     }
 
     public string GetString(string _key, params string[] _args)
@@ -51,7 +52,7 @@ public class TableStringData
 
     public string[] talkArray =>
         message.IsActive() ? Array.FindAll(Regex.Split(message, @"(?<=[.,?!]+\s+)"), x => string.IsNullOrWhiteSpace(x) == false)
-        :Array.Empty<string>();
+        : Array.Empty<string>();
     //message.Split(new string[] { ". ", ", ", "? ", "! " }, System.StringSplitOptions.RemoveEmptyEntries);
 }
 

@@ -10,12 +10,7 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
     Dictionary<HeroPositionType, ButtonPositionData> m_data = new();
     public void Initialize(CategoryType_HeroPositon _category, List<TableHeroPositionData> _data, UnityAction<CategoryType_HeroPositon, HeroPositionType> _onClick)
     {
-        m_element.txtTitle.text = _category switch
-        {
-            CategoryType_HeroPositon.HEAD => "수장",
-            CategoryType_HeroPositon.GENERAL => "관직",
-            _ => "칭호"
-        };
+        m_element.txtTitle.text = TableManager.stringTable.GetString($"UI_POSITION_{_category.ToString().ToUpper()}_TITLE");
         m_element.txtTitle.transform.parent.ForceRebuildLayout();
 
         int i = 0;

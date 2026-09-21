@@ -290,6 +290,30 @@ public static class Utils
     //    return remain;
     //}
 
+    public static string GetRanking(int _rank)
+    {
+        switch (DataManager.option.language)
+        {
+            case LanguageType.Korean:
+                return $"{_rank:#,0} {TableManager.stringTable.GetString("UI_RANKER_DIGIT")}";
+        }
+
+        if (_rank <= 0)
+            return _rank.ToString();
+
+        _rank %= 100;
+        if (_rank >= 11 && _rank <= 13)
+            return $"{_rank}th";
+
+        switch (_rank % 10)
+        {
+            case 1: return $"{_rank}st";
+            case 2: return $"{_rank}nd";
+            case 3: return $"{_rank}rd";
+            default: return $"{_rank:#,0}th";
+        }
+    }
+
     public static string[] GetRandomNicknameArray(int _count = 100)
     {
         var first = new List<string>

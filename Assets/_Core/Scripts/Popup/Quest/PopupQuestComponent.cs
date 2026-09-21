@@ -4,6 +4,7 @@ using Rev9.ContentsMarket;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -48,13 +49,18 @@ namespace Rev9.Quest
             Signal.instance.Quest_UpdateComplete.connect = SlotUpdateComplete;
 
             Utils.WaitEscape(this, Close, _isMenuPopup: true);
+
+            //setlocalization
+            {
+                transform.SetTextTable("Panel/txt_title", "UI_QUEST_TITLE");
+            }
         }
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
-                for (var i = QuestType.NONE + 1; i < QuestType.MAX; i++)
+                for (var i = QuestType.None + 1; i < QuestType.Max; i++)
                     QuestWorker.instance.AddCount(i);
             }
         }
@@ -172,7 +178,7 @@ namespace Rev9.Quest
             }
             else
             {
-                var result = await PopupManager.instance.OpenModalAsync("이동_하시겠습니까?");
+                var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_MOVE_NAVI");//"이동_하시겠습니까?");
 
                 if (result != StatusType.Success)
                     return;
@@ -180,27 +186,27 @@ namespace Rev9.Quest
                 // NAVIGATION
                 switch (_questData.key)
                 {
-                    case QuestType.tournament_play:
+                    case QuestType.TournamentPlay:
                         PopupManager.instance.OpenPopup(PopupType.LobbyTournament);
                         break;
-                    case QuestType.raid_play:
+                    case QuestType.RaidPlay:
                         PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid);
                         break;
-                    case QuestType.gacha_proceed:
+                    case QuestType.GachaProceed:
                         LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Summon);
                         break;
-                    case QuestType.rice_claim:
-                    case QuestType.gold_claim:
-                    case QuestType.office_dispatch:
+                    case QuestType.RiceClaim:
+                    case QuestType.GoldClaim:
+                    case QuestType.OfficeDispatch:
                         LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Castle);
                         break;
-                    case QuestType.daily_dungeon_play:
+                    case QuestType.DailyDungeonPlay:
                         LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Boss);
                         break;
-                    case QuestType.item_buy:
+                    case QuestType.ItemBuy:
                         LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Shop);
                         break;
-                    case QuestType.item_use:
+                    case QuestType.ItemUse:
                         PopupManager.instance.OpenPopup(PopupType.Inventory);
                         break;
                     default:

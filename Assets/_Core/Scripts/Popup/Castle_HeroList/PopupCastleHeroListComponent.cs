@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,7 +31,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
         for (int i = 0; i < m_element.btnCoreStat.Length; i++)
         {
-            CoreStatType statType = CoreStatType.NONE + 1 + i;
+            StatType statType = StatType.None + 1 + i;
             m_element.btnCoreStat[i].onClick.AddListener(() => { SetHeroInfoData(statType); });
         }
 
@@ -82,7 +83,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
     void RefreshHeroesData(bool _isInit)
     {
-        for (var i = CoreStatType.NONE + 1; i < CoreStatType.MAX; i++)
+        for (var i = StatType.None + 1; i < StatType.Max; i++)
         {
             if (SetHeroInfoData(i))
                 break;
@@ -90,7 +91,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         SetCoreStatStatus(_isInit);
     }
 
-    bool SetHeroInfoData(CoreStatType _coreStats)
+    bool SetHeroInfoData(StatType _coreStats)
     {
         var coreStat = TableManager.castle.GetCastleData(m_castleData.type).coreStat;
 
@@ -124,7 +125,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
             content.GetChild(i).gameObject.SetActive(false);
 
         i = 0;
-        for (var stat = CoreStatType.NONE + 1; stat < CoreStatType.MAX; stat++, i++)
+        for (var stat = StatType.None + 1; stat < StatType.Max; stat++, i++)
         {
             var name = TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}");
 
@@ -143,7 +144,7 @@ public class PopupCastleHeroListComponent : BasePopupComponent
     void SetCoreStatStatus(bool _isInit = false)
     {
         var dbRise = m_castleData.dbRise;
-        var coreStat = Array.FindAll(TableManager.castle.GetCastleData(m_castleData.type).coreStat, x => x != CoreStatType.NONE);
+        var coreStat = Array.FindAll(TableManager.castle.GetCastleData(m_castleData.type).coreStat, x => x != StatType.None);
 
         int i = 0;
         for (; i < coreStat.Length; i++)

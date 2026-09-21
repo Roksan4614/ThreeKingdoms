@@ -24,6 +24,11 @@ public class PopupUpgradeGuideComponent : BasePopupComponent, IValidatable
             button.text = TableManager.stringTable.GetString($"UPGRADE_GUIDE_{type}_TITLE");
             button.text += "\n<color=#6f6f6f><size=55%>" + TableManager.stringTable.GetString($"UPGRADE_GUIDE_{type}_DESC") + "</size></color>";
         }
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/Title/Text", TableManager.stringTable.GetString("UI_UPGRADE_GUIDE_TITLE"));
+        }
     }
 
     bool m_isDoing = false;

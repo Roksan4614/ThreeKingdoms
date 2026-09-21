@@ -43,6 +43,17 @@ public class PopupTournamentComponent : BasePopupComponent
             popup.GetChild(i).gameObject.SetActive(false);
 
         m_element.btnRefresh.onClick.AddListener(() => OnButtonAsync_Refresh().Forget());
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/txt_title", "UI_TOURNAMENT_TITLE");
+            m_element.buttons[(int)TournamentPopupType.History].text = TableManager.stringTable.GetString("UI_TOURNAMENT_HISTORY");
+            m_element.buttons[(int)TournamentPopupType.Ranking].text = TableManager.stringTable.GetString("UI_RANKING");
+            m_element.buttons[(int)TournamentPopupType.Batch].text = TableManager.stringTable.GetString("UI_TOURNAMENT_BATCH");
+            m_element.buttons[(int)TournamentPopupType.Shop].text = TableManager.stringTable.GetString("UI_SHOP");
+            m_element.buttons[(int)TournamentPopupType.Reward].text = TableManager.stringTable.GetString("UI_TOURNAMENT_INFO_REWARD");
+            m_element.btnRefresh.text = TableManager.stringTable.GetString("UI_REFRESH_LIST");
+        }
     }
 
     private void Start()
@@ -72,9 +83,9 @@ public class PopupTournamentComponent : BasePopupComponent
         await TournamentWorker.instance.InitailizeAsync();
 
         m_element.txtTier.text = $"[{TableManager.stringTable.GetGradeRankType(TournamentWorker.data.grade)}]";
-        m_element.txtRank.text = "_현재순위\n<size=150%>";
-        m_element.txtRank.text += TournamentWorker.data.rankData.rank == 0 ? "- 위" : $"{TournamentWorker.data.rankData.rank:#,0}_위";
-        m_element.txtPoint.text = "_점수\n<size=150%>";
+        m_element.txtRank.text = $"{TableManager.stringTable.GetString("UI_TOURNAMENT_RANK_NOW")}\n<size=150%>";
+        m_element.txtRank.text += Utils.GetRanking(TournamentWorker.data.rankData.rank);
+        m_element.txtPoint.text = $"{TableManager.stringTable.GetString("UI_POINT")}\n<size=150%>";
         m_element.txtPoint.text += $"{TournamentWorker.data.rankData.point:#,0}";
 
         SetPlayCount();
@@ -90,7 +101,7 @@ public class PopupTournamentComponent : BasePopupComponent
 
     public void SetPlayCount()
     {
-        m_element.txtPlayCount.text = $"일일_입장_가능_횟수: {TournamentWorker.data.countPlay}";
+        m_element.txtPlayCount.text = TableManager.stringTable.GetStringFormat("UI_ENTER_LIMIT_DAILY", TournamentWorker.data.countPlay.ToString());
         m_element.buttons[(int)TournamentPopupType.AD].text = $"{TournamentWorker.data.countAD}/3";
     }
 
@@ -131,11 +142,12 @@ public class PopupTournamentComponent : BasePopupComponent
 
         m_element.txtRefreshTimer.gameObject.SetActive(true);
 
+        var format = TableManager.stringTable.GetString("UI_TOURNAMENT_AFTER_ADD_REFRESH_COUNT");
         while (true)
         {
             var ts = dtEnd - Utils.GetUTC();
 
-            m_element.txtRefreshTimer.text = ts.ToRemainTime(15, _isStartMinute: true) + $" 후_무료_갱신_횟수_추가";
+            m_element.txtRefreshTimer.text = string.Format(format, ts.ToRemainTime(15, _isStartMinute: true));
 
             if (ts.TotalSeconds < 0)
                 break;
@@ -192,7 +204,7 @@ public class PopupTournamentComponent : BasePopupComponent
             }
 
             // "재화를_사용해서_갱신하시겠습니까?"
-            var result = await PopupManager.instance.OpenModalAsync(TableManager.stringTable.GetString("MODAL_REFRESH_BY_CURRENCY"));
+            var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_REFRESH_BY_CURRENCY");
 
             if (result == StatusType.Success)
                 DataManager.userInfo.AddAsset(ItemDetailType.Rice, -cost);

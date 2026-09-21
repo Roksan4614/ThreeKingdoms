@@ -30,7 +30,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
     {
         tabType = LobbyScreen_Hero.HeroTabType.Hero;
 
-        m_element.btnFilter.onClick.AddListener(
+        m_element.btnFilter?.onClick.AddListener(
             async () =>
             {
                 if (m_popupFilter == null)
@@ -89,11 +89,19 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
 
         // setlocalization
         {
-            transform.SetTextTable("Batch/txt_title", "UI_BATCH");
             transform.SetTextTable("List/txt_title", "UI_CHARACTER_LIST");
-            m_element.btnMainPosition.transform.SetTextTable("txt_title", "UI_MAIN_POSITION");
             m_element.btnFilter.text = TableManager.stringTable.GetString("UI_FILTER");
+            SetLocalization();
         }
+    }
+
+    protected virtual void SetLocalization()
+    {
+        m_element.btnMainPosition.transform.SetTextTable("txt_title", "UI_MAIN_POSITION");
+
+        transform.SetTextTable("Batch/txt_title", "UI_BATCH");
+        transform.SetTextTable("Batch/Layout/Hero/txt_main", "UI_POSITION_MAIN");
+        transform.SetTextTable("Batch/Layout/Hero_2/txt_sub", "UI_POSITION_SUB");
     }
 
     protected virtual void Start()

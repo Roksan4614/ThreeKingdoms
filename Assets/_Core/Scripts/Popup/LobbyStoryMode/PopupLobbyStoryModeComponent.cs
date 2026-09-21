@@ -38,11 +38,16 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
                 RefreshGauge();
             }
         });
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/txt_title", "UI_STORY_TITLE");
+        }
     }
 
     void RefreshGauge()
     {
-        m_element.gauge.textTitle = "달성도_";
+        m_element.gauge.textTitle = TableManager.stringTable.GetString("UI_STORY_PROGRESS");// "달성도_";
 
         var historyCount = DataManager.storyMode.historyCount;
         var totalNode = TableManager.storyNode.list.Count(x => x.chapter_key > 0);

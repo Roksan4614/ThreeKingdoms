@@ -214,7 +214,8 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
     }
 
     public void SetCanvasCamera() => m_element.canvas.worldCamera = CameraManager.instance.main;
-
+    public async UniTask<StatusType> OpenModalAsync_Table(string _key, string _confirm = null, string _cancel = null, UnityAction<StatusType> _callback = null)
+        => await OpenModalAsync(TableManager.alertString.GetString(_key), _confirm, _cancel, _callback);
     public async UniTask<StatusType> OpenModalAsync(string _content = null, string _confirm = null, string _cancel = null, UnityAction<StatusType> _callback = null)
     {
         PopupModalComponent.ModalPopupData popupData = new()

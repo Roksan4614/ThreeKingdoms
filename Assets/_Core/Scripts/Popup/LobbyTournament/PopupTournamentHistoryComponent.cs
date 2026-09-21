@@ -27,6 +27,16 @@ public class PopupTournamentHistoryComponent : BasePopupComponent
 #else
         Destroy(btnRevenge.gameObject);
 #endif
+
+        var btnConfirm = transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
+        btnConfirm.onClick.AddListener(Close);
+
+        // setlocalization
+        {
+            transform.SetTextTable("Panel/txt_title", "UI_TOUR_HIST_TITLE");
+            m_element.scroll.empty.SetTextTable("Text", "UI_TOUR_HIST_EMPTY");
+            btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
+        }
     }
 
     private void Start() => StartAsync().Forget();
@@ -46,8 +56,6 @@ public class PopupTournamentHistoryComponent : BasePopupComponent
             (_slot, _idx) => _slot.SetHistoryData(historyData[historyData.Count - _idx - 1], OnButton_Revenge));
 
         transform.GetComponent<Button>("Dimm").onClick.AddListener(Close);
-        var btnConfirm = transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
-        btnConfirm.onClick.AddListener(Close);
     }
 
     public bool CloseEscape()

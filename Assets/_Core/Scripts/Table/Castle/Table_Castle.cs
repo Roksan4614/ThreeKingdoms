@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Table_Castle : BaseTable<string, TableCastleData>
@@ -36,8 +37,8 @@ public class TableCastleData
     public void Initialize()
     {
         m_coreStat = new[] {
-                    stat_type_1.IsActive() ? Enum.Parse<CoreStatType>(stat_type_1) : CoreStatType.NONE,
-                    stat_type_2.IsActive() ? Enum.Parse<CoreStatType>(stat_type_2) : CoreStatType.NONE
+                    stat_type_1.IsActive() ? Enum.Parse<StatType>(stat_type_1) : StatType.None,
+                    stat_type_2.IsActive() ? Enum.Parse<StatType>(stat_type_2) : StatType.None
                 };
 
         m_objectType = Enum.Parse<CastleObjectType>(key);
@@ -46,8 +47,8 @@ public class TableCastleData
     CastleObjectType m_objectType;
     public CastleObjectType objectType => m_objectType;
 
-    CoreStatType[] m_coreStat;
-    public CoreStatType[] coreStat => m_coreStat;
+    StatType[] m_coreStat;
+    public StatType[] coreStat => m_coreStat;
 }
 
 public enum CastleObjectType

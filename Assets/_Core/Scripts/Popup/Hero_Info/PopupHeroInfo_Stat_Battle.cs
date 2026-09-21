@@ -14,6 +14,9 @@ public class PopupHeroInfo_Stat_Battle : MonoBehaviour, IValidatable
     {
         m_dbStat = m_element.lstStat.ToDictionary(x => x.type, x => x);
         m_element.lstStat = null;
+
+        foreach (var s in m_dbStat)
+            s.Value.txtName.text = TableManager.stringTraits.GetString($"{s.Key.ToString().ToUpper()}_TITLE");
     }
 
     public void SetActive(bool _isActive)

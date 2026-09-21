@@ -39,7 +39,7 @@ public class PopupTournamentResultComponent : BasePopupComponent
 
         await UniTask.WaitForSeconds(.5f);
 
-        m_element.txtTitle.text = isWin ? "_승리_" : "_패배_";
+        m_element.txtTitle.text = TableManager.stringTable.GetString(isWin ? "UI_RESULT_WIN" : "UI_RESULT_LOSE");
         m_element.title.gameObject.SetActive(true);
         await UniTask.WaitForSeconds(.5f);
 
@@ -64,7 +64,7 @@ public class PopupTournamentResultComponent : BasePopupComponent
 
         var targetRank = rankerData.rank - prevRankerData.rank;
         string msgRankDesc = targetRank == 0 ? "-" : $"{(targetRank > 0 ? "+" : "")}{targetRank}";
-        m_element.txtRank.text = $"{rankerData.rank:#,0}_위 <color=#{(isWin ? Palette.htmlString_Up : Palette.htmlString_Down)}><size=90%>({msgRankDesc})";
+        m_element.txtRank.text = $"{Utils.GetRanking(rankerData.rank)} <color=#{(isWin ? Palette.htmlString_Up : Palette.htmlString_Down)}><size=90%>({msgRankDesc})";
         //m_element.txtRank.transform.DOPunchScale(Vector3.one * .1f, .1f).Forget();
 
         m_element.reward.SetCountText(TournamentWorker.instance.GetResultRewardCount(isWin));
@@ -114,6 +114,7 @@ public class PopupTournamentResultComponent : BasePopupComponent
 
         m_element.btnExit.gameObject.SetActive(true);
         int prev = 0;
+        string format = TableManager.stringTable.GetString("UI_AUTOCLOSE_AFTER_SEC");
         while (dtEnd > DateTime.Now)
         {
             int sec = (int)(dtEnd - DateTime.Now).TotalSeconds;
@@ -121,7 +122,7 @@ public class PopupTournamentResultComponent : BasePopupComponent
             if (prev != sec)
             {
                 prev = sec;
-                m_element.txtTimer.text = $"{sec}초_후_자동으로_나가집니다.";
+                m_element.txtTimer.text = string.Format(format, sec);// $"{sec}초_후_자동으로_나가집니다.";
             }
 
             await UniTask.NextFrame(token);

@@ -46,7 +46,7 @@ public class Table_String_Item : Table_String_Base
 {
     public Table_String_Item(List<TableStringData> _table) : base(_table)
     {
-        SetDictionary(x => x.key);
+        //SetDictionary(x => x.key);
     }
 
     public string GetItemName(TableItemData _itemData)

@@ -53,7 +53,9 @@ namespace Rev9.Tournament
             }
         }
 
-        public string tierName => index <= 3 ? $"{index}등" : $"{index - 3}티어";
-        public string desc => $"랭킹 {minRank}이내\n점수 {minPoint:#,0}이상";
+        public string tierName => index <= 3
+            ? TableManager.stringTable.GetString($"UI_TIER_RANK_{index}")
+            : TableManager.stringTable.GetStringFormat("UI_TIER_RANK", (index - 3).ToString());
+        public string desc => TableManager.stringTable.GetStringFormat("UI_TOUR_REWARD_INFO", minRank.ToString(), $"{minPoint:#,0}");//  $"랭킹 {minRank}이내\n점수 {minPoint:#,0}이상";
     }
 }

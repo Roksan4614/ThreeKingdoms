@@ -1,10 +1,11 @@
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class PopupCastleHeroList_Item_Mission : PopupCastleHeroList_Item
 {
-    public void SetHeroInfoData_Mission(HeroInfoData _heroInfoData, UnityAction<HeroInfoData> _onClick, CoreStatType _coreStatType)
+    public void SetHeroInfoData_Mission(HeroInfoData _heroInfoData, UnityAction<HeroInfoData> _onClick, StatType _coreStatType)
     {
         m_element.button.onClick.RemoveAllListeners();
 
@@ -39,12 +40,12 @@ public class PopupCastleHeroList_Item_Mission : PopupCastleHeroList_Item
         m_element.bg.SetActive(transform.GetSiblingIndex() % 2 == 1);
     }
 
-    void SetCoreStat(HeroInfoData _heroInfoData, CoreStatType _coreStatType)
+    void SetCoreStat(HeroInfoData _heroInfoData, StatType _coreStatType)
     {
         var coreStat = _heroInfoData.resultCoreStat;
         for (int i = 0; i < coreStat.Count; i++)
         {
-            CoreStatType coreStatType = (CoreStatType)i;
+            StatType coreStatType = (StatType)i;
             TextType txtType = TextType.leadership + i;
             var value = coreStat[coreStatType];
             var txt = m_element.GetText(txtType);

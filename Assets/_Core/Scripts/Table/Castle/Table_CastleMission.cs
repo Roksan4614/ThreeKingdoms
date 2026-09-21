@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Table_CastleMission : BaseTable<string, TableCastleMissionData>
@@ -24,9 +25,9 @@ public class Table_CastleMission : BaseTable<string, TableCastleMissionData>
 public class TableCastleMissionData
 {
     public string key;
-    [JsonProperty] CoreStatType req_stat_type;
+    [JsonProperty] StatType req_stat_type;
 
-    public CoreStatType statType => req_stat_type;
+    public StatType statType => req_stat_type;
 }
 
 public enum test

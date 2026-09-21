@@ -318,7 +318,7 @@ public class Tutorial_START : TutorialBase
 
     public async UniTask OnButtonAsync_Skip()
     {
-        var result = await PopupManager.instance.OpenModalAsync("스킵??");
+        var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_SKIP");
 
         if (result == StatusType.Success)
         {

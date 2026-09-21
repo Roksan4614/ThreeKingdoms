@@ -16,6 +16,22 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
     {
         m_element.btnConfirm.onClick.AddListener(OnButtonClose);
         m_element.btnCopy.onClick.AddListener(OnButtonCopy);
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/txt_title", "UI_USERINFO_TITLE");
+            m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
+            SetLocalization();
+        }
+    }
+
+    protected virtual void SetLocalization()
+    {
+        transform.SetTextTable("Panel/Batch/txt_title", "UI_BATCH");
+        transform.SetTextTable("Panel/Batch/Layout/Hero/txt_main", "UI_POSITION_MAIN");
+        transform.SetTextTable("Panel/Batch/Layout/Hero_2/txt_sub", "UI_POSITION_SUB");
+
+        transform.SetTextTable("Panel/Treasure/txt_title", "UI_TREASURE");
     }
 
     protected virtual void OnButtonClose()
@@ -43,11 +59,15 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
         m_uid = _userInfo.uid;
         m_element.profile.SetProfileData(_userInfo.profileIdx, _userInfo.profileSkin);
         m_element.infNickname.text = _userInfo.nickname;
-        m_element.txtInfo.text = $"UID : {m_uid}\n¼Ò¼Ó_: {_userInfo.regionName}";
+        m_element.txtInfo.text = $"UID: {m_uid}\n{TableManager.stringTable.GetString("UI_REGION")}: {_userInfo.regionName}";
         m_element.infDesc.text = $"\"{(_userInfo.desc)}\"";
-
-        for (int i = 0; i < m_element.slotHeroes.Length; i++)
+        
+        int i = 0;
+        for (; i < _userInfo.batchHeroes.Count; i++)
             m_element.slotHeroes[i].SetHeroData_UserInfoAsync(_userInfo.batchHeroes[i]).Forget();
+
+        for (; i < m_element.slotHeroes.Length; i++)
+            m_element.slotHeroes[i].SetActivePanel(false);
     }
 
     public bool EscapeClose()

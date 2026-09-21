@@ -11,6 +11,7 @@ public class HeroIconComponent_UserInfo : HeroIconComponent
 
     public async UniTask SetHeroData_UserInfoAsync(HeroInfoData _heroData)
     {
+        SetActivePanel(true);
         SetHeroData(_heroData, null, null);
 
         //m_elementUserInfo.txtPosition.text = TableManager.stringTable.GetHeroPositionType(_heroData.positionType);
@@ -40,6 +41,8 @@ public class HeroIconComponent_UserInfo : HeroIconComponent
         }
     }
 
+    public void SetActivePanel(bool _isActive)
+        => element.panel.gameObject.SetActive(_isActive);
     public override void OnManualValidate()
     {
         base.OnManualValidate();

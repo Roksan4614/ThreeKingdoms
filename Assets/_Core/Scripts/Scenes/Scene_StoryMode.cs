@@ -29,6 +29,12 @@ public class Scene_StoryMode : SceneBase
 
         m_element.btnPlay.onClick.AddListener(OnButton_Playing);
         m_element.btnSkip.onClick.AddListener(() => OnButtonAsync_Skip().Forget());
+
+        //setlocalization
+        {
+            m_element.btnPlay.text = TableManager.stringTable.GetString("UI_AUTO_PLAY");
+            m_element.btnSkip.text = TableManager.stringTable.GetString("UI_SKIP");
+        }
     }
 
     public async UniTask OnButtonAsync_Skip(UnityAction<StatusType> _callback = null)
@@ -43,7 +49,7 @@ public class Scene_StoryMode : SceneBase
         m_element.btnSkip.interactable = false;
 
         // "건너띄겠습니까?"
-        var result = await PopupManager.instance.OpenModalAsync(TableManager.alertString.GetString("MODAL_SKIP"));
+        var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_SKIP");
 
         _callback?.Invoke(result);
 

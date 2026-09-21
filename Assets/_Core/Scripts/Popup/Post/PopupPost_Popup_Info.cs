@@ -24,6 +24,15 @@ namespace Rev9.Post
 
             m_element.btnConfirm.onClick.AddListener(() => OnButtonAsync_Receive().Forget());
             m_element.btnDelete.onClick.AddListener(() => OnButtonAsync_Delete().Forget());
+
+            //setlocalization
+            {
+                transform.SetTextTable("Panel/txt_title", "UI_POST_TITLE");
+                transform.SetTextTable("Panel/txt_post_title", "UI_POST_NAME");
+                transform.SetTextTable("Panel/Reward/txt_title", "UI_REWARD_LIST");
+                m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
+                m_element.btnDelete.text = TableManager.stringTable.GetString("BUTTON_DELETE");
+            }
         }
 
         private void OnDisable()

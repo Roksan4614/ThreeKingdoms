@@ -7,16 +7,17 @@ public class PopupTournament_Ranking_Slot_Podium : PopupLobbyBossRaid_PopupRanki
     protected override void SetRankerPoint(RankerUserData _rankerData, PopupLobbyBossRaid_PopupRanking.TabType _tabType)
     {
         string msg = $"{_rankerData.point:#,0}";
-        switch (_tabType)
+        var tabType = (PopupTournament_Ranking.TabTournamentType)_tabType;
+        switch (tabType)
         {
-            case PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Point:
-                msg += "p";
+            case PopupTournament_Ranking.TabTournamentType.Tournament_Point:
+                msg += TableManager.stringTable.GetString("UI_RANK_DIGIT_POINT");
                 break;
-            case PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Win:
-                msg += "_½Â";
+            case PopupTournament_Ranking.TabTournamentType.Tournament_Win:
+                msg += TableManager.stringTable.GetString("UI_RANK_DIGIT_WIN");
                 break;
-            case PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Winning:
-                msg += "_¿¬½Â";
+            case PopupTournament_Ranking.TabTournamentType.Tournament_Winning:
+                msg += TableManager.stringTable.GetString("UI_RANK_DIGIT_WINNING");
                 break;
         }
 

@@ -11,10 +11,14 @@ namespace Rev9.Tournament
         private void Awake()
         {
             transform.GetComponent<Button>("Panel/btn_close").onClick.AddListener(Close);
-            transform.GetComponent<Button>("Panel/btn_confirm").onClick.AddListener(Close);
+            var btnConfirm = transform.GetComponent<ButtonHelper>("Panel/btn_confirm");
+            btnConfirm.onClick.AddListener(Close);
             transform.GetComponent<Button>().onClick.AddListener(Close);
 
-            transform.GetComponent<TextMeshProUGUI>("Panel/txt_title").text = "보상_정보";
+            //setlocalization
+            transform.GetComponent<TextMeshProUGUI>("Panel/txt_title").text =
+                TableManager.stringTable.GetString("UI_TOUR_REWARD_TITLE");// "보상_정보";
+            btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
         }
 
         private void Start()

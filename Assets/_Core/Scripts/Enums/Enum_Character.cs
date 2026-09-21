@@ -87,19 +87,6 @@ public enum TeamPositionType
     MAX
 }
 
-public enum CoreStatType
-{
-    NONE = -1,
-
-    Leadership,
-    Strength,
-    Intellect,
-    Politics,
-    Charisma,
-
-    MAX
-}
-
 public enum BattleStatType
 {
     NONE = -1,

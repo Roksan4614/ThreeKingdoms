@@ -40,7 +40,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                 ((RectTransform)m_element.objLock.transform.GetChild(0)).SetAnchoredPositionY(30);
 
                 var nodeData = TableManager.storyNode.GetNode_OrderNum(nextOpenOrderNumber)[0];
-                m_element.txtDesc.text = $"{nodeData.chapter_key}-{nodeData.stage_key} 클리어시 해제";
+                m_element.txtDesc.text = $"{nodeData.chapter_key}-{nodeData.stage_key} {TableManager.stringTable.GetString("UI_STORY_UNLOCK_STAGE")}";//클리어시 해제";
 
                 m_element.button.interactable = false;
                 m_element.objBadge.SetActive(false);
@@ -172,7 +172,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
         m_element.button.interactable = false;
 
-        var result = await PopupManager.instance.OpenModalAsync("_입장하시겠습니까?");
+        var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_ENTER");// "_입장하시겠습니까?");
 
         if (result != StatusType.Success)
         {

@@ -13,11 +13,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         NONE = -1,
 
         Point,
-        PrevRaid,
-
-        Tutorial_Point = 0,
-        Tutorial_Win,
-        Tutorial_Winning,
+        Damage,
     }
 
     protected TabType m_curTabType = TabType.NONE;
@@ -32,8 +28,24 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
 
         for (var i = 0; i < m_element.tabs.Length; i++)
         {
-            var tabType = (TabType)i;
+            var tabType = TabType.NONE + i + 1;
             m_element.tabs[i].onClick.AddListener(() => OnButton_Tab(tabType));
+        }
+
+        //setlocalization
+        {
+            transform.SetTextTable("Top/txt_title", "UI_RANKING");
+            SetLocalization();
+        }
+    }
+
+    protected virtual void SetLocalization()
+    {
+        //setlocalization
+        for (var i = 0; i < m_element.tabs.Length; i++)
+        {
+            var tabType = TabType.NONE + i + 1;
+            m_element.tabs[i].text = TableManager.stringTable.GetString($"UI_BOSSRAID_RANK_{tabType.ToString().ToUpper()}");
         }
     }
 

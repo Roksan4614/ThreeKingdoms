@@ -17,6 +17,8 @@ public class PopupTournament_Slot : MonoBehaviour, IValidatable
         btnConfirm.onClick.AddListener(() => m_onStart(m_rankerUserData));
 
         transform.GetComponent<Button>("Panel/btn_info").onClick.AddListener(() => m_onOpenInfo(m_rankerUserData));
+
+        btnConfirm.text = TableManager.stringTable.GetString("UI_CHALLENGE");
     }
 
     public void ResetData()
@@ -35,7 +37,7 @@ public class PopupTournament_Slot : MonoBehaviour, IValidatable
         m_rankerUserData = _rankerUserData;
 
         m_element.txtNickname.text = _rankerUserData.info.nickname;
-        m_element.power.text = _rankerUserData.info.power.AmountKMBT(_isMBT:true);
+        m_element.power.text = _rankerUserData.info.power.AmountKMBT(_isMBT: true);
         m_element.tierPoint.SetRankInfo(_rankerUserData.info);
 
         m_element.profile.SetActivePanel(true);

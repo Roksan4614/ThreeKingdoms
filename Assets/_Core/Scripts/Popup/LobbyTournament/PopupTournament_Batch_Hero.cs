@@ -76,6 +76,12 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         }
     }
 
+    protected override void SetLocalization()
+    {
+        m_elementTournament.btnAttack.text = TableManager.stringTable.GetString("UI_ATTACK");
+        m_elementTournament.btnDefence.text = TableManager.stringTable.GetString("UI_DEFENCE");
+    }
+
     protected override void SetFilterSize()
     {
         var offsetMax = m_popupFilter.rtPanel.offsetMax;
@@ -164,8 +170,7 @@ public class PopupTournament_Batch_Hero : LobbyScreen_Hero_Hero
         else if (m_batchData_Attack.isUpdated == true || m_batchData_Defence.isUpdated == true)
         {
             //"변경사항이_있습니다.\n닫겠습니까?");
-            var status = await PopupManager.instance.OpenModalAsync(
-                TableManager.alertString.GetString("MODAL_TOURNAMENT_CLOSE_NO_SAVE"));
+            var status = await PopupManager.instance.OpenModalAsync_Table("MODAL_TOURNAMENT_CLOSE_NO_SAVE");
             if (status != StatusType.Success)
                 return;
         }

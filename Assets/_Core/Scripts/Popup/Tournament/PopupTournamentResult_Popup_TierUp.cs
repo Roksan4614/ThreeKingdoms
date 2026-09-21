@@ -14,7 +14,7 @@ public class PopupTournamentResult_Popup_TierUp : MonoBehaviour, IValidatable
 
         // setlocalization
         {
-            m_element.txtDesc.text = "빈_곳을_눌러_닫습니다.";
+            m_element.txtDesc.text = TableManager.stringTable.GetString("UI_CLOSE_PUSH_OUTLINE");// "빈_곳을_눌러_닫습니다.";
         }
     }
 
@@ -33,7 +33,7 @@ public class PopupTournamentResult_Popup_TierUp : MonoBehaviour, IValidatable
         var title = transform.Find("Title");
         Utils.SetActivePunch(title, true);
 
-        m_element.txtTierName.text = $"제_{_userData.tierTournament}_군단장";
+        m_element.txtTierName.text = TableManager.stringTable.GetStringFormat("UI_TIER_RANK", _userData.tierTournament.ToString());// $"제_{_userData.tierTournament}_군단장";
         await m_element.tierPoint.SetRankInfoAsync(_userData);
 
         Utils.SetActivePunch(m_element.txtTierName.transform, true);

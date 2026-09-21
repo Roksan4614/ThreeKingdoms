@@ -330,7 +330,7 @@ public class Data_BossRaid
             {
                 string name = $"[{TableManager.stringTable.GetGradeType(nowGrade, _isColor: true)}</color>] ";
                 if (DataManager.bossRaid.raidStatus >= BossRaidStatusType.Wait_SecondPhase)
-                    name += "Áø.";
+                    name += TableManager.stringTable.GetString("UI_BOSSRAID_JIN_BOSS_TITLE");// "Áø.";
                 name += TableManager.hero.Get(keyBoss).name;
                 return name;
             }

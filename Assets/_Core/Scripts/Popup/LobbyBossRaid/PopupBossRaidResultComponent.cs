@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using static Data_BossRaid;
 
 public class PopupBossRaidResultComponent : BasePopupComponent
 {
@@ -14,6 +13,11 @@ public class PopupBossRaidResultComponent : BasePopupComponent
             m_element.btnConfirm.interactable = false;
             BossRaidWorker.instance.ExitAsync().Forget();
         });
+
+        //setlocalization
+        {
+            m_element.btnConfirm.text = TableManager.stringTable.GetString("UI_CONFIRM");
+        }
     }
 
     public override void OpenPopup(params object[] _args)
@@ -34,15 +38,15 @@ public class PopupBossRaidResultComponent : BasePopupComponent
                 var data = dataRank[i];
 
                 // ·©Å·
-                string rank = $"{data.rank}À§";
+                string rank = Utils.GetRanking(data.rank);
                 rank += $"\n<color=#666666><size=60%>/{dataRank.Count}\n({(data.point == 0 ? 100 : (data.rank - 1) / (float)dataRank.Count * 100):0.00}%)</size></color>";
                 m_element.txtRank.text = rank;
 
                 // ÀÔÈù µ¥¹ÌÁö
-                m_element.txtDamage.text = $"ÀÔÈù_ÇÇÇØ·®\n<size=120%><color=#000000>{data.point:#,0}</color></size>";
+                m_element.txtDamage.text = $"{TableManager.stringTable.GetString("UI_HIT_DAMAGE_AMOUNT")}\n<size=120%><color=#000000>{data.point:#,0}</color></size>";
 
                 // È¹µæ Æ÷ÀÎÆ®
-                m_element.txtPoint.text = $"È¹µæ_Æ÷ÀÎÆ®\n<size=120%><color=#000000>{1422:#,0}</color></size>";
+                m_element.txtPoint.text = $"{TableManager.stringTable.GetString("UI_GET_POINT_AMOUNT")}\n<size=120%><color=#000000>{1422:#,0}</color></size>";
 
                 break;
             }

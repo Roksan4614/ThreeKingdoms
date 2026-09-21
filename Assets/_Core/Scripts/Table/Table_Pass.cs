@@ -53,6 +53,8 @@ namespace Rev9.Pass
             result.key = questData.key;
             result.type = questData.type;
             result.exp = questData.exp;
+            result.is_character = 1;
+            result.value = "GuanYu";
 
             return result;
         }
@@ -64,11 +66,16 @@ namespace Rev9.Pass
         public QuestDateType type;
         public int count;
         public int exp;
-        //public int is_character;
-        //public int is_country;
-        //public int is_class;
+        public int is_character;
+        public int is_country;
+        public int is_class;
 
         //custom
-        public string value;
+        public string value { get; set; }
+
+        public string name => TableManager.questString.GetString($"{Utils.ToSnakeCase(key.ToString()).ToUpper()}_NAME");
+
+        public string GetDesc(string _value)
+            => TableManager.questString.GetStringFormat($"{Utils.ToSnakeCase(key.ToString()).ToUpper()}_DESC", _value);
     }
 }

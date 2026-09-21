@@ -32,7 +32,7 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
 
         m_element.objAttack.SetActive(_historyData.isAttack);
         m_element.objDefence.SetActive(_historyData.isAttack == false);
-        m_element.txtType.text = _historyData.isAttack ? "_공격_" : "_방어_";
+        m_element.txtType.text = TableManager.stringTable.GetString(_historyData.isAttack ? "UI_ATTACK" : "UI_DEFENCE");
 
         m_element.txtResult.text = $"{(_historyData.isWin ? "WIN" : "LOSE")}\n<color=#555555><size=80%>({(_historyData.isWin ? "+" : "")}{_historyData.resultPoint}p)</size></color>";
         if (ColorUtility.TryParseHtmlString($"#{(_historyData.isWin ? Palette.htmlString_Up : Palette.htmlString_Down)}", out Color clr))
@@ -50,7 +50,7 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
         {
             if (_historyData.tick == 0)
             {
-                m_element.btnRevenge.text = $"복수성공";
+                m_element.btnRevenge.text = TableManager.stringTable.GetString("UI_TOUR_HIST_REVENGE_SUCCESS");// $"복수성공";
                 m_element.objRevenge.transform.ForceRebuildLayout();
                 if (ColorUtility.TryParseHtmlString("#05009C", out Color clrSuccess))
                     m_element.btnRevenge.image.color = clrSuccess;
@@ -106,7 +106,8 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
         var token = m_cts.Token;
 
         TimeSpan ts = _dtEnd - Utils.GetUTC();
-        m_element.btnRevenge.text = $"복수_<size=90%>({ts.ToRemainTime(25)})</size>";
+        string format = $"{TableManager.stringTable.GetString("UI_REVENGE")} "+"<size=90%>({0})</size>";
+        m_element.btnRevenge.text = string.Format(format, ts.ToRemainTime(25));
         m_element.objRevenge.transform.ForceRebuildLayout();
         m_element.btnRevenge.image.color = m_clrPrevRevenge;
         m_element.btnRevenge.interactable = true;
@@ -120,14 +121,14 @@ public class PopupTournamentHistory_Slot : MonoBehaviour, IValidatable
             {
                 prev = sec;
 
-                m_element.btnRevenge.text = $"복수_<size=90%>({ts.ToRemainTime(25)})</size>";
+                m_element.btnRevenge.text = string.Format(format, ts.ToRemainTime(25));
                 m_element.objRevenge.transform.ForceRebuildLayout();
             }
 
             await UniTask.NextFrame(token);
         }
 
-        m_element.btnRevenge.text = $"<color=#555555>시간초과</color>";
+        m_element.btnRevenge.text = $"<color=#555555>{TableManager.stringTable.GetString("UI_TIMEOVER")}</color>";
         m_element.btnRevenge.image.color = Color.white;
         m_element.btnRevenge.interactable = false;
     }

@@ -16,13 +16,24 @@ public class PopupTournament_UserInfo : MonoBehaviour, IValidatable
         transform.GetComponent<Button>("Panel/btn_close").onClick.AddListener(Close);
         transform.GetComponent<Button>("Dimm").onClick.AddListener(Close);
 
-        transform.GetComponent<TextMeshProUGUI>("Panel/txt_title").text = "_상세정보_";
-
-        m_element.treasure.parent.GetComponent<TextMeshProUGUI>("Text").text = "보물_";
-        m_element.panel.GetComponent<TextMeshProUGUI>("Batch/Text").text = "상대조합_";
-
         PPWorker.DeleteKey(PlayerPrefsType.TOURNAMENT_IS_ON_BATCH_INFO);
         m_element.toggleInfo.onClick.AddListener(() => { m_element.toggleInfo.OnButtonToggle(); SetInfo(); });
+
+        //setlocalization
+        {
+            m_element.toggleInfo.text = TableManager.stringTable.GetString("UI_TOGGLE_INFO");
+
+            transform.GetComponent<TextMeshProUGUI>("Panel/txt_title").text =
+                TableManager.stringTable.GetString("UI_TOUR_HIST_OTHER_INFO");// "_상세정보_";
+
+            m_element.treasure.parent.GetComponent<TextMeshProUGUI>("Text").text =
+                TableManager.stringTable.GetString("UI_TREASURE");//"보물_";
+            m_element.panel.GetComponent<TextMeshProUGUI>("Batch/Text").text =
+                TableManager.stringTable.GetString("UI_TOUR_HIST_OTHER_BATCH");//"상대조합_";
+
+            if (m_element.btnStart != null)
+                m_element.btnStart.text = TableManager.stringTable.GetString("UI_CHALLENGE");
+        }
     }
 
     public async UniTask OpenAsync(int _uid, TournamentBatchData _batchData = default)

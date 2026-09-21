@@ -121,8 +121,8 @@ namespace Rev9.Tournament
             return result;
         }
 
-        Dictionary<PopupLobbyBossRaid_PopupRanking.TabType, RankerData> m_dbRankData = new();
-        public async UniTask<RankerData> API_LoadRankerData(PopupLobbyBossRaid_PopupRanking.TabType _tabType)
+        Dictionary<PopupTournament_Ranking.TabTournamentType, RankerData> m_dbRankData = new();
+        public async UniTask<RankerData> API_LoadRankerData(PopupTournament_Ranking.TabTournamentType _tabType)
         {
             if (m_dbRankData.ContainsKey(_tabType))
                 return m_dbRankData[_tabType];
@@ -140,7 +140,7 @@ namespace Rev9.Tournament
                 userData.uid = isMine ? DataManager.userInfo.uid : DataManager.userInfo.uid + i + 1;
                 userData.prevRank = i + 1;
                 userData.nickname = isMine ? DataManager.userInfo.nickname.ToString() : $"Nickname_{userData.prevRank:00#}";
-                userData.point = _tabType == PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Winning ?
+                userData.point = _tabType == PopupTournament_Ranking.TabTournamentType.Tournament_Winning ?
                     UnityEngine.Random.Range(10, 100) :
                     UnityEngine.Random.Range(100, 10000);
                 userData.power = UnityEngine.Random.Range(1000, 3000);

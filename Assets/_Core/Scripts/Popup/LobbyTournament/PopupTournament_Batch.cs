@@ -20,6 +20,15 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
 
         m_element.btnBatch.onClick.AddListener(() => Close(true));
         m_element.btnAuto.onClick.AddListener(m_element.panelHero.StartAutoBatch);
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/Top/txt_title", "UI_TOURNAMENT_BATCH_TITLE");
+            m_element.tabHero.text = TableManager.stringTable.GetString($"L_HERO_TITLE_HERO");
+            m_element.tabRelic.text = TableManager.stringTable.GetString($"L_HERO_TITLE_RELIC");
+            m_element.btnAuto.text = TableManager.stringTable.GetString($"UI_TOURNAMENT_AUTO_BATCH");
+            m_element.btnBatch.text = TableManager.stringTable.GetString($"UI_TOURNAMENT_BATCH_FINISH");
+        }
     }
 
     public async UniTask<bool> OpenAsync()
@@ -89,8 +98,7 @@ public class PopupTournament_Batch : MonoBehaviour, IValidatable
     #region VALIDATE
     public void OnManualValidate() => m_element.Initialize(transform);
 
-    [SerializeField, HideInInspector]
-    //[SerializeField]
+    [SerializeField]
     ElementData m_element;
 
     [System.Serializable]

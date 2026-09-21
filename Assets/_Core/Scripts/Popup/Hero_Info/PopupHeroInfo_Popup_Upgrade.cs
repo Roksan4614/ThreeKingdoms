@@ -51,6 +51,12 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         });
 
         m_element.btnConfirm.onClick.AddListener(() => OnButtonAsync_Confirm().Forget());
+
+        //setlocalization
+        {
+            m_element.scroll.content.SetTextTable("Enchant/Mileage/txt_title", "UI_ENCHANT_POINT");
+
+        }
     }
 
     void SetInfo(UpgradeType _type)
@@ -68,7 +74,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
 
         if (isUpgrade)
         {
-            m_element.btnConfirm.text = $"_½Â±Þ_";
+            m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_UPGRADE_GRADE");
 
             m_element.txtTitle.text = m_heroInfoData.gradeName;
 
@@ -77,8 +83,8 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
         }
         else
         {
-            m_element.btnConfirm.text = $"+{m_heroInfoData.enchantLevel}_{"¼ºÀå"}";
-            m_element.txtTitle.text = $"<size=90%>¼ºÀå_¼º°ø_È®·ü:</size> 100%";
+            m_element.btnConfirm.text = $"+{m_heroInfoData.enchantLevel} {TableManager.stringTable.GetString("BUTTON_ENCHANT")}";
+            m_element.txtTitle.text = $"<size=90%>{TableManager.stringTable.GetString("UI_ENCHANT_COMPLETE_RATE")}:</size> 100%";
         }
 
     }

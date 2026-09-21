@@ -3,6 +3,7 @@ using Rev9.Tournament;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,8 +15,8 @@ public class PopupHeroInfo : BasePopupComponent
     enum TabType
     {
         NONE = -1,
-        stat,
-        attribute,
+        battle_stat,
+        traits,
         MAX
     }
 
@@ -49,6 +50,8 @@ public class PopupHeroInfo : BasePopupComponent
         {
             var tab = i;
             m_element.btnTap[(int)i].onClick.AddListener(() => SetActiveTab(tab));
+            //setlocalization
+            m_element.btnTap[(int)i].text = TableManager.stringTable.GetString($"UI_{tab.ToString().ToUpper()}");
         }
 
         m_element.btnConfirm.onClick.AddListener(Close);
@@ -71,7 +74,17 @@ public class PopupHeroInfo : BasePopupComponent
         }
 
         // Traits Reroll
-        m_element.statAttribute.onClickReroll.AddListener(() => OnButtonAsync_TraitsReroll().Forget());
+        m_element.statTraits.onClickReroll.AddListener(() => OnButtonAsync_TraitsReroll().Forget());
+
+        // setlocalization
+        {
+            var stat = transform.Find("Panel/Stat");
+            for (var i = StatType.None + 1; i < StatType.Max; i++)
+                stat.GetChild((int)i).SetTextTable("txt_title", $"CORESTAT_{i.ToString().ToUpper()}");
+
+            m_element.btnEnchant.text = TableManager.stringTable.GetString("BUTTON_ENCHANT");
+            m_element.btnUpgrade.text = TableManager.stringTable.GetString("BUTTON_UPGRADE_GRADE");
+        }
     }
 
     private void OnEnable()
@@ -79,7 +92,7 @@ public class PopupHeroInfo : BasePopupComponent
         statusType = StatusType.Wait;
         isNeedUpdate = false;
         Utils.SetActivePunch(m_element.panel, true, false);
-        SetActiveTab(TabType.stat);
+        SetActiveTab(TabType.battle_stat);
     }
 
     // HeroInfoData
@@ -94,8 +107,8 @@ public class PopupHeroInfo : BasePopupComponent
         for (var i = TabType.NONE + 1; i < TabType.MAX; i++)
             m_element.btnTap[(int)i].SetDrawSelect(i == _tabType);
 
-        m_element.statBattle.SetActive(_tabType == TabType.stat);
-        m_element.statAttribute.SetActive(_tabType == TabType.attribute, m_heroInfoData);
+        m_element.statBattle.SetActive(_tabType == TabType.battle_stat);
+        m_element.statTraits.SetActive(_tabType == TabType.traits, m_heroInfoData);
     }
 
     /// <summary>
@@ -175,6 +188,17 @@ public class PopupHeroInfo : BasePopupComponent
                 }
             }
         }
+
+        // SKILL
+        m_element.scrollSkill.content.anchoredPosition = Vector2.zero;
+        var nameUpper = m_heroInfoData.name.ToUpper();
+        // 아직 준비중
+        nameUpper = "LIUBEI";
+        var title = TableManager.stringHero.GetString($"SKILL_{nameUpper}_TITLE");
+        var cooltime = m_heroInfoData.tableData.skillCooltime - m_heroInfoData.tableData.skillCooltime * m_heroInfoData.resultStat.cooldownRate;
+        title += $" <size=72%><color=#888888>({TableManager.stringTable.GetStringFormat("UI_COOLTIME_SEC", $"{cooltime:0.#}")})</color></size>";
+        m_element.txtSkillTitle.text = title;
+        m_element.txtSkillDesc.text = TableManager.stringHero.GetString($"SKILL_{nameUpper}_DESC");
     }
 
     void SetHeroInfo_CoreStat(HeroInfoData _heroInfoData, bool _isCompare = false)
@@ -182,7 +206,7 @@ public class PopupHeroInfo : BasePopupComponent
         var coreStat = _heroInfoData.resultCoreStat;
         for (int i = 0; i < m_element.stat.Count; i++)
         {
-            var value = coreStat[(CoreStatType)i];
+            var value = coreStat[(StatType)i];
             var txt = m_element.stat[i].content;
 
             txt.text = value.ToString();
@@ -243,8 +267,8 @@ public class PopupHeroInfo : BasePopupComponent
             isNeedUpdate = true;
 
             m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
-            if (m_element.statAttribute.isActive)
-                m_element.statAttribute.SetActive(true, m_heroInfoData);
+            if (m_element.statTraits.isActive)
+                m_element.statTraits.SetActive(true, m_heroInfoData);
         }
 
         m_element.statBattle.SetStatData(m_heroInfoData);
@@ -289,7 +313,7 @@ public class PopupHeroInfo : BasePopupComponent
             return;
         }
 
-        m_element.statAttribute.interactable = false;
+        m_element.statTraits.interactable = false;
 
         m_heroInfoData = await DataManager.userInfo.API_TraitsChange(m_heroInfoData.key);
 
@@ -303,8 +327,8 @@ public class PopupHeroInfo : BasePopupComponent
         m_element.txtPower.text = $"cp {m_heroInfoData.power.AmountKMBT(_isMBT: true)}";
         isNeedUpdate = true;
 
-        m_element.statAttribute.SetActive(true, m_heroInfoData);
-        m_element.statAttribute.interactable = true;
+        m_element.statTraits.SetActive(true, m_heroInfoData);
+        m_element.statTraits.interactable = true;
     }
 
     async UniTask OpenPopupAsync_Position()
@@ -395,7 +419,7 @@ public class PopupHeroInfo : BasePopupComponent
         public PopupHeroInfo_Popup_Upgrade popupUpgrade;
 
         public PopupHeroInfo_Stat_Battle statBattle;
-        public PopupHeroInfo_Stat_Attribute statAttribute;
+        public PopupHeroInfo_Stat_Traits statTraits;
 
         public Transform popup;
 
@@ -407,6 +431,10 @@ public class PopupHeroInfo : BasePopupComponent
 
         public ButtonHelper[] btnTap;
         public TextMeshProUGUI txtPower;
+
+        public ScrollRect scrollSkill;
+        public TextMeshProUGUI txtSkillTitle;
+        public TextMeshProUGUI txtSkillDesc;
 
         public List<EntryData> stat;
         public void Initialize(Transform _transform)
@@ -453,7 +481,11 @@ public class PopupHeroInfo : BasePopupComponent
             btnTap = panel.Find("Tab").GetComponentsInChildren<ButtonHelper>();
 
             statBattle = panel.GetComponent<PopupHeroInfo_Stat_Battle>("Stat_Battle");
-            statAttribute = panel.GetComponent<PopupHeroInfo_Stat_Attribute>("Stat_Attribute");
+            statTraits = panel.GetComponent<PopupHeroInfo_Stat_Traits>("Stat_Traits");
+
+            scrollSkill = panel.GetComponent<ScrollRect>("Skill");
+            txtSkillTitle = panel.GetComponent<TextMeshProUGUI>("Skill/txt_title");
+            txtSkillDesc = scrollSkill.content.GetComponent<TextMeshProUGUI>("txt_desc");
         }
 
         //public Transform panelHero => btnCharacter.transform.GetChild(0);

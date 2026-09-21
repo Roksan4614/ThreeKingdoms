@@ -54,7 +54,7 @@ public class Data_HeroPosition : MonoBehaviour
         idxPrev = data.FindIndex(x => x.type == _type);
         if (idxPrev > -1)
         {
-            var result = await PopupManager.instance.OpenModalAsync("기존_장수를_해임하겠습니까?");
+            var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_OUT_BEFORE_HERO");// "기존_장수를_해임하겠습니까 ?");
 
             if (result == StatusType.Success)
             {

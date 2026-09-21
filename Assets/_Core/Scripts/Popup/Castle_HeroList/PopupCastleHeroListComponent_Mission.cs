@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -99,7 +100,7 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
             content.GetChild(i).gameObject.SetActive(false);
 
         i = 0;
-        for (var stat = CoreStatType.NONE + 1; stat < CoreStatType.MAX; stat++, i++)
+        for (var stat = StatType.None + 1; stat < StatType.Max; stat++, i++)
         {
             var name = TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}");
 

@@ -30,6 +30,13 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         m_element.btnHero.onClick.AddListener(OnButton_Hero);
         m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Start().Forget());
         m_element.btnShop.onClick.AddListener(() => PopupManager.instance.OpenPopup(PopupType.ContentsMarket, Rev9.ContentsMarket.ContentsMarketTabType.Raid));
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/txt_title", "UI_BOSSRAID_TITLE");
+            m_element.btnRanking.text = TableManager.stringTable.GetString("UI_RANKING");
+            m_element.btnShop.text = TableManager.stringTable.GetString("UI_SHOP");
+        }
     }
 
     private void Start()
@@ -89,9 +96,11 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         // 이전 라운드 정보
         if (raidData.tickPrevRound == 0)
-            m_element.txtInfoPrevRound.text = "이전_라운드_정보_없음";
+            m_element.txtInfoPrevRound.text = TableManager.stringTable.GetString("UI_PREV_ROUND_NO_INFO");// "이전_라운드_정보_없음";
         else
-            m_element.txtInfoPrevRound.text = $"이전_라운드_ :_[{TableManager.stringTable.GetGradeType(raidData.prevGrade)}]\n{raidData.dtPrevRound.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")}";
+            m_element.txtInfoPrevRound.text = $"{TableManager.stringTable.GetString("UI_PREV_ROUND")} :[{TableManager.stringTable.GetGradeType(raidData.prevGrade)}]\n{raidData.dtPrevRound.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")}";
+
+        m_element.txtBossName.text = TableManager.hero.Get(raidData.keyBoss).name;
     }
 
     async UniTask OnButtonAsync_Start()
@@ -120,7 +129,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
             await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
         }
 
-        m_element.txtSeasonRemainTimer.text = "_정산중_";
+        m_element.txtSeasonRemainTimer.text = TableManager.stringTable.GetString("UI_CALCULATING");// "_정산중_";
     }
 
     async UniTask TimerAsync_Round()
@@ -129,7 +138,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         if (DataManager.bossRaid.data.tickNextRound == 0)
         {
-            m_element.btnStart.text = "_미출현_";
+            m_element.btnStart.text = TableManager.stringTable.GetString("UI_BOSSRAID_NOT_APPERED");// "_미출현_";
             m_element.txtRoundRemainTimer.text = "";
             m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Center;
 
@@ -138,9 +147,10 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         // 시작까지 남은 시간
         var dtStart = DataManager.bossRaid.data.dtNextRound.AddSeconds(-Configure.instance.timeGapFromServer);
-        m_element.btnStart.text = "_대기_";
+        m_element.btnStart.text = TableManager.stringTable.GetString("UI_WAIT");// "_대기_";
         m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Top;
 
+        string format = TableManager.stringTable.GetString("UI_START_AFTER_SEC");
         while (true)
         {
             var ts = dtStart - DateTime.UtcNow;
@@ -148,7 +158,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
             if (ts.TotalSeconds <= 0)
                 break;
 
-            m_element.txtRoundRemainTimer.text = $"({ts.ToRemainTime(25, _isStartMinute: true)} 후 시작)";
+            m_element.txtRoundRemainTimer.text = $"({string.Format(format, ts.ToRemainTime(25, _isStartMinute: true))})";
             await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
         }
 
@@ -156,8 +166,9 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
         var dtFinished = DataManager.bossRaid.data.dtEndRound.AddSeconds(-Configure.instance.timeGapFromServer);
 
         m_element.btnStart.interactable = true;
-        m_element.btnStart.text = "_참가_";
+        m_element.btnStart.text = TableManager.stringTable.GetString("UI_JOIN");// "_참가_";
 
+        format = TableManager.stringTable.GetString("UI_REMAIN_TIME");
         while (true)
         {
             var ts = dtFinished - DateTime.UtcNow;
@@ -165,7 +176,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
             if (ts.TotalSeconds <= 0)
                 break;
 
-            m_element.txtRoundRemainTimer.text = $"<color=#{Palette.htmlString_Up}>({ts.ToRemainTime(25, _isStartMinute: true)} 남음)</color>";
+            m_element.txtRoundRemainTimer.text = $"<color=#{Palette.htmlString_Up}>({format}: {ts.ToRemainTime(25, _isStartMinute: true)})</color>";
             await UniTask.WaitForEndOfFrame(cancellationToken: destroyCancellationToken);
         }
 

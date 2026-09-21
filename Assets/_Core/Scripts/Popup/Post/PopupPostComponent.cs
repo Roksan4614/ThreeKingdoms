@@ -31,8 +31,9 @@ namespace Rev9.Post
 
             // setlocalization
             {
-                m_element.btnReceiveAll.text = "ÀÏ°ý_¹Þ±â";
-                m_element.btnDeleteAll.text = "ÀÏ°ý_»èÁ¦";
+                transform.SetTextTable("Panel/txt_title", "UI_POST_BOX_TITLE");
+                m_element.btnReceiveAll.text = TableManager.stringTable.GetString("BUTTON_RECEIVE_ALL");
+                m_element.btnDeleteAll.text = TableManager.stringTable.GetString("BUTTON_DELETE_ALL");
             }
         }
 

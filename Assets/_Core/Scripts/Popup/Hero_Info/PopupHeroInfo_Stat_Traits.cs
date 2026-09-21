@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PopupHeroInfo_Stat_Attribute : MonoBehaviour, IValidatable
+public class PopupHeroInfo_Stat_Traits : MonoBehaviour, IValidatable
 {
     public Button.ButtonClickedEvent onClickReroll
         => m_element.btnReroll.onClick;
@@ -77,7 +77,7 @@ public class PopupHeroInfo_Stat_Attribute : MonoBehaviour, IValidatable
         public ButtonHelper btnReroll;
         public CanvasGroup cgReroll;
 
-        public PopupHeroInfo_Stat_Attribute_Slot[] slots;
+        public PopupHeroInfo_Stat_Traits_Slot[] slots;
 
         public TextMeshProUGUI txtCost;
 
@@ -85,7 +85,7 @@ public class PopupHeroInfo_Stat_Attribute : MonoBehaviour, IValidatable
         {
             btnReroll = _transform.GetComponent<ButtonHelper>("btn_reroll");
             cgReroll = btnReroll.transform.GetComponent<CanvasGroup>();
-            slots = _transform.GetComponentsInChildren<PopupHeroInfo_Stat_Attribute_Slot>();
+            slots = _transform.GetComponentsInChildren<PopupHeroInfo_Stat_Traits_Slot>();
 
             txtCost = _transform.GetComponent<TextMeshProUGUI>("btn_reroll/Amount/Text");
         }

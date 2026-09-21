@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Table_Hero : BaseTable<string, TableHeroData>
@@ -60,7 +61,7 @@ public class Table_Hero : BaseTable<string, TableHeroData>
 public class TableHeroData
 {
     public string key;
-    
+
     public bool is_lock_active;
 
     [JsonProperty] HeroClassType character_class; public HeroClassType classType => character_class;
@@ -161,18 +162,21 @@ public class HeroInfoData
     public string talk => TableManager.stringHero.GetString("DESC_TALK_" + regionKey);
     public string fullNameGradeLevel => $"[{gradeName}] {name}{(enchantLevel == 0 ? "" : $"+{enchantLevel}")}";
 
+    TableHeroData m_tableData;
+    public TableHeroData tableData => m_tableData ??= TableManager.hero.Get(key);
+
     [JsonProperty] public int sortIdx { get; set; }
 
-    public Dictionary<CoreStatType, int> resultCoreStat
+    public Dictionary<StatType, int> resultCoreStat
     {
         get
         {
-            Dictionary<CoreStatType, int> result = new();
+            Dictionary<StatType, int> result = new();
 
             var heroData = TableManager.hero.Get(key);
             for (int i = 0; i < heroData.coreStatPoint.Count; i++)
             {
-                var statType = (CoreStatType)i;
+                var statType = (StatType)i;
                 result[statType] = heroData.coreStatPoint[i] + (int)(grade) * 10 + enchantLevel;
             }
 

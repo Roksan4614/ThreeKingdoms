@@ -20,6 +20,11 @@ namespace Rev9.Post
             transform.GetComponent<Button>().onClick.AddListener(() => click(this));
 
             m_element.btnConfirm.onClick.AddListener(() => clickConfirm(this));
+
+            //setlocalization
+            {
+                m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_RECEIVE");
+            }
         }
 
         public void SetPostData(PostInfoData _postData)

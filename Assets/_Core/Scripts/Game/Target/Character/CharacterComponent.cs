@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 
@@ -318,7 +319,7 @@ public class CharacterComponent : TargetComponent
                             TutorialManager.instance.Action_EnemyKill();
 
                             if( DataManager.instance.isLobby)
-                                QuestWorker.instance.AddCount(QuestType.enemy_kill);
+                                QuestWorker.instance.AddCount(QuestType.EnemyKill);
                         }
                     }
                 }

@@ -24,7 +24,7 @@ namespace Rev9.Tournament
         TournamentData m_data;
         public static TournamentData data => instance.m_data;
 
-        public RankerUserData rankData => m_dbRankData[PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Point].my;
+        public RankerUserData rankData => m_dbRankData[PopupTournament_Ranking.TabTournamentType.Tournament_Point].my;
 
         List<TournamentHistoryData> m_history;
         public List<TournamentHistoryData> history => m_history;
@@ -62,7 +62,7 @@ namespace Rev9.Tournament
                 await API_LoadBattleListAsync();
             }
 
-            await API_LoadRankerData(PopupLobbyBossRaid_PopupRanking.TabType.Tutorial_Point);
+            await API_LoadRankerData(PopupTournament_Ranking.TabTournamentType.Tournament_Point);
 
             // 갱신 업데이트
             var dtRefresh = Utils.GetDateTime(m_data.tickRefresh);
@@ -208,7 +208,7 @@ namespace Rev9.Tournament
         {
             if (m_data.countAD > 0)
             {
-                var result = await PopupManager.instance.OpenModalAsync("광고보러_가기");
+                var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_AD_SHOW");
 
                 if (result == StatusType.Success)
                 {

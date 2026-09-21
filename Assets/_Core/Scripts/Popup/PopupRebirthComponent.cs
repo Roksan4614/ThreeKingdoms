@@ -20,6 +20,16 @@ public class PopupRebirthComponent : BasePopupComponent
             if (gameObject.activeInHierarchy == true)
                 SetRebirthInfo();
         });
+
+        //setlocalization
+        {
+            m_element.txtTitle.text = TableManager.stringTable.GetString("UI_REBIRTH_TITLE");
+            m_element.txtStageTitle_Prev.text = TableManager.stringTable.GetString("UI_DIFFICULT_NOW");
+            m_element.txtStageTitle_Next.text = TableManager.stringTable.GetString("UI_DIFFICULT_AFTER_REBIRTH");
+            m_element.txtRewardTitle.text = TableManager.stringTable.GetString("UI_RECEIVE_AMOUNT_TIME_STONE");
+            m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
+            m_element.btnCancel.text = TableManager.stringTable.GetString("BUTTON_CANCEL");
+        }
     }
 
     public override void OpenPopup(params object[] _args)
@@ -55,7 +65,7 @@ public class PopupRebirthComponent : BasePopupComponent
         bool isAvail = stageData.level >= minStageData.level;
         m_element.btnConfirm.interactable = isAvail;
         m_element.txtDesc.text = isAvail ? ""
-            : $"{minStageData.stageFullName}_도달_후_가능";
+            : TableManager.stringTable.GetStringFormat("UI_REBIRTH_INFO", minStageData.stageFullName);// $"{}_도달_후_가능";
 
         m_element.btnConfirm.transform.GetComponent<CanvasGroup>().alpha = isAvail ? 1 : .6f;
 

@@ -85,6 +85,7 @@ namespace Rev9.ContentsMarket
                         lstData.Add(new()
                         {
                             key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
+                            value = CharacterName.LiuBei.ToString(),
                             cost = 2000,
                             count = 10,
                             countMax = 3
@@ -94,7 +95,7 @@ namespace Rev9.ContentsMarket
                     {
                         lstData.Add(new()
                         {
-                            key = "point_tournament",
+                            key = "tournament_point",
                             peroidType = PeroidType.Week,
                             cost = 2500,
                             count = 10,
@@ -124,6 +125,7 @@ namespace Rev9.ContentsMarket
                         lstData.Add(new()
                         {
                             key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
+                            value = CharacterName.LiuBei.ToString(),
                             peroidType = PeroidType.Season,
                             cost = 4500,
                             count = 5,
@@ -133,6 +135,7 @@ namespace Rev9.ContentsMarket
                         lstData.Add(new()
                         {
                             key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.CaoCao.ToString())}",
+                            value = CharacterName.CaoCao.ToString(),
                             peroidType = PeroidType.Season,
                             cost = 4500,
                             count = 5,
@@ -141,6 +144,7 @@ namespace Rev9.ContentsMarket
                         lstData.Add(new()
                         {
                             key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.SunQuan.ToString())}",
+                            value = CharacterName.SunQuan.ToString(),
                             peroidType = PeroidType.Season,
                             cost = 4500,
                             count = 5,

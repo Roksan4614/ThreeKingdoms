@@ -39,13 +39,12 @@ public static class Extenssions
     static async UniTask AutoResizeParentAsync(this GameObject _obj, bool _isFull = false)
     {
         var rt = _obj.transform as RectTransform;
-
-        if (rt == null || rt.parent == null)
-            return;
-
         var rtParent = (RectTransform)rt.parent;
 
         await UniTask.WaitUntil(() => rtParent.rect.width > 0);
+
+        if (rt == null || rt.parent == null)
+            return;
 
         if (_isFull)
         {

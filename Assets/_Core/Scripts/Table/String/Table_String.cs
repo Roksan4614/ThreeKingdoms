@@ -8,7 +8,7 @@ public class Table_String : Table_String_Base
 {
     public Table_String(List<TableStringData> _table) : base(_table)
     {
-        SetDictionary(x => x.key);
+        //SetDictionary(x => x.key);
     }
 
     public string GetGradeType(GradeType _gradeType, bool _isDifficult = false, bool _isColor = false)
@@ -40,7 +40,7 @@ public class Table_String_Hero : Table_String_Base
 {
     public Table_String_Hero(List<TableStringData> _table) : base(_table)
     {
-        SetDictionary(x => x.key);
+        //SetDictionary(x => x.key);
     }
 
     public string GetGradeType(GradeType _gradeType, bool _isDifficult = false, bool _isColor = false)
@@ -65,7 +65,7 @@ public class Table_String_GuideQuest : Table_String_Base
 {
     public Table_String_GuideQuest(List<TableStringData> _table) : base(_table)
     {
-        SetDictionary(x => x.key);
+        //SetDictionary(x => x.key);
     }
 
     public string GetGuideQuestTitle(GuideQuestType _type)

@@ -159,11 +159,12 @@ namespace Rev9.Tournament
             var dtEnd = DateTime.Now.AddSeconds(60);
 
             TimeSpan ts;
+            string remainTime = TableManager.stringTable.GetString("UI_REMAIN_TIME");
             while (dtEnd >= DateTime.Now)
             {
                 ts = dtEnd - DateTime.Now;
 
-                m_txtTimer.text = $"_남은시간_\n<color=#000000><size=160%>{ts.ToRemainTime(55)}";
+                m_txtTimer.text = $"{remainTime}\n<color=#000000><size=160%>{ts.ToRemainTime(55)}";
 
                 await UniTask.NextFrame(token);
             }

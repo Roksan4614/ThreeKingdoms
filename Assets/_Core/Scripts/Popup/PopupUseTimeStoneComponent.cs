@@ -72,11 +72,17 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
         {
             m_secTimeStone = _t;
             m_minuteAD = _a;
-            m_element.btnAD.text = $"-{m_minuteAD}분 <color=#6D6D6D><size=90%>({m_adCountData.countAD}/5)";
+            m_element.btnAD.text = $"-{TableManager.stringTable.GetStringFormat("UI_MINUTE", m_minuteAD.ToString())} <color=#6D6D6D><size=90%>({m_adCountData.countAD}/5)";
         });
 
         m_element.btnTimeStone.onClick.AddListener(OnButton_TimeStone);
         m_element.btnAD.onClick.AddListener(OnButton_AD);
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/txt_title", "UI_USE_TIMESTORN_TITLE");
+            transform.SetTextTable("Panel/txt_content", "UI_REMAIN_TIME");
+        }
     }
 
     public override void OpenPopup(params object[] _args)
@@ -191,7 +197,7 @@ public class PopupUseTimeStoneComponent : BasePopupComponent
         {
             TimeStoneCountType.type_1h => "1H",
             TimeStoneCountType.type_1d => "1D",
-            _ => "최대"
+            _ => TableManager.stringTable.GetString("UI_MAX")// "최대"
         };
 
     public bool CloseEscape()

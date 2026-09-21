@@ -46,7 +46,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
                 {
                     if (m_iconSoulStone == null)
                     {
-                        SetIconAsync(_itemData.key.ToString(), false, _icon =>
+                        SetIconAsync(_itemData.type.ToString(), false, _icon =>
                         {
                             m_iconSoulStone = _icon;
                             _icon.SetParent(_iconHero);
@@ -61,12 +61,12 @@ public class ItemComponent : MonoBehaviour, IValidatable
                 }).Forget();
             }
             else if (_itemData.type == ItemDetailType.ClassSoulStone)
-                SetIconAsync($"{_itemData.key}_{_itemData.value}", false).Forget();
+                SetIconAsync($"{_itemData.type}_{_itemData.value}", false).Forget();
             else
-                SetIconAsync(_itemData.key.ToString(), false).Forget();
+                SetIconAsync(_itemData.type.ToString(), false).Forget();
         }
         else
-            SetIconAsync(_itemData.key.ToString(), false).Forget();
+            SetIconAsync(_itemData.type.ToString(), false).Forget();
 
         txtCount = _itemData.count > 0 ? $"x{_itemData.count.AmountKMBT()}" : "";
     }

@@ -7,7 +7,7 @@ public class PopupLobbyStoryMode_Slot : MonoBehaviour, IValidatable
     public bool SetNodeData(RegionType _region, List<List<Table_StoryMode_Node.TableStoryModeNodeData>> _db)
     {
         m_element.txtYear.gameObject.SetActive(true);
-        m_element.txtYear.text = _db[0][0].year + "³â";
+        m_element.txtYear.text = TableManager.stringTable.GetStringFormat("UI_YEAR", _db[0][0].year.ToString());
 
         var idx = transform.Find("Node").GetSiblingIndex();
         bool isCanceled = false;

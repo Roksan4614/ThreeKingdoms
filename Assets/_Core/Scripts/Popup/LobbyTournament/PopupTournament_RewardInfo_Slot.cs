@@ -17,6 +17,8 @@ namespace Rev9.Tournament
 
             for (int i = 0; i < _rewardData.rewards.Count; i++)
                 content.GetChild(i).GetComponent<ItemComponent>().SetItemData(_rewardData.rewards[i]);
+
+            m_element.scroll.enabled = _rewardData.rewards.Count > 3;
         }
 
         private void OnEnable()

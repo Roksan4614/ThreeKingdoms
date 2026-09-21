@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 
 public class Table_Traits : BaseTable<TraitsType, TableTraitsData>
 {
@@ -67,27 +68,27 @@ public class Table_TraitsValue : BaseTable<TraitsType, TableTraitsValueData>
 
         return result;
     }
-    public (CoreStatType coreStat, int value) GetCoreStatData(TraitsType _type, int _index)
+    public (StatType coreStat, int value) GetCoreStatData(TraitsType _type, int _index)
     {
         var data = m_group[_type][_index];
-        (CoreStatType coreStat, int value) result = new();
+        (StatType coreStat, int value) result = new();
 
         switch (_type)
         {
             case TraitsType.leadership:
-                result.coreStat = CoreStatType.Leadership;
+                result.coreStat = StatType.Leadership;
                 break;
             case TraitsType.strength:
-                result.coreStat = CoreStatType.Strength;
+                result.coreStat = StatType.Strength;
                 break;
             case TraitsType.intellect:
-                result.coreStat = CoreStatType.Intellect;
+                result.coreStat = StatType.Intellect;
                 break;
             case TraitsType.politics:
-                result.coreStat = CoreStatType.Politics;
+                result.coreStat = StatType.Politics;
                 break;
             case TraitsType.charisma:
-                result.coreStat = CoreStatType.Charisma;
+                result.coreStat = StatType.Charisma;
                 break;
             default:
                 return result;
