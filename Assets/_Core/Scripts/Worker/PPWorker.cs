@@ -30,9 +30,14 @@ public class PPWorker
     static string PPKey(PlayerPrefsType _type, bool _isUserData = true)
         => $"PP_{_type}" + (_isUserData ? $"_{DataManager.userInfo.uid}" : "");
     public static bool HasKey(PlayerPrefsType _type, bool _isUserData = true)
-        => HasKey(PPKey(_type, _isUserData));
-    public static bool HasKey(string _key)
-        => PlayerPrefs.HasKey(_key);
+        => HasKey(PPKey(_type, _isUserData), false);
+    public static bool HasKey(string _key, bool _isUserData = true)
+    {
+        if (_isUserData)
+            _key += $"_{DataManager.userInfo.uid}";
+
+        return PlayerPrefs.HasKey(_key);
+    }
 
     public static void DeleteKey(PlayerPrefsType _type, bool _isUserData = true)
         => DeleteKey(PPKey(_type, _isUserData), _isUserData);
@@ -53,7 +58,7 @@ public class PPWorker
         if (_isUserData)
             _key += $"_{DataManager.userInfo.uid}";
 
-        if (HasKey(_key) == false)
+        if (HasKey(_key, _isUserData) == false)
             return default;
 
         object result;
@@ -80,7 +85,7 @@ public class PPWorker
         => Set(PPKey(_type, _isUserData), _value, false, _isAutoSave);
     public static void Set(string _key, object _value, bool _isUserData = true, bool _isAutoSave = true)
     {
-        if(_isUserData == true)
+        if (_isUserData == true)
             _key += $"_{DataManager.userInfo.uid}";
 
         var type = _value.GetType();

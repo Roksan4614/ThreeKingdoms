@@ -20,11 +20,6 @@ namespace Rev9.Post
             transform.GetComponent<Button>().onClick.AddListener(() => click(this));
 
             m_element.btnConfirm.onClick.AddListener(() => clickConfirm(this));
-
-            //setlocalization
-            {
-                m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_RECEIVE");
-            }
         }
 
         public void SetPostData(PostInfoData _postData)
@@ -68,7 +63,9 @@ namespace Rev9.Post
 
             transform.ForceRebuildLayout();
 
-            m_element.btnConfirm.text = isReceivedRewards ? "_보기_" : "_받기_";
+
+            m_element.btnConfirm.text = TableManager.stringTable
+                .GetString(isReceivedRewards ? "BUTTON_READ" : "BUTTON_RECEIVE");
         }
 
         void OnDisable()

@@ -31,7 +31,7 @@ namespace Rev9.Inventory
                 var type = sortCategory[i];
                 var button = content.GetChild(i).GetComponent<ButtonHelper>();
                 button.onClick.AddListener(() => SetTab(type));
-                button.text = TableManager.stringItem.GetString("CATEGORY_" + type.ToString().ToUpper());
+                button.text = TableManager.stringItem.GetString("CATEGORY_" + Utils.ToSnakeCase(type.ToString()).ToUpper());
                 button.SetDrawSelect(i == 0);
 
                 m_tabs.Add(type, button);

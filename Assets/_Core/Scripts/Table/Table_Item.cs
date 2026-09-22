@@ -52,13 +52,30 @@ public class Table_String_Item : Table_String_Base
     public string GetItemName(TableItemData _itemData)
     {
         string key = "";
-        if (_itemData.type == ItemDetailType.ClassSoulStone)
+        switch (_itemData.type)
         {
-            return TableManager.stringItem.GetStringFormat("NAME_SOUL_STONE", TableManager.stringHero.GetString(_itemData.value));
+            case ItemDetailType.ClassSoulStone:
+                {
+                    string lower = _itemData.value.ToLower();
+                    for (var i = HeroClassType.NONE + 1; i < HeroClassType.MAX; i++)
+                    {
+                        if (i.ToString().ToLower() == lower)
+                            return TableManager.stringItem.GetStringFormat("NAME_SOUL_STONE"
+                                , TableManager.stringHero.GetClassType(i));
+                    }
+                }
+                break;
+            case ItemDetailType.DedicatedSoulStone:
+                {
+                    return TableManager.stringItem.GetStringFormat("NAME_SOUL_STONE"
+                        , TableManager.stringHero.GetName(_itemData.value));
+                }
+            default:
+                key = $"NAME_{_itemData.key.ToUpper()}";
+                break;
         }
-        else
-            key = $"NAME_{key.ToUpper()}";
-        return TableManager.stringItem.GetString(key);
+
+        return key.IsActive() ? TableManager.stringItem.GetString(key) : "";
     }
 
     public string GetItemName(string _key)

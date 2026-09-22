@@ -30,7 +30,6 @@ namespace Rev9.Post
                 transform.SetTextTable("Panel/txt_title", "UI_POST_TITLE");
                 transform.SetTextTable("Panel/txt_post_title", "UI_POST_NAME");
                 transform.SetTextTable("Panel/Reward/txt_title", "UI_REWARD_LIST");
-                m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
                 m_element.btnDelete.text = TableManager.stringTable.GetString("BUTTON_DELETE");
             }
         }
@@ -78,7 +77,9 @@ namespace Rev9.Post
             else
                 m_element.rewards.gameObject.SetActive(false);
 
-            m_element.btnConfirm.text = isReceiveRewards ? "_확인_" : "_받기_";
+
+            m_element.btnConfirm.text = TableManager.stringTable
+                .GetString(isReceiveRewards ? "BUTTON_CONFIRM" : "BUTTON_RECEIVE");
             m_element.panel.ForceRebuildLayout();
 
             TimerAsync().Forget();

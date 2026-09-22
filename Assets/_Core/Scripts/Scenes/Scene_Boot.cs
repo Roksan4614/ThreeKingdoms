@@ -53,8 +53,10 @@ public class Scene_Boot : MonoBehaviour, IValidatable
         var timeStart = Time.realtimeSinceStartup;
 
         // 사이에 세팅할것들
-#if SERVICE_DEV && !UNITY_EDITOR
+        //#if SERVICE_DEV && !UNITY_EDITOR
+#if UNITY_EDITOR
         {
+            IngameLog.Add($"Boot: BuildData CHECK: Start");
             // 개발 도중 구조가 바뀌는것땜에 에러가 나는 경우가 있어서. 그거 대응
             var assetBuild = Resources.Load<TextAsset>("EditorData/BuildData");
 
@@ -62,12 +64,15 @@ public class Scene_Boot : MonoBehaviour, IValidatable
             {
                 string key = "pp_build_data";
 
+                IngameLog.Add($"Boot: BuildData CHECK: JObject Parse");
                 var build = Newtonsoft.Json.Linq.JObject.Parse(assetBuild.ToString());
                 long tickData = (long)build["dt_build"];
 
-                if (PPWorker.HasKey(key))
+                IngameLog.Add($"Boot: BuildData CHECK: HasKey: {PPWorker.HasKey(key)}");
+                if (PPWorker.HasKey(key, false))
                 {
-                    long tickLocal = long.Parse(PPWorker.Get<string>(key));
+                    IngameLog.Add($"Boot: BuildData CHECK: {PPWorker.Get<string>(key)}");
+                    long tickLocal = long.Parse(PPWorker.Get<string>(key, false));
 
                     if (tickLocal != tickData)
                     {
@@ -75,7 +80,7 @@ public class Scene_Boot : MonoBehaviour, IValidatable
                         var optionData = PPWorker.Get<Data_Option.OptionData>(PlayerPrefsType.OPTION);
 
                         PlayerPrefs.DeleteAll();
-                        PPWorker.Set(key, tickData);
+                        PPWorker.Set(key, tickData, false);
 
                         PPWorker.Set(PlayerPrefsType.OPTION, optionData);
                     }
@@ -86,11 +91,12 @@ public class Scene_Boot : MonoBehaviour, IValidatable
                     var optionData = PPWorker.Get<Data_Option.OptionData>(PlayerPrefsType.OPTION);
 
                     PlayerPrefs.DeleteAll();
-                    PPWorker.Set(key, tickData);
+                    PPWorker.Set(key, tickData, false);
 
                     PPWorker.Set(PlayerPrefsType.OPTION, optionData);
                 }
             }
+            IngameLog.Add($"Boot: BuildData CHECK: Finished");
         }
 #endif
         await UniTask.WhenAll(tasks.ToArray());

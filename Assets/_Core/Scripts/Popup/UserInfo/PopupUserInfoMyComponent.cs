@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -19,7 +20,7 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
 
         m_elementMy.btnEdit.onClick.AddListener(() => OnButton_Edit(true));
 
-        m_element.infNickname.onSelect.AddListener(_txt => m_elementMy.btnEdits[0].gameObject.SetActive(false));
+        m_element.infNickname.onSelect.AddListener(_txt => m_elementMy.txtEdits[0].transform.parent.gameObject.SetActive(false));
         m_element.infNickname.onValueChanged.AddListener(_txt =>
         {
             if (string.IsNullOrEmpty(_txt)) return;
@@ -44,14 +45,14 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
             if (hasInvalidChar)
                 m_element.infNickname.text = m_stringBuilder.ToString();
         });
-        m_element.infNickname.onEndEdit.AddListener(_txt => m_elementMy.btnEdits[0].gameObject.SetActive(true));
+        m_element.infNickname.onEndEdit.AddListener(_txt => m_elementMy.txtEdits[0].transform.parent.gameObject.SetActive(true));
 
         m_element.infDesc.onSelect.AddListener(_txt
-            => m_elementMy.btnEdits[1].gameObject.SetActive(false));
+            => m_elementMy.txtEdits[1].transform.parent.gameObject.SetActive(false));
         m_element.infDesc.onEndEdit.AddListener(_txt =>
         {
             m_element.infDesc.text = $"\"{_txt.Trim('"')}\"";
-            m_elementMy.btnEdits[1].gameObject.SetActive(true);
+            m_elementMy.txtEdits[1].transform.parent.gameObject.SetActive(true);
         });
 
         m_element.panel.gameObject.SetActive(false);
@@ -72,7 +73,7 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
     protected override void SetLocalization()
     {
         m_elementMy.btnEdit.text = TableManager.stringTable.GetString("BUTTON_EDIT");
-        foreach (var b in m_elementMy.btnEdits)
+        foreach (var b in m_elementMy.txtEdits)
             b.text = m_elementMy.btnEdit.text;
 
         transform.SetTextTable("Panel/Record/txt_title", "UI_RECORD");
@@ -101,8 +102,8 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
     {
         m_isEditMode = !m_isEditMode;
 
-        foreach (var e in m_elementMy.btnEdits)
-            e.gameObject.SetActive(m_isEditMode);
+        foreach (var e in m_elementMy.txtEdits)
+            e.transform.parent.gameObject.SetActive(m_isEditMode);
 
         m_element.infNickname.interactable =
         m_element.infDesc.interactable = m_isEditMode;
@@ -184,7 +185,7 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
     struct ElementData_My
     {
         public ButtonHelper btnEdit;
-        public List<ButtonHelper> btnEdits;
+        public List<TextMeshProUGUI> txtEdits;
 
         public ScrollRect scrollRecord;
         public Button btnProfile;
@@ -193,10 +194,10 @@ public class PopupUserInfoMyComponent : PopupUserInfoComponent
         {
             btnEdit = _transform.GetComponent<ButtonHelper>("Panel/btn_edit");
 
-            btnEdits = new();
-            btnEdits.Add(_transform.GetComponent<ButtonHelper>("Panel/FrontPanel/inf_nickname/Edit"));
-            btnEdits.Add(_transform.GetComponent<ButtonHelper>("Panel/FrontPanel/inf_desc/Edit"));
-            btnEdits.Add(_transform.GetComponent<ButtonHelper>("Panel/FrontPanel/Slot_Profile/Edit"));
+            txtEdits = new();
+            txtEdits.Add(_transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/inf_nickname/Edit/Text"));
+            txtEdits.Add(_transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/inf_desc/Edit/Text"));
+            txtEdits.Add(_transform.GetComponent<TextMeshProUGUI>("Panel/FrontPanel/Slot_Profile/Edit/Text"));
 
             scrollRecord = _transform.GetComponent<ScrollRect>("Panel/Record");
             btnProfile = _transform.GetComponent<Button>("Panel/FrontPanel/Slot_Profile");

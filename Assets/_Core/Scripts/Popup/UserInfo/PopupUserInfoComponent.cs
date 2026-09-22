@@ -61,10 +61,13 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
         m_element.infNickname.text = _userInfo.nickname;
         m_element.txtInfo.text = $"UID: {m_uid}\n{TableManager.stringTable.GetString("UI_REGION")}: {_userInfo.regionName}";
         m_element.infDesc.text = $"\"{(_userInfo.desc)}\"";
-        
+
         int i = 0;
-        for (; i < _userInfo.batchHeroes.Count; i++)
-            m_element.slotHeroes[i].SetHeroData_UserInfoAsync(_userInfo.batchHeroes[i]).Forget();
+        if (_userInfo.batchHeroes != null)
+        {
+            for (; i < _userInfo.batchHeroes.Count; i++)
+                m_element.slotHeroes[i].SetHeroData_UserInfoAsync(_userInfo.batchHeroes[i]).Forget();
+        }
 
         for (; i < m_element.slotHeroes.Length; i++)
             m_element.slotHeroes[i].SetActivePanel(false);

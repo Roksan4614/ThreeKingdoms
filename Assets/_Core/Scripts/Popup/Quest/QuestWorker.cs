@@ -213,7 +213,7 @@ public class QuestInfoData
     TableQuestData m_data;
     public TableQuestData data => m_data ??= TableManager.quest.GetQuestData(type, key);
 
-    public string name => TableManager.questString.GetString($"{key.ToString().ToUpper()}_NAME");
+    public string name => TableManager.questString.GetString($"{Utils.ToSnakeCase(key.ToString()).ToUpper()}_NAME");
 
     public bool isComplete => count >= data.target_value;
     public void AddCount()
