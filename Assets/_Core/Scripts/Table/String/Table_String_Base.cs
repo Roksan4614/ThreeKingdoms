@@ -42,8 +42,11 @@ public class TableStringData
 
     public string target;
 
-    public string message =>
-        DataManager.option.language switch
+    public string message
+        => GetMessage(DataManager.option.language);
+
+    public string GetMessage(LanguageType _language)
+        => _language switch
         {
             LanguageType.English => en,
             LanguageType.Chinese => cn,

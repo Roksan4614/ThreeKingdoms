@@ -16,7 +16,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
         {
             DataManager.storyMode.lastHistory = default;
             //시간이_어긋나_버렸습니다
-            PopupManager.instance.AlertShow_Table("STORYMOVE_BREAK_TIMELINE");
+            PopupManager.instance.AlertShow_Table("STORYMODE_BREAK_TIMELINE");
             Utils.SetActivePunch(m_element.panel, true);
         }
 
@@ -53,7 +53,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
         if (nextData.next_node_key.IsActive() == false && nextData.node_key == DataManager.storyMode.lastHistory.key)
         {
             //어긋난_시간선의_끝에_도달했습니다.
-            PopupManager.instance.AlertShow_Table("STORYMOVE_IF_FINISHED");
+            PopupManager.instance.AlertShow_Table("STORYMODE_IF_FINISHED");
             DataManager.storyMode.lastHistory = default;
         }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Rev9.Pass
 {
@@ -12,9 +13,10 @@ namespace Rev9.Pass
 
         private void Awake()
         {
-            m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_RECEIVE");
-            m_element.btnConfirm.onClick.AddListener(()
-                => actionComplete(this));
+            //m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_RECEIVE");
+            //m_element.btnConfirm.onClick.AddListener(()
+            //    => actionComplete(this));
+            transform.GetComponent<Button>().onClick.AddListener(() => actionComplete(this));
             m_element.txtBadge.text = TableManager.stringTable.GetString("UI_PASS_QUEST_PAID");
         }
 
@@ -25,13 +27,39 @@ namespace Rev9.Pass
             m_element.txtTitle.text = _data.data.name;
             m_element.txtCount.text = $"XP+{_data.data.exp}";
 
-            var heroName = TableManager.stringHero.GetName(CharacterName.GuanYu);
-            heroName = KoreanHelper.AppendJosa(heroName
-                , _data.data.key == ThreeKingdoms.Shared.Enums.QuestType.OfficeDispatch ? KoreanHelper.JosaType.EulLeul : KoreanHelper.JosaType.EuroroRo
-                , "[{0}]");
+            var heroName = _data.data.resultValueName;
+            if (heroName.IsActive())
+                heroName = KoreanHelper.AppendJosa(heroName
+                    , _data.data.key == ThreeKingdoms.Shared.Enums.QuestType.OfficeDispatch ? KoreanHelper.JosaType.EulLeul : KoreanHelper.JosaType.EuroroRo
+                    , "<size=120%>[{0}]</size>");
             m_element.txtDesc.text = _data.data.GetDesc(heroName);
+            m_element.txtDesc.text += $"\n<color=#555555>({_data.data.count}/{TableManager.passQuest.GetCount(_data.data)})";
 
             m_element.badge.SetActive(_data.isPaid && (DataManager.pass.isPaid == false));
+
+            //FFFFBA
+            if (_data.isComplete)
+            {
+                ColorUtility.TryParseHtmlString("#C3C3C3", out Color outClr);
+                m_element.imgSlot.color = outClr;
+            }
+            else
+                m_element.imgSlot.color = Color.white;
+
+            //if (QuestWorker.instance.HasNavigation(_data.data.key) == false)
+            //{
+            //    if (_data.isComplete == false)
+            //    {
+            //        m_element.btnConfirm.gameObject.SetActive(false);
+            //        return;
+            //    }
+            //}
+
+            //m_element.btnConfirm.gameObject.SetActive(true);
+            //m_element.btnConfirm.text = TableManager.stringTable.GetString($"BUTTON_{(_data.isComplete ? "RECEIVE" : "NAVIGATION")}");
+
+            //if (m_element.btnConfirm.isDrawSelect != _data.isComplete)
+            //    m_element.btnConfirm.SetDrawSelect(_data.isComplete);
         }
 
         #region VALIDATE
@@ -48,15 +76,19 @@ namespace Rev9.Pass
             public TextMeshProUGUI txtCount;
             public TextMeshProUGUI txtDesc;
             public TextMeshProUGUI txtBadge;
-            public ButtonHelper btnConfirm;
+
+            public Image imgSlot;
+
+            //public ButtonHelper btnConfirm;
 
             public void Initialize(Transform _transform)
             {
+                imgSlot = _transform.GetComponent<Image>();
                 txtTitle = _transform.GetComponent<TextMeshProUGUI>("Title/Text");
                 txtCount = _transform.GetComponent<TextMeshProUGUI>("Title/txt_count");
                 txtDesc = _transform.GetComponent<TextMeshProUGUI>("txt_desc");
                 txtBadge = _transform.GetComponent<TextMeshProUGUI>("Badge/Badge/Text");
-                btnConfirm = _transform.GetComponent<ButtonHelper>("btn_confirm");
+                //btnConfirm = _transform.GetComponent<ButtonHelper>("btn_confirm");
             }
 
             public GameObject badge => txtBadge.transform.parent.parent.gameObject;

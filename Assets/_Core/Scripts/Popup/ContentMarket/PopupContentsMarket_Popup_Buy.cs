@@ -55,8 +55,8 @@ namespace Rev9.ContentsMarket
             Utils.SetActivePunch(m_elementContentMarket.panel, true);
 
             m_elementContentMarket.rewardItem.SetItemData(_productData.itemData);
-            string peroidType = TableManager.stringTable.GetString("PEROID_TYPE_" + _productData.peroidType.ToString().ToUpper());
-            m_elementContentMarket.txtLimitCount.text = $"({peroidType} {_productData.strRemainCount})";
+            string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + _productData.periodType.ToString().ToUpper());
+            m_elementContentMarket.txtLimitCount.text = $"({periodType} {_productData.strRemainCount})";
 
             OnButton_MinMax(true);
         }

@@ -281,7 +281,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             var levelInfo = DataManager.castle.mission.levelInfo;
             m_element.txtBatchStat[0].text = $"{TableManager.stringTable.GetString("UI_EXP")} : <color=#{(levelInfo.nowExp >= levelInfo.maxExp ? Palette.htmlString_Up : Palette.htmlString_Down)}>{levelInfo.nowExp}/{levelInfo.maxExp}";
 
-            m_logUpgrade = levelInfo.isUpgradable ? "" : TableManager.alertString.GetString("CATLE_UPGRADE_INVALID_EXP");
+            m_logUpgrade = levelInfo.isUpgradable ? "" : TableManager.alertString.GetString("CASTLE_UPGRADE_INVALID_EXP");
             m_element.txtBatchStat[1].gameObject.SetActive(false);
         }
         else
@@ -305,7 +305,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                     {
                         color = $"<color=#{Palette.htmlString_Down}>";
                         colorBack = "</color>";
-                        m_logUpgrade = TableManager.alertString.GetString("CATLE_UPGRADE_INVALID_STAT_LOW");
+                        m_logUpgrade = TableManager.alertString.GetString("CASTLE_UPGRADE_INVALID_STAT_LOW");
                     }
 
                     txt.text = $"{TableManager.stringTable.GetString($"CORESTAT_{coreStat.ToString().ToUpper()}")} : {color}{total}/{max}{colorBack} ";
@@ -354,7 +354,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                         {
                             if (m_castleData.level != DataManager.castle.GetCaslteData(type).level)
                             {
-                                m_logUpgrade = TableManager.alertString.GetString("CATLE_UPGRADE_PALACE_INVALID");
+                                m_logUpgrade = TableManager.alertString.GetString("CASTLE_UPGRADE_PALACE_INVALID");
                                 break;
                             }
                         }
@@ -364,7 +364,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
                         var palaceLevel = DataManager.castle.GetCaslteData(CastleObjectType.Palace).level;
 
                         //궁성의 레벨보다 높을 수 없습니다.
-                        m_logUpgrade = m_castleData.level < palaceLevel ? "" : TableManager.alertString.GetString("CATLE_UPGRADE_PALACE_LEVEL_LOW");
+                        m_logUpgrade = m_castleData.level < palaceLevel ? "" : TableManager.alertString.GetString("CASTLE_UPGRADE_PALACE_LEVEL_LOW");
                     }
                 }
             }

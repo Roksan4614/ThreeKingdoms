@@ -237,7 +237,7 @@ public class StoryMode_Node_2 : StoryModeBaseComponent
         caoRen.anim.PlayAttack();
         await TalkStartAsync();
 
-        PopupManager.instance.AlertShow(TableManager.alertString.GetStringFormat("STORYMODE_RECEIVE_HEROE", 
+        PopupManager.instance.AlertShow(TableManager.alertString.GetStringFormat("STORYMODE_RECEIVE_HERO", 
             KoreanHelper.AppendJosa( caoRen.info.name, KoreanHelper.JosaType.IgA, "[{0}]")));
         await UniTask.WaitForSeconds(.5f);
 

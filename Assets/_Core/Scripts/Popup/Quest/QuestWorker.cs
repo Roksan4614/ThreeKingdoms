@@ -154,6 +154,72 @@ public class QuestWorker
         return false;
     }
 
+    public bool HasNavigation(QuestType _type)
+    {
+        switch (_type)
+        {
+            case QuestType.TournamentPlay:
+            case QuestType.RaidPlay:
+            case QuestType.GachaProceed:
+            case QuestType.RiceClaim:
+            case QuestType.GoldClaim:
+            case QuestType.OfficeDispatch:
+            case QuestType.DailyDungeonPlay:
+            case QuestType.ItemBuy:
+            case QuestType.ItemUse:
+                //case QuestType.AdsWatch:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public async UniTask<bool> QuestNavigationAsync(QuestType _type)
+    {
+        //StatusType result = StatusType.Wait;
+        //if (_type == QuestType.AdsWatch)
+        //    result = await PopupManager.instance.OpenModalAsync_Table("MODAL_AD_SHOW");
+        //else
+        var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_MOVE_NAVI");
+
+        if (result != StatusType.Success)
+            return false;
+
+        switch (_type)
+        {
+            case QuestType.TournamentPlay:
+                PopupManager.instance.OpenPopup(PopupType.LobbyTournament);
+                break;
+            case QuestType.RaidPlay:
+                PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid);
+                break;
+            case QuestType.GachaProceed:
+                LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Summon);
+                break;
+            case QuestType.RiceClaim:
+            case QuestType.GoldClaim:
+            case QuestType.OfficeDispatch:
+                LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Castle);
+                break;
+            case QuestType.DailyDungeonPlay:
+                LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Boss);
+                break;
+            case QuestType.ItemBuy:
+                LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Shop);
+                break;
+            case QuestType.ItemUse:
+                PopupManager.instance.OpenPopup(PopupType.Inventory);
+                break;
+            //case QuestType.AdsWatch:
+            //    AdsManager.instance.ShowAsync().Forget();
+            //    return false;
+            default:
+                return false;
+        }
+
+        return true;
+    }
+
     void SaveData() => PPWorker.Set(c_key, m_data);
 }
 

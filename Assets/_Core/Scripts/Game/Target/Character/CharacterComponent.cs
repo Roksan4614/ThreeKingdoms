@@ -318,7 +318,7 @@ public class CharacterComponent : TargetComponent
                         {
                             TutorialManager.instance.Action_EnemyKill();
 
-                            if( DataManager.instance.isLobby)
+                            if(DataManager.instance.isLobby)
                                 QuestWorker.instance.AddCount(QuestType.EnemyKill);
                         }
                     }

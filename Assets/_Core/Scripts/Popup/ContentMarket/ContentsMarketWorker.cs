@@ -58,7 +58,7 @@ namespace Rev9.ContentsMarket
                     lstData.Add(new()
                     {
                         key = "rice",
-                        peroidType = PeroidType.Week,
+                        periodType = PeriodType.Week,
                         cost = 7000,
                         count = 1000,
                         countMax = 3
@@ -67,7 +67,7 @@ namespace Rev9.ContentsMarket
                     lstData.Add(new()
                     {
                         key = "gold",
-                        peroidType = PeroidType.Week,
+                        periodType = PeriodType.Week,
                         cost = 7000,
                         count = 1000,
                         countMax = 3
@@ -96,7 +96,7 @@ namespace Rev9.ContentsMarket
                         lstData.Add(new()
                         {
                             key = "tournament_point",
-                            peroidType = PeroidType.Week,
+                            periodType = PeriodType.Week,
                             cost = 2500,
                             count = 10,
                             countMax = 3
@@ -105,7 +105,7 @@ namespace Rev9.ContentsMarket
                         lstData.Add(new()
                         {
                             key = "public_soul_stone",
-                            peroidType = PeroidType.Week,
+                            periodType = PeriodType.Week,
                             cost = 2500,
                             count = 10,
                             countMax = 3
@@ -117,7 +117,7 @@ namespace Rev9.ContentsMarket
                         lstData.Add(new()
                         {
                             key = "public_soul_stone",
-                            peroidType = PeroidType.Week,
+                            periodType = PeriodType.Week,
                             cost = 3500,
                             count = 10,
                             countMax = 3
@@ -126,7 +126,7 @@ namespace Rev9.ContentsMarket
                         {
                             key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
                             value = CharacterName.LiuBei.ToString(),
-                            peroidType = PeroidType.Season,
+                            periodType = PeriodType.Season,
                             cost = 4500,
                             count = 5,
                             countMax = 3
@@ -136,7 +136,7 @@ namespace Rev9.ContentsMarket
                         {
                             key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.CaoCao.ToString())}",
                             value = CharacterName.CaoCao.ToString(),
-                            peroidType = PeroidType.Season,
+                            periodType = PeriodType.Season,
                             cost = 4500,
                             count = 5,
                             countMax = 3
@@ -145,7 +145,7 @@ namespace Rev9.ContentsMarket
                         {
                             key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.SunQuan.ToString())}",
                             value = CharacterName.SunQuan.ToString(),
-                            peroidType = PeroidType.Season,
+                            periodType = PeriodType.Season,
                             cost = 4500,
                             count = 5,
                             countMax = 3
@@ -206,11 +206,11 @@ namespace Rev9.ContentsMarket
         [JsonProperty] public int countMax;
         [JsonProperty] public int countBuy;
 
-        PeroidType? peroid_type;
-        public PeroidType peroidType
+        PeriodType? period_type;
+        public PeriodType periodType
         {
-            get => peroid_type ?? PeroidType.Daily;
-            set => peroid_type = value;
+            get => period_type ?? PeriodType.Daily;
+            set => period_type = value;
         }
 
         ItemDetailType? cost_type;
@@ -239,7 +239,7 @@ namespace Rev9.ContentsMarket
         }
     }
 
-    public enum PeroidType
+    public enum PeriodType
     {
         Daily,
         Week,

@@ -36,6 +36,8 @@ public partial class Data_UserInfo
             idleRewardData.Default();
             SaveData_IdleReward();
         }
+
+        AuthWorker.instance.SetAuthData(AuthWorker.AuthType.Guest, "roksan");
     }
 
     public async UniTask<List<ItemData>> API_ReceiveIdleReward()

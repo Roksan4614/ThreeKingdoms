@@ -162,7 +162,7 @@ public class Data_Castle_Mission
         SaveData();
 
         if (prevExp < m_levelInfo.maxExp && m_levelInfo.nowExp >= m_levelInfo.maxExp)
-            PopupManager.instance.AlertShow_Table("CASLTE_READY_UPGRADE_OFFICE");
+            PopupManager.instance.AlertShow_Table("CASTLE_READY_UPGRADE_OFFICE");
 
         _onComplete(StatusType.Success, m_levelInfo.nowExp - prevExp);
 

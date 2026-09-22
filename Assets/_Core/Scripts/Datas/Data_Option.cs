@@ -24,9 +24,13 @@ public enum OptionType
 
 public enum LanguageType
 {
+    None = -1,
+
     Korean,
     English,
-    Chinese
+    Chinese,
+
+    Max
 }
 
 public class Data_Option

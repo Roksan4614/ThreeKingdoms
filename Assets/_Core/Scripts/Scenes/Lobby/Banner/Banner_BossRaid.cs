@@ -31,7 +31,7 @@ public class Banner_BossRaid : MonoBehaviour, IValidatable
 
         if (dataRaid.tickNextRound == 0)
         {
-            m_element.button.text = TableManager.stringTable.GetString("UI_BOSSRAID_NOT_APPERED");// "_미출현_";
+            m_element.button.text = TableManager.stringTable.GetString("UI_BOSSRAID_NOT_APPEARED");// "_미출현_";
             await UniTask.WaitUntil(() => DataManager.bossRaid.data.tickNextRound > 0, cancellationToken: destroyCancellationToken);
         }
 

@@ -75,6 +75,80 @@ namespace Rev9.Pass
 
         public string name => TableManager.questString.GetString($"{Utils.ToSnakeCase(key.ToString()).ToUpper()}_NAME");
 
+        string m_valueHero;
+        public string valueHero
+        {
+            get
+            {
+                if (m_valueHero == null)
+                    m_valueHero = is_character > 0 ? value : "";
+                return m_valueHero;
+            }
+        }
+
+        RegionType m_valueRegion = RegionType.NONE - 1;
+        public RegionType valueRegion
+        {
+            get
+            {
+                if (m_valueRegion == RegionType.NONE - 1)
+                {
+                    m_valueRegion = RegionType.NONE;
+                    if (is_country > 1)
+                    {
+                        for (var i = RegionType.NONE + 1; i < RegionType.MAX; i++)
+                        {
+                            if (i.ToString().ToLower() == value.ToLower())
+                            {
+                                m_valueRegion = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+                return m_valueRegion;
+            }
+        }
+
+        HeroClassType m_valueClass = HeroClassType.NONE - 1;
+        public HeroClassType valueClass
+        {
+            get
+            {
+                if (m_valueClass == HeroClassType.NONE - 1)
+                {
+                    m_valueClass = HeroClassType.NONE;
+                    if (is_class > 1)
+                    {
+                        for (var i = HeroClassType.NONE + 1; i < HeroClassType.MAX; i++)
+                        {
+                            if (i.ToString().ToLower() == value.ToLower())
+                            {
+                                m_valueClass = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+                return m_valueClass;
+            }
+        }
+
+        public string resultValueName
+        {
+            get
+            {
+                if (is_class == 0 && is_country == 0 && is_character == 0) return "";
+
+                if (is_character > 0)
+                    return TableManager.stringHero.GetName(value);
+                else if (is_country > 0)
+                    return TableManager.stringTable.GetRegionType(valueRegion, true);
+                else
+                    return TableManager.stringHero.GetClassType(valueClass);
+            }
+        }
+
         public string GetDesc(string _value)
             => TableManager.questString.GetStringFormat($"{Utils.ToSnakeCase(key.ToString()).ToUpper()}_DESC", _value);
     }

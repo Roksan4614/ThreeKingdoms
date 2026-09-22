@@ -36,9 +36,12 @@ namespace Rev9.Pass
             //setlocalization
             {
                 transform.SetTextTable("Panel/txt_title", "UI_PASS_TITLE");
-                transform.SetTextTable("Panel/Info/txt_desc", "UI_PASS_DESC");
+                transform.SetText("Panel/Info/txt_desc", TableManager.stringTable
+                    .GetStringFormat( "UI_PASS_DESC", TableManager.stringHero.GetName(CharacterName.LiuBei)));
                 m_element.btnPass.text = TableManager.stringTable.GetString("UI_PASS_BUY_DESC");
             }
+
+            m_element.panel.gameObject.SetActive(false);
         }
 
         public override void OpenPopup(params object[] _args)
@@ -49,10 +52,9 @@ namespace Rev9.Pass
 
         async UniTask OpenPopupAsync()
         {
-            m_element.panel.gameObject.SetActive(false);
             await DataManager.pass.InitializeAsync();
 
-            m_element.panel.gameObject.SetActive(true);
+            Utils.SetActivePunch(m_element.panel, true);
             SetTab(TabType.Reward);
 
             RefreshLevelXP();

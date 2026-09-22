@@ -13,10 +13,10 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         NONE = -1,
 
         Setting,
-        Pass,
         Noti,
         Inventory,
         Post,
+        Pass,
         Quest,
         Rebirth,
 

@@ -178,40 +178,8 @@ namespace Rev9.Quest
             }
             else
             {
-                var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_MOVE_NAVI");//"이동_하시겠습니까?");
-
-                if (result != StatusType.Success)
+                if (await QuestWorker.instance.QuestNavigationAsync(_questData.key) == false)
                     return;
-
-                // NAVIGATION
-                switch (_questData.key)
-                {
-                    case QuestType.TournamentPlay:
-                        PopupManager.instance.OpenPopup(PopupType.LobbyTournament);
-                        break;
-                    case QuestType.RaidPlay:
-                        PopupManager.instance.OpenPopup(PopupType.LobbyBossRaid);
-                        break;
-                    case QuestType.GachaProceed:
-                        LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Summon);
-                        break;
-                    case QuestType.RiceClaim:
-                    case QuestType.GoldClaim:
-                    case QuestType.OfficeDispatch:
-                        LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Castle);
-                        break;
-                    case QuestType.DailyDungeonPlay:
-                        LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Boss);
-                        break;
-                    case QuestType.ItemBuy:
-                        LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Shop);
-                        break;
-                    case QuestType.ItemUse:
-                        PopupManager.instance.OpenPopup(PopupType.Inventory);
-                        break;
-                    default:
-                        return;
-                }
 
                 Close();
             }

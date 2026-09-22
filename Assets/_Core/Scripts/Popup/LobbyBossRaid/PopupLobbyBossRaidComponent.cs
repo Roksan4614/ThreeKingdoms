@@ -138,7 +138,7 @@ public class PopupLobbyBossRaidComponent : BasePopupComponent
 
         if (DataManager.bossRaid.data.tickNextRound == 0)
         {
-            m_element.btnStart.text = TableManager.stringTable.GetString("UI_BOSSRAID_NOT_APPERED");// "_미출현_";
+            m_element.btnStart.text = TableManager.stringTable.GetString("UI_BOSSRAID_NOT_APPEARED");// "_미출현_";
             m_element.txtRoundRemainTimer.text = "";
             m_element.btnStart.TMPText.alignment = TextAlignmentOptions.Center;
 

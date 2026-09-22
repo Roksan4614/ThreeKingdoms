@@ -38,6 +38,12 @@ public class PopupQuest_Slot : MonoBehaviour, IValidatable
 
         m_element.badge.transform.parent.gameObject.SetActive(questData.isReceiveReward);
 
+        if (QuestWorker.instance.HasNavigation(questData.key) == false && questData.isComplete == false)
+        {
+            m_element.btnConfirm.gameObject.SetActive(false);
+            return;
+        }
+
         m_element.btnConfirm.gameObject.SetActive(questData.isReceiveReward == false);
         m_element.btnConfirm.text = TableManager.stringTable.GetString($"BUTTON_{(questData.isComplete ? "RECEIVE" : "NAVIGATION")}");
 

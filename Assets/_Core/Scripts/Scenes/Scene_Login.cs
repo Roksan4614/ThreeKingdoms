@@ -25,49 +25,58 @@ public class Scene_Login : SceneBase
             .SetLoops(-1, LoopType.Restart)
             .SetEase(Ease.Linear).Forget();
 
-        DataManager.option.Initialize();
         PopupManager.instance.ShowDimm(false);
         await UniTask.NextFrame();
 
         System.DateTime dtStart = System.DateTime.Now;
 
-        List<AddressableLabelType> labelIcon = new() { };
-
-        long totalSize = await AddressableManager.instance.GetDownloadSizeAsync(true, AddressableLabelType.L_Start);
-
-        IngameLog.AddBuild("TOTAL SIZE: START LABEL: " + Utils.FileSize(totalSize));
-
         List<UniTask> tasks = new();
-        var keys = TableManager.hero.list.Select(x => x.key).ToArray();
-        IngameLog.AddBuild("Load_HeroIconAsync");
-        tasks.Add(AddressableManager.instance.Load_HeroIconAsync(keys));
-        IngameLog.AddBuild("Load_HeroCharacterAsync");
-        tasks.Add(AddressableManager.instance.Load_HeroCharacterAsync(keys));
-        IngameLog.AddBuild("Load_ItemIconAsync");
-        tasks.Add(AddressableManager.instance.Load_ItemIconAsync(TableManager.item.list.Select(x => x.key.ToString()).ToArray()));
-        IngameLog.AddBuild("Load_TreasureIconAsync");
-        tasks.Add(AddressableManager.instance.Load_ItemIconAsync(TableManager.treasure.list.Select(x => $"Treasure_{x.key}").ToArray()));
-        IngameLog.AddBuild("Load_TierCionAsync");
+        if (LoadSceneWorker.instance.isRestart == false)
+        {
+            List<AddressableLabelType> labelIcon = new() { };
 
-        string[] tierKey = new string[8];
-        for (int i = 0; i < tierKey.Length; i++)
-            tierKey[i] = $"Tier_{i + 1}";
-        tasks.Add(AddressableManager.instance.Load_ItemIconAsync(tierKey));
+            long totalSize = await AddressableManager.instance.GetDownloadSizeAsync(true, AddressableLabelType.L_Start);
+
+            IngameLog.AddBuild("TOTAL SIZE: START LABEL: " + Utils.FileSize(totalSize));
+
+            var keys = TableManager.hero.list.Select(x => x.key).ToArray();
+            IngameLog.AddBuild("Load_HeroIconAsync");
+            tasks.Add(AddressableManager.instance.Load_HeroIconAsync(keys));
+            IngameLog.AddBuild("Load_HeroCharacterAsync");
+            tasks.Add(AddressableManager.instance.Load_HeroCharacterAsync(keys));
+            IngameLog.AddBuild("Load_ItemIconAsync");
+            tasks.Add(AddressableManager.instance.Load_ItemIconAsync(TableManager.item.list.Select(x => x.key.ToString()).ToArray()));
+            IngameLog.AddBuild("Load_TreasureIconAsync");
+            tasks.Add(AddressableManager.instance.Load_ItemIconAsync(TableManager.treasure.list.Select(x => $"Treasure_{x.key}").ToArray()));
+            IngameLog.AddBuild("Load_TierCionAsync");
+
+            string[] tierKey = new string[8];
+            for (int i = 0; i < tierKey.Length; i++)
+                tierKey[i] = $"Tier_{i + 1}";
+            tasks.Add(AddressableManager.instance.Load_ItemIconAsync(tierKey));
+        }
 
         IngameLog.AddBuild("LOGIN START");
 
-        // TODO: Login
-        await TutorialManager.instance.InitializeAsync();
-        await DataManager.userInfo.API_Login();
-        await DataManager.instance.InitializeAsync();
+        if (AuthWorker.data.isActive == false)
+        {
+            DataManager.option.Initialize();
+            // TODO: Login
+            await DataManager.userInfo.API_Login();
+            await TutorialManager.instance.InitializeAsync();
+            await DataManager.instance.InitializeAsync();
+        }
 
         TimeManager.instance.InitializeAsync().Forget();
 
-        if (DataManager.userInfo.myHero.Count == 0)
-            tasks.Add(PopupManager.instance.LoadAsset(PopupType.SelectRegion));
+        if (LoadSceneWorker.instance.isRestart == false)
+        {
+            if (DataManager.userInfo.myHero.Count == 0)
+                tasks.Add(PopupManager.instance.LoadAsset(PopupType.SelectRegion));
 
-        tasks.Add(AddressableManager.instance.DownloadAsync(true, null, "02_Lobby"));
-        tasks.Add(LoadLobbyScreenAsync());
+            tasks.Add(AddressableManager.instance.DownloadAsync(true, null, "02_Lobby"));
+            tasks.Add(LoadLobbyScreenAsync());
+        }
 
         await UniTask.WhenAll(tasks.ToArray());
         IngameLog.AddBuild($"Login: StartAsync: Finished: {(Time.realtimeSinceStartup - timeStart):0.#0}s");

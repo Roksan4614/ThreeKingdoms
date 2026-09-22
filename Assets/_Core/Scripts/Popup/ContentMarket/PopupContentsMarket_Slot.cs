@@ -34,8 +34,8 @@ namespace Rev9.ContentsMarket
 
             if (isLimit == true)
             {
-                string peroidType = TableManager.stringTable.GetString("PEROID_TYPE_" + _productData.peroidType.ToString().ToUpper());
-                m_element.txtCount.text = $"{peroidType} {_productData.strRemainCount}";
+                string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + _productData.periodType.ToString().ToUpper());
+                m_element.txtCount.text = $"{periodType} {_productData.strRemainCount}";
             }
         }
 
