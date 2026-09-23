@@ -413,6 +413,25 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
+    /// 필드 적 구분
+    /// </summary>
+    public enum FieldEnemyType
+    {
+        /// <summary>
+        /// 일반 적 (s_enemy_stat.key 참조)
+        /// </summary>
+        Normal = 0,
+        /// <summary>
+        /// 대체 보스 (s_enemy_stat.key 참조)
+        /// </summary>
+        BossGeneric = 1,
+        /// <summary>
+        /// 인물 보스 (s_character.key 참조)
+        /// </summary>
+        BossCharacter = 2,
+    }
+
+    /// <summary>
     /// 계정 생성 및 로그인에 사용한 인증 방식.
     /// </summary>
     public enum GameClientLoginType
