@@ -54,6 +54,7 @@ public struct TableHeroPositionData
     }
 
     public string name => TableManager.stringTable.GetHeroPositionType(key);
+    public string nameShort => TableManager.stringTable.GetHeroPositionTypeShort(key);
     public string stringAttribute
     {
         get

@@ -27,6 +27,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         m_element.baseHeroIcon.gameObject.SetActive(false);
 
         m_element.btnAdd.onClick.AddListener(() => OpenHeroListPopupAsync().Forget());
+
     }
 
     private void OnDisable()
@@ -63,7 +64,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
             ts = endTime - Utils.GetUTC();
         }
 
-        m_element.btnStart.text = "_확인_";
+        m_element.btnStart.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");// "_확인_";
     }
 
     public void Open(CastleMissionData _mission, bool _isRunning)
@@ -77,7 +78,7 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         }
         else
         {
-            m_element.btnStart.text = "_시작하기_";
+            m_element.btnStart.text = TableManager.stringTable.GetString("UI_START");// "_시작하기_";
             m_element.btnAdd.gameObject.SetActive(true);
             m_missionData.heroes = new();
 
@@ -108,15 +109,15 @@ public class PopupCastleMission_Popup_Info : BasePopupComponent
         Utils.SetActivePunch(m_element.panel, true);
         resultType = StatusType.Wait;
 
-        m_element.txtTitle.text = $"임무_:_[{TableManager.stringTable.GetGradeType(_mission.grade)}]";
+        m_element.txtTitle.text = $"{TableManager.stringTable.GetString("CASTLE_MENU_OFFICE")}: [{TableManager.stringTable.GetGradeType(_mission.grade)}]";
         m_element.txtName.text = _mission.missionNameStat;
-        m_element.gauge.textTitle = $"고유_능력({TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.statType.ToString().ToUpper()}")})_요구치";
+        m_element.gauge.textTitle = $"{TableManager.stringTable.GetString("CASTLE_MISSION_REQ_STAT")}: {TableManager.stringTable.GetString($"CORESTAT_{_mission.dbData.statType.ToString().ToUpper()}")}";
 
         //소요시간
         var now = DateTime.Now;
         TimeSpan ts = now.AddSeconds(_mission.dbGradeData.durationSeconds) - now;
-        m_element.txtContent_Time.text = $"소요시간_:_{ts.ToRemainTime()}";
-        m_element.txtContent_Exp.text = $"경험치_:_+{_mission.dbGradeData.missionXp.AmountKMBT()}";
+        m_element.txtContent_Time.text = $"{TableManager.stringTable.GetString("UI_RUNNING_TIME")}: {ts.ToRemainTime()}";
+        m_element.txtContent_Exp.text = $"{TableManager.stringTable.GetString("UI_EXP")}: +{_mission.dbGradeData.missionXp.AmountKMBT()}";
         m_element.txtContent_Exp.transform.parent.ForceRebuildLayout();
 
         UpdateHero(true);

@@ -47,7 +47,10 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         m_missionData = _missionData;
 
         m_element.txt_title.text = _missionData.missionNameStat;
-        m_element.txt_exp.text = $"난이도_:_{TableManager.stringTable.GetGradeType(_missionData.grade, _isDifficult: true)} <size=90%>(+{_missionData.dbGradeData.missionXp.AmountKMBT()}경험치)";
+        m_element.txt_exp.text = TableManager.stringTable.GetStringFormat("CASTLE_MISSION_DIFF_INFO"
+            , TableManager.stringTable.GetGradeType(_missionData.grade, _isDifficult: true)
+            , _missionData.dbGradeData.missionXp.AmountKMBT());
+        //$"난이도_:_{} <size=90%>(+{_missionData.dbGradeData.missionXp.AmountKMBT()}경험치)";
 
         var dbRewards = TableManager.castleMissionReward.GetReward(_missionData);
 
@@ -121,7 +124,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
             m_element.btn_batch.rt.sizeDelta = size;
 
             m_element.btn_batch.SetDrawSelect(false);
-            m_element.btn_batch.text = "장수_편성";
+            m_element.btn_batch.text = TableManager.stringTable.GetString("BUTTON_BATCH");// "장수_편성";
             m_element.btn_batch.interactable = true;
         }
 
@@ -153,12 +156,12 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         {
             if (ts.TotalSeconds <= 10)
             {
-                m_element.btn_batch.text = ts.ToRemainTime(21) + "\n<size=90%>시간단축";
+                m_element.btn_batch.text = ts.ToRemainTime(21) + "\n<size=90%>" + TableManager.stringTable.GetString("BUTTON_SPEED_UP");
                 m_onUpdateTimer(m_missionData.idx, ts);
             }
             else if (ts.Seconds != prev)
             {
-                m_element.btn_batch.text = ts.ToRemainTime(21) + "\n<size=90%>시간단축";
+                m_element.btn_batch.text = ts.ToRemainTime(21) + "\n<size=90%>" + TableManager.stringTable.GetString("BUTTON_SPEED_UP");
                 m_onUpdateTimer(m_missionData.idx, ts);
                 prev = ts.Seconds;
             }
@@ -172,7 +175,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         m_element.btn_batch.rt.sizeDelta = size;
 
         m_element.btn_batch.SetDrawSelect(true);
-        m_element.btn_batch.text = "_완료_";
+        m_element.btn_batch.text = TableManager.stringTable.GetString("BUTTON_COMPLETE");
     }
 
     void Release_CTS()

@@ -64,11 +64,11 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         }
 #endif
 
-        for( var i = ButtonType.NONE + 1; i < ButtonType.MAX; i++)
+        for (var i = ButtonType.NONE + 1; i < ButtonType.MAX; i++)
         {
             var type = i;
             m_buttons[i].onClick.AddListener(() => OnButtonAsync(type).Forget());
-            if( i != ButtonType.Rebirth)
+            if (i != ButtonType.Rebirth)
                 m_buttons[i].text = TableManager.stringTable.GetString($"MENU_{type.ToString().ToUpper()}");
         }
 
@@ -97,6 +97,10 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
 
         var btn = m_buttons[_type];
         btn.interactable = false;
+
+        PopupManager.instance.CloseAll(m_popups.Select(x => x.Value.popupType).ToArray());
+        LobbyScreenManager.instance.CloseScreen(LobbyScreenType.None);
+
         switch (_type)
         {
             case ButtonType.Setting:

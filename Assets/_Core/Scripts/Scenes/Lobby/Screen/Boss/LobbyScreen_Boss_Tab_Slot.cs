@@ -61,7 +61,7 @@ public class LobbyScreen_Boss_Tab_Slot : MonoBehaviour, IValidatable
         public void Initialize(Transform _transform)
         {
             button = _transform.GetComponent<Button>();
-            txtName = _transform.GetComponent<TextMeshProUGUI>("Panel/txt_name");
+            txtName = _transform.GetComponent<TextMeshProUGUI>("txt_name");
             dimm = _transform.Find("Panel/Dimm").gameObject;
             objSelect = _transform.Find("Select").gameObject;
 

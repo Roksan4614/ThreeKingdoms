@@ -17,6 +17,8 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
         transform.GetComponent<Button>("Dimm")?.onClick.AddListener(Close);
         transform.GetComponent<Button>("Panel/btn_close")?.onClick.AddListener(Close);
         m_element.btnStart.onClick.AddListener(() => OnButtonAsync_Confirm().Forget());
+
+        m_element.btnStart.text = TableManager.stringTable.GetString("BUTTON_RECEIVE_REWARD").ToUpper();// "_시작하기_";
     }
 
     public async UniTask OpenAsync(params Data_Castle_Mission.CastleMissionData[] _missionDatas)
@@ -30,19 +32,19 @@ public class PopupCastleMission_Popup_Result : PopupCastleMission_Popup_Info
 
         var firstMission = _missionDatas.First();
 
-        m_element.txtTitle.text = $"임무_결과_:_[{(_missionDatas.Length > 1 ? "전체" : TableManager.stringTable.GetGradeType(firstMission.grade))}]";
+        m_element.txtTitle.text = $"{TableManager.stringTable.GetString("CASTLE_MISSION_RESULT")}: [{(_missionDatas.Length > 1 ? TableManager.stringTable.GetString("TAB_ALL") : TableManager.stringTable.GetGradeType(firstMission.grade))}]";
 
         m_element.txtName.text = firstMission.missionNameStat;
 
         if (_missionDatas.Length > 1)
-            m_element.txtName.text += $"_외_{_missionDatas.Length - 1}건";
+            m_element.txtName.text += TableManager.stringTable.GetStringFormat("UI_AND_OTHERS_COUNT", (_missionDatas.Length - 1).ToString());// $"_외_{_missionDatas.Length - 1}건";
 
         // 관아 레벨
         {
             var levelInfo = DataManager.castle.mission.levelInfo;
             var addExp = _missionDatas.Sum(x => x.dbGradeData.missionXp);
-            m_element.txtContent_Exp.text = $"획득_경험치 : +{addExp.AmountKMBT(_isMBT: true)}";
-            m_element.gauge.textTitle = $"Lv.{levelInfo.level}_관아_경험치 : ";
+            m_element.txtContent_Exp.text = $"{TableManager.stringTable.GetString("UI_RECEIVE_EXP")}: +{addExp.AmountKMBT(_isMBT: true)}";
+            m_element.gauge.textTitle = TableManager.stringTable.GetStringFormat("CASTLE_EXP_INFO", levelInfo.level.ToString());// $"Lv.{levelInfo.level}_관아_경험치 : ";
             m_element.gauge.textAmount = $"{levelInfo.nowExp + addExp:#,0} / {levelInfo.maxExp:#,0}";
             m_element.gauge.fillAmount = levelInfo.nowExp / (float)levelInfo.maxExp;
         }

@@ -19,8 +19,8 @@ public class BannerComponent : Singleton<BannerComponent>, IValidatable
 
         //setlocalization
         {
-            m_element.btnIdleReward.text = TableManager.stringTable.GetString("UI_AFK_TITLE");
-            m_element.btnTournament.text = TableManager.stringTable.GetString("UI_TOURNAMENT_TITLE");
+            m_element.btnIdleReward.text = TableManager.stringTable.GetString("UI_AFK_TITLE_S");
+            m_element.btnTournament.text = TableManager.stringTable.GetString("UI_TOURNAMENT_TITLE_S");
             m_element.story.transform.SetTextTable("Text", "UI_BANNER_STORY");            
         }
     }

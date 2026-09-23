@@ -30,6 +30,20 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
             Close();
         });
         m_element.btnCancel.onClick.AddListener(Close);
+
+
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/txt_title", "UI_CHARACTER_LIST");
+
+            var panelTop = m_element.txtTop[0].transform.parent;
+            panelTop.SetTextTable("txt_name", "CASTLE_OFFICER");
+            panelTop.SetTextTable("txt_batch", "CASTLE_BATCH");
+
+            m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
+            m_element.btnCancel.text = TableManager.stringTable.GetString("BUTTON_CANCEL");
+        }
     }
 
     public void Open(Data_Castle_Mission.CastleMissionData _missionData)
@@ -138,7 +152,7 @@ public class PopupCastleHeroListComponent_Mission : BasePopupComponent
 
         var percent = Mathf.Min(1f, now / (float)condition);
         var gauge = m_element.gauges[0];
-        gauge.textTitle = $"필요_{TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}")}_수치 ({percent * 100:0.##}%)";
+        gauge.textTitle = $"{TableManager.stringTable.GetString("CASTLE_MISSION_REQ_STAT")}: {TableManager.stringTable.GetString($"CORESTAT_{stat.ToString().ToUpper()}")} ({percent * 100:0.##}%)";
         gauge.textAmount = $"{now}/{condition}";
         gauge.doFillAmount = percent;
     }

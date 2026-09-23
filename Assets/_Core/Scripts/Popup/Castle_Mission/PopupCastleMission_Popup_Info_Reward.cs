@@ -10,15 +10,15 @@ public class PopupCastleMission_Popup_Info_Reward : MonoBehaviour, IValidatable
     private void Awake()
     {
         m_rewardRandom = Instantiate(m_element.baseRewardItem, m_element.scroll.content).GetComponent<PopupCastleMission_Popup_Info_RewardItem>();
-        m_element.baseRewardItem.SetTitle(true, "È®Á¤_º¸»ó");
-        m_rewardRandom.SetTitle(false, "È¹µæ_°¡´É_º¸»ó");
+        m_element.baseRewardItem.SetTitle(true, TableManager.stringTable.GetString("UI_GUARANTEED_REWARD").ToUpper());// "È®Á¤_º¸»ó");
+        m_rewardRandom.SetTitle(false, TableManager.stringTable.GetString( "UI_VALID_REWARD_LIST").ToUpper()); //È¹µæ °¡´É º¸»ó
         m_rewardRandom.name = "Random";
     }
 
     public void SetTitleResult()
     {
-        m_element.baseRewardItem.SetTitle(true, "È®Á¤_º¸»ó");
-        m_rewardRandom.SetTitle(false, "È¹µæ_°¡´É_º¸»ó");
+        m_element.baseRewardItem.SetTitle(true, TableManager.stringTable.GetString("UI_GUARANTEED_REWARD").ToUpper());
+        m_rewardRandom.SetTitle(false, TableManager.stringTable.GetString("UI_VALID_REWARD_LIST").ToUpper());
     }
 
     public void SetRewardList(Data_Castle_Mission.CastleMissionData _missionData, float _percent)

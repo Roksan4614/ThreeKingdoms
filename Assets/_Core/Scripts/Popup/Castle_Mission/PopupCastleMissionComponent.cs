@@ -30,11 +30,21 @@ public class PopupCastleMissionComponent : BasePopupComponent
         base.Awake();
 
         m_element.baseItem.transform.SetParent(m_element.scroll.viewport);
+
         m_element.baseItem.gameObject.SetActive(false);
 
         var popup = transform.Find("Popup");
         for (int i = 0; i < popup.childCount; i++)
             popup.GetChild(i).gameObject.SetActive(false);
+
+
+        //setlocalization
+        {
+            transform.SetText("Panel/txt_title", $"{TableManager.stringTable.GetString("CASTLE_OBJECT_OFFICE")}: {TableManager.stringTable.GetString("CASTLE_MENU_OFFICE")}");
+            m_element.baseItem.transform.SetTextTable("Badge/Text", "UI_GUARANTEED");
+            m_element.btnAll.text = TableManager.stringTable.GetString("BUTTON_RECEIVE_ALL").ToUpper();
+            m_element.txtEmpty.text = TableManager.stringTable.GetString("CASTLE_MISSION_EMPTY_COMPLETE");
+        }
     }
 
     private void Start()
@@ -43,7 +53,10 @@ public class PopupCastleMissionComponent : BasePopupComponent
         Utils.WaitEscape(this, CloseEscape, _token: m_cts.Token);
 
         foreach (var tab in m_element.dbTab)
+        {
             tab.Value.onClick.AddListener(() => OnButton_Tab(tab.Key));
+            tab.Value.text = TableManager.stringTable.GetString($"CASTLE_MISSION_TAB_{tab.Key.ToString().ToUpper()}");
+        }
 
         m_element.btnRefresh.onClick.AddListener(() =>
         {
@@ -53,6 +66,8 @@ public class PopupCastleMissionComponent : BasePopupComponent
 
         m_element.btnAll.onClick.AddListener(()
             => OpenMissionResultAsync(DataManager.castle.mission.GetFinishedMissions()).Forget());
+
+        m_element.btnRefresh.text = TableManager.stringTable.GetString("BUTTON_REFRESH");
     }
 
     public override void OpenPopup(params object[] _args)
@@ -68,13 +83,18 @@ public class PopupCastleMissionComponent : BasePopupComponent
     void UpdateLevelInfo()
     {
         var levelInfo = DataManager.castle.mission.levelInfo;
-        m_element.exp.textTitle = $"Lv.{levelInfo.level}_관아_경험치 : ";
+        m_element.exp.textTitle = TableManager.stringTable.GetStringFormat("CASTLE_EXP_INFO", levelInfo.level.ToString());//$"Lv.{levelInfo.level}_관아_경험치 : ";
         m_element.exp.textAmount = $"{levelInfo.nowExp:#,0} / {levelInfo.maxExp:#,0}";
         m_element.exp.fillAmount = levelInfo.nowExp / (float)levelInfo.maxExp;
     }
 
+    string m_formatRemainCount;
     void RefreshRemainCount()
-        => m_element.txtRemainCount.text = $"남은_횟수 : {DataManager.castle.mission.levelInfo.missionCount}";
+    {
+        if (m_formatRemainCount.IsActive() == false)
+            m_formatRemainCount = TableManager.stringTable.GetString("UI_REMAIN_COUNT");
+        m_element.txtRemainCount.text = string.Format(m_formatRemainCount, DataManager.castle.mission.levelInfo.missionCount);
+    }
 
     void OnButton_Tab(TabType _tabType)
     {

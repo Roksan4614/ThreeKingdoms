@@ -45,16 +45,13 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
     {
         if (_screenType == LobbyScreenType.None)
         {
-            for (var screen = LobbyScreenType.None + 1; screen < LobbyScreenType.MAX; screen++)
-            {
-                if (m_dicScreen.ContainsKey(screen) == false)
-                    continue;
-                if (m_dicScreen[screen].isOpenned)
-                    m_dicScreen[screen].Close();
-            }
+            foreach (var screen in m_dicScreen)
+                if (screen.Value.isOpenned == true)
+                    screen.Value.Close();
+
             SetActiveDimm(false);
         }
-        if (_screenType == m_curScreen)
+        else if (_screenType == m_curScreen)
         {
             m_dicScreen[_screenType].Close();
             SetActiveDimm(false);
@@ -88,13 +85,13 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         => BottomComponent.instance.OnButton_OpenScreen(_screenType);
 
     // bottomcomponent에서 와야 해 ㅜㅜ
-    public async UniTask OpenScreenAsync(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback)
+    public async UniTask OpenScreenAsync(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback = null)
     {
         ControllerManager.instance.SetSwitch(true);
 
         if (m_doing_ActiveDimm == true)
         {
-            _callback(null);
+            _callback?.Invoke(null);
             return;
         }
 
@@ -103,7 +100,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
             var screen = await AddressableManager.instance.GetLobbyScreen(_screenType);
             if (screen == null)
             {
-                _callback(null);
+                _callback?.Invoke(null);
                 return;
             }
 
@@ -121,7 +118,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
             if (m_curScreen > LobbyScreenType.None)
                 CloseScreen(m_curScreen);
             {
-                _callback(null);
+                _callback?.Invoke(null);
                 return;
             }
         }
@@ -134,7 +131,7 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         m_curScreen = _screenType;
 
         ControllerManager.instance.SetSwitch(false);
-        _callback(m_dicScreen[_screenType]);
+        _callback?.Invoke(m_dicScreen[_screenType]);
     }
 
     bool m_doing_ActiveDimm;

@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 namespace Rev9.Pass
@@ -71,7 +72,7 @@ namespace Rev9.Pass
                         idx = idx++,
                         tick = ticks,
                         isPaid = i == 2,
-                        data = TableManager.passQuest.GetRandomQuest(false)
+                        tableData = TableManager.passQuest.GetRandomQuest(false)
                     });
                 }
             }
@@ -85,7 +86,7 @@ namespace Rev9.Pass
                         idx = idx++,
                         tick = ticks,
                         isPaid = (i + 1) % 3 == 0,
-                        data = TableManager.passQuest.GetRandomQuest(true)
+                        tableData = TableManager.passQuest.GetRandomQuest(true)
                     });
                 }
             }
@@ -119,7 +120,6 @@ namespace Rev9.Pass
             var receiveData = _isPaid ? m_data.receiveLevel_Paid : m_data.receiveLevel;
             if (receiveData.Contains(level))
             {
-                //PopupManager.instance.AlertShow("이미_보상을_받았습니다.");
                 return false;
             }
 
@@ -154,6 +154,22 @@ namespace Rev9.Pass
             //return TableManager.passReward.GetRewardItem(_level, _isPaid);
         }
 
+        public void AddCount_EnemyKill(HeroInfoData _heroinfoData)
+        {
+            foreach (var q in m_data.quests)
+            {
+                if (q.tableData.key == QuestType.EnemyKill)
+                {
+                    if (q.tableData.valueHero == _heroinfoData.key ||
+                        q.tableData.valueClass == _heroinfoData.classType ||
+                        q.tableData.valueRegion == _heroinfoData.regionType)
+                    {
+                        q.tableData.count++;
+                        Signal.instance.Pass_UpdateQuest.Emit(q);
+                    }
+                }
+            }
+        }
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -180,14 +196,14 @@ namespace Rev9.Pass
         [JsonProperty] public int idx;
         [JsonProperty] public long tick;
         [JsonProperty] public bool isPaid;
-        [JsonProperty] public TablePassQuestData data;
+        [JsonProperty] public TablePassQuestData tableData;
 
         public bool isComplete
-            => TableManager.passQuest.GetCount(data) <= data.count;
+            => TableManager.passQuest.GetCount(tableData) <= tableData.count;
 
         public System.DateTime dt => Utils.GetDateTime(tick);
 
         public bool isDaily
-            => data.type == 0;
+            => tableData.type == 0;
     }
 }

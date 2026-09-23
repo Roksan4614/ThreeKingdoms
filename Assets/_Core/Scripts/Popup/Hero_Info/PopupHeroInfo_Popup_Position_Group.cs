@@ -28,7 +28,7 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
             }
 
             att.button.onClick.AddListener(() => _onClick(_category, d.type));
-            att.txtName.text = d.name;
+            att.txtName.text = d.nameShort;
             att.txtAttribute.text = d.stringAttribute;
 
             att.transform.ForceRebuildLayout();

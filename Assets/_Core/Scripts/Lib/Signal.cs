@@ -1,3 +1,4 @@
+using Rev9.Pass;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -314,6 +315,7 @@ public class Signal
 
     public SignalObject<ItemData> Inventory_UpdateCount = new();
 
+    public SignalObject<PassQuestData> Pass_UpdateQuest = new(); 
     public SignalObject<QuestInfoData> Quest_UpdateStatus = new();
     public SignalObject<QuestCategoryType> Quest_UpdateComplete = new();
 

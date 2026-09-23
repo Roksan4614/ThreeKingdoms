@@ -83,7 +83,11 @@ public class PopupHeroInfo : BasePopupComponent
                 stat.GetChild((int)i).SetTextTable("txt_title", $"CORESTAT_{i.ToString().ToUpper()}");
 
             m_element.btnEnchant.text = TableManager.stringTable.GetString("BUTTON_ENCHANT");
-            m_element.btnUpgrade.text = TableManager.stringTable.GetString("BUTTON_UPGRADE_GRADE");
+            m_element.btnUpgrade.text = TableManager.stringTable.GetString("BUTTON_UPGRADE_GRADE_S");
+            transform.SetTextTable("Panel/Skill/Badge/Text", "UI_SKILL");
+
+            m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
+            m_element.btnBatch.text = TableManager.stringTable.GetString("BUTTON_BATCH");
         }
     }
 
@@ -295,7 +299,7 @@ public class PopupHeroInfo : BasePopupComponent
     void SetHeroInfoText(string _gradeInfo)
     {
         m_element.txtInfo.text = _gradeInfo;
-        m_element.txtInfo.text += $"\n{TableManager.stringTable.GetString("UI_REGION")}: {TableManager.stringTable.GetRegionType(m_heroInfoData.regionType, true)}";
+        m_element.txtInfo.text += $"\n{TableManager.stringTable.GetString("UI_REGION")}: {TableManager.stringTable.GetRegionType(m_heroInfoData.regionType, true).ToUpper()}";
     }
 
     async UniTask OnButtonAsync_TraitsReroll()

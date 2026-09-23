@@ -18,9 +18,16 @@ namespace Rev9.Pass
             InitializeScroll();
         }
 
+        private void OnEnable()
+        {
+            m_element.scroll.velocity
+                = m_element.scroll.content.anchoredPosition
+                = Vector2.zero;
+        }
+
         void InitializeScroll()
         {
-            var db = DataManager.pass.quests.GroupBy(x => x.data.type).ToDictionary(x => x.Key, x => x.ToList());
+            var db = DataManager.pass.quests.GroupBy(x => x.tableData.type).ToDictionary(x => x.Key, x => x.ToList());
 
             foreach (var data in db)
             {

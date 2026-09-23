@@ -50,7 +50,7 @@ public class PopupHeroInfo_Stat_Traits_Slot : MonoBehaviour, IValidatable
     {
         SetActivePanel(false);
 
-        var msg = "특성_새로_부여_가능";
+        var msg = TableManager.stringTraits.GetString("VALID_OPEN");// "특성_새로_부여_가능";
         m_element.txtUnOpen.text = msg;
     }
 
@@ -59,7 +59,7 @@ public class PopupHeroInfo_Stat_Traits_Slot : MonoBehaviour, IValidatable
         SetActivePanel(false);
 
         var grade = TableManager.stringTable.GetString($"GRADE_{_gradeType.ToString().ToUpper()}");
-        m_element.txtUnOpen.text = $"<color=#999999>[{grade}]_등급_달성_시_해제";
+        m_element.txtUnOpen.text = $"<color=#999999>{TableManager.stringTraits.GetStringFormat("INVALID_GRADE", grade)}";// [{grade}]_등급_달성_시_해제";
     }
 
     void SetActivePanel(bool _isActive)

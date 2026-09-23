@@ -14,7 +14,7 @@ public class PopupHeroInfo_Stat_Traits : MonoBehaviour, IValidatable
     private void Awake()
     {
         //setlocalization
-        m_element.btnReroll.text = "_부여_";
+        m_element.btnReroll.text = TableManager.stringTable.GetString("BUTTON_TRAITS_CREATE");// "_부여_";
     }
 
     public void SetActive(bool _isActive, HeroInfoData _heroData)

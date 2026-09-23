@@ -25,6 +25,8 @@ public class LobbyScreen_Boss : LobbyScreen_Base
         transform.SetText("Panel/Top/txt_title", TableManager.stringTable.GetString("SCREEN_DD_TITLE"));
         transform.SetText("Panel/Front/Reward/txt_title", TableManager.stringTable.GetString("UI_VALID_REWARD_LIST"));
         m_element.btnStart.text = TableManager.stringTable.GetString("UI_ENTER");
+        if (DataManager.option.language == LanguageType.English)
+            m_element.btnStart.TMPText.characterSpacing = 0;
     }
 
     protected override bool IsEscapeloseScreen()

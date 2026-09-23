@@ -58,7 +58,7 @@ public class PPWorker
         if (_isUserData)
             _key += $"_{DataManager.userInfo.uid}";
 
-        if (HasKey(_key, _isUserData) == false)
+        if (HasKey(_key, false) == false)
             return default;
 
         object result;

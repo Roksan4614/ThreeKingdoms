@@ -46,6 +46,7 @@ namespace Rev9.Pass
             if (m_heightSlot == 0)
                 return;
 
+            m_element.scroll.scroll.velocity = Vector2.zero;
             SetPositionOpen();
         }
 

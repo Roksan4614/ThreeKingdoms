@@ -122,6 +122,8 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
         content.ForceRebuildLayout();
 
         Utils.WaitEscape(this, () => Utils.AfterSecond(Close));
+
+        transform.SetTextTable("Panel/btn_close/Text", "BUTTON_CLOSE");
     }
 
     public override void OpenPopup(params object[] _args)

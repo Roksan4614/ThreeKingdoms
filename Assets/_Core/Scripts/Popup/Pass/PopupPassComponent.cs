@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,7 +38,7 @@ namespace Rev9.Pass
             {
                 transform.SetTextTable("Panel/txt_title", "UI_PASS_TITLE");
                 transform.SetText("Panel/Info/txt_desc", TableManager.stringTable
-                    .GetStringFormat( "UI_PASS_DESC", TableManager.stringHero.GetName(CharacterName.LiuBei)));
+                    .GetStringFormat("UI_PASS_DESC", TableManager.stringHero.GetName(CharacterName.LiuBei)));
                 m_element.btnPass.text = TableManager.stringTable.GetString("UI_PASS_BUY_DESC");
             }
 
@@ -93,7 +94,48 @@ namespace Rev9.Pass
         {
             // todo 완료시켜야 해
 
-            RefreshLevelXP();
+            if (_slot.data.isComplete == false)
+            {
+                var type = _slot.data.tableData.key;
+                StatusType result = StatusType.Wait;
+                switch (type)
+                {
+                    case QuestType.Login:
+                        break;
+                    case QuestType.EnemyKill:
+                    case QuestType.StageBossKill:
+                        {
+                            result = await PopupManager.instance.OpenModalAsync_Table("MODAL_MOVE_NAVI");
+                            if (result == StatusType.Success)
+                            {
+                                Close();
+                                LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Hero);
+                            }
+                        }
+                        break;
+                    default:
+                        {
+                            if (type == QuestType.AdsWatch)
+                                result = await PopupManager.instance.OpenModalAsync_Table("MODAL_AD_SHOW");
+                            else
+                                result = await PopupManager.instance.OpenModalAsync_Table("MODAL_MOVE_NAVI");
+
+                            if (result == StatusType.Success)
+                            {
+                                //먼저 꺼주기 위해서.. HOST가 꺼지면서 다른 팝업과 겹침 ㅜㅜ
+                                Close();
+                                await UniTask.WaitForSeconds(.1f);
+                                await QuestWorker.instance.NavigationAsync(type, false);
+                            }
+                        }
+                        break;
+                }
+            }
+            else
+            {
+
+                RefreshLevelXP();
+            }
         }
 
         public override void Close()

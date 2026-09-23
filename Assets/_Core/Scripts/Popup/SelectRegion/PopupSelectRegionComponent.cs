@@ -167,6 +167,6 @@ public class PopupSelectRegionComponent : BasePopupComponent
             => TableManager.stringHero.GetString("REGION_MASTER_DESC_SUB_" + region.ToString().ToUpper());
 
         public void SetMasterName()
-            => txtName.text = $"{masterName}\n<color=#636363><size=70%>{masterDesc}";
+            => txtName.text = $"{masterName}\n<color=#636363><size={(DataManager.option.language == LanguageType.English ? 55 : 70)}%>{masterDesc}";
     }
 }

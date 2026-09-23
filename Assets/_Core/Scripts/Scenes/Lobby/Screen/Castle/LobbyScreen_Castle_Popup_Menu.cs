@@ -17,8 +17,15 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
 
         //setlocalization
         {
-            m_element.btnInfo.text = TableManager.stringTable.GetString("CASTLE_MENU_INFO");
-            m_element.btnSetting.text = TableManager.stringTable.GetString("CASTLE_MENU_SETTING");
+            m_element.btnInfo.text = TableManager.stringTable.GetString("CASTLE_MENU_INFO_S");
+            m_element.btnSetting.text = TableManager.stringTable.GetString("CASTLE_MENU_SETTING_S");
+
+            if( DataManager.option.language == LanguageType.English)
+            {
+                m_element.btnSetting.TMPText.characterSpacing =
+                m_element.btnEtc.TMPText.characterSpacing =
+                    m_element.btnInfo.TMPText.characterSpacing = 0;
+            }
         }
     }
 
@@ -33,7 +40,7 @@ public class LobbyScreen_Castle_Popup_Menu : MonoBehaviour, IValidatable
         {
             case CastleObjectType.Office:
             case CastleObjectType.Merchant:
-                m_element.btnEtc.text = TableManager.stringTable.GetString($"CASTLE_MENU_{_type.ToString().ToUpper()}");
+                m_element.btnEtc.text = TableManager.stringTable.GetString($"CASTLE_MENU_{_type.ToString().ToUpper()}_S");
                 break;
             default:
                 m_element.btnEtc.gameObject.SetActive(false);

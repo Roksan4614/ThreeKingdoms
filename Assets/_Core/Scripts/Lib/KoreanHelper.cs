@@ -20,6 +20,9 @@ public static class KoreanHelper
 
             if (!isKorean)
             {
+                if (_format.IsActive() == true)
+                    _word = string.Format(_format, _word);
+
                 return _word;
             }
         }

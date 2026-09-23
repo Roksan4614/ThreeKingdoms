@@ -93,6 +93,11 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         });
         Signal.instance.StartCaslteBuildingUpgrade.connect = SlotStartCaslteBuildingUpgrade;
         Signal.instance.UpdateCaslteBuildingUpgrade.connect = SlotUpdateCaslteBuildingUpgrade;
+
+        //setlocalization
+        {
+            m_element.btnGoShop.text = TableManager.stringTable.GetString("BUTTON_GO_SHOP");
+        }
     }
 
     public async UniTask OpenAsync(bool _isInfo, CastleObjectType _type, CancellationToken _cancelToken)
@@ -121,6 +126,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             if (_type == CastleObjectType.Market || _type == CastleObjectType.Farm)
             {
                 m_element.gauge.gameObject.SetActive(true);
+                m_element.gauge.textTitle = TableManager.stringTable.GetString($"CASTLE_SET_PAL_{_type.ToString().ToUpper()}");
                 SlotUpdateFarmMarketData(m_castleData);
             }
             else
@@ -370,7 +376,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
             }
         }
 
-//        m_element.btnUpgrade.text = m_logUpgrade.IsActive() == false ? "증축_시작" : "조건_미달성";
+        //        m_element.btnUpgrade.text = m_logUpgrade.IsActive() == false ? "증축_시작" : "조건_미달성";
 
         m_element.btnUpgrade.text = TableManager.stringTable.GetString($"CASTLE_SETTING_UPGRADE_{(m_logUpgrade.IsActive() == false ? "VALID" : "INVALID")}");
 

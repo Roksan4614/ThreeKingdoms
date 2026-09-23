@@ -38,7 +38,7 @@ namespace Rev9.Quest
 
             foreach (var tab in m_tabs)
             {
-                tab.Value.text = TableManager.questString.GetString("CATEGORY_NAME_" + tab.Key.ToString().ToUpper());
+                tab.Value.text = TableManager.questString.GetString("CATEGORY_NAME_S_" + tab.Key.ToString().ToUpper());
                 tab.Value.onClick.AddListener(() => SetTab(tab.Key));
             }
 
@@ -56,6 +56,7 @@ namespace Rev9.Quest
             }
         }
 
+#if UNITY_EDITOR
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Alpha0))
@@ -64,6 +65,7 @@ namespace Rev9.Quest
                     QuestWorker.instance.AddCount(i);
             }
         }
+#endif
 
         private void OnDisable()
         {
@@ -178,7 +180,7 @@ namespace Rev9.Quest
             }
             else
             {
-                if (await QuestWorker.instance.QuestNavigationAsync(_questData.key) == false)
+                if (await QuestWorker.instance.NavigationAsync(_questData.key) == false)
                     return;
 
                 Close();

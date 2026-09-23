@@ -23,17 +23,18 @@ namespace Rev9.Pass
         public void SetQuestData(PassQuestData _data)
         {
             data = _data;
+            var tableData = _data.tableData;
 
-            m_element.txtTitle.text = _data.data.name;
-            m_element.txtCount.text = $"XP+{_data.data.exp}";
+            m_element.txtTitle.text = tableData.name;
+            m_element.txtCount.text = $"XP+{tableData.exp}";
 
-            var heroName = _data.data.resultValueName;
+            var heroName = tableData.resultValueName;
             if (heroName.IsActive())
                 heroName = KoreanHelper.AppendJosa(heroName
-                    , _data.data.key == ThreeKingdoms.Shared.Enums.QuestType.OfficeDispatch ? KoreanHelper.JosaType.EulLeul : KoreanHelper.JosaType.EuroroRo
+                    , tableData.key == ThreeKingdoms.Shared.Enums.QuestType.OfficeDispatch ? KoreanHelper.JosaType.EulLeul : KoreanHelper.JosaType.EuroroRo
                     , "<size=120%>[{0}]</size>");
-            m_element.txtDesc.text = _data.data.GetDesc(heroName);
-            m_element.txtDesc.text += $"\n<color=#555555>({_data.data.count}/{TableManager.passQuest.GetCount(_data.data)})";
+            m_element.txtDesc.text = tableData.GetDesc(heroName);
+            m_element.txtDesc.text += $"\n<color=#555555>({tableData.count}/{TableManager.passQuest.GetCount(tableData)})";
 
             m_element.badge.SetActive(_data.isPaid && (DataManager.pass.isPaid == false));
 

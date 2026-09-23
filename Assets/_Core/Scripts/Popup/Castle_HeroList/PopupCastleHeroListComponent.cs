@@ -49,9 +49,9 @@ public class PopupCastleHeroListComponent : BasePopupComponent
         //setlocalization
         {
             var panelTop = m_element.btnCoreStat[0].transform.parent;
-            panelTop.SetTextTable("txt_name", "L_HERO_TITLE_HERO");
+            panelTop.SetTextTable("txt_name", "CASTLE_OFFICER", "UI_CHARACTER_LIST");
             panelTop.SetTextTable("txt_job", "CASTLE_JOB");
-            panelTop.SetTextTable("txt_batch", "UI_BATCH");
+            panelTop.SetTextTable("txt_batch", "CASTLE_BATCH");
 
             m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
             m_element.btnCancel.text = TableManager.stringTable.GetString("BUTTON_CANCEL");

@@ -117,7 +117,7 @@ public class LobbyScreen_Hero_Relic_Item : MonoBehaviour, IValidatable
             m_heroInfoData = _heroInfoData;
 
             m_element.txt_title.text =
-                $"{_heroInfoData.name}:_¹«±â";
+                $"{_heroInfoData.name}: {TableManager.stringTable.GetString("UI_WEAPON")}";
 
             // ICON
             SetIconAsync(_heroInfoData.key, true).Forget();

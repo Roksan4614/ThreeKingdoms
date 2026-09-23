@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class QuestWorker
 {
@@ -43,11 +44,11 @@ public class QuestWorker
     public QuestInfoData GetQuestData(QuestCategoryType _category, QuestType _key)
         => m_data.GetQuestData(_category, _key);
 
-    public void AddCount(QuestType _key)
+    public void AddCount(QuestType _type)
     {
         for (var i = QuestCategoryType.NONE + 1; i < QuestCategoryType.MAX; i++)
         {
-            var questData = m_data.GetQuestData(i, _key);
+            var questData = m_data.GetQuestData(i, _type);
 
             if (questData.isComplete == false)
             {
@@ -167,23 +168,27 @@ public class QuestWorker
             case QuestType.DailyDungeonPlay:
             case QuestType.ItemBuy:
             case QuestType.ItemUse:
-                //case QuestType.AdsWatch:
+            case QuestType.AdsWatch:
                 return true;
             default:
                 return false;
         }
     }
 
-    public async UniTask<bool> QuestNavigationAsync(QuestType _type)
+    public async UniTask<bool> NavigationAsync(QuestType _type, bool _isWidthModal = true)
     {
-        //StatusType result = StatusType.Wait;
-        //if (_type == QuestType.AdsWatch)
-        //    result = await PopupManager.instance.OpenModalAsync_Table("MODAL_AD_SHOW");
-        //else
-        var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_MOVE_NAVI");
+        if (_isWidthModal == true)
+        {
+            StatusType result = StatusType.Wait;
 
-        if (result != StatusType.Success)
-            return false;
+            if (_type == QuestType.AdsWatch)
+                result = await PopupManager.instance.OpenModalAsync_Table("MODAL_AD_SHOW");
+            else
+                result = await PopupManager.instance.OpenModalAsync_Table("MODAL_MOVE_NAVI");
+
+            if (result != StatusType.Success)
+                return false;
+        }
 
         switch (_type)
         {
@@ -198,8 +203,11 @@ public class QuestWorker
                 break;
             case QuestType.RiceClaim:
             case QuestType.GoldClaim:
+                LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Castle);
+                break;
             case QuestType.OfficeDispatch:
                 LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Castle);
+                Utils.AfterSecond(() => PopupManager.instance.OpenPopup(PopupType.Castle_Mission), .2f);
                 break;
             case QuestType.DailyDungeonPlay:
                 LobbyScreenManager.instance.OpenScreen(LobbyScreenType.Boss);

@@ -100,8 +100,14 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         m_element.btnMainPosition.transform.SetTextTable("txt_title", "UI_MAIN_POSITION");
 
         transform.SetTextTable("Batch/txt_title", "UI_BATCH");
-        transform.SetTextTable("Batch/Layout/Hero/txt_main", "UI_POSITION_MAIN");
-        transform.SetTextTable("Batch/Layout/Hero_2/txt_sub", "UI_POSITION_SUB");
+        var tMain = transform.SetTextTable("Batch/Layout/Hero/txt_main", "UI_POSITION_MAIN");
+        var tSub = transform.SetTextTable("Batch/Layout/Hero_2/txt_sub", "UI_POSITION_SUB");
+
+        if (DataManager.option.language == LanguageType.English)
+        {
+            tMain.GetComponent<TextMeshProUGUI>().characterSpacing =
+                tSub.GetComponent<TextMeshProUGUI>().characterSpacing = 0;
+        }
     }
 
     protected virtual void Start()
@@ -126,6 +132,7 @@ public class LobbyScreen_Hero_Hero : LobbyScreen_Hero_TabBase, IValidatable
         var scroll = m_element.scroll;
         var baseItem = scroll.content.GetChild(0).GetComponent<HeroIconComponent>();
         baseItem.transform.SetParent(scroll.viewport);
+        baseItem.transform.SetText("Panel/Badge/Text", TableManager.stringTable.GetString("UI_BATCH_S").ToUpper());
         while (baseItem.element.icon.childCount > 0)
             DestroyImmediate(baseItem.element.icon.GetChild(0).gameObject);
 

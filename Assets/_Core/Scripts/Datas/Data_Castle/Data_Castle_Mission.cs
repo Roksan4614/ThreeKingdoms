@@ -10,7 +10,7 @@ public class Data_Castle_Mission
     List<CastleMissionData> m_data;
     //public IReadOnlyList<CastleMissionData> data => m_data.DeepClone();
 
-    const string c_key = "pp_casltle_mission";
+    const string c_key = "pp_castle_mission";
 
 
     int m_idxMission;

@@ -34,6 +34,8 @@ public class Table_String : Table_String_Base
 
     public string GetHeroPositionType(string _positionType)
         => TableManager.stringTable.GetString("CHARACTER_POSITION_" + _positionType.ToUpper());
+    public string GetHeroPositionTypeShort(string _positionType)
+        => TableManager.stringTable.GetString("CHARACTER_POSITION_S_" + _positionType.ToUpper());
 }
 
 public class Table_String_Hero : Table_String_Base

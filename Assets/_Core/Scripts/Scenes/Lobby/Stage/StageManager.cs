@@ -527,7 +527,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
         public string difficultName
             => TableManager.stringTable
             .GetString($"GRADE_DIFFICULT_{(GradeType.NONE + Math.Min(level, 5)).ToString().ToUpper()}")
-            + (level > 5 ? $"{(level - 4)}" : "");
+            + (level > 5 ? $"{(level - 4)}" : "").ToUpper();
 
         public string stageFullName
             => $"[{difficultName}] {chapterNumber}-{stageNumber}";
