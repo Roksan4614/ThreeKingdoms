@@ -576,9 +576,10 @@ namespace ThreeKingdoms.Shared.Enums
         /// </summary>
         TicketTournament = 19,
         /// <summary>
-        /// 토너먼트 티켓
+        /// 패스
         /// </summary>
-        Max = 20,
+        Pass = 20,
+        Max = 21,
     }
 
     /// <summary>
@@ -613,6 +614,9 @@ namespace ThreeKingdoms.Shared.Enums
     /// </summary>
     public enum ItemType
     {
+        /// <summary>
+        /// 없음
+        /// </summary>
         None = -1,
         /// <summary>
         /// 재화
@@ -646,7 +650,11 @@ namespace ThreeKingdoms.Shared.Enums
         /// 입장권
         /// </summary>
         ContentsTicket = 8,
-        Max = 9,
+        /// <summary>
+        /// 패스
+        /// </summary>
+        Pass = 9,
+        Max = 10,
     }
 
     /// <summary>
@@ -918,6 +926,9 @@ namespace ThreeKingdoms.Shared.Enums
         /// 주간
         /// </summary>
         Weekly = 1,
+        /// <summary>
+        /// 시즌
+        /// </summary>
         Season = 2,
     }
 
@@ -1068,6 +1079,10 @@ namespace ThreeKingdoms.Shared.Enums
     public enum ShopCategoryType
     {
         /// <summary>
+        /// 없음
+        /// </summary>
+        None = -1,
+        /// <summary>
         /// 금화
         /// </summary>
         Gold = 0,
@@ -1083,6 +1098,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// 패스
         /// </summary>
         Pass = 3,
+        Max = 4,
     }
 
     /// <summary>
@@ -1090,6 +1106,10 @@ namespace ThreeKingdoms.Shared.Enums
     /// </summary>
     public enum ShopProductType
     {
+        /// <summary>
+        /// 없음
+        /// </summary>
+        None = -1,
         /// <summary>
         /// 단일
         /// </summary>
@@ -1102,6 +1122,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// 패스
         /// </summary>
         Pass = 2,
+        Max = 3,
     }
 
     /// <summary>
