@@ -794,6 +794,10 @@ namespace ThreeKingdoms.Shared.Enums
         /// 토너먼트 포인트 결제
         /// </summary>
         TournamentPoint = 4,
+        /// <summary>
+        /// 현금 결제
+        /// </summary>
+        Cash = 5,
     }
 
     /// <summary>
@@ -1056,6 +1060,48 @@ namespace ThreeKingdoms.Shared.Enums
         /// 금화
         /// </summary>
         Gold = 0,
+    }
+
+    /// <summary>
+    /// 상점 카테고리 타입
+    /// </summary>
+    public enum ShopCategoryType
+    {
+        /// <summary>
+        /// 금화
+        /// </summary>
+        Gold = 0,
+        /// <summary>
+        /// 군량
+        /// </summary>
+        Rice = 1,
+        /// <summary>
+        /// 패키지
+        /// </summary>
+        Package = 2,
+        /// <summary>
+        /// 패스
+        /// </summary>
+        Pass = 3,
+    }
+
+    /// <summary>
+    /// 상점 상품 타입
+    /// </summary>
+    public enum ShopProductType
+    {
+        /// <summary>
+        /// 단일
+        /// </summary>
+        Single = 0,
+        /// <summary>
+        /// 패키지
+        /// </summary>
+        Package = 1,
+        /// <summary>
+        /// 패스
+        /// </summary>
+        Pass = 2,
     }
 
     /// <summary>
