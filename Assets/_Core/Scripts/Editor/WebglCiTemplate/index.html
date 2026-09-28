@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <script>
+        let version_BuildIndex = "1.2_2";
+        let version_UnityProgress = 20250117;
+
+        let path = "/WebGL/" + version_BuildIndex + "/web/";
+        let urlUnity = path + "Build/web.loader.js";
+    </script>
+
+    <link rel="stylesheet" href="/CommonWebGL/style.css?v=2024032501" />
+    <link rel="stylesheet" href="/CommonWebGL/loadingStyle.css?v=2024062401" />
+    <link
+      rel="stylesheet"
+      href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css"
+    />
+    <meta charset="utf-8" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!--<meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=0, viewport-fit=cover'>-->
+    <meta
+      content="user-scalable=no, width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0"
+      name="viewport"
+    />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.socket.io/4.5.3/socket.io.js"></script>
+
+    <title>Three KingZ</title>
+    <!--  ĺ         -->
+    <link
+      rel="apple-touch-icon"
+      sizes="57x57"
+      href="/CommonWebGL/favicon/apple-icon-57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="/CommonWebGL/favicon/apple-icon-60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="/CommonWebGL/favicon/apple-icon-72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="/CommonWebGL/favicon/apple-icon-76x76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href="/CommonWebGL/favicon/apple-icon-114x114.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="/CommonWebGL/favicon/apple-icon-120x120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="/CommonWebGL/favicon/apple-icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="/CommonWebGL/favicon/apple-icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/CommonWebGL/favicon/apple-icon-180x180.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/CommonWebGL/favicon/android-icon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/CommonWebGL/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/CommonWebGL/favicon/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/CommonWebGL/favicon/favicon-16x16.png"
+    />
+    <link
+      rel="manifest"
+      href="/CommonWebGL/favicon/manifest.json?v=2024032502"
+    />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta
+      name="msapplication-TileImage"
+      content="/CommonWebGL/favicon/ms-icon-144x144.png"
+    />
+    <meta name="theme-color" content="#ffffff" />
+
+<!-- ERUDA 시작 -->
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>
+    eruda.init({tool: ['console']});
+    const handleErudaResize = () => {
+      const x = window.innerWidth - 40 - 8
+      const y = window.innerHeight - 40 - 8;
+
+      eruda.position({ x, y });
+    };
+
+    handleErudaResize();
+    window.addEventListener('resize', handleErudaResize);
+</script>
+<!-- ERUDA 종료 -->
+
+    <!--  ĺ         -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.2/firebase-analytics-compat.js"></script>
+    <script>
+      // Import the functions you need from the SDKs you need
+      // import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+      // import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
+
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyAtG5WShQYciH_-89kNfmWMGCfx55guZOc",
+        authDomain: "play.kingz.games",
+        projectId: "kingz-tongits",
+        storageBucket: "kingz-tongits.appspot.com",
+        messagingSenderId: "970800707731",
+        appId: "1:970800707731:web:d6dcd497fe40f03f9e3566",
+        measurementId: "G-0KNQXW419S",
+      };
+
+      // Initialize Firebase
+      const app = firebase.initializeApp(firebaseConfig);
+      // const analytics = getAnalytics(app);
+
+      console.log("firebaseConfig", firebaseConfig);
+      console.log("app", app);
+      // console.log('analytics', analytics)
+    </script>
+
+  </head>
+  <body style="text-align: center">
+    <div id="wrap">
+      <canvas id="game"></canvas>
+      <!-- <div class="overlay">
+        <div class="iconContainer">
+          <div class="phone"><i class="las la-redo-alt"></i></div>
+          <p>Rotate your device!</p>
+        </div>
+      </div>       -->
+    </div>
+    <div id="baseLoadingWrap">
+      <div id="centerWrap">
+        <!-- 로고연출 시작 -->
+        <div id="logoWrap" class="animationWrap">
+          <div class="hide1"></div>
+          <div class="hide2"></div>
+          <div class="hide3"></div>
+          <div class="hide4"></div>
+          <div class="hide5"></div>
+        </div>
+        <!-- 로고연출 종료 -->
+
+        <!-- 개 스프라이트이미지 시작 -->
+        <div id="dogSpriteWrap">
+          <div class="animationScaleWrap">
+            <div class="dogAnimation"></div>
+          </div>
+        </div>
+        <!-- 개 스프라이트이미지 종료 -->
+      </div>
+
+      <!-- 로딩게이지 시작 -->
+      <div id="loadingGauge"></div>
+      <!-- 로딩게이지 종료 -->
+    </div>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script>
+      let scriptTag = document.createElement("script");
+      scriptTag.src = urlUnity;
+      document.body.appendChild(scriptTag);
+    </script>
+  <script>
+        let scriptUP = document.createElement("script");
+        scriptUP.src = "/CommonWebGL/UnityProgress_GRC.js?v=" + version_UnityProgress;
+        document.body.appendChild(scriptUP);
+    </script>
+    <script>
+      {
+        var game = document.querySelector("#game");
+        var nethereumUnityInstance = null;
+
+        console.log("PATH: " + path);
+        console.log("urlUnity: " + urlUnity);
+
+        var config = {
+          dataUrl: path + "Build/web.data.unityweb",
+          frameworkUrl: path + "Build/web.framework.js.unityweb",
+          codeUrl: path + "Build/web.wasm.unityweb",
+          streamingAssetsUrl: path + "StreamingAssets",
+          companyName: "YieldKingZ",
+          productName: "YieldKingZ Casino",
+          productVersion: "0.1",
+          cacheControl: function (url) {
+            // Caching enabled for .data and .bundle files.
+            // Revalidate if file is up to date before loading from cache
+
+            if (url.match(/\.data/) || url.match(/\.bundle/)) {
+              return "must-revalidate";
+            }
+
+            // Caching enabled for .mp4 and .custom files
+            // Load file from cache without revalidation.
+            if (url.match(/\.mp4/) || url.match(/\.custom/)) {
+              return "immutable";
+            }
+
+            // Disable explicit caching for all other files.
+            // Note: the default browser cache may cache them anyway.
+            return "no-store";
+          },
+        };
+
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+          config.dataUrl = config.dataUrl.replace(
+            "web.data.unityweb",
+            "web_mobile.data.unityweb"
+          );
+          config.frameworkUrl = config.frameworkUrl.replace(
+            "web.framework.js.unityweb",
+            "web_mobile.framework.js.unityweb"
+          );
+          config.codeUrl = config.codeUrl.replace(
+            "web.wasm.unityweb",
+            "web_mobile.wasm.unityweb"
+          );
+        }
+
+        function startGame() {
+          createUnityInstance(game, config, UnityProgress).then(
+            (unityInstance) => {
+              nethereumUnityInstance = unityInstance;
+              window.unityInstance = unityInstance;
+              WakeLock();
+            }
+          );
+        }
+
+        function onResize() {
+            if (window.innerHeight === screen.height) {
+                window.unityInstance.SendMessage("MessageHandler", "SetFullScreen", 0);
+            } else {
+                window.unityInstance.SendMessage("MessageHandler", "SetFullScreen", 1);
+            }
+        }
+
+        window.addEventListener('resize', onResize);
+
+        function UnityHandler_FullScreen(_isFullScreen) {
+          if (_isFullScreen) {
+            if (document.documentElement.mozRequestFullScreen) {
+              /* Firefox */ return document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+              /* Chrome, Safari and Opera */ return document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+              /* IE/Edge */ return document.documentElement.msRequestFullscreen();
+            }
+          } else {
+             document.exitFullscreen();
+          }
+        }
+      }
+    </script>
+    <script src="/CommonWebGL/loadingMotion.js?v=2024062401"></script>
+  </body>
+</html>

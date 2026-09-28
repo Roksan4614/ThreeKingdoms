@@ -220,7 +220,8 @@ public partial class EditorWindow_Build : EditorWindow
 
         if (_isAddressable == true)
         {
-            m_isSuccessBuild = Build_Addressables(true, m_userData.serviceType);
+            if (m_isCiBuild) Debug.Log("[WEBGL_STAGE] addressables");
+            m_isSuccessBuild = Build_Addressables(m_isCiBuild ? m_forceCleanCiCache : true, m_userData.serviceType);
             CopyBundle();
         }
         else
@@ -387,6 +388,7 @@ public partial class EditorWindow_Build : EditorWindow
                 break;
             case BuildTarget.WebGL:
                 {
+                    if (m_isCiBuild) Debug.Log("[WEBGL_STAGE] webgl_dxt");
                     var folderPath = filePath;
                     filePath += "/web";
 
@@ -395,6 +397,7 @@ public partial class EditorWindow_Build : EditorWindow
 
                     onComplete = () =>
                     {
+                        if (m_isCiBuild) Debug.Log("[WEBGL_STAGE] webgl_astc");
                         EditorUserBuildSettings.webGLBuildSubtarget = WebGLTextureSubtarget.ASTC;
                         options.subtarget = (int)WebGLTextureSubtarget.ASTC;
                         options.locationPathName = filePath + "_mobile";
@@ -420,10 +423,11 @@ public partial class EditorWindow_Build : EditorWindow
                         }
                         else
                         {
+                            m_isSuccessBuild = false;
                             m_buildLog.Enqueue($"Build Failed: _MOBILE");
                         }
 
-                        SetWebGLIndexFile_BuildIndex();
+                        if (!m_isCiBuild) SetWebGLIndexFile_BuildIndex();
                     };
                 }
                 break;

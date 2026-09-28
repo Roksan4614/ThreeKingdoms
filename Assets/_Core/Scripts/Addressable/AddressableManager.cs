@@ -35,7 +35,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
     protected override void OnAwake()
     {
-        bundleUrl = "https://dev-static.kingz.app/Bundle/WebGL/" + Application.version.Split('.')[2];
+        bundleUrl = WebglBuildMetadata.ResolveBundleUrl();
     }
 
     private void OnApplicationQuit()
