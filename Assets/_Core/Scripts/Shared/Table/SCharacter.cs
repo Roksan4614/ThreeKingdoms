@@ -62,5 +62,15 @@ namespace ThreeKingdoms.Shared.Table
         /// </summary>
         [JsonProperty("CHA", NullValueHandling = NullValueHandling.Include)]
         public int CHA { get; set; } = default!;
+        /// <summary>
+        /// 가챠 활성화 여부 가챠에서 획득 가능한지 여부 체크 빈칸 = 획득 불가 1 = 획득 가능
+        /// </summary>
+        [JsonProperty("is_gacha_active", NullValueHandling = NullValueHandling.Include)]
+        public int IsGachaActive { get; set; } = default!;
+        /// <summary>
+        /// 활성화 여부 무장 리스트에서 표시 가능한지 여부 체크 빈칸 = 표시 불가 1 = 표시 가능
+        /// </summary>
+        [JsonProperty("is_character_active", NullValueHandling = NullValueHandling.Include)]
+        public int IsCharacterActive { get; set; } = default!;
     }
 }

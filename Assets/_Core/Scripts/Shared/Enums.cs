@@ -321,6 +321,30 @@ namespace ThreeKingdoms.Shared.Enums
         /// 추후 생성될 국가분류
         /// </summary>
         Etc = 5,
+        /// <summary>
+        /// 황건적
+        /// </summary>
+        YellowTurban = 6,
+        /// <summary>
+        /// 동탁 세력
+        /// </summary>
+        DongzhuoGroup = 7,
+        /// <summary>
+        /// 원소 세력
+        /// </summary>
+        YuanshaoGroup = 8,
+        /// <summary>
+        /// 원술 세력
+        /// </summary>
+        YuanshuGroup = 9,
+        /// <summary>
+        /// 엄백호 세력
+        /// </summary>
+        YanbaihuGroup = 10,
+        /// <summary>
+        /// 여포 세력
+        /// </summary>
+        LubuGroup = 11,
     }
 
     /// <summary>
@@ -410,25 +434,6 @@ namespace ThreeKingdoms.Shared.Enums
         /// 고대
         /// </summary>
         Ancient = 5,
-    }
-
-    /// <summary>
-    /// 필드 적 구분
-    /// </summary>
-    public enum FieldEnemyType
-    {
-        /// <summary>
-        /// 일반 적 (s_enemy_stat.key 참조)
-        /// </summary>
-        Normal = 0,
-        /// <summary>
-        /// 대체 보스 (s_enemy_stat.key 참조)
-        /// </summary>
-        BossGeneric = 1,
-        /// <summary>
-        /// 인물 보스 (s_character.key 참조)
-        /// </summary>
-        BossCharacter = 2,
     }
 
     /// <summary>
