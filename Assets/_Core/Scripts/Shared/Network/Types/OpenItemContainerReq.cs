@@ -16,7 +16,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 열 주머니 또는 랜덤박스 s_item.idx.
         /// </summary>
         [JsonProperty("item_id", NullValueHandling = NullValueHandling.Include)]
-        public long ItemId { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey ItemId { get; set; } = default!;
 
         /// <summary>
         /// 한 번에 열 수량. 서버 제한은 1~100개다.

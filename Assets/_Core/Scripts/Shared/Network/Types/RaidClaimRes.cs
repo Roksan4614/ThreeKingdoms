@@ -18,8 +18,8 @@ namespace ThreeKingdoms.Shared.Types
         [JsonProperty("reward_points", NullValueHandling = NullValueHandling.Include)]
         public string RewardPoints { get; set; } = default!;
 
-        [JsonProperty("raid_point_balance", NullValueHandling = NullValueHandling.Include)]
-        public string RaidPointBalance { get; set; } = default!;
+        [JsonProperty("point_raid_balance", NullValueHandling = NullValueHandling.Include)]
+        public string PointRaidBalance { get; set; } = default!;
 
         [JsonProperty("already_claimed", NullValueHandling = NullValueHandling.Include)]
         public bool AlreadyClaimed { get; set; } = default!;

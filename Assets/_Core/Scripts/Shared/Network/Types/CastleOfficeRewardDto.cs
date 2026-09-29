@@ -13,13 +13,7 @@ namespace ThreeKingdoms.Shared.Types
     public class CastleOfficeRewardDto
     {
         [JsonProperty("item_id", NullValueHandling = NullValueHandling.Include)]
-        public long ItemId { get; set; } = default!;
-
-        /// <summary>
-        /// item_id와 같은 s_item 행의 stable key.
-        /// </summary>
-        [JsonProperty("item_key", NullValueHandling = NullValueHandling.Include)]
-        public string ItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey ItemId { get; set; } = default!;
 
         [JsonProperty("amount", NullValueHandling = NullValueHandling.Include)]
         public long Amount { get; set; } = default!;

@@ -28,10 +28,10 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("dungeon_boss_grade", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.DungeonBossGrade DungeonBossGrade { get; set; } = default!;
         /// <summary>
-        /// s_item.key 참조
+        /// enum item_key 참조
         /// </summary>
         [JsonProperty("reward_item_key", NullValueHandling = NullValueHandling.Include)]
-        public string RewardItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey RewardItemKey { get; set; } = default!;
         /// <summary>
         /// 지급 수량
         /// </summary>

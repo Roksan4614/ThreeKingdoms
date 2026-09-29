@@ -24,8 +24,8 @@ namespace ThreeKingdoms.Shared.Types
         [JsonProperty("last_participated_raid_id", NullValueHandling = NullValueHandling.Include)]
         public string? LastParticipatedRaidId { get; set; } = default!;
 
-        [JsonProperty("raid_point_balance", NullValueHandling = NullValueHandling.Include)]
-        public string RaidPointBalance { get; set; } = default!;
+        [JsonProperty("point_raid_balance", NullValueHandling = NullValueHandling.Include)]
+        public string PointRaidBalance { get; set; } = default!;
 
     }
 }

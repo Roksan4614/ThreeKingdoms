@@ -46,15 +46,15 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 공용 영혼석
         /// </summary>
-        PublicSoulStone = 0,
+        SoulStonePublic = 0,
         /// <summary>
         /// 클래스 영혼석
         /// </summary>
-        ClassSoulStone = 1,
+        SoulStoneClass = 1,
         /// <summary>
         /// 장수 영혼석
         /// </summary>
-        DedicatedSoulStone = 2,
+        SoulStoneDedicated = 2,
     }
 
     /// <summary>
@@ -475,12 +475,12 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
-    /// 서버가 발행한 가이드 퀘스트 종류.
+    /// 가이드 퀘스트 종류
     /// </summary>
     public enum GuideQuestKind
     {
         /// <summary>
-        /// 최초 진행 학습 퀘스트
+        /// 학습 퀘스트
         /// </summary>
         Learning = 0,
         /// <summary>
@@ -494,6 +494,9 @@ namespace ThreeKingdoms.Shared.Enums
     /// </summary>
     public enum ItemDetailType
     {
+        /// <summary>
+        /// 없음
+        /// </summary>
         None = -1,
         /// <summary>
         /// 군량
@@ -522,15 +525,15 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 클래스 영혼석 랜덤박스
         /// </summary>
-        RandomBoxClassSoulStone = 6,
+        RandomBoxSoulStoneClass = 6,
         /// <summary>
         /// 전용 영혼석 랜덤박스
         /// </summary>
-        RandomBoxDedicatedSoulStone = 7,
+        RandomBoxSoulStoneDedicated = 7,
         /// <summary>
         /// 보물 조각 랜덤박스
         /// </summary>
-        RandomBoxTreasurePieceRandomBox = 8,
+        RandomBoxTreasurePiece = 8,
         /// <summary>
         /// 일반 연회권
         /// </summary>
@@ -550,15 +553,15 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 공용 영혼석
         /// </summary>
-        PublicSoulStone = 13,
+        SoulStonePublic = 13,
         /// <summary>
         /// 전용 영혼석
         /// </summary>
-        DedicatedSoulStone = 14,
+        SoulStoneDedicated = 14,
         /// <summary>
         /// 클래스 영혼석
         /// </summary>
-        ClassSoulStone = 15,
+        SoulStoneClass = 15,
         /// <summary>
         /// 보물 마일리지
         /// </summary>
@@ -610,6 +613,645 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
+    /// 아이템 식별자 (값은 s_item.idx)
+    /// </summary>
+    public enum ItemKey
+    {
+        /// <summary>
+        /// 군량
+        /// </summary>
+        Rice = 1,
+        /// <summary>
+        /// 무료 금화
+        /// </summary>
+        GoldFree = 2,
+        /// <summary>
+        /// 유료 금화
+        /// </summary>
+        GoldPaid = 3,
+        /// <summary>
+        /// 시간석
+        /// </summary>
+        TimeStone = 4,
+        /// <summary>
+        /// 군량 주머니 일반
+        /// </summary>
+        PocketRiceNormal = 5,
+        /// <summary>
+        /// 군량 주머니 고급
+        /// </summary>
+        PocketRiceElite = 6,
+        /// <summary>
+        /// 군량 주머니 희귀
+        /// </summary>
+        PocketRiceGeneral = 7,
+        /// <summary>
+        /// 군량 주머니 명품
+        /// </summary>
+        PocketRiceHero = 8,
+        /// <summary>
+        /// 군량 주머니 국보
+        /// </summary>
+        PocketRiceLegend = 9,
+        /// <summary>
+        /// 금화 주머니 일반
+        /// </summary>
+        PocketGoldNormal = 10,
+        /// <summary>
+        /// 금화 주머니 고급
+        /// </summary>
+        PocketGoldElite = 11,
+        /// <summary>
+        /// 금화 주머니 희귀
+        /// </summary>
+        PocketGoldGeneral = 12,
+        /// <summary>
+        /// 금화 주머니 명품
+        /// </summary>
+        PocketGoldHero = 13,
+        /// <summary>
+        /// 금화 주머니 국보
+        /// </summary>
+        PocketGoldLegend = 14,
+        /// <summary>
+        /// 시간석 주머니 일반
+        /// </summary>
+        PocketTimeStoneNormal = 15,
+        /// <summary>
+        /// 시간석 주머니 고급
+        /// </summary>
+        PocketTimeStoneElite = 16,
+        /// <summary>
+        /// 시간석 주머니 희귀
+        /// </summary>
+        PocketTimeStoneGeneral = 17,
+        /// <summary>
+        /// 시간석 주머니 명품
+        /// </summary>
+        PocketTimeStoneHero = 18,
+        /// <summary>
+        /// 시간석 주머니 국보
+        /// </summary>
+        PocketTimeStoneLegend = 19,
+        /// <summary>
+        /// 클래스 영혼석 랜덤 상자 일반
+        /// </summary>
+        RandomBoxSoulStoneClassNormal = 20,
+        /// <summary>
+        /// 클래스 영혼석 랜덤 상자 고급
+        /// </summary>
+        RandomBoxSoulStoneClassElite = 21,
+        /// <summary>
+        /// 클래스 영혼석 랜덤 상자 희귀
+        /// </summary>
+        RandomBoxSoulStoneClassGeneral = 22,
+        /// <summary>
+        /// 클래스 영혼석 랜덤 상자 명품
+        /// </summary>
+        RandomBoxSoulStoneClassHero = 23,
+        /// <summary>
+        /// 클래스 영혼석 랜덤 상자 국보
+        /// </summary>
+        RandomBoxSoulStoneClassLegend = 24,
+        /// <summary>
+        /// 전용 영혼석 랜덤 상자 일반
+        /// </summary>
+        RandomBoxSoulStoneDedicatedNormal = 25,
+        /// <summary>
+        /// 전용 영혼석 랜덤 상자 고급
+        /// </summary>
+        RandomBoxSoulStoneDedicatedElite = 26,
+        /// <summary>
+        /// 전용 영혼석 랜덤 상자 희귀
+        /// </summary>
+        RandomBoxSoulStoneDedicatedGeneral = 27,
+        /// <summary>
+        /// 전용 영혼석 랜덤 상자 명품
+        /// </summary>
+        RandomBoxSoulStoneDedicatedHero = 28,
+        /// <summary>
+        /// 전용 영혼석 랜덤 상자 국보
+        /// </summary>
+        RandomBoxSoulStoneDedicatedLegend = 29,
+        /// <summary>
+        /// 보물 파편 랜덤 상자 일반
+        /// </summary>
+        RandomBoxTreasurePieceNormal = 30,
+        /// <summary>
+        /// 보물 파편 랜덤 상자 고급
+        /// </summary>
+        RandomBoxTreasurePieceElite = 31,
+        /// <summary>
+        /// 보물 파편 랜덤 상자 희귀
+        /// </summary>
+        RandomBoxTreasurePieceGeneral = 32,
+        /// <summary>
+        /// 보물 파편 랜덤 상자 명품
+        /// </summary>
+        RandomBoxTreasurePieceHero = 33,
+        /// <summary>
+        /// 보물 파편 랜덤 상자 국보
+        /// </summary>
+        RandomBoxTreasurePieceLegend = 34,
+        /// <summary>
+        /// 일반 연회권
+        /// </summary>
+        TicketGachaNormal = 35,
+        /// <summary>
+        /// 고급 연회권
+        /// </summary>
+        TicketGachaPremium = 36,
+        /// <summary>
+        /// 레이드 포인트
+        /// </summary>
+        PointRaid = 37,
+        /// <summary>
+        /// 토너먼트 포인트
+        /// </summary>
+        PointTournament = 38,
+        /// <summary>
+        /// 공용 영혼석
+        /// </summary>
+        SoulStonePublic = 39,
+        /// <summary>
+        /// 조조 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedCaoCao = 40,
+        /// <summary>
+        /// 조인 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedCaoRen = 41,
+        /// <summary>
+        /// 하후돈 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedXiahouDun = 42,
+        /// <summary>
+        /// 장료 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedZhangLiao = 43,
+        /// <summary>
+        /// 하후연 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedXiahouYuan = 44,
+        /// <summary>
+        /// 순욱 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedXunYu = 45,
+        /// <summary>
+        /// 유비 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedLiuBei = 46,
+        /// <summary>
+        /// 관우 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedGuanYu = 47,
+        /// <summary>
+        /// 장비 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedZhangFei = 48,
+        /// <summary>
+        /// 조운 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedZhaoYun = 49,
+        /// <summary>
+        /// 황충 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedHuangZhong = 50,
+        /// <summary>
+        /// 제갈량 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedZhugeLiang = 51,
+        /// <summary>
+        /// 손견 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedSunJian = 52,
+        /// <summary>
+        /// 손권 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedSunQuan = 53,
+        /// <summary>
+        /// 황개 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedHuangGai = 54,
+        /// <summary>
+        /// 손책 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedSunCe = 55,
+        /// <summary>
+        /// 태사자 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedTaishiCi = 56,
+        /// <summary>
+        /// 한당 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedHanDang = 57,
+        /// <summary>
+        /// 주유 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedZhouYu = 58,
+        /// <summary>
+        /// 여포 전용 영혼석
+        /// </summary>
+        SoulStoneDedicatedLuBu = 59,
+        /// <summary>
+        /// 지휘관 클래스 영혼석
+        /// </summary>
+        SoulStoneClassCommander = 60,
+        /// <summary>
+        /// 용장 클래스 영혼석
+        /// </summary>
+        SoulStoneClassChampion = 61,
+        /// <summary>
+        /// 선봉장 클래스 영혼석
+        /// </summary>
+        SoulStoneClassVanguard = 62,
+        /// <summary>
+        /// 추격자 클래스 영혼석
+        /// </summary>
+        SoulStoneClassChaser = 63,
+        /// <summary>
+        /// 궁장 클래스 영혼석
+        /// </summary>
+        SoulStoneClassArcher = 64,
+        /// <summary>
+        /// 책사 클래스 영혼석
+        /// </summary>
+        SoulStoneClassStrategist = 65,
+        /// <summary>
+        /// 보물 마일리지
+        /// </summary>
+        TreasureMileage = 66,
+        /// <summary>
+        /// 육도 조각
+        /// </summary>
+        TreasurePieceLiutao = 67,
+        /// <summary>
+        /// 삼략 조각
+        /// </summary>
+        TreasurePieceSanlue = 68,
+        /// <summary>
+        /// 위료자 조각
+        /// </summary>
+        TreasurePieceWeiliaozi = 69,
+        /// <summary>
+        /// 장수기 조각
+        /// </summary>
+        TreasurePieceCommandersBanner = 70,
+        /// <summary>
+        /// 호부 조각
+        /// </summary>
+        TreasurePieceTigerTally = 71,
+        /// <summary>
+        /// 금고 조각
+        /// </summary>
+        TreasurePieceWarDrumGong = 72,
+        /// <summary>
+        /// 사마법 조각
+        /// </summary>
+        TreasurePieceSimaFa = 73,
+        /// <summary>
+        /// 오자 조각
+        /// </summary>
+        TreasurePieceWuzi = 74,
+        /// <summary>
+        /// 적벽의 화염 조각
+        /// </summary>
+        TreasurePieceRedCliffFlame = 75,
+        /// <summary>
+        /// 방천화극 파편 조각
+        /// </summary>
+        TreasurePieceBangcheonhwagugShard = 76,
+        /// <summary>
+        /// 간장막야 조각
+        /// </summary>
+        TreasurePieceGanjiangMoye = 77,
+        /// <summary>
+        /// 순구 조각
+        /// </summary>
+        TreasurePieceChungou = 78,
+        /// <summary>
+        /// 담로 조각
+        /// </summary>
+        TreasurePieceZhanlu = 79,
+        /// <summary>
+        /// 어장 조각
+        /// </summary>
+        TreasurePieceYuchang = 80,
+        /// <summary>
+        /// 태아 조각
+        /// </summary>
+        TreasurePieceTaie = 81,
+        /// <summary>
+        /// 거궐 조각
+        /// </summary>
+        TreasurePieceJuque = 82,
+        /// <summary>
+        /// 승영 조각
+        /// </summary>
+        TreasurePieceShengxie = 83,
+        /// <summary>
+        /// 군왕궁 조각
+        /// </summary>
+        TreasurePieceLordsWarBow = 84,
+        /// <summary>
+        /// 오장원의 별 조각
+        /// </summary>
+        TreasurePieceWujangwonStar = 85,
+        /// <summary>
+        /// 손자병법 조각
+        /// </summary>
+        TreasurePieceArtOfWar = 86,
+        /// <summary>
+        /// 기문둔갑 조각
+        /// </summary>
+        TreasurePieceQimenDunjia = 87,
+        /// <summary>
+        /// 주역 조각
+        /// </summary>
+        TreasurePieceIChing = 88,
+        /// <summary>
+        /// 귀곡자 조각
+        /// </summary>
+        TreasurePieceGuiguzi = 89,
+        /// <summary>
+        /// 관자 조각
+        /// </summary>
+        TreasurePieceGuanzi = 90,
+        /// <summary>
+        /// 한비자 조각
+        /// </summary>
+        TreasurePieceHanFeizi = 91,
+        /// <summary>
+        /// 황석공소서 조각
+        /// </summary>
+        TreasurePieceSuShuOfHuangshi = 92,
+        /// <summary>
+        /// 묵자 조각
+        /// </summary>
+        TreasurePieceMozi = 93,
+        /// <summary>
+        /// 황제의 인장 조각
+        /// </summary>
+        TreasurePieceEmperorsSeal = 94,
+        /// <summary>
+        /// 상군서 조각
+        /// </summary>
+        TreasurePieceBookOfLordShang = 95,
+        /// <summary>
+        /// 여씨춘추 조각
+        /// </summary>
+        TreasurePieceLushiChunqiu = 96,
+        /// <summary>
+        /// 논어 조각
+        /// </summary>
+        TreasurePieceAnalects = 97,
+        /// <summary>
+        /// 정전 조각
+        /// </summary>
+        TreasurePieceWeiAdministrativeCode = 98,
+        /// <summary>
+        /// 전국책 조각
+        /// </summary>
+        TreasurePieceStratagemsOfWarringStates = 99,
+        /// <summary>
+        /// 옥새 조각
+        /// </summary>
+        TreasurePieceImperialJadeSeal = 100,
+        /// <summary>
+        /// 군목 인장 조각
+        /// </summary>
+        TreasurePiecePrefectsOfficialSeal = 101,
+        /// <summary>
+        /// 황노백서 조각
+        /// </summary>
+        TreasurePieceHuanglaoSilkManuscript = 102,
+        /// <summary>
+        /// 도원의 술잔 조각
+        /// </summary>
+        TreasurePieceDoewonCup = 103,
+        /// <summary>
+        /// 화씨벽 조각
+        /// </summary>
+        TreasurePieceHesJadeDisc = 104,
+        /// <summary>
+        /// 산해경 조각
+        /// </summary>
+        TreasurePieceClassicOfMountainsAndSeas = 105,
+        /// <summary>
+        /// 현학금 조각
+        /// </summary>
+        TreasurePieceXuanheQin = 106,
+        /// <summary>
+        /// 봉황패 조각
+        /// </summary>
+        TreasurePiecePhoenixJadePendant = 107,
+        /// <summary>
+        /// 예기 조각
+        /// </summary>
+        TreasurePieceBookOfRites = 108,
+        /// <summary>
+        /// 연환서 조각
+        /// </summary>
+        TreasurePieceAllianceLetter = 109,
+        /// <summary>
+        /// 하도낙서 조각
+        /// </summary>
+        TreasurePieceHetuLuoshu = 110,
+        /// <summary>
+        /// 서왕모도 조각
+        /// </summary>
+        TreasurePieceMapOfQueenMotherOfTheWest = 111,
+        /// <summary>
+        /// 육도 완제품
+        /// </summary>
+        TreasureLiutao = 112,
+        /// <summary>
+        /// 삼략 완제품
+        /// </summary>
+        TreasureSanlue = 113,
+        /// <summary>
+        /// 위료자 완제품
+        /// </summary>
+        TreasureWeiliaozi = 114,
+        /// <summary>
+        /// 장수기 완제품
+        /// </summary>
+        TreasureCommandersBanner = 115,
+        /// <summary>
+        /// 호부 완제품
+        /// </summary>
+        TreasureTigerTally = 116,
+        /// <summary>
+        /// 금고 완제품
+        /// </summary>
+        TreasureWarDrumGong = 117,
+        /// <summary>
+        /// 사마법 완제품
+        /// </summary>
+        TreasureSimaFa = 118,
+        /// <summary>
+        /// 오자 완제품
+        /// </summary>
+        TreasureWuzi = 119,
+        /// <summary>
+        /// 적벽의 화염 완제품
+        /// </summary>
+        TreasureRedCliffFlame = 120,
+        /// <summary>
+        /// 방천화극 파편 완제품
+        /// </summary>
+        TreasureBangcheonhwagugShard = 121,
+        /// <summary>
+        /// 간장막야 완제품
+        /// </summary>
+        TreasureGanjiangMoye = 122,
+        /// <summary>
+        /// 순구 완제품
+        /// </summary>
+        TreasureChungou = 123,
+        /// <summary>
+        /// 담로 완제품
+        /// </summary>
+        TreasureZhanlu = 124,
+        /// <summary>
+        /// 어장 완제품
+        /// </summary>
+        TreasureYuchang = 125,
+        /// <summary>
+        /// 태아 완제품
+        /// </summary>
+        TreasureTaie = 126,
+        /// <summary>
+        /// 거궐 완제품
+        /// </summary>
+        TreasureJuque = 127,
+        /// <summary>
+        /// 승영 완제품
+        /// </summary>
+        TreasureShengxie = 128,
+        /// <summary>
+        /// 군왕궁 완제품
+        /// </summary>
+        TreasureLordsWarBow = 129,
+        /// <summary>
+        /// 오장원의 별 완제품
+        /// </summary>
+        TreasureWujangwonStar = 130,
+        /// <summary>
+        /// 손자병법 완제품
+        /// </summary>
+        TreasureArtOfWar = 131,
+        /// <summary>
+        /// 기문둔갑 완제품
+        /// </summary>
+        TreasureQimenDunjia = 132,
+        /// <summary>
+        /// 주역 완제품
+        /// </summary>
+        TreasureIChing = 133,
+        /// <summary>
+        /// 귀곡자 완제품
+        /// </summary>
+        TreasureGuiguzi = 134,
+        /// <summary>
+        /// 관자 완제품
+        /// </summary>
+        TreasureGuanzi = 135,
+        /// <summary>
+        /// 한비자 완제품
+        /// </summary>
+        TreasureHanFeizi = 136,
+        /// <summary>
+        /// 황석공소서 완제품
+        /// </summary>
+        TreasureSuShuOfHuangshi = 137,
+        /// <summary>
+        /// 묵자 완제품
+        /// </summary>
+        TreasureMozi = 138,
+        /// <summary>
+        /// 황제의 인장 완제품
+        /// </summary>
+        TreasureEmperorsSeal = 139,
+        /// <summary>
+        /// 상군서 완제품
+        /// </summary>
+        TreasureBookOfLordShang = 140,
+        /// <summary>
+        /// 여씨춘추 완제품
+        /// </summary>
+        TreasureLushiChunqiu = 141,
+        /// <summary>
+        /// 논어 완제품
+        /// </summary>
+        TreasureAnalects = 142,
+        /// <summary>
+        /// 정전 완제품
+        /// </summary>
+        TreasureWeiAdministrativeCode = 143,
+        /// <summary>
+        /// 전국책 완제품
+        /// </summary>
+        TreasureStratagemsOfWarringStates = 144,
+        /// <summary>
+        /// 옥새 완제품
+        /// </summary>
+        TreasureImperialJadeSeal = 145,
+        /// <summary>
+        /// 군목 인장 완제품
+        /// </summary>
+        TreasurePrefectsOfficialSeal = 146,
+        /// <summary>
+        /// 황노백서 완제품
+        /// </summary>
+        TreasureHuanglaoSilkManuscript = 147,
+        /// <summary>
+        /// 도원의 술잔 완제품
+        /// </summary>
+        TreasureDoewonCup = 148,
+        /// <summary>
+        /// 화씨벽 완제품
+        /// </summary>
+        TreasureHesJadeDisc = 149,
+        /// <summary>
+        /// 산해경 완제품
+        /// </summary>
+        TreasureClassicOfMountainsAndSeas = 150,
+        /// <summary>
+        /// 현학금 완제품
+        /// </summary>
+        TreasureXuanheQin = 151,
+        /// <summary>
+        /// 봉황패 완제품
+        /// </summary>
+        TreasurePhoenixJadePendant = 152,
+        /// <summary>
+        /// 예기 완제품
+        /// </summary>
+        TreasureBookOfRites = 153,
+        /// <summary>
+        /// 연환서 완제품
+        /// </summary>
+        TreasureAllianceLetter = 154,
+        /// <summary>
+        /// 하도낙서 완제품
+        /// </summary>
+        TreasureHetuLuoshu = 155,
+        /// <summary>
+        /// 서왕모도 완제품
+        /// </summary>
+        TreasureMapOfQueenMotherOfTheWest = 156,
+        /// <summary>
+        /// 토너먼트 티켓
+        /// </summary>
+        TicketTournament = 157,
+        /// <summary>
+        /// 패스
+        /// </summary>
+        PassBattle = 158,
+    }
+
+    /// <summary>
     /// 아이템 타입
     /// </summary>
     public enum ItemType
@@ -641,7 +1283,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 연회권
         /// </summary>
-        GachaTicket = 6,
+        TicketGacha = 6,
         /// <summary>
         /// 보물
         /// </summary>
@@ -649,7 +1291,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 입장권
         /// </summary>
-        ContentsTicket = 8,
+        TicketContents = 8,
         /// <summary>
         /// 패스
         /// </summary>
@@ -789,23 +1431,27 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 무료 금화 결제
         /// </summary>
-        FreeGold = 1,
+        GoldFree = 1,
         /// <summary>
         /// 유료 금화 결제
         /// </summary>
-        PaidGold = 2,
+        GoldPaid = 2,
         /// <summary>
         /// 레이드 포인트 결제
         /// </summary>
-        RaidPoint = 3,
+        PointRaid = 3,
         /// <summary>
         /// 토너먼트 포인트 결제
         /// </summary>
-        TournamentPoint = 4,
+        PointTournament = 4,
         /// <summary>
         /// 현금 결제
         /// </summary>
         Cash = 5,
+        /// <summary>
+        /// 광고 결제
+        /// </summary>
+        Ad = 6,
     }
 
     /// <summary>
@@ -1214,12 +1860,12 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
-    /// 토너먼트 시즌의 현재 API 이용 가능 상태.
+    /// 토너먼트 이용 가능 상태
     /// </summary>
     public enum TournamentAvailabilityStatus
     {
         /// <summary>
-        /// 토너먼트 이용 가능
+        /// 이용 가능
         /// </summary>
         Open = 0,
         /// <summary>
@@ -1229,7 +1875,7 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
-    /// 토너먼트 전투의 클라이언트 보고·서버 확정 결과.
+    /// 토너먼트 전투 결과
     /// </summary>
     public enum TournamentBattleResult
     {
@@ -1244,7 +1890,7 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
-    /// 토너먼트 전투 이력의 현재 상태.
+    /// 토너먼트 전투 이력 상태
     /// </summary>
     public enum TournamentBattleStatus
     {
@@ -1257,11 +1903,11 @@ namespace ThreeKingdoms.Shared.Enums
         /// </summary>
         Completed = 1,
         /// <summary>
-        /// 새 전투 시작으로 포기됨
+        /// 포기
         /// </summary>
         Abandoned = 2,
         /// <summary>
-        /// 제한시간 만료
+        /// 만료
         /// </summary>
         Expired = 3,
     }
@@ -1322,21 +1968,21 @@ namespace ThreeKingdoms.Shared.Enums
         /// </summary>
         Rice = 0,
         /// <summary>
-        /// 무료 금화 (향후 금화 분리 구조에서 사용)
+        /// 무료 금화 (user_asset.gold_free)
         /// </summary>
-        FreeGold = 1,
+        GoldFree = 1,
         /// <summary>
-        /// 유료 금화 (향후 금화 분리 구조에서 사용)
+        /// 유료 금화 (user_asset.gold_paid)
         /// </summary>
-        PaidGold = 2,
+        GoldPaid = 2,
         /// <summary>
-        /// 레이드 포인트 (user_asset.raid_point)
+        /// 레이드 시즌 재화 (user_raid_wallet.balance, 일반 user_asset과 별도 저장)
         /// </summary>
-        RaidPoint = 3,
+        PointRaid = 3,
         /// <summary>
-        /// 토너먼트 시즌 포인트 (user_tournament_season.point_amount, 시즌 초기화)
+        /// 시즌이 바뀌어도 유지되는 토너먼트 재화 (user_asset.point_tournament)
         /// </summary>
-        TournamentPoint = 4,
+        PointTournament = 4,
         /// <summary>
         /// 시간석 (user_asset.time_stone)
         /// </summary>

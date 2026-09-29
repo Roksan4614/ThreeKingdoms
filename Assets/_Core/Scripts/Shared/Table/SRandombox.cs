@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 랜덤 상자 구성 item key (s_item.key 참조)
         /// </summary>
         [JsonProperty("item_key", NullValueHandling = NullValueHandling.Include)]
-        public string ItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey ItemKey { get; set; } = default!;
         /// <summary>
         /// 가중치
         /// </summary>

@@ -38,15 +38,15 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("pay_type", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.PayType PayType { get; set; } = default!;
         /// <summary>
-        /// 가격 게임 재화 결제일 때만 사용한다. 현금 결제는 0이며 실제 금액은 스토어 콘솔이 관리한다
+        /// 가격
         /// </summary>
         [JsonProperty("price", NullValueHandling = NullValueHandling.Include)]
         public int Price { get; set; } = default!;
         /// <summary>
-        /// 지급 아이템. item.s_item.key 참조
+        /// enum item_key 참조
         /// </summary>
         [JsonProperty("reward_item_key", NullValueHandling = NullValueHandling.Include)]
-        public string RewardItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey? RewardItemKey { get; set; } = default!;
         /// <summary>
         /// 지급 수량
         /// </summary>

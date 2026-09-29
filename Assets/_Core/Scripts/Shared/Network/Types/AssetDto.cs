@@ -30,14 +30,14 @@ namespace ThreeKingdoms.Shared.Types
         /// <summary>
         /// 현재 보유 무료 금화 수량.
         /// </summary>
-        [JsonProperty("free_gold", NullValueHandling = NullValueHandling.Include)]
-        public long FreeGold { get; set; } = default!;
+        [JsonProperty("gold_free", NullValueHandling = NullValueHandling.Include)]
+        public long GoldFree { get; set; } = default!;
 
         /// <summary>
         /// 현재 보유 유료 금화 수량.
         /// </summary>
-        [JsonProperty("paid_gold", NullValueHandling = NullValueHandling.Include)]
-        public long PaidGold { get; set; } = default!;
+        [JsonProperty("gold_paid", NullValueHandling = NullValueHandling.Include)]
+        public long GoldPaid { get; set; } = default!;
 
         /// <summary>
         /// 현재 보유 시간석 수량.
@@ -48,8 +48,8 @@ namespace ThreeKingdoms.Shared.Types
         /// <summary>
         /// 시즌이 변경되어도 유지되는 토너먼트 포인트.
         /// </summary>
-        [JsonProperty("tournament_point", NullValueHandling = NullValueHandling.Include)]
-        public long TournamentPoint { get; set; } = default!;
+        [JsonProperty("point_tournament", NullValueHandling = NullValueHandling.Include)]
+        public long PointTournament { get; set; } = default!;
 
     }
 }

@@ -28,10 +28,10 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("target_value", NullValueHandling = NullValueHandling.Include)]
         public int TargetValue { get; set; } = default!;
         /// <summary>
-        /// 개별 보상 아이템 key s_item.key 참조
+        /// enum item_key 참조
         /// </summary>
         [JsonProperty("reward_item_key", NullValueHandling = NullValueHandling.Include)]
-        public string RewardItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey RewardItemKey { get; set; } = default!;
         /// <summary>
         /// 보상 수량
         /// </summary>

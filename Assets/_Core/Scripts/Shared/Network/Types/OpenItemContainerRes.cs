@@ -19,7 +19,7 @@ namespace ThreeKingdoms.Shared.Types
         public string EventId { get; set; } = default!;
 
         [JsonProperty("opened_item_id", NullValueHandling = NullValueHandling.Include)]
-        public long OpenedItemId { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey OpenedItemId { get; set; } = default!;
 
         [JsonProperty("opened_quantity", NullValueHandling = NullValueHandling.Include)]
         public long OpenedQuantity { get; set; } = default!;

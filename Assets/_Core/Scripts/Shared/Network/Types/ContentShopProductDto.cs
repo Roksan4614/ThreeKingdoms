@@ -25,13 +25,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 지급할 concrete s_item.idx.
         /// </summary>
         [JsonProperty("reward_item_id", NullValueHandling = NullValueHandling.Include)]
-        public long RewardItemId { get; set; } = default!;
-
-        /// <summary>
-        /// 표시와 지급 검증에 사용할 s_item.key.
-        /// </summary>
-        [JsonProperty("reward_item_key", NullValueHandling = NullValueHandling.Include)]
-        public string RewardItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey RewardItemId { get; set; } = default!;
 
         /// <summary>
         /// 1개 구매 단위당 지급 수량.

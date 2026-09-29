@@ -33,10 +33,10 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("unlock_rate", NullValueHandling = NullValueHandling.Include)]
         public double UnlockRate { get; set; } = default!;
         /// <summary>
-        /// 지급할 concrete item key (s_item.key 참조)
+        /// enum item_key 참조
         /// </summary>
         [JsonProperty("reward_item_key", NullValueHandling = NullValueHandling.Include)]
-        public string RewardItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey RewardItemKey { get; set; } = default!;
         /// <summary>
         /// 보상 수량 최소
         /// </summary>

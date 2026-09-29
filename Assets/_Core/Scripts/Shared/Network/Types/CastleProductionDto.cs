@@ -16,7 +16,7 @@ namespace ThreeKingdoms.Shared.Types
     public class CastleProductionDto
     {
         /// <summary>
-        /// 농지는 Rice, 시장은 FreeGold다.
+        /// 농지는 Rice, 시장은 GoldFree다.
         /// </summary>
         [JsonProperty("currency", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.UserAssetType Currency { get; set; } = default!;

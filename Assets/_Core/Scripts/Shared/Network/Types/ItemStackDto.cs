@@ -19,13 +19,7 @@ namespace ThreeKingdoms.Shared.Types
         /// s_item.idx에 대응하는 숫자 ID.
         /// </summary>
         [JsonProperty("item_id", NullValueHandling = NullValueHandling.Include)]
-        public long ItemId { get; set; } = default!;
-
-        /// <summary>
-        /// s_item.key. 표시 이름은 string table에서 조회한다.
-        /// </summary>
-        [JsonProperty("item_key", NullValueHandling = NullValueHandling.Include)]
-        public string ItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey ItemId { get; set; } = default!;
 
         /// <summary>
         /// 처리 후 절대 보유량. 0이 된 stack도 버전을 보존한다.

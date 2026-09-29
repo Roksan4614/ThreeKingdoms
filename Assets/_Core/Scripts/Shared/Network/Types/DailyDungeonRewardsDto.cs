@@ -19,7 +19,7 @@ namespace ThreeKingdoms.Shared.Types
         /// 해당 보스 클래스의 concrete 영혼석 s_item.idx.
         /// </summary>
         [JsonProperty("class_item_id", NullValueHandling = NullValueHandling.Include)]
-        public long ClassItemId { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey ClassItemId { get; set; } = default!;
 
         /// <summary>
         /// 이번 클래스 영혼석 지급량.
