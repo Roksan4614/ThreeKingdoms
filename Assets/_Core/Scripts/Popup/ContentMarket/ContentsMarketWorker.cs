@@ -20,7 +20,7 @@ namespace Rev9.ContentsMarket
             }
         }
 
-        Dictionary<ContentsMarketTabType, List<ContentsMarketProductData>> m_db;
+        Dictionary<ContentsMarketTabType, List<TableProductData>> m_db;
 
         public static void Release()
         {
@@ -37,78 +37,77 @@ namespace Rev9.ContentsMarket
                 m_db = new();
                 for (ContentsMarketTabType i = 0; i < ContentsMarketTabType.MAX; i++)
                 {
-                    List<ContentsMarketProductData> lstData = new();
+                    List<TableProductData> lstData = new();
 
                     lstData.Add(new()
                     {
-                        key = "rice",
-                        cost = 1000,
-                        count = 100,
-                        countMax = 5
+                        reward_item_key = "rice",
+                        price = 300,
+                        reward_count = 100,
+                        buy_limit = 5
                     });
 
                     lstData.Add(new()
                     {
-                        key = "gold",
-                        cost = 1000,
-                        count = 100,
-                        countMax = 5
+                        reward_item_key = "free_gold",
+                        price = 600,
+                        reward_count = 100,
+                        buy_limit = 5
                     });
 
                     lstData.Add(new()
                     {
-                        key = "rice",
+                        reward_item_key = "rice",
                         periodType = PeriodType.Week,
-                        cost = 7000,
-                        count = 1000,
-                        countMax = 3
+                        price = 7000,
+                        reward_count = 1000,
+                        buy_limit = 3
                     });
 
                     lstData.Add(new()
                     {
-                        key = "gold",
+                        reward_item_key = "free_gold",
                         periodType = PeriodType.Week,
-                        cost = 7000,
-                        count = 1000,
-                        countMax = 3
+                        price = 7000,
+                        reward_count = 1000,
+                        buy_limit = 3
                     });
 
                     if (i == ContentsMarketTabType.Daily)
                     {
                         lstData.Add(new()
                         {
-                            key = "time_stone",
-                            cost = 2000,
-                            count = 10,
-                            countMax = 3
+                            reward_item_key = "time_stone",
+                            price = 2000,
+                            reward_count = 10,
+                            buy_limit = 3
                         });
                         lstData.Add(new()
                         {
-                            key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
-                            value = CharacterName.LiuBei.ToString(),
-                            cost = 2000,
-                            count = 10,
-                            countMax = 3
+                            reward_item_key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
+                            price = 2000,
+                            reward_count = 10,
+                            buy_limit = 3
                         });
                     }
                     else if (i == ContentsMarketTabType.Tournament)
                     {
                         lstData.Add(new()
                         {
-                            key = "tournament_point",
+                            reward_item_key = "tournament_point",
                             periodType = PeriodType.Week,
-                            cost = 2500,
-                            count = 10,
-                            countMax = 3
+                            price = 2500,
+                            reward_count = 10,
+                            buy_limit = 3
                         });
 
                         lstData.Add(new()
                         {
-                            key = "public_soul_stone",
+                            reward_item_key = "public_soul_stone",
                             periodType = PeriodType.Week,
-                            cost = 2500,
-                            count = 10,
-                            countMax = 3
+                            price = 2500,
+                            reward_count = 10,
+                            buy_limit = 3
                         });
                     }
                     else if (i == ContentsMarketTabType.Raid)
@@ -116,39 +115,36 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            key = "public_soul_stone",
+                            reward_item_key = "public_soul_stone",
                             periodType = PeriodType.Week,
-                            cost = 3500,
-                            count = 10,
-                            countMax = 3
+                            price = 3500,
+                            reward_count = 10,
+                            buy_limit = 3
                         });
                         lstData.Add(new()
                         {
-                            key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
-                            value = CharacterName.LiuBei.ToString(),
+                            reward_item_key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
                             periodType = PeriodType.Season,
-                            cost = 4500,
-                            count = 5,
-                            countMax = 3
+                            price = 4500,
+                            reward_count = 5,
+                            buy_limit = 3
                         });
 
                         lstData.Add(new()
                         {
-                            key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.CaoCao.ToString())}",
-                            value = CharacterName.CaoCao.ToString(),
+                            reward_item_key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.CaoCao.ToString())}",
                             periodType = PeriodType.Season,
-                            cost = 4500,
-                            count = 5,
-                            countMax = 3
+                            price = 4500,
+                            reward_count = 5,
+                            buy_limit = 3
                         });
                         lstData.Add(new()
                         {
-                            key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.SunQuan.ToString())}",
-                            value = CharacterName.SunQuan.ToString(),
+                            reward_item_key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.SunQuan.ToString())}",
                             periodType = PeriodType.Season,
-                            cost = 4500,
-                            count = 5,
-                            countMax = 3
+                            price = 4500,
+                            reward_count = 5,
+                            buy_limit = 3
                         });
                     }
 
@@ -156,7 +152,7 @@ namespace Rev9.ContentsMarket
                     {
                         var d = lstData[j];
                         d.idx = j;
-                        d.costType = i == ContentsMarketTabType.Tournament ? ItemDetailType.PointTournament : i == ContentsMarketTabType.Raid ? ItemDetailType.PointRaid : ItemDetailType.Gold;
+                        d.pay_type = i == ContentsMarketTabType.Tournament ? PayType.TournamentPoint : i == ContentsMarketTabType.Raid ? PayType.RaidPoint : PayType.FreeGold;
                         lstData[j] = d;
                     }
 
@@ -164,7 +160,7 @@ namespace Rev9.ContentsMarket
                 }
             }
         }
-        public List<ContentsMarketProductData> GetProducts(ContentsMarketTabType _tabType)
+        public List<TableProductData> GetProducts(ContentsMarketTabType _tabType)
             => m_db[_tabType];
 
         Dictionary<ContentsMarketTabType, string> m_dbMessage = new();
@@ -178,7 +174,7 @@ namespace Rev9.ContentsMarket
                 m_dbMessage.Add(_tabType, _message);
         }
 
-        public async UniTask<bool> API_ProductBuy(ContentsMarketTabType _tabType, ContentsMarketProductData _productData, int _countProduct)
+        public async UniTask<bool> API_ProductBuy(ContentsMarketTabType _tabType, TableProductData _productData, int _countProduct)
         {
             await UniTask.NextFrame();
 
@@ -190,52 +186,6 @@ namespace Rev9.ContentsMarket
             db[idx] = data;
 
             return true;
-        }
-    }
-
-    [JsonObject(MemberSerialization.OptIn)]
-    public class ContentsMarketProductData
-    {
-        [JsonProperty] public int idx;
-        [JsonProperty] public string key;
-        [JsonProperty] public int count;
-        [JsonProperty] public string value;
-
-        [JsonProperty] public int cost;
-
-        [JsonProperty] public int countMax;
-        [JsonProperty] public int countBuy;
-
-        PeriodType? period_type;
-        public PeriodType periodType
-        {
-            get => period_type ?? PeriodType.Daily;
-            set => period_type = value;
-        }
-
-        ItemDetailType? cost_type;
-        public ItemDetailType costType
-        {
-            get => cost_type ?? ItemDetailType.Gold;
-            set => cost_type = value;
-        }
-
-        public bool isLimit => countMax > 0;
-        public int remainCount => countMax - countBuy;
-        public string strRemainCount => $"{remainCount}/{countMax}";
-
-        ItemData m_itemData;
-        public ItemData itemData
-        {
-            get
-            {
-                if (m_itemData == null)
-                {
-                    m_itemData = TableManager.item.GetItemData(key, count);
-                    m_itemData.value = value;
-                }
-                return m_itemData;
-            }
         }
     }
 

@@ -97,7 +97,7 @@ public class Scene_Login : SceneBase
     public async UniTask LoadLobbyScreenAsync()
     {
         IngameLog.AddBuild("LoadLobbyScreenAsync: Start");
-        var instantiateScreen = new List<LobbyScreenType>() { LobbyScreenType.Hero, LobbyScreenType.Castle };
+        var instantiateScreen = new List<LobbyScreenType>() { LobbyScreenType.Hero, LobbyScreenType.Castle, LobbyScreenType.Shop };
 
         for (int i = 0; i < instantiateScreen.Count; i++)
             await AddressableManager.instance.Load_LobbyScreenAsync(instantiateScreen[i]);

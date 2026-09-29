@@ -81,8 +81,8 @@ public class LobbyScreenManager : Singleton<LobbyScreenManager>
         }
     }
 
-    public void OpenScreen(LobbyScreenType _screenType)
-        => BottomComponent.instance.OnButton_OpenScreen(_screenType);
+    public void OpenScreen(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback = null)
+        => BottomComponent.instance.OnButton_OpenScreen(_screenType, _callback);
 
     // bottomcomponent에서 와야 해 ㅜㅜ
     public async UniTask OpenScreenAsync(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback = null)

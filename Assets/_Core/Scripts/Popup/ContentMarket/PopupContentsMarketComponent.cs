@@ -54,13 +54,14 @@ namespace Rev9.ContentsMarket
             foreach (var tab in m_dbTab)
                 tab.Value.button.onClick.AddListener(() => OnButton_Tab(tab.Key));
 
-            for (int i = 0; i < m_element.panelPopup.childCount; i++)
-                m_element.panelPopup.GetChild(i).gameObject.SetActive(false);
+            //for (int i = 0; i < m_element.panelPopup.childCount; i++)
+            //    m_element.panelPopup.GetChild(i).gameObject.SetActive(false);
 
             Utils.WaitEscape(this, () =>
             {
-                if (m_element.popupBuy.CloseEscape() == false)
-                    Close();
+                if (m_popupBuy?.gameObject.activeSelf == true)
+                    return;
+                Close();
             });
 
             StartAsync().Forget();
@@ -86,6 +87,7 @@ namespace Rev9.ContentsMarket
 
         public override void Close()
         {
+            Destroy(m_popupBuy.gameObject);
             Utils.SetActivePunch(m_element.panel, false, _callback: base.Close);
         }
 
@@ -213,7 +215,7 @@ namespace Rev9.ContentsMarket
             {
                 var slot = (i < content.childCount ? content.GetChild(i) : Instantiate(content.GetChild(0), content))
                     .GetComponent<PopupContentsMarket_Slot>();
-                slot.SetProductData(products[i], OnButton_Product);
+                slot.SetProductData(products[i], _productData => OnButtonAsync_Product(_productData).Forget());
             }
 
             for (; i < content.childCount; i++)
@@ -221,14 +223,45 @@ namespace Rev9.ContentsMarket
 
             content.ForceRebuildLayout();
             m_element.scrollProduct.velocity = content.anchoredPosition = Vector2.zero;
+
+            m_element.myCurrency.text = products[0].currencyMyCount.AmountKMBT(_isMBT: true);
+
+            string costType = products[0].pay_type.ToString();
+            i = 0;
+            for (; i < m_element.costPanel.childCount; i++)
+            {
+                var obj = m_element.costPanel.GetChild(i).gameObject;
+                obj.SetActive(obj.name.Equals(costType));
+            }
         }
 
-        void OnButton_Product(ContentsMarketProductData _productData)
+        PopupBuyComponent m_popupBuy;
+        async UniTask OnButtonAsync_Product(TableProductData _productData)
         {
-            //var myCurrency = InventoryWorker
+            if (m_popupBuy == null)
+                m_popupBuy = await PopupManager.instance.OpenPopupAsync<PopupBuyComponent>(PopupType.Buy, _productData);
+            else
+                m_popupBuy.OpenPopup(_productData);
 
-            if (_productData.remainCount > 0 || _productData.isLimit == false)
-                m_element.popupBuy.SetProductData(_productData, m_curTab);
+            await UniTask.WaitUntil(() => m_popupBuy.statusType != StatusType.Wait);
+
+            if (m_popupBuy.statusType == StatusType.Success)
+            {
+                bool isSuccess = await ContentsMarketWorker.instance.API_ProductBuy(m_curTab, _productData, m_popupBuy.buyCount);
+
+                if (isSuccess)
+                {
+                    List<ItemData> rewards = new();
+                    for (int i = 0; i < m_popupBuy.buyCount; i++)
+                        rewards.Add(_productData.itemData);
+
+                    RewardWorker.OpenRewardPopup(rewards.ToArray());
+                    SetProductLayout();
+                    Close();
+                }
+                else
+                    PopupManager.instance.AlertShow_Table("BUY_FAILED");
+            }
         }
 
         #region VALIDATE
@@ -246,7 +279,10 @@ namespace Rev9.ContentsMarket
             public CharacterComponent guide;
             public TextMeshProUGUI txtTimer;
 
-            public PopupContentsMarket_Popup_Buy popupBuy;
+            public TextMeshProUGUI myCurrency;
+            public Transform costPanel;
+
+            //public PopupContentsMarket_Popup_Buy popupBuy;
 
             public void Initialize(Transform _transform)
             {
@@ -255,11 +291,14 @@ namespace Rev9.ContentsMarket
                 scrollProduct = _transform.GetComponent<ScrollRect>("Panel/Market/Scroll");
                 guide = scrollProduct.transform.GetComponent<CharacterComponent>("Host/Guide");
                 txtTimer = scrollProduct.transform.GetComponent<TextMeshProUGUI>("txt_timer");
-                popupBuy = _transform.GetComponent<PopupContentsMarket_Popup_Buy>("Popup/Buy");
+                //popupBuy = _transform.GetComponent<PopupContentsMarket_Popup_Buy>("Popup/Buy");
+
+                myCurrency = _transform.GetComponent<TextMeshProUGUI>("Panel/Asset/txt_amount");
+                costPanel = _transform.Find("Panel/Asset/Icon");
             }
 
             public Transform panel => scrollTab.transform.parent;
-            public Transform panelPopup => popupBuy.transform.parent;
+            //public Transform panelPopup => popupBuy.transform.parent;
         }
         #endregion VALIDATE
 

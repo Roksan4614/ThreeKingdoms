@@ -314,8 +314,9 @@ public class Signal
     public SignalObject<Rev9.Tournament.TournamentStatusType> TournamentStatus = new();
 
     public SignalObject<ItemData> Inventory_UpdateCount = new();
+    public SignalObject<TableShopProductData> Buy_Item = new();
 
-    public SignalObject<PassQuestData> Pass_UpdateQuest = new(); 
+    public SignalObject<QuestType> Pass_UpdateQuest = new(); 
     public SignalObject<QuestInfoData> Quest_UpdateStatus = new();
     public SignalObject<QuestCategoryType> Quest_UpdateComplete = new();
 

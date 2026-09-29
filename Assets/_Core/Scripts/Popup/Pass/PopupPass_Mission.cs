@@ -39,6 +39,13 @@ namespace Rev9.Pass
             m_element.scroll.content.ForceRebuildLayout();
         }
 
+        public void UpdateQuest(QuestType _questType)
+        {
+            m_element.groupDaily.UpdateQuest(_questType);
+            m_element.groupSeason.UpdateQuest(_questType);
+        }
+
+
         #region VALIDATE
         public override void OnManualValidate() => m_element.Initialize(transform);
 

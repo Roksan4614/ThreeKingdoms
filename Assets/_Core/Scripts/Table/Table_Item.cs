@@ -39,7 +39,10 @@ public class TableItemData
     [JsonProperty] public ItemType category;
 
     public string name
-        => TableManager.stringItem.GetItemName(this);
+        => TableManager.stringItem.GetItemName(this, true);
+
+    public string desc
+        => TableManager.stringItem.GetItemName(this, false);
 }
 
 public class Table_String_Item : Table_String_Base
@@ -49,7 +52,7 @@ public class Table_String_Item : Table_String_Base
         //SetDictionary(x => x.key);
     }
 
-    public string GetItemName(TableItemData _itemData)
+    public string GetItemName(TableItemData _itemData, bool _isName = true)
     {
         string key = "";
         switch (_itemData.type)
@@ -60,18 +63,18 @@ public class Table_String_Item : Table_String_Base
                     for (var i = HeroClassType.NONE + 1; i < HeroClassType.MAX; i++)
                     {
                         if (i.ToString().ToLower() == lower)
-                            return TableManager.stringItem.GetStringFormat("NAME_SOUL_STONE"
+                            return TableManager.stringItem.GetStringFormat($"{(_isName ? "NAME" : "DESC")}_SOUL_STONE"
                                 , TableManager.stringHero.GetClassType(i));
                     }
                 }
                 break;
             case ItemDetailType.DedicatedSoulStone:
                 {
-                    return TableManager.stringItem.GetStringFormat("NAME_SOUL_STONE"
+                    return TableManager.stringItem.GetStringFormat($"{(_isName ? "NAME" : "DESC")}_SOUL_STONE"
                         , TableManager.stringHero.GetName(_itemData.value));
                 }
             default:
-                key = $"NAME_{_itemData.key.ToUpper()}";
+                key = $"{(_isName ? "NAME" : "DESC")}_{_itemData.key.ToUpper()}";
                 break;
         }
 

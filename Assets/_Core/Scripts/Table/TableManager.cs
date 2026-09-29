@@ -111,9 +111,19 @@ public class TableManager
     Dictionary<CastleObjectType, Table_Castle_Effect> m_castleEffect;
     public static Dictionary<CastleObjectType, Table_Castle_Effect> castleEffect => instance.m_castleEffect;
 
+    public static Table_ShopProduct shopProduct => instance.m_shopProduct;
+    Table_ShopProduct m_shopProduct;
+    public static Table_ShopProductReward shopProductReward => instance.m_shopProductReward;
+    Table_ShopProductReward m_shopProductReward;
+
+
     public async UniTask InitializeAsync()
     {
         await InitializeAsync_CDN();
+
+        m_item = new(LoadList<TableItemData>("s_item"));
+        m_shopProduct = new(LoadList<TableShopProductData>("s_shop_product"));
+        m_shopProductReward = new(LoadList<TableShopProductRewardData>("s_shop_product_reward"));
 
         await AddressableManager.instance.LoadAssetAsync<TextAsset>(true, _result =>
         {
@@ -124,7 +134,6 @@ public class TableManager
             m_traits = new(LoadList<TableTraitsData>(_result, "s_traits_pool"));
             m_traitsValue = new(LoadList<TableTraitsValueData>(_result, "s_traits_value_pool"));
 
-            m_item = new(LoadList<TableItemData>(_result, "s_item"));
             m_region = new(LoadList<TableRegionData>(_result, "RegionData"));
 
             m_stringTable = new(LoadList<TableStringData>(_result, "String"));

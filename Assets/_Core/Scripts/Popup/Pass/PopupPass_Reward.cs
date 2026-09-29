@@ -18,7 +18,7 @@ namespace Rev9.Pass
             m_element.slotStep.actionReward = (_slot, _isPaid) => OnButtonAsync_Reward(_slot, _isPaid).Forget();
         }
 
-        void InitializeScroll()
+        public void InitializeScroll()
         {
             var db = TableManager.passReward.list;
             var content = m_element.scroll.content;

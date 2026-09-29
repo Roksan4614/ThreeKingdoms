@@ -412,6 +412,13 @@ public class TeamManager : Singleton<TeamManager>, IValidatable
         return true;
     }
 
+    public bool HasHero(string _heroKey)
+        => m_member.Values.Any(x => x.info.key == _heroKey);
+    public bool HasHeroClass(HeroClassType _classType)
+        => m_member.Values.Any(x => x.info.classType == _classType);
+    public bool HasHeroRegion(RegionType _regionType)
+        => m_member.Values.Any(x => x.info.regionType == _regionType);
+
     public void StopAllRespawn()
         => heroInfo.StopAllRespawn();
 

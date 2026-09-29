@@ -11,6 +11,8 @@ namespace Rev9.Pass
         public PassQuestData data { get; private set; }
         public UnityAction<PopupPass_Mission_Group_Slot> actionComplete { get; set; }
 
+        string m_msgDesc;
+
         private void Awake()
         {
             //m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_RECEIVE");
@@ -33,34 +35,25 @@ namespace Rev9.Pass
                 heroName = KoreanHelper.AppendJosa(heroName
                     , tableData.key == ThreeKingdoms.Shared.Enums.QuestType.OfficeDispatch ? KoreanHelper.JosaType.EulLeul : KoreanHelper.JosaType.EuroroRo
                     , "<size=120%>[{0}]</size>");
-            m_element.txtDesc.text = tableData.GetDesc(heroName);
-            m_element.txtDesc.text += $"\n<color=#555555>({tableData.count}/{TableManager.passQuest.GetCount(tableData)})";
+            m_msgDesc = tableData.GetDesc(heroName);
+            UpdateCount();
 
-            m_element.badge.SetActive(_data.isPaid && (DataManager.pass.isPaid == false));
+            m_element.badge.SetActive(data.isPaid && (DataManager.pass.isPaid == false));
+            transform.GetComponent<Button>().enabled = m_element.badge.activeSelf == false;
+        }
 
-            //FFFFBA
-            if (_data.isComplete)
+        public void UpdateCount()
+        {
+            m_element.txtDesc.text = m_msgDesc;
+            m_element.txtDesc.text += $"\n<color=#555555>({data.tableData.count}/{TableManager.passQuest.GetCount(data.tableData)})";
+
+            if (data.isComplete)
             {
                 ColorUtility.TryParseHtmlString("#C3C3C3", out Color outClr);
                 m_element.imgSlot.color = outClr;
             }
             else
                 m_element.imgSlot.color = Color.white;
-
-            //if (QuestWorker.instance.HasNavigation(_data.data.key) == false)
-            //{
-            //    if (_data.isComplete == false)
-            //    {
-            //        m_element.btnConfirm.gameObject.SetActive(false);
-            //        return;
-            //    }
-            //}
-
-            //m_element.btnConfirm.gameObject.SetActive(true);
-            //m_element.btnConfirm.text = TableManager.stringTable.GetString($"BUTTON_{(_data.isComplete ? "RECEIVE" : "NAVIGATION")}");
-
-            //if (m_element.btnConfirm.isDrawSelect != _data.isComplete)
-            //    m_element.btnConfirm.SetDrawSelect(_data.isComplete);
         }
 
         #region VALIDATE

@@ -50,6 +50,7 @@ public class DataManager
         tasks.Add(m_bossRaid.InitializeAsync());
         tasks.Add(dailyDungeon.InitializeAsync());
         tasks.Add(storyMode.InitializeAsync());
+        tasks.Add(pass.InitializeAsync());
 
         tasks.Add(InventoryWorker.instance.InitializeAsync());
         tasks.Add(PostWorker.instance.InitializeAsync());

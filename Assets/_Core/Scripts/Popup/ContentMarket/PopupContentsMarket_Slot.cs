@@ -7,7 +7,7 @@ namespace Rev9.ContentsMarket
 {
     public class PopupContentsMarket_Slot : MonoBehaviour, IValidatable
     {
-        public void SetProductData(ContentsMarketProductData _productData, UnityAction<ContentsMarketProductData> _onClick)
+        public void SetProductData(TableProductData _productData, UnityAction<TableProductData> _onClick)
         {
             gameObject.SetActive(true);
 
@@ -15,13 +15,13 @@ namespace Rev9.ContentsMarket
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => _onClick(_productData));
 
-            m_element.txtCost.text = _productData.cost.AmountKMBT(_isMBT: true);
+            m_element.txtCost.text = _productData.price.AmountKMBT(_isMBT: true);
             m_element.txtCost.transform.ForceRebuildLayout();
 
             for (int i = 0; i < m_element.iconCost.childCount; i++)
             {
                 var icon = m_element.iconCost.GetChild(i).gameObject;
-                icon.SetActive(icon.name == _productData.costType.ToString());
+                icon.SetActive(icon.name == _productData.pay_type.ToString());
             }
 
             m_element.item.SetItemData(_productData.itemData);
@@ -29,10 +29,10 @@ namespace Rev9.ContentsMarket
             bool isClose = _productData.remainCount == 0;
             m_element.objClose.SetActive(isClose);
 
-            bool isLimit = _productData.isLimit == true && isClose == false;
-            m_element.txtCount.transform.parent.gameObject.SetActive(isLimit);
+            bool hasLimit = _productData.hasLimit == true && isClose == false;
+            m_element.txtCount.transform.parent.gameObject.SetActive(hasLimit);
 
-            if (isLimit == true)
+            if (hasLimit == true)
             {
                 string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + _productData.periodType.ToString().ToUpper());
                 m_element.txtCount.text = $"{periodType} {_productData.strRemainCount}";

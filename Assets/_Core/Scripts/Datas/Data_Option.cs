@@ -149,8 +149,8 @@ public class Data_Option
                 db.Add(e, 0);
 
             //db[OptionType.LANGUEGE] = (int)LanguageType.Chinese;
-            //db[OptionType.LANGUEGE] = (int)LanguageType.Korean;
-            db[OptionType.LANGUEGE] = (int)LanguageType.English;
+            db[OptionType.LANGUEGE] = (int)LanguageType.Korean;
+            //db[OptionType.LANGUEGE] = (int)LanguageType.English;
         }
 
         public void SetOption(OptionType _type, bool _isOn)

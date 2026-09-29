@@ -8,7 +8,7 @@ namespace Rev9.ContentsMarket
 {
     public class PopupContentsMarket_Popup_Buy : PopupBuyComponent
     {
-        ContentsMarketProductData m_productData;
+        TableProductData m_productData;
         ContentsMarketTabType m_tabType;
         int m_buyCount = 0;
 
@@ -17,20 +17,6 @@ namespace Rev9.ContentsMarket
             transform.GetComponent<Button>("Dimm").onClick.AddListener(Close);
             transform.GetComponent<Button>("Panel/btn_close").onClick.AddListener(Close);
 
-            var btnConfirm = transform.GetComponent<ButtonHelper>("Panel/Button/btn_confirm");
-            btnConfirm.onClick.AddListener(() => OnButtonAsync_Confirm().Forget());
-
-            var controller = transform.Find("Panel/Controll");
-            var btnMin = controller.GetComponent<ButtonHelper>("btn_min");
-            var btnMax = controller.GetComponent<ButtonHelper>("btn_max");
-            controller.GetComponent<Button>("btn_minus").onClick.AddListener(() => OnButton_Increase(true));
-            controller.GetComponent<Button>("btn_plus").onClick.AddListener(() => OnButton_Increase(false));
-            btnMin.onClick.AddListener(() => OnButton_MinMax(true));
-            btnMax.onClick.AddListener(() => OnButton_MinMax(false));
-
-            //setlocalization
-            btnMin.text = TableManager.stringTable.GetString("UI_MIN");
-            btnMax.text = TableManager.stringTable.GetString("UI_MAX");
         }
 
         public bool CloseEscape()
@@ -46,7 +32,7 @@ namespace Rev9.ContentsMarket
             return false;
         }
 
-        public void SetProductData(ContentsMarketProductData _productData, ContentsMarketTabType _tabType)
+        public void SetProductData(TableProductData _productData, ContentsMarketTabType _tabType)
         {
             m_tabType = _tabType;
             m_productData = _productData;
@@ -66,14 +52,14 @@ namespace Rev9.ContentsMarket
             if (_isMinus)
                 m_buyCount = Mathf.Max(1, m_buyCount - 1);
             else
-                m_buyCount = Mathf.Min(m_productData.countMax, m_buyCount + 1);
+                m_buyCount = Mathf.Min(m_productData.buy_limit, m_buyCount + 1);
 
             m_elementContentMarket.txtCount.text = $"{m_buyCount:#,0}";
         }
 
         void OnButton_MinMax(bool _isMin)
         {
-            m_buyCount = _isMin ? 1 : m_productData.countMax;
+            m_buyCount = _isMin ? 1 : m_productData.buy_limit;
             m_elementContentMarket.txtCount.text = $"{m_buyCount:#,0}";
         }
 

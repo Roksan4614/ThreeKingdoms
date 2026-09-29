@@ -321,7 +321,7 @@ public class CharacterComponent : TargetComponent
                             if (DataManager.instance.isLobby)
                             {
                                 QuestWorker.instance.AddCount(QuestType.EnemyKill);
-                                DataManager.pass.AddCount_EnemyKill(_attacker.info);
+                                DataManager.pass.AddCount_EnemyKill();
                             }
                         }
                     }

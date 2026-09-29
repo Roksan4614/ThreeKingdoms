@@ -7,123 +7,126 @@ using System.Linq;
 using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class BottomComponent : Singleton<BottomComponent>, IValidatable
 {
-	Dictionary<LobbyScreenType, ScreenData> m_dbScreen = new();
+    Dictionary<LobbyScreenType, ScreenData> m_dbScreen = new();
 
-	IEnumerator Start()
-	{
-		m_dbScreen = m_element.screens.ToDictionary(x => x.type, x => x);
+    IEnumerator Start()
+    {
+        m_dbScreen = m_element.screens.ToDictionary(x => x.type, x => x);
 
-		foreach (var screen in m_dbScreen.Values)
-		{
-			screen.button.onClick
-				.AddListener(() => OnButton_OpenScreen(screen.type));
+        foreach (var screen in m_dbScreen.Values)
+        {
+            screen.button.onClick
+                .AddListener(() => OnButton_OpenScreen(screen.type));
 
             screen.button.name = screen.type.ToString().ToUpper();
-			screen.txtName.text = TableManager.stringTable.GetString($"L_BOT_{screen.button.name}");
-		}
+            screen.txtName.text = TableManager.stringTable.GetString($"L_BOT_{screen.button.name}");
+        }
 
-		m_element.panel.ForceRebuildLayout();
-		m_element.panel.GetComponent<HorizontalLayoutGroup>().enabled = false;
+        m_element.panel.ForceRebuildLayout();
+        m_element.panel.GetComponent<HorizontalLayoutGroup>().enabled = false;
 
-		yield return null;
+        yield return null;
 
-		// Text 크기 맞추기
-		{
-			int minSize = (int)m_dbScreen.Values.Min(x => x.txtName.preferredHeight);
-			foreach (var screen in m_dbScreen.Values)
-				screen.txtName.fontSizeMax = minSize;
-		}
+        // Text 크기 맞추기
+        {
+            int minSize = (int)m_dbScreen.Values.Min(x => x.txtName.preferredHeight);
+            foreach (var screen in m_dbScreen.Values)
+                screen.txtName.fontSizeMax = minSize;
+        }
 
-		Signal.instance.CloseLobbyScreen.connectLambda = new(this, _screen => SelectButton(_screen, false));
-		Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(_isActive));
-	}
+        Signal.instance.CloseLobbyScreen.connectLambda = new(this, _screen => SelectButton(_screen, false));
+        Signal.instance.ActiveHUD.connectLambda = new(this, _isActive => gameObject.SetActive(_isActive));
+    }
 
-	bool m_isDoing = false;
-	public void OnButton_OpenScreen(LobbyScreenType _screenType)
-	{
-		if (LobbyScreenManager.instance.isLock == true || m_isDoing == true)
-			return;
+    bool m_isDoing = false;
+    public void OnButton_OpenScreen(LobbyScreenType _screenType, UnityAction<LobbyScreen_Base> _callback = null)
+    {
+        if (LobbyScreenManager.instance.isLock == true || m_isDoing == true)
+            return;
 
-		m_isDoing = true;
+        m_isDoing = true;
 
-		SelectButton(LobbyScreenManager.instance.curScreen, false);
+        SelectButton(LobbyScreenManager.instance.curScreen, false);
 
-		LobbyScreenManager.instance.OpenScreenAsync(_screenType, _screen =>
-		{
-			if (_screen != null)
-				SelectButton(_screenType, true);
-			m_isDoing = false;
-		}).Forget();
-	}
+        LobbyScreenManager.instance.OpenScreenAsync(_screenType, _screen =>
+        {
+            if (_screen != null)
+                SelectButton(_screenType, true);
+            m_isDoing = false;
 
-	void SelectButton(LobbyScreenType _screen, bool _isSelect)
-	{
-		if (_screen == LobbyScreenType.None)
-			return;
+            _callback?.Invoke(_screen);
+        }).Forget();
+    }
 
-		m_dbScreen[_screen].rt.DOScale(_isSelect ? Vector3.one * 1.2f : Vector3.one, 0.1f);
+    void SelectButton(LobbyScreenType _screen, bool _isSelect)
+    {
+        if (_screen == LobbyScreenType.None)
+            return;
 
-		if (_isSelect)
-			m_dbScreen[_screen].rt.parent.SetAsFirstSibling();
-	}
+        m_dbScreen[_screen].rt.DOScale(_isSelect ? Vector3.one * 1.2f : Vector3.one, 0.1f);
 
-	public Transform GetIconScreen(ItemDetailType _itemType)
-		=> m_dbScreen[_itemType switch
-		{
-			ItemDetailType.TicketGachaNormal => LobbyScreenType.Summon,
-			ItemDetailType.DedicatedSoulStone => LobbyScreenType.Hero,
-			ItemDetailType.ClassSoulStone => LobbyScreenType.Hero,
-			ItemDetailType.PublicSoulStone => LobbyScreenType.Hero,
-			ItemDetailType.TimeStone => LobbyScreenType.Hero,
-			_ => LobbyScreenType.Castle
-		}].icon;
+        if (_isSelect)
+            m_dbScreen[_screen].rt.parent.SetAsFirstSibling();
+    }
 
-	#region VALIDATA
-	public void OnManualValidate() => m_element.Initialize(transform);
+    public Transform GetIconScreen(ItemDetailType _itemType)
+        => m_dbScreen[_itemType switch
+        {
+            ItemDetailType.TicketGachaNormal => LobbyScreenType.Summon,
+            ItemDetailType.DedicatedSoulStone => LobbyScreenType.Hero,
+            ItemDetailType.ClassSoulStone => LobbyScreenType.Hero,
+            ItemDetailType.PublicSoulStone => LobbyScreenType.Hero,
+            ItemDetailType.TimeStone => LobbyScreenType.Hero,
+            _ => LobbyScreenType.Castle
+        }].icon;
 
-	[SerializeField, HideInInspector]
-	ElementData m_element;
-	public ElementData element => m_element;
+    #region VALIDATA
+    public void OnManualValidate() => m_element.Initialize(transform);
 
-	[Serializable]
-	public struct ElementData
-	{
-		public Transform panel;
-		public List<ScreenData> screens;
+    [SerializeField, HideInInspector]
+    ElementData m_element;
+    public ElementData element => m_element;
 
-		public Vector3 prevScale;
-		public void Initialize(Transform _transform)
-		{
-			panel = _transform.Find("Panel");
+    [Serializable]
+    public struct ElementData
+    {
+        public Transform panel;
+        public List<ScreenData> screens;
 
-			screens = new();
-			for (int i = 0; i < panel.childCount; i++)
-			{
-				ScreenData data = new()
-				{
-					type = LobbyScreenType.None + 1 + i,
-					button = panel.GetChild(i).GetComponent<Button>()
-				};
-				data.rt = (RectTransform)data.button.transform;
-				data.txtName = data.rt.GetComponent<TextMeshProUGUI>("Panel/txt_name");
-				data.icon = data.rt.Find("Panel/Icon");
-				screens.Add(data);
-			}
-		}
-	}
+        public Vector3 prevScale;
+        public void Initialize(Transform _transform)
+        {
+            panel = _transform.Find("Panel");
 
-	[Serializable]
-	public class ScreenData
-	{
-		public LobbyScreenType type;
-		public Button button;
-		public TextMeshProUGUI txtName;
-		public RectTransform rt;
-		public Transform icon;
-	}
-	#endregion
+            screens = new();
+            for (int i = 0; i < panel.childCount; i++)
+            {
+                ScreenData data = new()
+                {
+                    type = LobbyScreenType.None + 1 + i,
+                    button = panel.GetChild(i).GetComponent<Button>()
+                };
+                data.rt = (RectTransform)data.button.transform;
+                data.txtName = data.rt.GetComponent<TextMeshProUGUI>("Panel/txt_name");
+                data.icon = data.rt.Find("Panel/Icon");
+                screens.Add(data);
+            }
+        }
+    }
+
+    [Serializable]
+    public class ScreenData
+    {
+        public LobbyScreenType type;
+        public Button button;
+        public TextMeshProUGUI txtName;
+        public RectTransform rt;
+        public Transform icon;
+    }
+    #endregion
 }

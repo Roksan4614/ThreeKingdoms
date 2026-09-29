@@ -43,6 +43,23 @@ namespace Rev9.Pass
             }
 
             m_element.panel.gameObject.SetActive(false);
+
+            if (DataManager.pass.isPaid)
+            {
+                m_element.btnPass.interactable = false;
+                m_element.txtCost.text = TableManager.stringTable.GetString("UI_PASS_RUNNING");
+            }
+
+            Signal.instance.Pass_UpdateQuest.connect = SlotPassUpdateQuest;
+            Signal.instance.Buy_Item.connectLambda = new(this, _product =>
+            {
+                if (_product.product_type == ShopProductType.Pass)
+                {
+                    m_element.reward.InitializeScroll();
+                    m_element.btnPass.interactable = false;
+                    m_element.txtCost.text = TableManager.stringTable.GetString("UI_PASS_RUNNING");
+                }
+            });
         }
 
         public override void OpenPopup(params object[] _args)
@@ -53,8 +70,6 @@ namespace Rev9.Pass
 
         async UniTask OpenPopupAsync()
         {
-            await DataManager.pass.InitializeAsync();
-
             Utils.SetActivePunch(m_element.panel, true);
             SetTab(TabType.Reward);
 
@@ -92,9 +107,12 @@ namespace Rev9.Pass
 
         async UniTask OnButtonAsync_Complete(PopupPass_Mission_Group_Slot _slot)
         {
-            // todo 완료시켜야 해
-
-            if (_slot.data.isComplete == false)
+            if (_slot.data.isComplete == true)
+            {
+                await DataManager.pass.API_QuestComplete(_slot.data.idx);
+                RefreshLevelXP();
+            }
+            else
             {
                 var type = _slot.data.tableData.key;
                 StatusType result = StatusType.Wait;
@@ -131,11 +149,11 @@ namespace Rev9.Pass
                         break;
                 }
             }
-            else
-            {
+        }
 
-                RefreshLevelXP();
-            }
+        void SlotPassUpdateQuest(QuestType _questType)
+        {
+            m_element.mission.UpdateQuest(_questType);
         }
 
         public override void Close()
@@ -157,6 +175,7 @@ namespace Rev9.Pass
             public TextMeshProUGUI txtTimer;
             public Transform pHost;
             public ButtonHelper btnPass;
+            public TextMeshProUGUI txtCost;
             public TextMeshProUGUI txtDescPass;
             public GaugeHelper gaugeXP;
             public TextMeshProUGUI txtLevelXP;
@@ -172,6 +191,7 @@ namespace Rev9.Pass
                 txtTimer = _transform.GetComponent<TextMeshProUGUI>("Panel/Timer/Text");
                 pHost = _transform.Find("Panel/Host");
                 btnPass = _transform.GetComponent<ButtonHelper>("Panel/Info/btn_pass");
+                txtCost = _transform.GetComponent<TextMeshProUGUI>("Panel/Info/btn_pass/txt_cost");
                 txtDescPass = _transform.GetComponent<TextMeshProUGUI>("Panel/Info/txt_desc");
                 gaugeXP = _transform.GetComponent<GaugeHelper>("Panel/Info/Gauge_XP");
                 txtLevelXP = gaugeXP.transform.GetComponent<TextMeshProUGUI>("Level/Text");

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Rev9.Pass
 {
-    public class Data_Pass
+    public partial class Data_Pass
     {
         const string c_key = "pp_pass";
 
@@ -94,15 +94,6 @@ namespace Rev9.Pass
             SaveData();
         }
 
-        public async UniTask API_QuestComplete(int _idx)
-        {
-            await UniTask.NextFrame();
-
-            var index = m_data.quests.FindIndex(x => x.idx == _idx);
-            m_data.quests.RemoveAt(index);
-            SaveData();
-        }
-
         public async UniTask<bool> API_ReceiveReward(PopupPass_Reward_Slot _slot, bool _isPaid)
         {
             if (_slot.rewardData.level > m_data.level)
@@ -114,7 +105,26 @@ namespace Rev9.Pass
             if (_isPaid && m_data.isPaid == false)
             {
                 PopupManager.instance.AlertShow_Table("PASS_CAN_AFTER_PAID");
-                return false;
+
+                var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_BUY");
+
+                if (result == StatusType.Success)
+                {
+                    TableShopProductData productData = TableManager.shopProduct.GetProductData("battle_pass_season_1");
+                    var popup = await PopupManager.instance.OpenPopupAsync<PopupBuyComponent>(PopupType.Buy, productData);
+                    popup.BaseClose();
+
+                    // 구매를 했다면
+                    if (popup.statusType == StatusType.Success)
+                    {
+                        SetBuyBattlePass();
+                        Signal.instance.Buy_Item.Emit(productData);
+                    }
+                    else
+                        return false;
+                }
+                else
+                    return false;
             }
 
             var receiveData = _isPaid ? m_data.receiveLevel_Paid : m_data.receiveLevel;
@@ -154,21 +164,33 @@ namespace Rev9.Pass
             //return TableManager.passReward.GetRewardItem(_level, _isPaid);
         }
 
-        public void AddCount_EnemyKill(HeroInfoData _heroinfoData)
+        public async UniTask API_QuestComplete(int _idx)
         {
-            foreach (var q in m_data.quests)
+            await UniTask.NextFrame();
+
+            var index = m_data.quests.FindIndex(x => x.idx == _idx);
+
+            var data = m_data.quests[_idx];
+            if (data.isComplete == true)
             {
-                if (q.tableData.key == QuestType.EnemyKill)
+                m_data.exp += data.tableData.exp;
+                var rewardData = TableManager.passReward.GetRewardData(m_data.level);
+
+                while (m_data.exp > rewardData.exp)
                 {
-                    if (q.tableData.valueHero == _heroinfoData.key ||
-                        q.tableData.valueClass == _heroinfoData.classType ||
-                        q.tableData.valueRegion == _heroinfoData.regionType)
-                    {
-                        q.tableData.count++;
-                        Signal.instance.Pass_UpdateQuest.Emit(q);
-                    }
+                    m_data.level++;
+                    m_data.exp -= rewardData.exp;
+                    rewardData = TableManager.passReward.GetRewardData(m_data.level);
                 }
+
+                m_data.quests.RemoveAt(index);
+                SaveData();
             }
+        }
+
+        public void SetBuyBattlePass()
+        {
+            m_data.tickEndPaid = SeasonWorker.instance.dtEnd.Ticks;
         }
     }
 

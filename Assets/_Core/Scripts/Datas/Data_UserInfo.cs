@@ -267,6 +267,8 @@ public partial class Data_UserInfo
     #region ASSETS
     public long GetAssetAmount(ItemDetailType _itemType)
         => _itemType switch { ItemDetailType.Gold => m_element.gold, ItemDetailType.Rice => m_element.rice, _ => -1 };
+    public long GetAssetAmount(PayType _payType)
+        => _payType switch { PayType.FreeGold => m_element.gold, PayType.Rice => m_element.rice, _ => -1 };
 
 
     //public void AddHeroSoul(string _key, int _count)
