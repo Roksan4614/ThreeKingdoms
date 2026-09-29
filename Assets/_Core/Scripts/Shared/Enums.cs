@@ -494,6 +494,9 @@ namespace ThreeKingdoms.Shared.Enums
     /// </summary>
     public enum ItemDetailType
     {
+        /// <summary>
+        /// 없음
+        /// </summary>
         None = -1,
         /// <summary>
         /// 군량
