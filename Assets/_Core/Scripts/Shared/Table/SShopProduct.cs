@@ -38,7 +38,7 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("pay_type", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.PayType PayType { get; set; } = default!;
         /// <summary>
-        /// 가격 게임 재화 결제일 때만 사용한다. 현금 결제는 0이며 실제 금액은 스토어 콘솔이 관리한다
+        /// 가격
         /// </summary>
         [JsonProperty("price", NullValueHandling = NullValueHandling.Include)]
         public int Price { get; set; } = default!;
