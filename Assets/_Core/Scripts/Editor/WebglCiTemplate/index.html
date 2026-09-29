@@ -268,6 +268,7 @@
         }
 
         function onResize() {
+            if (!window.unityInstance) return;
             if (window.innerHeight === screen.height) {
                 window.unityInstance.SendMessage("MessageHandler", "SetFullScreen", 0);
             } else {
