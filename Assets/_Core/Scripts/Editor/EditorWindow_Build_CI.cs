@@ -8,12 +8,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 public partial class EditorWindow_Build
 {
     private bool m_isCiBuild;
     private bool m_forceCleanCiCache;
+    private WebglCiOptions m_ciOptions;
     private const string CiMetadataAsset = "Assets/Resources/ThreeKingzWebglBuild.json";
     private const string CiHtmlTemplate = "Assets/_Core/Scripts/Editor/WebglCiTemplate/index.html";
 
@@ -24,6 +27,8 @@ public partial class EditorWindow_Build
         public string gitSha;
         public int buildNumber;
         public string appVersion;
+        public string codeGeneration;
+        public bool stripEngineCode;
     }
 
     private static string RequiredCiArgument(string name)
@@ -59,13 +64,22 @@ public partial class EditorWindow_Build
         var version = PlayerSettings.bundleVersion;
         if (!Regex.IsMatch(version, "^[0-9]+\\.[0-9]+\\.[0-9]+$")) throw new InvalidOperationException("Keep a complete major.minor.patch app version in master.");
         if (!File.Exists(CiHtmlTemplate)) throw new FileNotFoundException("CI HTML template is missing.", CiHtmlTemplate);
-        return new WebglCiOptions { output = output, publicUrl = publicUrl, gitSha = sha, buildNumber = number, appVersion = version };
+        var arguments = Environment.GetCommandLineArgs();
+        var codeGeneration = arguments.Contains("-ciCodeGeneration") ? RequiredCiArgument("-ciCodeGeneration") : "project";
+        if (codeGeneration != "project" && codeGeneration != "size")
+            throw new ArgumentException("CI code generation must be project or size.");
+        return new WebglCiOptions
+        {
+            output = output, publicUrl = publicUrl, gitSha = sha, buildNumber = number, appVersion = version,
+            codeGeneration = codeGeneration, stripEngineCode = arguments.Contains("-ciStripEngineCode")
+        };
     }
 
     private static EditorWindow_Build CreateCiBuilder(WebglCiOptions options)
     {
         var builder = CreateInstance<EditorWindow_Build>();
         builder.m_isCiBuild = true;
+        builder.m_ciOptions = options;
         builder.m_forceCleanCiCache = Environment.GetCommandLineArgs().Contains("-ciCleanCache");
         var buildData = Resources.Load<TextAsset>("EditorData/BuildData");
         if (buildData == null) throw new InvalidOperationException("EditorData/BuildData is missing.");
@@ -92,6 +106,9 @@ public partial class EditorWindow_Build
             var options = ReadWebglCiOptions();
             var builder = CreateCiBuilder(options);
             builder.Run(false, false);
+            if (options.codeGeneration == "size")
+                PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.WebGL, Il2CppCodeGeneration.OptimizeSize);
+            if (options.stripEngineCode) PlayerSettings.stripEngineCode = true;
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
             PlayerSettings.WebGL.decompressionFallback = true;
             var metadata = new WebglBuildMetadata
@@ -99,8 +116,14 @@ public partial class EditorWindow_Build
                 app_version = options.appVersion, git_sha = options.gitSha,
                 bundle_base_url = options.publicUrl + "/Bundle/WebGL/ci", bundle_idx = options.buildNumber
             };
-            File.WriteAllText(CiMetadataAsset, JsonUtility.ToJson(metadata, true), new UTF8Encoding(false));
-            AssetDatabase.ImportAsset(CiMetadataAsset, ImportAssetOptions.ForceSynchronousImport);
+            var contents = JsonUtility.ToJson(metadata, true);
+            if (!File.Exists(CiMetadataAsset) || File.ReadAllText(CiMetadataAsset) != contents)
+            {
+                File.WriteAllText(CiMetadataAsset, contents, new UTF8Encoding(false));
+                AssetDatabase.ImportAsset(CiMetadataAsset, ImportAssetOptions.ForceSynchronousImport);
+            }
+            Debug.Log("[WEBGL_METADATA_GUID] " + AssetDatabase.AssetPathToGUID(CiMetadataAsset));
+            Debug.Log("[WEBGL_OPTIONS] " + JsonConvert.SerializeObject(DescribeCiOptimization()));
             AssetDatabase.SaveAssets();
             DestroyImmediate(builder);
             Debug.Log("[WEBGL_STAGE] configured");
@@ -119,6 +142,10 @@ public partial class EditorWindow_Build
             var metadata = JsonUtility.FromJson<WebglBuildMetadata>(metadataAsset.text);
             if (metadata.bundle_idx != options.buildNumber || metadata.app_version != options.appVersion || metadata.git_sha != options.gitSha)
                 throw new InvalidOperationException("CI build metadata does not match this request.");
+            if (options.codeGeneration == "size" && PlayerSettings.GetIl2CppCodeGeneration(NamedBuildTarget.WebGL) != Il2CppCodeGeneration.OptimizeSize)
+                throw new InvalidOperationException("CI IL2CPP setting was not prepared.");
+            if (options.stripEngineCode && !PlayerSettings.stripEngineCode)
+                throw new InvalidOperationException("CI engine stripping setting was not prepared.");
             var builder = CreateCiBuilder(options);
             builder.Run(true, true);
             if (!m_isSuccessBuild) throw new InvalidOperationException("A required WebGL or Addressables build failed.");
@@ -128,6 +155,34 @@ public partial class EditorWindow_Build
             Debug.Log("[WEBGL_STAGE] complete");
         }
         catch (Exception error) { Debug.LogException(error); EditorApplication.Exit(1); }
+    }
+
+    private static object DescribeCiOptimization()
+    {
+        return new
+        {
+            il2cpp_code_generation = PlayerSettings.GetIl2CppCodeGeneration(NamedBuildTarget.WebGL).ToString(),
+            strip_engine_code = PlayerSettings.stripEngineCode
+        };
+    }
+
+    private void RecordCiBuildReport(BuildReport report, string variant)
+    {
+        if (!m_isCiBuild) return;
+        var directory = Path.Combine(m_ciOptions.output, "reports");
+        Directory.CreateDirectory(directory);
+        var data = new
+        {
+            build_number = m_ciOptions.buildNumber, client_sha = m_ciOptions.gitSha, variant,
+            result = report.summary.result.ToString(), duration_seconds = report.summary.totalTime.TotalSeconds,
+            size_bytes = report.summary.totalSize, errors = report.summary.totalErrors,
+            optimization = DescribeCiOptimization(), metadata_guid = AssetDatabase.AssetPathToGUID(CiMetadataAsset),
+            steps = report.steps.Select(step => new { step.name, step.depth, duration_seconds = step.duration.TotalSeconds }).ToArray()
+        };
+        File.WriteAllText(Path.Combine(directory, variant + ".json"), JsonConvert.SerializeObject(data, Formatting.Indented), new UTF8Encoding(false));
+        var trace = Path.Combine("Library", "Bee", "buildreport.json");
+        if (File.Exists(trace)) File.Copy(trace, Path.Combine(directory, variant + "-trace.json"), false);
+        Debug.Log($"[WEBGL_REPORT] {variant} seconds={report.summary.totalTime.TotalSeconds:F3} result={report.summary.result}");
     }
 
     private static void CopyCiDirectory(string source, string destination)
@@ -181,7 +236,7 @@ public partial class EditorWindow_Build
             format_version = 1, build_number = options.buildNumber, client_sha = options.gitSha,
             app_version = options.appVersion, unity_version = Application.unityVersion, branch = "master",
             bundle_idx = options.buildNumber, created_at = DateTime.UtcNow.ToString("O"),
-            variants = new[] { "DXT", "ASTC" }, files, bundles = bundleFiles
+            variants = new[] { "DXT", "ASTC" }, optimization = DescribeCiOptimization(), files, bundles = bundleFiles
         };
         File.WriteAllText(Path.Combine(player, "build-manifest.json"), JsonConvert.SerializeObject(manifest, Formatting.Indented), new UTF8Encoding(false));
     }
