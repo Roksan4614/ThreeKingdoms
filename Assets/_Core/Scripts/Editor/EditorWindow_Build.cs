@@ -403,6 +403,7 @@ public partial class EditorWindow_Build : EditorWindow
                         options.locationPathName = filePath + "_mobile";
 
                         BuildReport report_mobile = BuildPipeline.BuildPlayer(options);
+                        RecordCiBuildReport(report_mobile, "astc");
 
                         if (report_mobile.summary.result == BuildResult.Succeeded)
                         {
@@ -441,6 +442,7 @@ public partial class EditorWindow_Build : EditorWindow
 
         // Build Player!!
         BuildReport report = BuildPipeline.BuildPlayer(options);
+        RecordCiBuildReport(report, "dxt");
 
         m_isSuccessBuild = report.summary.result == BuildResult.Succeeded;
 
