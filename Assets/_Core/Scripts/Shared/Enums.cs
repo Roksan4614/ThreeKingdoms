@@ -533,7 +533,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 보물 조각 랜덤박스
         /// </summary>
-        RandomBoxTreasurePieceRandomBox = 8,
+        RandomBoxTreasurePiece = 8,
         /// <summary>
         /// 일반 연회권
         /// </summary>
@@ -553,15 +553,15 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 공용 영혼석
         /// </summary>
-        PublicSoulStone = 13,
+        SoulStonePublic = 13,
         /// <summary>
         /// 전용 영혼석
         /// </summary>
-        DedicatedSoulStone = 14,
+        SoulStoneDedicated = 14,
         /// <summary>
         /// 클래스 영혼석
         /// </summary>
-        ClassSoulStone = 15,
+        SoulStoneClass = 15,
         /// <summary>
         /// 보물 마일리지
         /// </summary>
@@ -792,19 +792,19 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 무료 금화 결제
         /// </summary>
-        FreeGold = 1,
+        GoldFree = 1,
         /// <summary>
         /// 유료 금화 결제
         /// </summary>
-        PaidGold = 2,
+        GoldPaid = 2,
         /// <summary>
         /// 레이드 포인트 결제
         /// </summary>
-        RaidPoint = 3,
+        PointRaid = 3,
         /// <summary>
         /// 토너먼트 포인트 결제
         /// </summary>
-        TournamentPoint = 4,
+        PointTournament = 4,
         /// <summary>
         /// 현금 결제
         /// </summary>
