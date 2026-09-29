@@ -14,6 +14,46 @@ namespace ThreeKingdoms.Shared.Constants
     {
         public const string SUCCESS = "SUCCESS";
         /// <summary>
+        /// 차단된 운영자 계정이다.
+        /// </summary>
+        public const string ADMIN_ACCOUNT_BLOCKED = "ADMIN_ACCOUNT_BLOCKED";
+        /// <summary>
+        /// Google 계정과 등록된 운영자 정보가 충돌한다.
+        /// </summary>
+        public const string ADMIN_ACCOUNT_CONFLICT = "ADMIN_ACCOUNT_CONFLICT";
+        /// <summary>
+        /// 운영자 승인을 기다리는 계정이다.
+        /// </summary>
+        public const string ADMIN_APPROVAL_PENDING = "ADMIN_APPROVAL_PENDING";
+        /// <summary>
+        /// 운영툴 세션이 없거나 만료됐다.
+        /// </summary>
+        public const string ADMIN_AUTH_REQUIRED = "ADMIN_AUTH_REQUIRED";
+        /// <summary>
+        /// 빌드 또는 리소스 검증이 완료되지 않았다.
+        /// </summary>
+        public const string ADMIN_BUILD_NOT_READY = "ADMIN_BUILD_NOT_READY";
+        /// <summary>
+        /// 운영툴 요청의 출처 또는 CSRF 값이 일치하지 않는다.
+        /// </summary>
+        public const string ADMIN_CSRF_INVALID = "ADMIN_CSRF_INVALID";
+        /// <summary>
+        /// 운영툴 설정이나 게시 데이터가 유효하지 않다.
+        /// </summary>
+        public const string ADMIN_INVALID_SETTING = "ADMIN_INVALID_SETTING";
+        /// <summary>
+        /// 마지막 활성 관리자를 차단하거나 일반 운영자로 변경할 수 없다.
+        /// </summary>
+        public const string ADMIN_LAST_ADMIN = "ADMIN_LAST_ADMIN";
+        /// <summary>
+        /// 해당 작업에 관리자 권한이 필요하다.
+        /// </summary>
+        public const string ADMIN_PERMISSION_DENIED = "ADMIN_PERMISSION_DENIED";
+        /// <summary>
+        /// 조회 후 설정이 변경됐으므로 다시 확인해야 한다.
+        /// </summary>
+        public const string ADMIN_SETTINGS_CONFLICT = "ADMIN_SETTINGS_CONFLICT";
+        /// <summary>
         /// Firebase ID Token의 유효 시간이 만료됐다.
         /// </summary>
         public const string AUTH_TOKEN_EXPIRED = "AUTH_TOKEN_EXPIRED";
