@@ -52,16 +52,10 @@ namespace ThreeKingdoms.Shared.Types
         public string Navigation { get; set; } = default!;
 
         /// <summary>
-        /// reward_item_key에 대응하는 s_item.idx.
+        /// 지급할 아이템의 s_item.idx.
         /// </summary>
         [JsonProperty("reward_item_id", NullValueHandling = NullValueHandling.Include)]
-        public long RewardItemId { get; set; } = default!;
-
-        /// <summary>
-        /// 서버가 지급할 concrete 보상 key.
-        /// </summary>
-        [JsonProperty("reward_item_key", NullValueHandling = NullValueHandling.Include)]
-        public string RewardItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey RewardItemId { get; set; } = default!;
 
         /// <summary>
         /// 서버가 지급할 보상 수량.

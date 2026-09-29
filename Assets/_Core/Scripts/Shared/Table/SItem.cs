@@ -18,10 +18,10 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("idx", NullValueHandling = NullValueHandling.Include)]
         public int Idx { get; set; } = default!;
         /// <summary>
-        /// 아이템 논리 키
+        /// enum item_key 참조
         /// </summary>
         [JsonProperty("key", NullValueHandling = NullValueHandling.Include)]
-        public string Key { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey Key { get; set; } = default!;
         /// <summary>
         /// 아이템 타입. bundle의 세부 종류는 s_bundle.bundle_item_type(pocket/random_box)으로 구분한다.
         /// </summary>

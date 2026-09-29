@@ -18,20 +18,20 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("level", NullValueHandling = NullValueHandling.Include)]
         public int Level { get; set; } = default!;
         /// <summary>
-        /// 무료 전용 지급 보상 key s_item 참조
+        /// enum item_key 참조
         /// </summary>
         [JsonProperty("reward_key", NullValueHandling = NullValueHandling.Include)]
-        public string RewardKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey RewardKey { get; set; } = default!;
         /// <summary>
         /// 지급 개수
         /// </summary>
         [JsonProperty("reward_count", NullValueHandling = NullValueHandling.Include)]
         public int RewardCount { get; set; } = default!;
         /// <summary>
-        /// 유료 전용 지급 보상 key s_item 참조
+        /// enum item_key 참조
         /// </summary>
         [JsonProperty("paid_reward_key", NullValueHandling = NullValueHandling.Include)]
-        public string PaidRewardKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey PaidRewardKey { get; set; } = default!;
         /// <summary>
         /// 지급 개수
         /// </summary>

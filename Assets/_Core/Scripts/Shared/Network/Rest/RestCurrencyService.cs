@@ -16,7 +16,7 @@ namespace ThreeKingdoms.Shared.Rest
         public RestCurrencyService(IRestClient client) { _client = client ?? throw new ArgumentNullException(nameof(client)); }
         /// <summary>
         /// 재화 조회
-        /// 자동 충전 정산 없이 현재 asset의 revision·rice·free_gold·paid_gold·time_stone 스냅샷을 조회한다.
+        /// 자동 충전 정산 없이 현재 asset의 revision·rice·gold_free·gold_paid·time_stone·point_tournament 스냅샷을 조회한다.
         /// </summary>
         public Cysharp.Threading.Tasks.UniTask<CommonBody<global::ThreeKingdoms.Shared.Types.AssetDto>> InfoAsync(global::ThreeKingdoms.Shared.Types.EmptyRes request, Rest.RestRequestOptions options, System.Threading.CancellationToken cancellationToken = default)
         {

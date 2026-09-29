@@ -28,7 +28,7 @@ namespace ThreeKingdoms.Shared.Types
         public global::ThreeKingdoms.Shared.Types.CastleSnapshotDto Castle { get; set; } = default!;
 
         /// <summary>
-        /// 이번에 수령한 재화. 농지는 Rice, 시장은 FreeGold다.
+        /// 이번에 수령한 재화. 농지는 Rice, 시장은 GoldFree다.
         /// </summary>
         [JsonProperty("collected_currency", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.UserAssetType CollectedCurrency { get; set; } = default!;

@@ -40,7 +40,7 @@ namespace ThreeKingdoms.Shared.Types
         public global::ThreeKingdoms.Shared.Types.AssetDto Asset { get; set; } = default!;
 
         /// <summary>
-        /// rice, free_gold 순서의 실제 양수 지급분.
+        /// rice, gold_free 순서의 실제 양수 지급분.
         /// </summary>
         [JsonProperty("rewards", NullValueHandling = NullValueHandling.Include)]
         public List<global::ThreeKingdoms.Shared.Types.CastleThiefRewardDto> Rewards { get; set; } = default!;

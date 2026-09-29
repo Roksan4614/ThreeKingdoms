@@ -43,9 +43,9 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("configuration_maximum", NullValueHandling = NullValueHandling.Include)]
         public int ConfigurationMaximum { get; set; } = default!;
         /// <summary>
-        /// 주머니(pocket)의 고정 지급 대상 s_item.key 참조. 랜덤 상자(random_box)는 빈 문자열이며 후보는 s_randombox가 소유한다.
+        /// 주머니(pocket)의 고정 지급 대상 s_item.key 참조. 랜덤 상자(random_box)는 빈 값(null)이며 후보는 s_randombox가 소유한다.
         /// </summary>
         [JsonProperty("reward_item_key", NullValueHandling = NullValueHandling.Include)]
-        public string RewardItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey? RewardItemKey { get; set; } = default!;
     }
 }

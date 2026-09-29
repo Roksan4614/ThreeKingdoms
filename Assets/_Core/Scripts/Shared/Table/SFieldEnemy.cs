@@ -36,7 +36,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 유저가 선택한 지역에 따라 등장하는 적 분기 처리 용도 빈칸 = null 1 = 위나라용
         /// </summary>
         [JsonProperty("region_type", NullValueHandling = NullValueHandling.Include)]
-        public string RegionType { get; set; } = default!;
+        public int RegionType { get; set; } = default!;
         /// <summary>
         /// 등장하는 NormalWarrior 수
         /// </summary>

@@ -18,10 +18,10 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("idx", NullValueHandling = NullValueHandling.Include)]
         public int Idx { get; set; } = default!;
         /// <summary>
-        /// 상품 지급 item key (s_item.key 참조)
+        /// enum item_key 참조
         /// </summary>
         [JsonProperty("reward_item_key", NullValueHandling = NullValueHandling.Include)]
-        public string RewardItemKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey RewardItemKey { get; set; } = default!;
         /// <summary>
         /// 상품 등급 보따리·랜덤 상자는 s_bundle.item_grade와 일치해야 한다. 실제 지급 수량은 해당 번들의 s_bundle.configuration_minimum/maximum 설정을 사용한다 고정 카탈로그라 진열 추첨에는 사용하지 않는다
         /// </summary>
