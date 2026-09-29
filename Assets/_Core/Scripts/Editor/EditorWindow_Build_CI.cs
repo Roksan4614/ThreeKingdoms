@@ -98,63 +98,84 @@ public partial class EditorWindow_Build
         return builder;
     }
 
-    // Preparation is a separate process so define changes compile before the build entrypoint.
+    // Older runners can still prepare and build in separate processes.
     public static void ConfigureWebglCi()
     {
-        try
-        {
-            var options = ReadWebglCiOptions();
-            var builder = CreateCiBuilder(options);
-            builder.Run(false, false);
-            if (options.codeGeneration == "size")
-                PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.WebGL, Il2CppCodeGeneration.OptimizeSize);
-            if (options.stripEngineCode) PlayerSettings.stripEngineCode = true;
-            PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
-            PlayerSettings.WebGL.decompressionFallback = true;
-            var metadata = new WebglBuildMetadata
-            {
-                app_version = options.appVersion, git_sha = options.gitSha,
-                bundle_base_url = options.publicUrl + "/Bundle/WebGL/ci", bundle_idx = options.buildNumber
-            };
-            var contents = JsonUtility.ToJson(metadata, true);
-            if (!File.Exists(CiMetadataAsset) || File.ReadAllText(CiMetadataAsset) != contents)
-            {
-                File.WriteAllText(CiMetadataAsset, contents, new UTF8Encoding(false));
-                AssetDatabase.ImportAsset(CiMetadataAsset, ImportAssetOptions.ForceSynchronousImport);
-            }
-            Debug.Log("[WEBGL_METADATA_GUID] " + AssetDatabase.AssetPathToGUID(CiMetadataAsset));
-            Debug.Log("[WEBGL_OPTIONS] " + JsonConvert.SerializeObject(DescribeCiOptimization()));
-            AssetDatabase.SaveAssets();
-            DestroyImmediate(builder);
-            Debug.Log("[WEBGL_STAGE] configured");
-        }
+        try { PrepareWebglCi(ReadWebglCiOptions()); }
         catch (Exception error) { Debug.LogException(error); EditorApplication.Exit(1); }
+    }
+
+    private static void PrepareWebglCi(WebglCiOptions options)
+    {
+        var builder = CreateCiBuilder(options);
+        builder.Run(false, false);
+        if (options.codeGeneration == "size")
+            PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.WebGL, Il2CppCodeGeneration.OptimizeSize);
+        if (options.stripEngineCode) PlayerSettings.stripEngineCode = true;
+        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
+        PlayerSettings.WebGL.decompressionFallback = true;
+        var metadata = new WebglBuildMetadata
+        {
+            app_version = options.appVersion, git_sha = options.gitSha,
+            bundle_base_url = options.publicUrl + "/Bundle/WebGL/ci", bundle_idx = options.buildNumber
+        };
+        var contents = JsonUtility.ToJson(metadata, true);
+        if (!File.Exists(CiMetadataAsset) || File.ReadAllText(CiMetadataAsset) != contents)
+        {
+            File.WriteAllText(CiMetadataAsset, contents, new UTF8Encoding(false));
+            AssetDatabase.ImportAsset(CiMetadataAsset, ImportAssetOptions.ForceSynchronousImport);
+        }
+        Debug.Log("[WEBGL_METADATA_GUID] " + AssetDatabase.AssetPathToGUID(CiMetadataAsset));
+        Debug.Log("[WEBGL_OPTIONS] " + JsonConvert.SerializeObject(DescribeCiOptimization()));
+        AssetDatabase.SaveAssets();
+        DestroyImmediate(builder);
+        Debug.Log("[WEBGL_STAGE] configured");
     }
 
     public static void BuildWebglCi()
     {
+        try { BuildPreparedWebglCi(ReadWebglCiOptions()); }
+        catch (Exception error) { Debug.LogException(error); EditorApplication.Exit(1); }
+    }
+
+    public static void ExecuteWebglCi()
+    {
         try
         {
             var options = ReadWebglCiOptions();
-            if (Directory.Exists(options.output)) throw new InvalidOperationException("CI output already exists; never overwrite a build.");
-            var metadataAsset = Resources.Load<TextAsset>("ThreeKingzWebglBuild");
-            if (metadataAsset == null) throw new InvalidOperationException("Run ConfigureWebglCi first.");
-            var metadata = JsonUtility.FromJson<WebglBuildMetadata>(metadataAsset.text);
-            if (metadata.bundle_idx != options.buildNumber || metadata.app_version != options.appVersion || metadata.git_sha != options.gitSha)
-                throw new InvalidOperationException("CI build metadata does not match this request.");
-            if (options.codeGeneration == "size" && PlayerSettings.GetIl2CppCodeGeneration(NamedBuildTarget.WebGL) != Il2CppCodeGeneration.OptimizeSize)
-                throw new InvalidOperationException("CI IL2CPP setting was not prepared.");
-            if (options.stripEngineCode && !PlayerSettings.stripEngineCode)
-                throw new InvalidOperationException("CI engine stripping setting was not prepared.");
-            var builder = CreateCiBuilder(options);
-            builder.Run(true, true);
-            if (!m_isSuccessBuild) throw new InvalidOperationException("A required WebGL or Addressables build failed.");
-            if (PlayerSettings.bundleVersion != options.appVersion) throw new InvalidOperationException("The app version changed during the build.");
-            ExportWebglCi(options);
-            DestroyImmediate(builder);
-            Debug.Log("[WEBGL_STAGE] complete");
+            var before = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.WebGL);
+            PrepareWebglCi(options);
+            var after = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.WebGL);
+            if (before != after || EditorApplication.isCompiling)
+            {
+                Debug.Log("[WEBGL_RELOAD_REQUIRED] Compile the prepared defines in a fresh Editor process.");
+                EditorApplication.Exit(10);
+                return;
+            }
+            BuildPreparedWebglCi(options);
         }
         catch (Exception error) { Debug.LogException(error); EditorApplication.Exit(1); }
+    }
+
+    private static void BuildPreparedWebglCi(WebglCiOptions options)
+    {
+        if (Directory.Exists(options.output)) throw new InvalidOperationException("CI output already exists; never overwrite a build.");
+        var metadataAsset = Resources.Load<TextAsset>("ThreeKingzWebglBuild");
+        if (metadataAsset == null) throw new InvalidOperationException("Run ConfigureWebglCi first.");
+        var metadata = JsonUtility.FromJson<WebglBuildMetadata>(metadataAsset.text);
+        if (metadata.bundle_idx != options.buildNumber || metadata.app_version != options.appVersion || metadata.git_sha != options.gitSha)
+            throw new InvalidOperationException("CI build metadata does not match this request.");
+        if (options.codeGeneration == "size" && PlayerSettings.GetIl2CppCodeGeneration(NamedBuildTarget.WebGL) != Il2CppCodeGeneration.OptimizeSize)
+            throw new InvalidOperationException("CI IL2CPP setting was not prepared.");
+        if (options.stripEngineCode && !PlayerSettings.stripEngineCode)
+            throw new InvalidOperationException("CI engine stripping setting was not prepared.");
+        var builder = CreateCiBuilder(options);
+        builder.Run(true, true);
+        if (!m_isSuccessBuild) throw new InvalidOperationException("A required WebGL or Addressables build failed.");
+        if (PlayerSettings.bundleVersion != options.appVersion) throw new InvalidOperationException("The app version changed during the build.");
+        ExportWebglCi(options);
+        DestroyImmediate(builder);
+        Debug.Log("[WEBGL_STAGE] complete");
     }
 
     private static object DescribeCiOptimization()
