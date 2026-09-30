@@ -18,10 +18,10 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("idx", NullValueHandling = NullValueHandling.Include)]
         public int Idx { get; set; } = default!;
         /// <summary>
-        /// 서버·기획에서 사용하는 불변 직책 key
+        /// enum position_type
         /// </summary>
         [JsonProperty("key", NullValueHandling = NullValueHandling.Include)]
-        public string Key { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.PositionType Key { get; set; } = default!;
         /// <summary>
         /// 직책 분류 (table_enum.position_category 참조)
         /// </summary>

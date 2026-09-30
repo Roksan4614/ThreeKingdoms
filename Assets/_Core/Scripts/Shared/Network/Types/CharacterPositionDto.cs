@@ -22,10 +22,10 @@ namespace ThreeKingdoms.Shared.Types
         public long PositionId { get; set; } = default!;
 
         /// <summary>
-        /// s_position.key.
+        /// s_position.key의 직책 종류. position_id와는 별도의 enum 값이다.
         /// </summary>
         [JsonProperty("position_key", NullValueHandling = NullValueHandling.Include)]
-        public string PositionKey { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.PositionType PositionKey { get; set; } = default!;
 
         /// <summary>
         /// 해금 완료, 조건 미충족, 실제 진행 기록 연결 전을 구분한다.

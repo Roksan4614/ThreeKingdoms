@@ -1402,6 +1402,82 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
+    /// 직책 타입
+    /// </summary>
+    public enum PositionType
+    {
+        /// <summary>
+        /// 없음
+        /// </summary>
+        None = -1,
+        /// <summary>
+        /// 승상
+        /// </summary>
+        PrimeMinister = 0,
+        /// <summary>
+        /// 대장군
+        /// </summary>
+        GrandGeneral = 1,
+        /// <summary>
+        /// 군사
+        /// </summary>
+        GrandStrategist = 2,
+        /// <summary>
+        /// 상서령
+        /// </summary>
+        DirectorOfTheSecretariat = 3,
+        /// <summary>
+        /// 어사중승
+        /// </summary>
+        PalaceAssistantInspector = 4,
+        /// <summary>
+        /// 전장군
+        /// </summary>
+        GeneralOfTheVanguard = 5,
+        /// <summary>
+        /// 좌장군
+        /// </summary>
+        GeneralOfTheLeft = 6,
+        /// <summary>
+        /// 우장군
+        /// </summary>
+        GeneralOfTheRight = 7,
+        /// <summary>
+        /// 후장군
+        /// </summary>
+        GeneralOfTheRear = 8,
+        /// <summary>
+        /// 군사마
+        /// </summary>
+        MilitarySima = 9,
+        /// <summary>
+        /// 탕구장군
+        /// </summary>
+        SuppressesBandits = 10,
+        /// <summary>
+        /// 파적장군
+        /// </summary>
+        VanquishesRebels = 11,
+        /// <summary>
+        /// 아문장군
+        /// </summary>
+        TheStandard = 12,
+        /// <summary>
+        /// 편장군
+        /// </summary>
+        GeneralOfTheCavalry = 13,
+        /// <summary>
+        /// 군사중랑장
+        /// </summary>
+        ChiefMilitaryAdviser = 14,
+        /// <summary>
+        /// 용의 전사
+        /// </summary>
+        DragonFighter = 15,
+        Max = 16,
+    }
+
+    /// <summary>
     /// 직책 해금 조건 종류
     /// </summary>
     public enum PositionUnlockConditionType
@@ -1642,22 +1718,26 @@ namespace ThreeKingdoms.Shared.Enums
         /// </summary>
         None = -1,
         /// <summary>
-        /// 금화
+        /// 유료 금화
         /// </summary>
-        Gold = 0,
+        GoldPaid = 0,
+        /// <summary>
+        /// 무료 금화
+        /// </summary>
+        GoldFree = 1,
         /// <summary>
         /// 군량
         /// </summary>
-        Rice = 1,
+        Rice = 2,
         /// <summary>
         /// 패키지
         /// </summary>
-        Package = 2,
+        Package = 3,
         /// <summary>
         /// 패스
         /// </summary>
-        Pass = 3,
-        Max = 4,
+        Pass = 4,
+        Max = 5,
     }
 
     /// <summary>
