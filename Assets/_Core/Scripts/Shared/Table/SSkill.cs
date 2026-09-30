@@ -33,7 +33,7 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("usage_type", NullValueHandling = NullValueHandling.Include)]
         public string UsageType { get; set; } = default!;
         /// <summary>
-        /// 어느 보스 형태가 쓰는지 빈칸 = 모든 형태가 사용 basic = 기본 보스 전용 jin = 진 보스 전용 usage_type이 enemy 또는 both일 때만 사용
+        /// 이 스킬을 쓸 수 있는 형태 제한 빈칸 = 제한 없음 · 일반 몬스터처럼 형태 구분이 없는 적 · 두 형태가 모두 쓰는 보스 스킬 basic = 기본 보스만 사용 jin = 진 보스만 사용 usage_type이 playable이면 항상 빈칸
         /// </summary>
         [JsonProperty("boss_type", NullValueHandling = NullValueHandling.Include)]
         public string BossType { get; set; } = default!;
@@ -68,12 +68,7 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("auto_target_type", NullValueHandling = NullValueHandling.Include)]
         public string AutoTargetType { get; set; } = default!;
         /// <summary>
-        /// AUTO 사용 시 적이 이 수 이상일 때만 발동 0 = 조건 없음
-        /// </summary>
-        [JsonProperty("auto_cast_min_enemy_count", NullValueHandling = NullValueHandling.Include)]
-        public int AutoCastMinEnemyCount { get; set; } = default!;
-        /// <summary>
-        /// AUTO 사용 시 시전자 체력이 이 비율 이상일 때만 발동 1 = 100% 0 = 조건 없음
+        /// 시전자 체력이 이 비율 이상일 때만 발동 자기 체력을 깎는 스킬의 자멸 방지용 적 스킬은 늘 자동이므로 항상 적용된다 1 = 100% 0 = 조건 없음
         /// </summary>
         [JsonProperty("auto_cast_min_health_rate", NullValueHandling = NullValueHandling.Include)]
         public double AutoCastMinHealthRate { get; set; } = default!;

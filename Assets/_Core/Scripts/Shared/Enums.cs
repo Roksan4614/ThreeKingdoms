@@ -1718,22 +1718,26 @@ namespace ThreeKingdoms.Shared.Enums
         /// </summary>
         None = -1,
         /// <summary>
-        /// 금화
+        /// 유료 금화
         /// </summary>
-        Gold = 0,
+        GoldPaid = 0,
+        /// <summary>
+        /// 무료 금화
+        /// </summary>
+        GoldFree = 1,
         /// <summary>
         /// 군량
         /// </summary>
-        Rice = 1,
+        Rice = 2,
         /// <summary>
         /// 패키지
         /// </summary>
-        Package = 2,
+        Package = 3,
         /// <summary>
         /// 패스
         /// </summary>
-        Pass = 3,
-        Max = 4,
+        Pass = 4,
+        Max = 5,
     }
 
     /// <summary>
