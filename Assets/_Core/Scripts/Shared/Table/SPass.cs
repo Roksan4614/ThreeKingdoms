@@ -28,11 +28,6 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("shop_product_key", NullValueHandling = NullValueHandling.Include)]
         public string ShopProductKey { get; set; } = default!;
         /// <summary>
-        /// 최대 단계
-        /// </summary>
-        [JsonProperty("max_level", NullValueHandling = NullValueHandling.Include)]
-        public int MaxLevel { get; set; } = default!;
-        /// <summary>
         /// 시즌 시작 일시 (YYYY-MM-DD HH:MM:SS)
         /// </summary>
         [JsonProperty("season_start_at", NullValueHandling = NullValueHandling.Include)]

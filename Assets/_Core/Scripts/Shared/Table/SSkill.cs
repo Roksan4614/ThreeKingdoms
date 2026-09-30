@@ -23,10 +23,20 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("key", NullValueHandling = NullValueHandling.Include)]
         public string Key { get; set; } = default!;
         /// <summary>
-        /// 스킬을 사용하는 무장 s_character.key 참조 무장 1명당 스킬 1개
+        /// 스킬을 쓰는 개체 인물 = s_character.key 일반 몬스터 = s_enemy_stat.key
         /// </summary>
-        [JsonProperty("character_key", NullValueHandling = NullValueHandling.Include)]
-        public string CharacterKey { get; set; } = default!;
+        [JsonProperty("owner_key", NullValueHandling = NullValueHandling.Include)]
+        public string OwnerKey { get; set; } = default!;
+        /// <summary>
+        /// 어느 쪽으로 쓰이는 스킬인지 playable = 유저가 편성해 쓰는 스킬, 개체당 1개 enemy = 적으로 등장할 때만 쓰는 스킬, 여러 개 가능 both = 양쪽에서 같은 스킬을 씀
+        /// </summary>
+        [JsonProperty("usage_type", NullValueHandling = NullValueHandling.Include)]
+        public string UsageType { get; set; } = default!;
+        /// <summary>
+        /// 어느 보스 형태가 쓰는지 빈칸 = 모든 형태가 사용 basic = 기본 보스 전용 jin = 진 보스 전용 usage_type이 enemy 또는 both일 때만 사용
+        /// </summary>
+        [JsonProperty("boss_type", NullValueHandling = NullValueHandling.Include)]
+        public string BossType { get; set; } = default!;
         /// <summary>
         /// 시전 형태 team = 편성된 무장 전체 self_area = 시전자 주변 target_area = 지정한 범위 ground_area = 지정한 위치에 설치 line_forward = 전방 직선 dash_path = 돌진 경로 single_target = 적 하나 지정
         /// </summary>
@@ -53,7 +63,7 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("chain_count", NullValueHandling = NullValueHandling.Include)]
         public int ChainCount { get; set; } = default!;
         /// <summary>
-        /// AUTO 사용 시 조준 규칙 self = 조준 없음 enemy_nearest = 가장 가까운 적 enemy_dense = 적이 가장 많이 겹치는 지점 enemy_boss_first = 보스 우선, 없으면 가장 가까운 적
+        /// AUTO 사용 시 조준 규칙 적 스킬은 늘 자동이므로 항상 적용된다 self = 조준 없음 enemy_nearest = 가장 가까운 적 enemy_dense = 적이 가장 많이 겹치는 지점 enemy_boss_first = 보스 우선, 없으면 가장 가까운 적
         /// </summary>
         [JsonProperty("auto_target_type", NullValueHandling = NullValueHandling.Include)]
         public string AutoTargetType { get; set; } = default!;
