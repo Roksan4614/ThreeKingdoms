@@ -31,14 +31,13 @@ namespace ThreeKingdoms.Shared.Types
         public string MissionKey { get; set; } = default!;
 
         /// <summary>
-        /// 파견 임무 등급.
+        /// 파견 임무 등급 Normal·General·Legend.
         /// </summary>
         [JsonProperty("mission_grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.MissionGrade MissionGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType MissionGrade { get; set; } = default!;
 
         /// <summary>
-        /// 달성률 계산에 사용할 실제 능력치 종류. None은 포함하지 않는다.
-        /// RequirementStatType: StatType.Leadership | StatType.Strength | StatType.Intellect | StatType.Politics | StatType.Charisma
+        /// 달성률 계산에 사용할 능력치 Leadership~Charisma. None·Max는 포함하지 않는다.
         /// </summary>
         [JsonProperty("stat_type", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.StatType StatType { get; set; } = default!;

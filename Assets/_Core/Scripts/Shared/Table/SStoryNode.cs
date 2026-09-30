@@ -23,6 +23,11 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("key", NullValueHandling = NullValueHandling.Include)]
         public string Key { get; set; } = default!;
         /// <summary>
+        /// 국가 타입
+        /// </summary>
+        [JsonProperty("region_type", NullValueHandling = NullValueHandling.Include)]
+        public global::ThreeKingdoms.Shared.Enums.RegionType RegionType { get; set; } = default!;
+        /// <summary>
         /// 노드 타입
         /// </summary>
         [JsonProperty("node_type", NullValueHandling = NullValueHandling.Include)]
@@ -56,7 +61,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 클리어 보상 재화 타입
         /// </summary>
         [JsonProperty("reward_currency_type", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.RewardCurrencyType RewardCurrencyType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.ItemKey RewardCurrencyType { get; set; } = default!;
         /// <summary>
         /// 클리어 보상 재화 값
         /// </summary>

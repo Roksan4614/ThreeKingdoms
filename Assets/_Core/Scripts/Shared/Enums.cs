@@ -58,33 +58,6 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
-    /// 보스 등급
-    /// </summary>
-    public enum BossGrade
-    {
-        /// <summary>
-        /// 일반
-        /// </summary>
-        Normal = 0,
-        /// <summary>
-        /// 정예
-        /// </summary>
-        Elite = 1,
-        /// <summary>
-        /// 명장
-        /// </summary>
-        General = 2,
-        /// <summary>
-        /// 영웅
-        /// </summary>
-        Hero = 3,
-        /// <summary>
-        /// 전설
-        /// </summary>
-        Legend = 4,
-    }
-
-    /// <summary>
     /// 보스 타입
     /// </summary>
     public enum BossType
@@ -184,33 +157,6 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
-    /// 캐릭터 등급
-    /// </summary>
-    public enum CharacterGrade
-    {
-        /// <summary>
-        /// 일반
-        /// </summary>
-        Normal = 0,
-        /// <summary>
-        /// 정예
-        /// </summary>
-        Elite = 1,
-        /// <summary>
-        /// 명장
-        /// </summary>
-        General = 2,
-        /// <summary>
-        /// 영웅
-        /// </summary>
-        Hero = 3,
-        /// <summary>
-        /// 전설
-        /// </summary>
-        Legend = 4,
-    }
-
-    /// <summary>
     /// 무장 성장 한 번의 최종 판정.
     /// </summary>
     public enum CharacterGrowthResult
@@ -281,15 +227,15 @@ namespace ThreeKingdoms.Shared.Enums
         /// <summary>
         /// 일일 상점
         /// </summary>
-        Daily = 1,
+        Daily = 0,
         /// <summary>
         /// 레이드 상점
         /// </summary>
-        Raid = 2,
+        Raid = 1,
         /// <summary>
         /// 토너먼트 상점
         /// </summary>
-        Tournament = 3,
+        Tournament = 2,
     }
 
     /// <summary>
@@ -379,33 +325,6 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
-    /// 던전 보스 등급
-    /// </summary>
-    public enum DungeonBossGrade
-    {
-        /// <summary>
-        /// 일반
-        /// </summary>
-        Normal = 0,
-        /// <summary>
-        /// 난세
-        /// </summary>
-        Elite = 1,
-        /// <summary>
-        /// 극한
-        /// </summary>
-        General = 2,
-        /// <summary>
-        /// 지옥
-        /// </summary>
-        Hero = 3,
-        /// <summary>
-        /// 심연
-        /// </summary>
-        Legend = 4,
-    }
-
-    /// <summary>
     /// 적 국가
     /// </summary>
     public enum EnemyCountry
@@ -457,6 +376,41 @@ namespace ThreeKingdoms.Shared.Enums
         /// Apple 계정 로그인
         /// </summary>
         AppleLogin = 4,
+    }
+
+    /// <summary>
+    /// 등급 타입
+    /// </summary>
+    public enum GradeType
+    {
+        /// <summary>
+        /// none
+        /// </summary>
+        None = -1,
+        /// <summary>
+        /// 일반
+        /// </summary>
+        Normal = 0,
+        /// <summary>
+        /// 정예
+        /// </summary>
+        Elite = 1,
+        /// <summary>
+        /// 명장
+        /// </summary>
+        General = 2,
+        /// <summary>
+        /// 영웅
+        /// </summary>
+        Hero = 3,
+        /// <summary>
+        /// 전설
+        /// </summary>
+        Legend = 4,
+        /// <summary>
+        /// max
+        /// </summary>
+        Max = 5,
     }
 
     /// <summary>
@@ -586,37 +540,14 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
-    /// 아이템 등급
-    /// </summary>
-    public enum ItemGrade
-    {
-        /// <summary>
-        /// 일반
-        /// </summary>
-        Normal = 0,
-        /// <summary>
-        /// 고급
-        /// </summary>
-        Elite = 1,
-        /// <summary>
-        /// 희귀
-        /// </summary>
-        General = 2,
-        /// <summary>
-        /// 명품
-        /// </summary>
-        Hero = 3,
-        /// <summary>
-        /// 국보
-        /// </summary>
-        Legend = 4,
-    }
-
-    /// <summary>
     /// 아이템 식별자 (값은 s_item.idx)
     /// </summary>
     public enum ItemKey
     {
+        /// <summary>
+        /// 없음
+        /// </summary>
+        None = -1,
         /// <summary>
         /// 군량
         /// </summary>
@@ -1249,6 +1180,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// 패스
         /// </summary>
         PassBattle = 158,
+        Max = 159,
     }
 
     /// <summary>
@@ -1320,25 +1252,6 @@ namespace ThreeKingdoms.Shared.Enums
         /// 영구 (초기화 없음)
         /// </summary>
         Permanent = 3,
-    }
-
-    /// <summary>
-    /// 미션 등급
-    /// </summary>
-    public enum MissionGrade
-    {
-        /// <summary>
-        /// 일반
-        /// </summary>
-        Normal = 0,
-        /// <summary>
-        /// 명장
-        /// </summary>
-        General = 1,
-        /// <summary>
-        /// 전설
-        /// </summary>
-        Legend = 2,
     }
 
     /// <summary>
@@ -1910,52 +1823,6 @@ namespace ThreeKingdoms.Shared.Enums
         /// 만료
         /// </summary>
         Expired = 3,
-    }
-
-    /// <summary>
-    /// 특성 등급
-    /// </summary>
-    public enum TraitsGrade
-    {
-        /// <summary>
-        /// 일반
-        /// </summary>
-        Normal = 0,
-        /// <summary>
-        /// 명장
-        /// </summary>
-        General = 1,
-        /// <summary>
-        /// 전설
-        /// </summary>
-        Legend = 2,
-    }
-
-    /// <summary>
-    /// 특성 수치 등급
-    /// </summary>
-    public enum TraitsValueGrade
-    {
-        /// <summary>
-        /// 일반
-        /// </summary>
-        Normal = 0,
-        /// <summary>
-        /// 정예
-        /// </summary>
-        Elite = 1,
-        /// <summary>
-        /// 명장
-        /// </summary>
-        General = 2,
-        /// <summary>
-        /// 영웅
-        /// </summary>
-        Hero = 3,
-        /// <summary>
-        /// 전설
-        /// </summary>
-        Legend = 4,
     }
 
     /// <summary>

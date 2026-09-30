@@ -36,7 +36,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 공격속도 기본값
         /// </summary>
         [JsonProperty("attack_speed", NullValueHandling = NullValueHandling.Include)]
-        public int AttackSpeed { get; set; } = default!;
+        public double AttackSpeed { get; set; } = default!;
         /// <summary>
         /// 체력 기본값
         /// </summary>
@@ -46,26 +46,26 @@ namespace ThreeKingdoms.Shared.Table
         /// 이동속도 기본값
         /// </summary>
         [JsonProperty("move_speed", NullValueHandling = NullValueHandling.Include)]
-        public int MoveSpeed { get; set; } = default!;
+        public double MoveSpeed { get; set; } = default!;
         /// <summary>
         /// 체력흡수 기본값
         /// </summary>
         [JsonProperty("life_steal", NullValueHandling = NullValueHandling.Include)]
-        public int LifeSteal { get; set; } = default!;
+        public double LifeSteal { get; set; } = default!;
         /// <summary>
         /// 치명타 확률 기본값
         /// </summary>
         [JsonProperty("critical_rate", NullValueHandling = NullValueHandling.Include)]
-        public int CriticalRate { get; set; } = default!;
+        public double CriticalRate { get; set; } = default!;
         /// <summary>
         /// 재사용 감소 기본값
         /// </summary>
         [JsonProperty("cooldown_rate", NullValueHandling = NullValueHandling.Include)]
-        public int CooldownRate { get; set; } = default!;
+        public double CooldownRate { get; set; } = default!;
         /// <summary>
         /// 치명타 위력 기본값
         /// </summary>
         [JsonProperty("critical_damage", NullValueHandling = NullValueHandling.Include)]
-        public int CriticalDamage { get; set; } = default!;
+        public double CriticalDamage { get; set; } = default!;
     }
 }

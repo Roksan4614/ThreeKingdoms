@@ -22,10 +22,10 @@ namespace ThreeKingdoms.Shared.Types
         public long BossId { get; set; } = default!;
 
         /// <summary>
-        /// 처치 완료 등급. 해당 보스의 일반도 미처치면 null.
+        /// 처치 완료 등급 Normal~Legend(0~4). None·Max는 제외한다. 해당 보스의 일반도 미처치면 null.
         /// </summary>
         [JsonProperty("highest_killed_grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.DungeonBossGrade? HighestKilledGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType? HighestKilledGrade { get; set; } = default!;
 
     }
 }

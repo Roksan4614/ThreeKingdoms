@@ -31,10 +31,10 @@ namespace ThreeKingdoms.Shared.Types
         public string CharacterKey { get; set; } = default!;
 
         /// <summary>
-        /// 스냅샷 시점 등급.
+        /// 스냅샷 시점 등급 Normal~Legend. None·Max는 포함하지 않는다.
         /// </summary>
         [JsonProperty("character_grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.CharacterGrade CharacterGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType CharacterGrade { get; set; } = default!;
 
         /// <summary>
         /// 스냅샷 시점 성장 단계.

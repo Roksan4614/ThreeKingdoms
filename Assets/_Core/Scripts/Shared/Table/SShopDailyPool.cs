@@ -26,7 +26,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 상품 등급 진열 추첨에 사용한다 (등급별 확률은 s_shop_daily_grade_rate 참조) 보따리·랜덤 상자는 이 등급으로 지급 수량이 정해진다
         /// </summary>
         [JsonProperty("grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.ItemGrade Grade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType Grade { get; set; } = default!;
         /// <summary>
         /// 지급 수량
         /// </summary>

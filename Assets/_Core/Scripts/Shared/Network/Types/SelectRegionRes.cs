@@ -16,8 +16,7 @@ namespace ThreeKingdoms.Shared.Types
     public class SelectRegionRes
     {
         /// <summary>
-        /// 서버가 적용한 초기 지역.
-        /// SelectableRegionType: RegionType.Wei | RegionType.Shu | RegionType.Wu
+        /// 서버가 적용한 초기 지역 Wei·Shu·Wu.
         /// </summary>
         [JsonProperty("region", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.RegionType Region { get; set; } = default!;

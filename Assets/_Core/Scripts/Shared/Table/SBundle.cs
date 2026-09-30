@@ -31,7 +31,7 @@ namespace ThreeKingdoms.Shared.Table
         /// 번들단계분류
         /// </summary>
         [JsonProperty("item_grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.ItemGrade ItemGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType ItemGrade { get; set; } = default!;
         /// <summary>
         /// 지급 최소량 configuration_minimum~ configuration_maximum 사이 랜덤 값 지급
         /// </summary>
