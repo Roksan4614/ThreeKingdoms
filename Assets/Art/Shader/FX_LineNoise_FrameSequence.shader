@@ -14,12 +14,20 @@ Shader "Custom/FX/FX_LineNoise_FrameSequence"
         _EdgeOnly ("Edge Only 0 Off 1 On", Float) = 0
         _EdgeWidth ("Edge Width", Float) = 1.5
 
+        // =========================
+        // Unity UI Mask / Stencil
+        // =========================
         [HideInInspector] _StencilComp ("Stencil Comparison", Float) = 8
         [HideInInspector] _Stencil ("Stencil ID", Float) = 0
         [HideInInspector] _StencilOp ("Stencil Operation", Float) = 0
         [HideInInspector] _StencilWriteMask ("Stencil Write Mask", Float) = 255
         [HideInInspector] _StencilReadMask ("Stencil Read Mask", Float) = 255
         [HideInInspector] _ColorMask ("Color Mask", Float) = 15
+
+        // =========================
+        // RectMask2D
+        // =========================
+        [HideInInspector] _UseUIAlphaClip ("Use Alpha Clip", Float) = 0
     }
 
     SubShader
@@ -46,17 +54,26 @@ Shader "Custom/FX/FX_LineNoise_FrameSequence"
         Lighting Off
         ZWrite Off
         ZTest [unity_GUIZTestMode]
+
         Blend SrcAlpha OneMinusSrcAlpha
         ColorMask [_ColorMask]
 
         Pass
         {
             CGPROGRAM
+
             #pragma vertex vert
             #pragma fragment frag
             #pragma target 2.0
 
+            // RectMask2D
+            #pragma multi_compile_local _ UNITY_UI_CLIP_RECT
+
+            // UI Alpha Clip
+            #pragma multi_compile_local _ UNITY_UI_ALPHACLIP
+
             #include "UnityCG.cginc"
+            #include "UnityUI.cginc"
 
             sampler2D _MainTex;
             float4 _MainTex_TexelSize;
@@ -70,6 +87,9 @@ Shader "Custom/FX/FX_LineNoise_FrameSequence"
             float _EdgeOnly;
             float _EdgeWidth;
 
+            // Canvas / RectMask2D가 자동으로 전달
+            float4 _ClipRect;
+
             struct appdata
             {
                 float4 vertex : POSITION;
@@ -82,6 +102,9 @@ Shader "Custom/FX/FX_LineNoise_FrameSequence"
                 float4 vertex : SV_POSITION;
                 fixed4 color : COLOR;
                 float2 uv : TEXCOORD0;
+
+                // RectMask2D 계산용
+                float4 worldPosition : TEXCOORD1;
             };
 
             float hash11(float p)
@@ -147,12 +170,28 @@ Shader "Custom/FX/FX_LineNoise_FrameSequence"
 
                 float center = tex2D(_MainTex, uv).a;
 
-                float left  = tex2D(_MainTex, uv + float2(-texel.x, 0)).a;
-                float right = tex2D(_MainTex, uv + float2( texel.x, 0)).a;
-                float down  = tex2D(_MainTex, uv + float2(0, -texel.y)).a;
-                float up    = tex2D(_MainTex, uv + float2(0,  texel.y)).a;
+                float left  = tex2D(
+                    _MainTex,
+                    uv + float2(-texel.x, 0)
+                ).a;
+
+                float right = tex2D(
+                    _MainTex,
+                    uv + float2(texel.x, 0)
+                ).a;
+
+                float down = tex2D(
+                    _MainTex,
+                    uv + float2(0, -texel.y)
+                ).a;
+
+                float up = tex2D(
+                    _MainTex,
+                    uv + float2(0, texel.y)
+                ).a;
 
                 float edge = 0.0;
+
                 edge += abs(center - left);
                 edge += abs(center - right);
                 edge += abs(center - down);
@@ -164,9 +203,15 @@ Shader "Custom/FX/FX_LineNoise_FrameSequence"
             v2f vert(appdata v)
             {
                 v2f o;
+
+                // Unity UI Default Shader와 동일한 방식.
+                // RectMask2D가 이 좌표를 기준으로 클리핑한다.
+                o.worldPosition = v.vertex;
+
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
                 o.color = v.color * _Color;
+
                 return o;
             }
 
@@ -174,21 +219,58 @@ Shader "Custom/FX/FX_LineNoise_FrameSequence"
             {
                 float frameRate = max(_FrameRate, 0.001);
 
-                float rawFrame = floor(_Time.y * frameRate);
+                float rawFrame = floor(
+                    _Time.y * frameRate
+                );
 
-                // frame 값이 계속 커지면서 노이즈 좌표 정밀도 문제가 생기는 것을 방지
-                float frame = fmod(rawFrame, 256.0);
+                // frame 값이 계속 커지면서
+                // 노이즈 좌표 정밀도 문제가 생기는 것을 방지
+                float frame = fmod(
+                    rawFrame,
+                    256.0
+                );
 
-                float2 jitter = GetJitter(i.uv, frame);
+                float2 jitter = GetJitter(
+                    i.uv,
+                    frame
+                );
 
                 if (_EdgeOnly > 0.5)
                 {
-                    float edgeMask = GetEdgeMask(i.uv);
+                    float edgeMask = GetEdgeMask(
+                        i.uv
+                    );
+
                     jitter *= edgeMask;
                 }
 
-                fixed4 col = tex2D(_MainTex, i.uv + jitter);
+                fixed4 col = tex2D(
+                    _MainTex,
+                    i.uv + jitter
+                );
+
                 col *= i.color;
+
+                // =========================
+                // RectMask2D
+                // =========================
+                #ifdef UNITY_UI_CLIP_RECT
+
+                col.a *= UnityGet2DClipping(
+                    i.worldPosition.xy,
+                    _ClipRect
+                );
+
+                #endif
+
+                // =========================
+                // Unity UI Alpha Clip
+                // =========================
+                #ifdef UNITY_UI_ALPHACLIP
+
+                clip(col.a - 0.001);
+
+                #endif
 
                 return col;
             }
