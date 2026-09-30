@@ -19,10 +19,10 @@ namespace ThreeKingdoms.Shared.Types
         public long BossId { get; set; } = default!;
 
         /// <summary>
-        /// 직접 플레이는 이번 처치 등급, 토벌은 사용한 영구 최고 등급.
+        /// Normal~Legend(0~4), None·Max 제외. 직접 플레이는 이번 처치 등급, 토벌은 사용한 영구 최고 등급.
         /// </summary>
         [JsonProperty("highest_killed_grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.DungeonBossGrade? HighestKilledGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType? HighestKilledGrade { get; set; } = default!;
 
         /// <summary>
         /// 직접 플레이는 입장 당시, 토벌은 현재 보상표 버전.

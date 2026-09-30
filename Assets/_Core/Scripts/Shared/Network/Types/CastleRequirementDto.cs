@@ -16,8 +16,7 @@ namespace ThreeKingdoms.Shared.Types
     public class CastleRequirementDto
     {
         /// <summary>
-        /// s_building.stat_type_1/2의 실제 요구 능력치 종류. None은 포함하지 않는다.
-        /// RequirementStatType: StatType.Leadership | StatType.Strength | StatType.Intellect | StatType.Politics | StatType.Charisma
+        /// s_building.stat_type_1/2의 요구 능력치 Leadership~Charisma. None·Max는 포함하지 않는다.
         /// </summary>
         [JsonProperty("stat_type", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.StatType StatType { get; set; } = default!;

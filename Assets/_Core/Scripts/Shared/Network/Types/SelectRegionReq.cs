@@ -17,7 +17,6 @@ namespace ThreeKingdoms.Shared.Types
     {
         /// <summary>
         /// 선택할 지역. Wei(0)·Shu(1)·Wu(2)만 허용한다.
-        /// SelectableRegionType: RegionType.Wei | RegionType.Shu | RegionType.Wu
         /// </summary>
         [JsonProperty("region", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.RegionType Region { get; set; } = default!;

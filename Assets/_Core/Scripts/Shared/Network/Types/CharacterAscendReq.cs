@@ -23,10 +23,9 @@ namespace ThreeKingdoms.Shared.Types
 
         /// <summary>
         /// 도달할 등급 Elite~Legend. 현재보다 높은 등급이어야 한다.
-        /// AscendTargetGrade: CharacterGrade.Elite | CharacterGrade.General | CharacterGrade.Hero | CharacterGrade.Legend
         /// </summary>
         [JsonProperty("target_grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.CharacterGrade TargetGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType TargetGrade { get; set; } = default!;
 
     }
 }

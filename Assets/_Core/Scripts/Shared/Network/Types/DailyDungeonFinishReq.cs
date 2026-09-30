@@ -22,10 +22,10 @@ namespace ThreeKingdoms.Shared.Types
         public string EntryEventId { get; set; } = default!;
 
         /// <summary>
-        /// 이번에 처치 완료한 등급. 일반도 미처치면 null, 진행 중 등급이 아니다.
+        /// 이번에 처치 완료한 등급 Normal~Legend(0~4). None·Max는 제외한다. 일반도 미처치면 null, 진행 중 등급이 아니다.
         /// </summary>
         [JsonProperty("highest_killed_grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.DungeonBossGrade? HighestKilledGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType? HighestKilledGrade { get; set; } = default!;
 
         /// <summary>
         /// 진행 중 보스의 남은 HP를 양수 INT64 10진 문자열로 전달. 심연 처치 완료면 null.

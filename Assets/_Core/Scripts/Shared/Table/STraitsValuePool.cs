@@ -20,18 +20,18 @@ namespace ThreeKingdoms.Shared.Table
         /// <summary>
         /// 특성 key
         /// </summary>
-        [JsonProperty("traits_pool_key", NullValueHandling = NullValueHandling.Include)]
-        public string TraitsPoolKey { get; set; } = default!;
+        [JsonProperty("key", NullValueHandling = NullValueHandling.Include)]
+        public string Key { get; set; } = default!;
         /// <summary>
         /// 수치 값 값이 여러 개일 때는 쉼표로 구분 (예: 1,200,3) 왼쪽부터 #traits_name의 {0},{1},{2} 순서에 대응
         /// </summary>
-        [JsonProperty("traits_value", NullValueHandling = NullValueHandling.Include)]
-        public string TraitsValue { get; set; } = default!;
+        [JsonProperty("value", NullValueHandling = NullValueHandling.Include)]
+        public string Value { get; set; } = default!;
         /// <summary>
         /// 등급
         /// </summary>
         [JsonProperty("traits_value_grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.TraitsValueGrade TraitsValueGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType TraitsValueGrade { get; set; } = default!;
         /// <summary>
         /// 수치별 등장 확률 같은 고유 key의 rate 합이 1 등급별 합계 normal : 50% elite : 25% general : 15% hero : 7% legend : 3%
         /// </summary>

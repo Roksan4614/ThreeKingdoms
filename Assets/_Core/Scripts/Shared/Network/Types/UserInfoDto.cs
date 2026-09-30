@@ -40,8 +40,7 @@ namespace ThreeKingdoms.Shared.Types
         public string Nickname { get; set; } = default!;
 
         /// <summary>
-        /// 선택한 초기 지역. 지역 선택 전이면 null이다.
-        /// SelectableRegionType: RegionType.Wei | RegionType.Shu | RegionType.Wu
+        /// 선택한 초기 지역 Wei·Shu·Wu. 지역 선택 전이면 null이다.
         /// </summary>
         [JsonProperty("region", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.RegionType? Region { get; set; } = default!;

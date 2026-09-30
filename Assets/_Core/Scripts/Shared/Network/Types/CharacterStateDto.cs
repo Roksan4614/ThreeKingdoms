@@ -46,10 +46,10 @@ namespace ThreeKingdoms.Shared.Types
         public string Revision { get; set; } = default!;
 
         /// <summary>
-        /// 현재 무장 등급.
+        /// 현재 무장 등급 Normal~Legend. None·Max는 포함하지 않는다.
         /// </summary>
         [JsonProperty("character_grade", NullValueHandling = NullValueHandling.Include)]
-        public global::ThreeKingdoms.Shared.Enums.CharacterGrade CharacterGrade { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.GradeType CharacterGrade { get; set; } = default!;
 
         /// <summary>
         /// 현재 성장 단계. 성장 전 초기 상태는 0이다.

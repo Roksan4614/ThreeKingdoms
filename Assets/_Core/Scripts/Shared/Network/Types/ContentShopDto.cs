@@ -13,7 +13,7 @@ namespace ThreeKingdoms.Shared.Types
     public class ContentShopDto
     {
         /// <summary>
-        /// Daily(1)·Raid(2)·Tournament(3) 상점 타입.
+        /// Daily(0)·Raid(1)·Tournament(2) 상점 타입.
         /// </summary>
         [JsonProperty("shop_type", NullValueHandling = NullValueHandling.Include)]
         public global::ThreeKingdoms.Shared.Enums.ContentShopType ShopType { get; set; } = default!;
