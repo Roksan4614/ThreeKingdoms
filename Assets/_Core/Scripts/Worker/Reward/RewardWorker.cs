@@ -51,7 +51,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         {
             var data = _itemData[i];
 
-            InventoryWorker.AddItem(false, _isRewardAction: false, _itemData: _itemData);
+            InventoryWorker.instance.AddItem(false, _isRewardAction: false, _itemData: _itemData);
 
             tasks.Add(RunAsync(_posFrom, _itemData[i].key, _itemData[i].count, _isPopup: _isPopup, _isStartPunch: _isStartPunch));
         }

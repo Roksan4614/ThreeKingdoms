@@ -14,7 +14,7 @@ public class HeroIconComponent_UserInfo : HeroIconComponent
         SetActivePanel(true);
         SetHeroData(_heroData, null, null);
 
-        //m_elementUserInfo.txtPosition.text = TableManager.stringTable.GetHeroPositionType(_heroData.positionType);
+        //m_elementUserInfo.txtPosition.text = TableManager.stringTable.GetPositionType(_heroData.positionType);
         m_elementUserInfo.txtRelicLevel.text = $"Lv.{_heroData.relicLevel}";
 
         // ICON

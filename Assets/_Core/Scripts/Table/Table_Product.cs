@@ -128,6 +128,25 @@ public class TableProductData
         }
     }
 
+    public bool isEnoughCurrency => currencyMyCount >= price || pay_type == PayType.Cash;
+
+    public ItemKey currencyKey
+    {
+        get
+        {
+            switch (pay_type)
+            {
+                case PayType.Rice: return ItemKey.Rice;
+                case PayType.GoldFree: return ItemKey.GoldFree;
+                case PayType.GoldPaid: return ItemKey.GoldPaid;
+                case PayType.PointRaid: return ItemKey.PointRaid;
+                case PayType.PointTournament: return ItemKey.PointTournament;
+                default:
+                    return 0;
+            }
+        }
+    }
+
     public long currencyMyCount
     {
         get
@@ -138,11 +157,9 @@ public class TableProductData
                 case PayType.GoldFree:
                     return DataManager.userInfo.GetAssetAmount(pay_type);
                 case PayType.GoldPaid:
-                    return InventoryWorker.instance.GetItemCount(ItemKey.GoldPaid);
                 case PayType.PointRaid:
-                    return InventoryWorker.instance.GetItemCount(ItemKey.PointRaid);
                 case PayType.PointTournament:
-                    return InventoryWorker.instance.GetItemCount(ItemKey.PointTournament);
+                    return InventoryWorker.instance.GetItemCount(currencyKey);
                 default:
                     return 0;
             }

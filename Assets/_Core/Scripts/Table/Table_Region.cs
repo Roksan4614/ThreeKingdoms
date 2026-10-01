@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 
 public class Table_Region : BaseTable<RegionType, TableRegionData>
 {
@@ -20,7 +21,7 @@ public class Table_Region : BaseTable<RegionType, TableRegionData>
     {
         string key = Get(_regionType).master;
 
-        if (_regionType == RegionType.WU)
+        if (_regionType == RegionType.Wu)
         {
             if (DataManager.userInfo.GetHeroInfoData(CharacterName.SunQuan).IsActive() == true)
                 return CharacterName.SunQuan.ToString();

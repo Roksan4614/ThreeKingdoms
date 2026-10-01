@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
     PopupLobbyStoryModeComponent() : base(PopupType.LobbyStoryMode) { }
 
     Dictionary<RegionType, ButtonHelper> m_dicButton = new();
-    RegionType m_curRegion = RegionType.MAX;
+    RegionType m_curRegion = RegionType.Max;
 
     private void Start()
     {
@@ -26,7 +27,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         InitializeTab();
         if (OpenIFMode() == false)
         {
-            OnButton_Tab(RegionType.NONE);
+            OnButton_Tab(RegionType.None);
             RefreshGauge();
         }
 
@@ -34,7 +35,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         {
             if (OpenIFMode() == false)
             {
-                OnButton_Tab(RegionType.NONE, true);
+                OnButton_Tab(RegionType.None, true);
                 RefreshGauge();
             }
         });
@@ -72,7 +73,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
     void InitializeTab()
     {
         int i = 0;
-        for (var region = RegionType.NONE; region <= RegionType.ETC; region++, i++)
+        for (var region = RegionType.None; region <= RegionType.Etc; region++, i++)
         {
             var slot = i == m_element.pTab.childCount ? Instantiate(m_element.pTab.GetChild(0), m_element.pTab) : m_element.pTab.GetChild(i);
 
@@ -147,7 +148,7 @@ public class PopupLobbyStoryModeComponent : BasePopupComponent
         var group = TableManager.storyNode.group
             .Select(x =>
                 x.Where(y =>
-                    m_curRegion == RegionType.NONE ||
+                    m_curRegion == RegionType.None ||
                     y.Count(x => x.region_type == m_curRegion) > 0 ||
                     y[0].order_num == DataManager.storyMode.nextOpenOrderNumber)
                 .ToList())

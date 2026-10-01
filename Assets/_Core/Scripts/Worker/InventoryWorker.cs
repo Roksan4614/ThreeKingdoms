@@ -1,8 +1,10 @@
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class InventoryWorker : BaseWorker<InventoryWorker>
 {
@@ -42,16 +44,43 @@ public class InventoryWorker : BaseWorker<InventoryWorker>
     }
 
     public long GetItemCount(ItemKey _key, string _value = null)
-        => m_data.Find(x => x.key == _key && x.value == _value)?.count ?? 0;
+        => m_data.Find(x =>
+        {
+            if (x.key != _key)
+                return false;
+
+            if (x.value.IsActive() == false && _value.IsActive() == false)
+                return true;
+
+            return x.value == _value;
+        })?.count ?? 0;
 
     public long GetItemCount(ItemData _itemData)
         => m_data.Find(x => x.key == _itemData.key && x.value == _itemData.value)?.count ?? 0;
 
-    public static void AddItem(ItemKey _itemKey, int _count, bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default)
+    public bool UseItem(ItemKey _itemKey, int _count, bool _isUpdate = true, bool _isTween = true)
+    {
+        var d = data.Find(x => x.key == _itemKey);
+
+        if (d.count < _count)
+            return false;
+
+        d.count -= _count;
+        if (d.count < 0)
+            d.count = 0;
+
+        SaveData();
+
+        Signal.instance.Inventory_UpdateCount.Emit(d);
+
+        return true;
+    }
+
+    public void AddItem(ItemKey _itemKey, int _count, bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default)
     {
         AddItem(_isUpdate, _isTween, _isRewardAction, _actionPosition, TableManager.item.GetItemData(_itemKey, _count));
     }
-    public static void AddItem(bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default, params ItemData[] _itemData)
+    public void AddItem(bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default, params ItemData[] _itemData)
     {
         if (_isRewardAction)
             RewardWorker.instance.RunAsync(_actionPosition, _itemData: _itemData).Forget();
@@ -59,39 +88,50 @@ public class InventoryWorker : BaseWorker<InventoryWorker>
         {
             foreach (var item in _itemData)
             {
-                switch (item.type)
+                switch (item.key)
                 {
-                    case ItemDetailType.Rice:
-                    case ItemDetailType.Gold:
-                        DataManager.userInfo.AddAsset(item.type, item.count, _isUpdate, _isTween);
+                    case ItemKey.Rice:
+                    case ItemKey.GoldFree:
+                        DataManager.userInfo.AddAsset(item.key, item.count, _isUpdate, _isTween);
                         break;
                     default:
-                        var d = data.Find(x => x.type == item.type && x.value == item.value);
+                        var d = data.Find(x =>
+                        {
+                            if (x.key != item.key)
+                                return false;
+
+                            if (x.value.IsActive() == false && item.value.IsActive() == false)
+                                return true;
+
+                            return x.value == item.value;
+                        });
 
                         if (d == null)
                         {
-                            d = JsonConvert.DeserializeObject<InventoryItemData>(Newtonsoft.Json.JsonConvert.SerializeObject(item));
+                            d = new()
+                            {
+                                key = item.key,
+                                value = item.value,
+                                category = item.category,
+                                type = item.type,
+                                count = item.count
+                            };
+
+                            d.idx = (int)Utils.GetUTC().Ticks;
                             data.Add(d);
                         }
                         else
                             d.count += item.count;
 
-                        //// 장수 영혼석인데 보유하지 않았다면
-                        //if (item.key == ItemDetailType.SoulStoneDedicated && DataManager.userInfo.HasHero(d.value) == false)
-                        //{
-                        //    var grade = TableManager.hero.GetGradeFromSoulCount(d.count);
-                        //    if (grade > GradeType.None)
-                        //    {
-                        //        DataManager.userInfo.AddHero(d.value, grade);
-                        //        d.count -= TableManager.hero.GetNeedSoul(grade);
-                        //    }
-                        //}
-
                         d.isNew = true;
-                        instance.SaveData();
+                        SaveData();
+
+                        Signal.instance.Inventory_UpdateCount.Emit(d);
                         break;
                 }
+
             }
+
         }
     }
 
@@ -148,12 +188,12 @@ public class InventoryWorker : BaseWorker<InventoryWorker>
 }
 
 
-[JsonObject(MemberSerialization.OptIn)]
+[Serializable]
 public class ItemData : TableItemData
 {
     //custom 
-    [JsonProperty] public bool isNew;
-    [JsonProperty] public long count;
+    public bool isNew;
+    public long count;
 
     public bool EqaulsItemData(ItemData _itemData)
     {
@@ -164,7 +204,8 @@ public class ItemData : TableItemData
     }
 }
 
-[JsonObject(MemberSerialization.OptIn)]
+[Serializable]
 public class InventoryItemData : ItemData
 {
+    public int idx;
 }

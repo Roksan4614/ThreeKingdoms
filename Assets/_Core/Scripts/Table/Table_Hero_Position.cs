@@ -1,36 +1,35 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
-public class Table_Hero_Position : BaseTable<HeroPositionType, TableHeroPositionData>
+public class Table_Hero_Position : BaseTable<PositionType, TableHeroPositionData>
 {
-    Dictionary<CategoryType_HeroPositon, List<TableHeroPositionData>> m_group;
+    Dictionary<PositionCategory, List<TableHeroPositionData>> m_group;
 
     public Table_Hero_Position(List<TableHeroPositionData> _table) : base(_table)
     {
-        m_group = _table.GroupBy(x => x.category).ToDictionary(x => x.Key, x => x.ToList());
+        m_group = _table.GroupBy(x => x.position_category).ToDictionary(x => x.Key, x => x.ToList());
     }
 
-    public List<TableHeroPositionData> GetPositionds(CategoryType_HeroPositon _category)
+    public List<TableHeroPositionData> GetPositionds(PositionCategory _category)
         => m_group.ContainsKey(_category) ? m_group[_category] : new();
 
-    public TableHeroPositionData GetData(HeroPositionType _type)
-        => m_list.Find(x => x.type == _type);
+    public TableHeroPositionData GetData(PositionType _type)
+        => m_list.Find(x => x.key == _type);
 }
 
-public struct TableHeroPositionData
+public class TableHeroPositionData
 {
-    public string key;
-    public CategoryType_HeroPositon category;
+    public PositionType key;
+    public PositionCategory position_category;
     [JsonProperty] string effect;
-
+    public int unlock_condition_value;
+    public int equip_condition_value;
 
     // CUSTOM
-    public bool isActive => key.IsActive();
-    public HeroPositionType type => System.Enum.Parse<HeroPositionType>(key);
-
     List<BattleStatData> m_statData;
     public List<BattleStatData> statData
     {
@@ -53,8 +52,8 @@ public struct TableHeroPositionData
         }
     }
 
-    public string name => TableManager.stringTable.GetHeroPositionType(key);
-    public string nameShort => TableManager.stringTable.GetHeroPositionTypeShort(key);
+    public string name => TableManager.stringTable.GetPositionType(key);
+    public string nameShort => TableManager.stringTable.GetPositionTypeShort(key);
     public string stringAttribute
     {
         get

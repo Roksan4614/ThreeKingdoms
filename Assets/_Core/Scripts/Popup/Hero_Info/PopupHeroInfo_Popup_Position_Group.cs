@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,8 +8,8 @@ using UnityEngine.UI;
 
 public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
 {
-    Dictionary<HeroPositionType, ButtonPositionData> m_data = new();
-    public void Initialize(CategoryType_HeroPositon _category, List<TableHeroPositionData> _data, UnityAction<CategoryType_HeroPositon, HeroPositionType> _onClick)
+    Dictionary<PositionType, ButtonPositionData> m_data = new();
+    public void Initialize(PositionCategory _category, List<TableHeroPositionData> _data, UnityAction<PositionCategory, PositionType> _onClick)
     {
         m_element.txtTitle.text = TableManager.stringTable.GetString($"UI_POSITION_{_category.ToString().ToUpper()}_TITLE");
         m_element.txtTitle.transform.parent.ForceRebuildLayout();
@@ -27,19 +28,19 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
                 att.button.onClick.RemoveAllListeners();
             }
 
-            att.button.onClick.AddListener(() => _onClick(_category, d.type));
+            att.button.onClick.AddListener(() => _onClick(_category, d.key));
             att.txtName.text = d.nameShort;
             att.txtAttribute.text = d.stringAttribute;
 
             att.transform.ForceRebuildLayout();
 
-            m_data.Add(d.type, att);
+            m_data.Add(d.key, att);
         }
 
         transform.ForceRebuildLayout();
     }
 
-    public float GetPositionY(HeroPositionType _heroPositionType)
+    public float GetPositionY(PositionType _heroPositionType)
     {
         var rt = (RectTransform)transform;
         float posY = rt.anchoredPosition.y;
@@ -51,9 +52,9 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
     }
 
 
-    public void RefreshData(HeroPositionType _heroPositionType = HeroPositionType.NONE)
+    public void RefreshData(PositionType _heroPositionType = PositionType.None)
     {
-        if (_heroPositionType > HeroPositionType.NONE)
+        if (_heroPositionType > PositionType.None)
             RefreshData(_heroPositionType, m_data[_heroPositionType]);
         else
         {
@@ -62,7 +63,7 @@ public class PopupHeroInfo_Popup_Position_Group : MonoBehaviour, IValidatable
         }
     }
 
-    void RefreshData(HeroPositionType _type, ButtonPositionData _data)
+    void RefreshData(PositionType _type, ButtonPositionData _data)
     {
         var hpData = DataManager.heroPosition.GetHeroPositionData(_type);
 

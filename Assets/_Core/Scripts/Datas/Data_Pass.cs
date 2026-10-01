@@ -102,36 +102,6 @@ namespace Rev9.Pass
             await UniTask.NextFrame();
             var level = _slot.rewardData.level;
 
-            if (_isPaid && m_data.isPaid == false)
-            {
-                PopupManager.instance.AlertShow_Table("PASS_CAN_AFTER_PAID");
-
-                var result = await PopupManager.instance.OpenModalAsync(
-                    TableManager.alertString.GetStringFormat("MODAL_BUY_ITEM",
-                    KoreanHelper.AppendJosa(TableManager.item.GetItemData(ItemKey.PassBattle).name, KoreanHelper.JosaType.EulLeul, "[{0}]")));
-
-                if (result == StatusType.Success)
-                {
-                    TableShopProductData productData = TableManager.shopProduct.GetBattlePass();
-                    var popup = await PopupManager.instance.OpenPopupAsync<PopupBuyComponent>(PopupType.Buy, productData);
-
-                    await UniTask.WaitUntil(() => popup.statusType != StatusType.Wait);
-
-                    popup.BaseClose();
-
-                    // 구매를 했다면
-                    if (popup.statusType == StatusType.Success)
-                    {
-                        SetBuyBattlePass();
-                        Signal.instance.Buy_Item.Emit(productData);
-                    }
-                    else
-                        return false;
-                }
-                else
-                    return false;
-            }
-
             var receiveData = _isPaid ? m_data.receiveLevel_Paid : m_data.receiveLevel;
             if (receiveData.Contains(level))
             {
@@ -226,11 +196,11 @@ namespace Rev9.Pass
         [JsonProperty] public TablePassQuestData tableData;
 
         public bool isComplete
-            => TableManager.passQuest.GetCount(tableData) <= tableData.count;
+            => TableManager.passQuest.GetCount(tableData) <= tableData.target_value;
 
         public System.DateTime dt => Utils.GetDateTime(tick);
 
         public bool isDaily
-            => tableData.type == 0;
+            => tableData.date_type == QuestDateType.Daily;
     }
 }

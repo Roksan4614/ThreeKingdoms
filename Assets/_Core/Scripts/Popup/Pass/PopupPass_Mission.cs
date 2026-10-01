@@ -27,7 +27,7 @@ namespace Rev9.Pass
 
         void InitializeScroll()
         {
-            var db = DataManager.pass.quests.GroupBy(x => x.tableData.type).ToDictionary(x => x.Key, x => x.ToList());
+            var db = DataManager.pass.quests.GroupBy(x => x.tableData.date_type).ToDictionary(x => x.Key, x => x.ToList());
 
             foreach (var data in db)
             {

@@ -65,6 +65,8 @@ public class ItemComponent : MonoBehaviour, IValidatable
             else
                 SetIconAsync(_itemData.type.ToString(), false).Forget();
         }
+        else if(_itemData.key == ItemKey.GoldPaid)
+            SetIconAsync(_itemData.key.ToString(), false).Forget();
         else
             SetIconAsync(_itemData.type.ToString(), false).Forget();
 
@@ -90,8 +92,19 @@ public class ItemComponent : MonoBehaviour, IValidatable
         if (isFinded == false && _key.IsActive())
         {
             var result = await AddressableManager.instance.GetIconAsync(_key, _isHero);
+
+            bool isDefault = false;
             if (result == null)
-                return;
+            {
+                if (_isHero == true)
+                    return;
+
+                result = await AddressableManager.instance.GetItemIconAsync("Default");
+                isDefault = true;
+
+                if (result == null)
+                    return;
+            }
 
             var icon = Instantiate(result, m_element.iconPanel);
             await UniTask.Yield();
@@ -99,6 +112,9 @@ public class ItemComponent : MonoBehaviour, IValidatable
             icon.transform.SetAsFirstSibling();
             icon.AutoResizeParent();
             icon.name = _key;
+
+            if (isDefault)
+                icon.transform.SetText("Text", data.name);
 
             _onComplete?.Invoke(icon.transform);
         }

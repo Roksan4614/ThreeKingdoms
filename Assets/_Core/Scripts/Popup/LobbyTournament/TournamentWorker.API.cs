@@ -19,7 +19,7 @@ namespace Rev9.Tournament
 
             // todo
             var randomNickname = Utils.GetRandomNicknameArray(4);
-            var heroes = TableManager.hero.GetHeroList().Where(x => x.regionType == RegionType.SHU).ToList();
+            var heroes = TableManager.hero.GetHeroList().Where(x => x.regionType == RegionType.Shu).ToList();
             for (int i = 0; i < 4; i++)
             {
                 int uid = DataManager.userInfo.uid + i;

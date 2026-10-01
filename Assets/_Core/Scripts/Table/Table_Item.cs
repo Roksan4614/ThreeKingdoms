@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
@@ -33,6 +34,7 @@ public class Table_Item : BaseTable<ItemKey, TableItemData>
 }
 
 
+[Serializable]
 public class TableItemData
 {
     public ItemKey key;

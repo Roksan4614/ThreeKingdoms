@@ -53,7 +53,7 @@ public class PopupModalComponent : BasePopupComponent
             m_element.rt.ForceRebuildLayout();
         }
 
-        m_element.rt.position = CameraManager.posPointer;
+        m_element.rt.position = popupData.posPointer ?? CameraManager.posPointer;
         //IngameLog.Add("CAMERA:POINTER:POS: " + CameraManager.posPointer + $"{Screen.width}/{Screen.height}");
 
         var rateW = 1080f / Screen.width;
@@ -124,6 +124,7 @@ public class PopupModalComponent : BasePopupComponent
         public string content;
         public string confirm;
         public string cancel;
+        public Vector2? posPointer;
 
         public UnityAction<StatusType> callback;
     }

@@ -366,7 +366,7 @@ public partial class Data_Castle
         PopupManager.instance.AlertShow(TableManager.alertString.GetStringFormat("CASTLE_CLAIM", itemName, count.AmountKMBT()));
 
         // SAVEDATA 재화 데이타 저장
-        DataManager.userInfo.AddAsset(itemType, count, false, false);
+        DataManager.userInfo.AddAsset(itemKey, count, false, false);
 
         RewardWorker.instance.Run(CameraManager.posPointer,
             itemKey, count, _isPopup: true, _isStartPunch: false);

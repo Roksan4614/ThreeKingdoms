@@ -4,6 +4,7 @@ using Rev9.Post;
 using Rev9.Quest;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Top_Popup_Menu : MonoBehaviour, IValidatable
@@ -99,7 +100,8 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         btn.interactable = false;
 
         PopupManager.instance.CloseAll(m_popups.Select(x => x.Value.popupType).ToArray());
-        LobbyScreenManager.instance.CloseScreen(LobbyScreenType.None);
+        if (LobbyScreenManager.instance.curScreen != LobbyScreenType.None)
+            BottomComponent.instance.OnButton_OpenScreen(LobbyScreenManager.instance.curScreen);
 
         switch (_type)
         {
@@ -207,7 +209,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
                     if (node.order_num <= 3 && node.region_type != DataManager.userInfo.region)
                     {
                         //오나라는 손견을 줘야해..
-                        var startHero = node.region_type == RegionType.WU
+                        var startHero = node.region_type == RegionType.Wu
                             ? CharacterName.SunJian.ToString()
                             : TableManager.region.Get(node.region_type).master;
 

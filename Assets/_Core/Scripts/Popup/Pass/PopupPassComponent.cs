@@ -14,6 +14,8 @@ namespace Rev9.Pass
         TabType m_curTab = TabType.NONE;
         Dictionary<TabType, ButtonHelper> m_tabs = new();
 
+        PopupBuyComponent m_popupBuy;
+
         private void Start()
         {
             for (var i = TabType.NONE + 1; i < TabType.MAX; i++)
@@ -54,7 +56,9 @@ namespace Rev9.Pass
                 m_element.btnPass.interactable = true;
                 m_element.txtCost.text = TableManager.shopProduct.GetBattlePass().price.AmountKMBT(_isMBT: true);
             }
+
             m_element.btnPass.onClick.AddListener(() => OnButtonAsync_BuyPass().Forget());
+            m_element.reward.actionPass = () => OnButtonAsync_BuyPass().Forget();
 
             Signal.instance.Pass_UpdateQuest.connect = SlotPassUpdateQuest;
             Signal.instance.Buy_Item.connectLambda = new(this, _product =>
@@ -66,12 +70,31 @@ namespace Rev9.Pass
                     m_element.txtCost.text = TableManager.stringTable.GetString("UI_PASS_RUNNING");
                 }
             });
+
+            Utils.WaitEscape(this, () =>
+            {
+                if (m_popupBuy?.gameObject.activeSelf == true)
+                {
+                    m_popupBuy.Close();
+                    return;
+                }
+                Close();
+            }, _isMenuPopup: true);
         }
 
         public override void OpenPopup(params object[] _args)
         {
             gameObject.SetActive(true);
             OpenPopupAsync().Forget();
+        }
+
+        private void OnDisable()
+        {
+            if (m_popupBuy != null)
+            {
+                Destroy(m_popupBuy.gameObject);
+                m_popupBuy = null;
+            }
         }
 
         async UniTask OpenPopupAsync()
@@ -86,32 +109,39 @@ namespace Rev9.Pass
 
         async UniTask OnButtonAsync_BuyPass()
         {
-            await UniTask.Yield();
+            if (DataManager.pass.isPaid == true)
+                return;
 
-            var product = TableManager.shopProduct.GetBattlePass();
+            var productPass = TableManager.shopProduct.GetBattlePass();
 
             // 유료재화가 부족합니다. 구매하시겠습니까?
-            if (product.currencyMyCount < product.price)
+            if (productPass.isEnoughCurrency == false)
             {
                 var itemName = TableManager.item.GetItemData(ItemKey.GoldPaid).name;
-                //var itemName = TableManager.stringItem.GetString("NAME_" + ItemKey.GoldPaid.ToString().ToUpper());
                 itemName = KoreanHelper.AppendJosa(itemName, KoreanHelper.JosaType.IgA, "[{0}]");
                 var result = await PopupManager.instance.OpenModalAsync(
-                    TableManager.alertString.GetStringFormat("MODAL_BUY_CURRENCY_NOT_ENOUGH", itemName));
+                    TableManager.alertString.GetStringFormat("MODAL_BUY_CURRENCY_NOT_ENOUGH", itemName), _posPointer: m_element.reward.posPointer);
 
                 if (result == StatusType.Success)
-                {
-                    Utils.OpenUrl("https://naver.com");
-
-#if SERVICE_DEV
-                    //InventoryWorker.AddItem(_itemData: TableManager.item.GetItemData());
-#endif
-                }
+                    DataManager.shop.OpenURL_GoldPaid(10000);
 
                 return;
             }
 
+            Utils.SetActivePunch(m_element.panel, false);
+            await UniTask.WaitForSeconds(.1f);
 
+            if (m_popupBuy == null)
+                m_popupBuy = await PopupManager.instance.OpenPopupAsync<PopupBuyComponent>(PopupType.Buy, productPass);
+            else
+                m_popupBuy.OpenPopup(productPass);
+
+            if (await m_popupBuy.WaitAsync() == StatusType.Success)
+            {
+                m_popupBuy.SetResult(await DataManager.shop.API_BuyItemAsync(productPass));
+            }
+
+            Utils.SetActivePunch(m_element.panel, true);
         }
 
         void RefreshLevelXP()

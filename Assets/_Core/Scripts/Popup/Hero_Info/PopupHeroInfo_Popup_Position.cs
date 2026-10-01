@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,15 +9,15 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
 {
     string m_heroKey;
 
-    Dictionary<CategoryType_HeroPositon, PopupHeroInfo_Popup_Position_Group> m_group = new();
+    Dictionary<PositionCategory, PopupHeroInfo_Popup_Position_Group> m_group = new();
 
     private void Start()
     {
         transform.GetComponent<Button>("Dimm").onClick.AddListener(Close);
 
-        for (var i = CategoryType_HeroPositon.NONE + 1; i < CategoryType_HeroPositon.MAX; i++)
+        for (var i = PositionCategory.None + 1; i < PositionCategory.Max; i++)
         {
-            CategoryType_HeroPositon type = i;
+            PositionCategory type = i;
             int idx = (int)type;
 
             var data = TableManager.heroPosition.GetPositionds(type);
@@ -51,7 +52,7 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
         if (posData != null)
         {
             var pos = m_element.scroll.content.anchoredPosition;
-            pos.y = m_group[posData.positionData.category].GetPositionY(posData.type) * -1 - 200;
+            pos.y = m_group[posData.positionData.position_category].GetPositionY(posData.type) * -1 - 200;
             m_element.scroll.content.anchoredPosition = pos;
         }
 
@@ -60,9 +61,9 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
         return isNeedUpdate;
     }
 
-    void RefreshData(CategoryType_HeroPositon _category = CategoryType_HeroPositon.NONE, HeroPositionType _heroPositionType = HeroPositionType.NONE)
+    void RefreshData(PositionCategory _category = PositionCategory.None, PositionType _heroPositionType = PositionType.None)
     {
-        if (_heroPositionType > HeroPositionType.NONE)
+        if (_heroPositionType > PositionType.None)
             m_group[_category].RefreshData(_heroPositionType);
         else
         {
@@ -72,7 +73,7 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
     }
 
     bool m_isDoing = false;
-    async UniTask OnButtonAsync(CategoryType_HeroPositon _category, HeroPositionType _heroPositionType)
+    async UniTask OnButtonAsync(PositionCategory _category, PositionType _heroPositionType)
     {
         if (m_isDoing == true)
             return;
@@ -89,7 +90,7 @@ public class PopupHeroInfo_Popup_Position : MonoBehaviour, IValidatable
 
             if (prevData != null)
             {
-                var prevCategory = prevData.positionData.category;
+                var prevCategory = prevData.positionData.position_category;
                 RefreshData(prevCategory, prevData.type);
             }
 

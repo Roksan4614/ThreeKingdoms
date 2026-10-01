@@ -108,7 +108,7 @@ public class HeroInfoData
     [JsonProperty] public string key;
     [JsonProperty] public string skin;
     [JsonProperty] public GradeType grade;
-    [JsonProperty] public HeroPositionType positionType;
+    [JsonProperty] public PositionType positionType;
     [JsonProperty] public int enchantLevel;
     [JsonProperty] public int relicLevel;
     [JsonProperty] public bool isBatch;
@@ -126,7 +126,7 @@ public class HeroInfoData
     public RegionType regionType => m_regionType;
 
     public HeroInfoData() { }
-    public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, HeroPositionType _heroPositionType = HeroPositionType.NONE, string _skin = null,
+    public HeroInfoData(string _key, GradeType _grade = GradeType.Normal, PositionType _heroPositionType = PositionType.None, string _skin = null,
         int _soulCount = 0, int _enchantLevel = 0, int _relicLevel = 0, bool _isBatch = false, bool _isMain = false, bool _isMine = true, int _sortIdx = 0, TableStatData? _statData = null)
     {
         key = _key;

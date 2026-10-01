@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using ThreeKingdoms.Shared.Enums;
 
 public class LobbyScreen_Summon : LobbyScreen_Base
 {

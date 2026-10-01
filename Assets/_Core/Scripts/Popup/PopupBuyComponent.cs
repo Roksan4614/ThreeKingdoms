@@ -22,7 +22,7 @@ public class PopupBuyComponent : BasePopupComponent
 
     private void Start()
     {
-        m_element.btnBuy.onClick.AddListener(() => OnButtonAsync_Confirm().Forget());
+        m_element.btnBuy.onClick.AddListener(OnButton_Confirm);
 
         var controller = transform.Find("Panel/Controll");
         var btnMin = controller.GetComponent<ButtonHelper>("btn_min");
@@ -60,8 +60,19 @@ public class PopupBuyComponent : BasePopupComponent
 
         Utils.SetActivePunch(m_element.panel, true);
 
-        string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + productData.limit_reset_type.ToString().ToUpper());
-        m_element.txtLimitCount.text = $"({periodType} {productData.strRemainCount})";
+        m_element.txtLimitCount.gameObject.SetActive(productData.hasLimit);
+        if (productData.hasLimit)
+        {
+            if (productData.limit_reset_type == LimitResetType.Permanent)
+            {
+                m_element.txtLimitCount.text = TableManager.stringTable.GetStringFormat("UI_BUY_REMAIN_COUNT", productData.strRemainCount);
+            }
+            else
+            {
+                string periodType = TableManager.stringTable.GetString("PEROID_TYPE_" + productData.limit_reset_type.ToString().ToUpper());
+                m_element.txtLimitCount.text = $"({periodType} {productData.strRemainCount})";
+            }
+        }
 
         //Reward
         {
@@ -197,33 +208,35 @@ public class PopupBuyComponent : BasePopupComponent
         SetCost();
     }
 
-    async UniTask OnButtonAsync_Confirm()
+    void OnButton_Confirm()
     {
-        if (isEnoughCurrency == false)
+        if (isEnoughCurrency == false && productData.pay_type != PayType.Cash)
         {
             PopupManager.instance.AlertShow_Table("NOT_ENOUGH_CURRENCY");
             return;
         }
 
         m_element.btnBuy.interactable = false;
-        bool isSuccess = true;
-        //= await ContentsMarketWorker.instance.API_ProductBuy(m_tabType, m_productData, m_buyCount);
+        statusType = StatusType.Success;
+    }
 
-        if (isSuccess)
+    public async UniTask<StatusType> WaitAsync()
+    {
+        await UniTask.WaitUntil(() => statusType != StatusType.Wait);
+        return statusType;
+    }
+
+    public void SetResult(bool _isSuccessed)
+    {
+        if (_isSuccessed)
         {
-
-
-
-
-            List<ItemData> rewards = new();
-            //for (int i = 0; i < m_buyCount; i++)
-            //    rewards.Add(m_productData.itemData);
-
-            RewardWorker.OpenRewardPopup(rewards.ToArray());
+            PopupManager.instance.AlertShow_Table("BUY_SUCCESS");
             Close();
         }
         else
             PopupManager.instance.AlertShow_Table("BUY_FAILED");
+
+        m_element.btnBuy.interactable = true;
     }
 
     public override void Close()

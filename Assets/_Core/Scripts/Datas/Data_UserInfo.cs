@@ -293,8 +293,8 @@ public partial class Data_UserInfo
             _rice != 0 ? m_element.rice + _rice : -1,
             _isUpdate, _isTween);
     }
-    public void AddAsset(ItemDetailType _itemType, long _amount, bool _isUpdate = true, bool _isTween = true)
-        => AddAsset(_itemType == ItemDetailType.Gold ? _amount : 0, _itemType == ItemDetailType.Rice ? _amount : 0, _isUpdate, _isTween);
+    public void AddAsset(ItemKey _itemKey, long _amount, bool _isUpdate = true, bool _isTween = true)
+        => AddAsset(_itemKey == ItemKey.GoldFree ? _amount : 0, _itemKey == ItemKey.Rice ? _amount : 0, _isUpdate, _isTween);
 
     //public void SetProvision(long _amount, bool _isUpdate = true, bool _isTween = true)
     //    => SetAsset(-1, _amount, _isUpdate, _isTween);
@@ -454,7 +454,7 @@ public partial class Data_UserInfo
             while (true)
             {
                 var rt = (RegionType)i;
-                if (rt < RegionType.MAX)
+                if (rt < RegionType.Max)
                     filter_region.Add(rt);
 
                 var ct = (HeroClassType)i;
@@ -465,7 +465,7 @@ public partial class Data_UserInfo
                 if (gt < GradeType.Max)
                     filter_grade.Add(gt);
 
-                if (rt >= RegionType.MAX &&
+                if (rt >= RegionType.Max &&
                     ct >= HeroClassType.MAX &&
                     gt >= GradeType.Max)
                     break;
@@ -474,7 +474,7 @@ public partial class Data_UserInfo
             }
         }
 
-        public bool isAll_Region => filter_region.Contains(RegionType.MAX);
+        public bool isAll_Region => filter_region.Contains(RegionType.Max);
         public bool isAll_Class => filter_class.Contains(HeroClassType.MAX);
         public bool isAll_Grade => filter_grade.Contains(GradeType.Max);
     }

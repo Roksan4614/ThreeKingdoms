@@ -312,7 +312,7 @@ public class Tutorial_START : TutorialBase
             await UniTask.NextFrame(_token);
         }
 
-        screen.SetRegionType(RegionType.NONE);
+        screen.SetRegionType(RegionType.None);
     }
 
 

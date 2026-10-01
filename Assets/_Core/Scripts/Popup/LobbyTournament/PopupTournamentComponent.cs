@@ -207,7 +207,7 @@ public class PopupTournamentComponent : BasePopupComponent
             var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_REFRESH_BY_CURRENCY");
 
             if (result == StatusType.Success)
-                DataManager.userInfo.AddAsset(ItemDetailType.Rice, -cost);
+                DataManager.userInfo.AddAsset(ItemKey.Rice, -cost);
             else
                 return;
         }

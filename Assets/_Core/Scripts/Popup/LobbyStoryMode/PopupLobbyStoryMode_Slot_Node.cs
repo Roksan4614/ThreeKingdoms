@@ -20,7 +20,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         m_element.btnChange.onClick.AddListener(OnButton_Change);
     }
 
-    public void SetStoryNode(List<Table_StoryMode_Node.TableStoryModeNodeData> _data, RegionType _region = RegionType.NONE)
+    public void SetStoryNode(List<Table_StoryMode_Node.TableStoryModeNodeData> _data, RegionType _region = RegionType.None)
     {
         m_curIdx = 0;
         gameObject.SetActive(true);
@@ -51,7 +51,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         }
 
         m_data = _data.SortBy(x => x.region_type == DataManager.userInfo.region ? -1 : 0);
-        if (_region > RegionType.NONE)
+        if (_region > RegionType.None)
         {
             for (int i = 0; i < m_data.Count; i++)
             {
@@ -218,7 +218,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
             // 첫번째인데 내 국가가 아니면 군주 추가해줘야해.
             if (storyNode.order_num <= 3 && storyNode.region_type != DataManager.userInfo.region)
             {
-                var startHero = storyNode.region_type == RegionType.WU ?
+                var startHero = storyNode.region_type == RegionType.Wu ?
                     CharacterName.SunJian.ToString() :
                     TableManager.region.Get(storyNode.region_type).master;
 
@@ -235,7 +235,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                 if (DataManager.userInfo.HasHero(key) == false)
                     DataManager.userInfo.AddHero(key);
                 else
-                    InventoryWorker.AddItem(Enum.Parse<ItemKey>($"SoulStoneDedicated{key}"), 10, _isRewardAction: false);
+                    InventoryWorker.instance.AddItem(Enum.Parse<ItemKey>($"SoulStoneDedicated{key}"), 10, _isRewardAction: false);
 
                 newHero.Add(key);
             }

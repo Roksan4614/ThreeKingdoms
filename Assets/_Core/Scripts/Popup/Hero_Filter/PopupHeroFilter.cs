@@ -56,13 +56,13 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
             var panel = content.Find("Region/Content");
             panel.parent.GetComponent<TextMeshProUGUI>("txt_title").text =
                 TableManager.stringTable.GetString("UI_FILTER_REGION");
-            int max = (int)RegionType.MAX;
+            int max = (int)RegionType.Max;
             int idx = 0;
             for (int i = -1; i < max; i++, idx++)
             {
                 var type = (RegionType)i;
                 var btn = (idx == panel.childCount ? Instantiate(panel.GetChild(0), panel) : panel.GetChild(idx)).GetComponent<ButtonHelper>();
-                btn.text = TableManager.stringTable.GetString(type == RegionType.NONE ? "TAB_ALL" : $"REGION_NAME_{type}");
+                btn.text = TableManager.stringTable.GetString(type == RegionType.None ? "TAB_ALL" : $"REGION_NAME_{type}");
                 btn.onClick.AddListener(() => OnButton_Region(type));
 
                 m_dicRegion.Add(type, btn);
@@ -160,7 +160,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
 
     void OnButton_Region(RegionType _region)
     {
-        if (_region == RegionType.NONE)
+        if (_region == RegionType.None)
         {
             bool isAll = isAll_Region == false;
 
@@ -271,7 +271,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
         rtPanel.offsetMax = _offsetMax;
     }
 
-    bool isAll_Region => m_filterRegion.Contains(RegionType.NONE);
+    bool isAll_Region => m_filterRegion.Contains(RegionType.None);
     bool isAll_Class => m_filterClass.Contains(HeroClassType.NONE);
     bool isAll_Grade => m_filterGrade.Contains(GradeType.None);
 

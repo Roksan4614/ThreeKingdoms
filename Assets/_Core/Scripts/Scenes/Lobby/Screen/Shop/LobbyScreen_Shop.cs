@@ -3,6 +3,7 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using ThreeKingdoms.Shared.Enums;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public class LobbyScreen_Shop : LobbyScreen_Base
     Dictionary<ShopCategoryType, TabData> m_dbTab = new();
 
     List<LobbyScreen_Shop_Group> m_groups = new();
+
+    long m_currencyAmount;
 
     private void Start()
     {
@@ -47,12 +50,34 @@ public class LobbyScreen_Shop : LobbyScreen_Base
 
         SetLayoutList();
         OnButton_Tab(ShopCategoryType.Pass, true);
+
+        //setlocalization
+        {
+            transform.SetTextTable("Panel/Top/txt_title", "UI_CURRENCY_SHOP_TITLE");
+        }
+
+        Signal.instance.Inventory_UpdateCount.connectLambda = new(this, _itemData =>
+        {
+            if (_itemData.key == ItemKey.GoldPaid)
+            {
+                DOTween.To(() => m_currencyAmount,
+                    _result =>
+                    {
+                        IngameLog.Add(_result);
+                        m_element.txtCurrency.text = _result.AmountKMBT(_isMBT: true);
+                    },
+                    _itemData.count, 0.2f).OnComplete(() => m_currencyAmount = _itemData.count);
+            }
+        });
     }
 
     public override void Open(LobbyScreenType _prevScreen)
     {
         base.Open(_prevScreen);
         OnButton_Tab(ShopCategoryType.Pass);
+
+        m_currencyAmount = InventoryWorker.instance.GetItemCount(ItemKey.GoldPaid);
+        m_element.txtCurrency.text = m_currencyAmount.AmountKMBT(_isMBT: true);
     }
 
     void OnButton_Tab(ShopCategoryType _tabType, bool _isForce = false)
@@ -125,9 +150,65 @@ public class LobbyScreen_Shop : LobbyScreen_Base
     void OnButton_Product(LobbyScreen_Shop_Group_Slot _slot)
         => BuyProductAsync(_slot).Forget();
 
+    PopupBuyComponent m_popupBuy;
     async UniTask BuyProductAsync(LobbyScreen_Shop_Group_Slot _slot)
     {
-        IngameLog.Add("BuyProductAsync: " + _slot.productData.name);
+        var productData = _slot.productData;
+        if (productData.isEnoughCurrency == false)
+        {
+            var itemName = TableManager.item.GetItemData(productData.currencyKey).name;
+            itemName = KoreanHelper.AppendJosa(itemName, KoreanHelper.JosaType.IgA, "[{0}]");
+
+            var result = await PopupManager.instance.OpenModalAsync(
+                TableManager.alertString.GetStringFormat("MODAL_BUY_CURRENCY_NOT_ENOUGH", itemName));
+
+            if (result == StatusType.Success)
+            {
+                if (productData.currencyKey == ItemKey.GoldPaid)
+                {
+                    var group = m_groups.Find(x => x.category == ShopCategoryType.GoldPaid);
+                    var slots = group.slots.SortBy(x => x.productData.reward_count);
+
+                    var price = slots[slots.Count - 1].productData.price;
+
+                    foreach (var s in slots)
+                    {
+                        if (s.productData.reward_count >= productData.price)
+                        {
+                            price = s.productData.price;
+                            break;
+                        }
+                    }
+
+                    DataManager.shop.OpenURL_GoldPaid(price);
+                }
+                else
+                {
+                    OnButton_Tab(productData switch
+                    {
+                        _ => ShopCategoryType.GoldPaid
+                    });
+                }
+            }
+
+            return;
+        }
+
+        if (m_popupBuy == null)
+            m_popupBuy = await PopupManager.instance.OpenPopupAsync<PopupBuyComponent>(PopupType.Buy, productData);
+        else
+            m_popupBuy.OpenPopup(productData);
+
+        if (await m_popupBuy.WaitAsync() == StatusType.Success)
+        {
+            if (productData.pay_type == PayType.Cash)
+            {
+                DataManager.shop.OpenURL_GoldPaid(productData.price);
+                m_popupBuy.SetResult(true);
+            }
+            else
+                m_popupBuy.SetResult(await DataManager.shop.API_BuyItemAsync(productData));
+        }
     }
 
     #region VALIDATE
@@ -143,10 +224,14 @@ public class LobbyScreen_Shop : LobbyScreen_Base
         public ScrollRect scrollTab;
         public ScrollRect scroll;
 
+        public TextMeshProUGUI txtCurrency;
+
         public void Initialize(Transform _transform)
         {
             scrollTab = _transform.GetComponent<ScrollRect>("Panel/Tab");
             scroll = _transform.GetComponent<ScrollRect>("Panel/Scroll");
+
+            txtCurrency = _transform.GetComponent<TextMeshProUGUI>("Panel/Asset/txt_amount");
         }
     }
     #endregion VALIDATE

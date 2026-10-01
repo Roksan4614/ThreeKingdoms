@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -101,7 +102,7 @@ public class PopupSelectRegionComponent : BasePopupComponent
             txtDesc = panel.GetComponent<TextMeshProUGUI>("txt_desc");
 
             m_dbHero = new();
-            for (var region = RegionType.NONE + 1; region < RegionType.ETC; region++)
+            for (var region = RegionType.None + 1; region < RegionType.Etc; region++)
             {
                 RegionData hero = new();
                 hero.Initialize(region, panel.Find("btn_" + region));

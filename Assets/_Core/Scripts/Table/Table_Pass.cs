@@ -79,16 +79,16 @@ namespace Rev9.Pass
         public Table_PassQuest(List<TablePassQuestData> _table) : base(_table) { }
 
         public int GetCount(TablePassQuestData _data)
-            => m_list.Find(x => x.key == _data.key && x.type == _data.type)?.count ?? 0;
+            => m_list.Find(x => x.key == _data.key && x.date_type == _data.date_type)?.target_value ?? 0;
         public TablePassQuestData GetRandomQuest(bool _isSeason)
         {
             TablePassQuestData result = new();
 
             var type = _isSeason ? QuestDateType.Season : QuestDateType.Daily;
-            var questData = m_list.FindAll(x => x.type == type).RandomFirst();
+            var questData = m_list.FindAll(x => x.date_type == type).RandomFirst();
 
             result.key = questData.key;
-            result.type = questData.type;
+            result.date_type = questData.date_type;
             result.exp = questData.exp;
             result.is_character = 1;
             result.value = "GuanYu";
@@ -100,8 +100,8 @@ namespace Rev9.Pass
     public class TablePassQuestData
     {
         public QuestType key;
-        public QuestDateType type;
-        public int count;
+        public QuestDateType date_type;
+        public int target_value;
         public int exp;
         public int is_character;
         public int is_country;
@@ -123,17 +123,17 @@ namespace Rev9.Pass
             }
         }
 
-        RegionType m_valueRegion = RegionType.NONE - 1;
+        RegionType m_valueRegion = RegionType.None - 1;
         public RegionType valueRegion
         {
             get
             {
-                if (m_valueRegion == RegionType.NONE - 1)
+                if (m_valueRegion == RegionType.None - 1)
                 {
-                    m_valueRegion = RegionType.NONE;
+                    m_valueRegion = RegionType.None;
                     if (is_country > 1)
                     {
-                        for (var i = RegionType.NONE + 1; i < RegionType.MAX; i++)
+                        for (var i = RegionType.None + 1; i < RegionType.Max; i++)
                         {
                             if (i.ToString().ToLower() == value.ToLower())
                             {

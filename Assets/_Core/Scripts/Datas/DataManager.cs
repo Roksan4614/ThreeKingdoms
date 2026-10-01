@@ -17,6 +17,7 @@ public class DataManager: BaseWorker<DataManager>
     Data_DailyDungeon m_dailyDungeon = new();
     Data_StoryMode m_storyMode = new();
     Data_Pass m_pass = new();
+    Data_Shop m_shop = new();
 
     public static Data_UserInfo userInfo => instance.m_userInfo;
     public static Data_Option option => instance.m_option;
@@ -27,6 +28,7 @@ public class DataManager: BaseWorker<DataManager>
     public static Data_DailyDungeon dailyDungeon => instance.m_dailyDungeon;
     public static Data_StoryMode storyMode => instance.m_storyMode;
     public static Data_Pass pass => instance.m_pass;
+    public static Data_Shop shop => instance.m_shop;
 
     public async UniTask InitializeAsync()
     {
@@ -40,6 +42,7 @@ public class DataManager: BaseWorker<DataManager>
         tasks.Add(dailyDungeon.InitializeAsync());
         tasks.Add(storyMode.InitializeAsync());
         tasks.Add(pass.InitializeAsync());
+        tasks.Add(shop.InitializeAsync());
 
         tasks.Add(InventoryWorker.instance.InitializeAsync());
         tasks.Add(PostWorker.instance.InitializeAsync());

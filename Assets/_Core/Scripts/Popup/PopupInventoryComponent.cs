@@ -117,7 +117,11 @@ namespace Rev9.Inventory
 
         public override void Close()
         {
-            Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
+            Utils.SetActivePunch(m_element.panel, false, _callback: () =>
+            {
+                SetTab(ItemType.None);
+                gameObject.SetActive(false);
+            });
         }
 
         #region VALIDATE

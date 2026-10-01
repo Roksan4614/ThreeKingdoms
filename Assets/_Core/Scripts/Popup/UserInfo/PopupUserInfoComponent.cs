@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 

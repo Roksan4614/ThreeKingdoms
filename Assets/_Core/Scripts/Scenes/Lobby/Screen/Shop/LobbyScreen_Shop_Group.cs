@@ -7,6 +7,7 @@ using UnityEngine.Events;
 public class LobbyScreen_Shop_Group : MonoBehaviour
 {
     protected List<LobbyScreen_Shop_Group_Slot> m_slots = new();
+    public List<LobbyScreen_Shop_Group_Slot> slots => m_slots;
     public ShopCategoryType category => m_slots[0].category;
     public UnityAction<LobbyScreen_Shop_Group_Slot> actionProduct { get; set; }
 

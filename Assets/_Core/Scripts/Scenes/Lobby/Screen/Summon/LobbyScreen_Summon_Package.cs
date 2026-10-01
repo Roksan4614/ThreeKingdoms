@@ -2,6 +2,7 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,7 +14,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
     Dictionary<RegionType, Button> m_dbButton;
     Dictionary<RegionType, bool> m_dbActive;
 
-    RegionType m_curRegion = RegionType.NONE;
+    RegionType m_curRegion = RegionType.None;
 
     bool m_isPush;
 
@@ -29,7 +30,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
 
         foreach (var btn in m_dbButton)
         {
-            if (btn.Key == RegionType.NONE)
+            if (btn.Key == RegionType.None)
                 btn.Value.transform.SetText("Text", TableManager.stringTable.GetString("SUMMON_TYPE_ALL"));
             else
                 btn.Value.transform.SetText("Text", TableManager.stringTable.GetStringFormat("SUMMON_TYPE_COUNTRY", $"{TableManager.stringTable.GetStringFormat($"REGION_NAME_FULL_{btn.Key.ToString().ToUpper()}")}"));
@@ -46,7 +47,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
             m_dbButton = m_element.buttons.ToDictionary(x =>
             {
                 if (Enum.TryParse(x.name, out RegionType region) == false)
-                    region = RegionType.NONE;
+                    region = RegionType.None;
 
                 m_dbActive.Add(region, true);
                 return region;
@@ -126,9 +127,9 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
         }
     }
 
-    public RegionType prevRegion => m_curRegion == RegionType.NONE ? RegionType.WU : m_curRegion - 1;
+    public RegionType prevRegion => m_curRegion == RegionType.None ? RegionType.Wu : m_curRegion - 1;
     public RegionType curRegion => m_curRegion;
-    public RegionType nextRegion => m_curRegion == RegionType.WU ? RegionType.NONE : m_curRegion + 1;
+    public RegionType nextRegion => m_curRegion == RegionType.Wu ? RegionType.None : m_curRegion + 1;
 
     public void SetActive(bool _isActive)
     {
@@ -159,14 +160,14 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
 
         var region = _region.ToList();
 
-        for (var r = RegionType.NONE; r < RegionType.MAX; r++)
+        for (var r = RegionType.None; r < RegionType.Max; r++)
         {
             if (m_dbActive.ContainsKey(r))
                 m_dbActive[r] = region.Count == 0 || region.Contains(r);
         }
 
         m_element.scroll.enabled = m_dbActive.Where(x => x.Value == true).Count() > 1;
-        SetRegionType(_region.Length == 0 ? RegionType.NONE : _region[0]);
+        SetRegionType(_region.Length == 0 ? RegionType.None : _region[0]);
 
         if (isAwaked)
             SetButtonSort();
@@ -209,7 +210,7 @@ public class LobbyScreen_Summon_Package : MonoBehaviour, IValidatable, IEndDragH
             buttons = buttons.ToDictionary(x =>
             {
                 if (Enum.TryParse(x.name, out RegionType region) == false)
-                    return RegionType.NONE;
+                    return RegionType.None;
                 return region;
             }, x => x).OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value).Values.ToArray();
 

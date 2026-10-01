@@ -45,7 +45,7 @@ namespace Rev9.Pass
         public void UpdateCount()
         {
             m_element.txtDesc.text = m_msgDesc;
-            m_element.txtDesc.text += $"\n<color=#555555>({data.tableData.count}/{TableManager.passQuest.GetCount(data.tableData)})";
+            m_element.txtDesc.text += $"\n<color=#555555>({data.tableData.target_value}/{TableManager.passQuest.GetCount(data.tableData)})";
 
             if (data.isComplete)
             {

@@ -30,7 +30,7 @@ namespace Rev9.ContentsMarket
 
             if (hasLimit == true)
             {
-                string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + _productData.limit_reset_type.ToString().ToUpper());
+                string periodType = TableManager.stringTable.GetString("PEROID_TYPE_" + _productData.limit_reset_type.ToString().ToUpper());
                 m_element.txtCount.text = $"{periodType} {_productData.strRemainCount}";
             }
         }

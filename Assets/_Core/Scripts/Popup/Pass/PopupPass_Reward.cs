@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Rev9.Pass
@@ -9,6 +11,8 @@ namespace Rev9.Pass
     {
         float m_paddigTop;
         float m_heightSlot;
+
+        public UnityAction actionPass { get; set; }
 
         private void Start()
         {
@@ -74,8 +78,31 @@ namespace Rev9.Pass
             }
         }
 
+        public Vector2? posPointer { get; private set; }
         async UniTask OnButtonAsync_Reward(PopupPass_Reward_Slot _slot, bool _isPaid)
         {
+            if (_slot.rewardData.level > DataManager.pass.level)
+                return;
+
+
+            if (_isPaid && DataManager.pass.isPaid == false)
+            {
+                PopupManager.instance.AlertShow_Table("PASS_CAN_AFTER_PAID");
+
+                posPointer = CameraManager.posPointer;
+                var result = await PopupManager.instance.OpenModalAsync(
+                    TableManager.alertString.GetStringFormat("MODAL_BUY_ITEM",
+                    KoreanHelper.AppendJosa(TableManager.item.GetItemData(ItemKey.PassBattle).name, KoreanHelper.JosaType.EulLeul, "[{0}]")));
+
+                if (result == StatusType.Success)
+                {
+                    actionPass();
+                }
+                posPointer = null;
+                return;
+            }
+
+
             if (await DataManager.pass.API_ReceiveReward(_slot, _isPaid) == true)
             {
                 var prevPos = m_element.scroll.content.anchoredPosition;

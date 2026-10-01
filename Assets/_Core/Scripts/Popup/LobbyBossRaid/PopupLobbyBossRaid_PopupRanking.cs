@@ -164,7 +164,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
         {
             nickname = _rankerData.nickname,
             profileIdx = -1,
-            region = Random.Range(0, (int)RegionType.MAX) + RegionType.NONE + 1,
+            region = Random.Range(0, (int)RegionType.Max) + RegionType.None + 1,
             uid = _rankerData.uid,
             batchHeroes = new(),
             treasures = new(),
@@ -178,8 +178,8 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
                 userInfo.batchHeroes = m_dbBatch[userInfo.uid];
             else
             {
-                List<HeroPositionType> dbPosition = new();
-                for (var i = HeroPositionType.NONE + 1; i < HeroPositionType.MAX; i++)
+                List<PositionType> dbPosition = new();
+                for (var i = PositionType.None + 1; i < PositionType.Max; i++)
                     dbPosition.Add(i);
                 dbPosition = dbPosition.SortBy(x => Random.value);
 

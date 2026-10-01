@@ -1,16 +1,3 @@
-public enum RegionType
-{
-    NONE = -1,
-
-    WEI,    // ¿ß
-    SHU,    // √À
-    WU,     // ø¿
-    ETC,     // ¡ﬂ∏≥
-
-    MAX,
-
-    Historical,
-}
 
 public enum FactionType
 {

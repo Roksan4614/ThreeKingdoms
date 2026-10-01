@@ -100,7 +100,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 				.Where(x => x.key.Equals(_hostKey) == false && x.isLockSummon == false && x.is_lock_active == false).ToList();
 
 			// 특정 국가면 하나 더 넣자
-			if (_regionType > RegionType.NONE)
+			if (_regionType > RegionType.None)
 				dbHeroes.AddRange(TableManager.hero.list
 					.Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false && x.isLockSummon == false && x.is_lock_active == false).ToList());
 
@@ -211,7 +211,7 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 				DataManager.userInfo.AddHero(soul.Key, grade);
 			}
 			else
-				InventoryWorker.AddItem(
+				InventoryWorker.instance.AddItem(
 					Enum.Parse<ItemKey>($"SoulStoneDedicated{soul.Key}"), count, _isRewardAction: false);
 		}
 	}

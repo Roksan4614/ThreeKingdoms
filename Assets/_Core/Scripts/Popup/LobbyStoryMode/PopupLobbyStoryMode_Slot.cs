@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 

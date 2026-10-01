@@ -296,7 +296,7 @@ public class Signal : BaseWorker<Signal>
 
     public SignalObject<Rev9.Tournament.TournamentStatusType> TournamentStatus = new();
 
-    public SignalObject<ItemData> Inventory_UpdateCount = new();
+    public SignalObject<InventoryItemData> Inventory_UpdateCount = new();
     public SignalObject<TableShopProductData> Buy_Item = new();
 
     public SignalObject<QuestType> Pass_UpdateQuest = new();

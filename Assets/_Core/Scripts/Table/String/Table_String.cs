@@ -28,15 +28,15 @@ public class Table_String : Table_String_Base
     }
 
     public string GetRegionType(RegionType _regionType, bool _isFull)
-        => GetString(_regionType == RegionType.NONE ? "TAB_ALL" : $"REGION_NAME_{(_isFull ? "FULL_" : "")}{_regionType}");
+        => GetString(_regionType == RegionType.None ? "TAB_ALL" : $"REGION_NAME_{(_isFull ? "FULL_" : "")}{_regionType.ToString().ToUpper()}");
 
     public string GetBattleStat(BattleStatType _statType)
         => GetString("BATTLESTAT_" + _statType.ToString().ToUpper());
 
-    public string GetHeroPositionType(string _positionType)
-        => TableManager.stringTable.GetString("CHARACTER_POSITION_" + _positionType.ToUpper());
-    public string GetHeroPositionTypeShort(string _positionType)
-        => TableManager.stringTable.GetString("CHARACTER_POSITION_S_" + _positionType.ToUpper());
+    public string GetPositionType(PositionType _positionType)
+        => TableManager.stringTable.GetString("CHARACTER_POSITION_" + _positionType.ToString().ToUpper());
+    public string GetPositionTypeShort(PositionType _positionType)
+        => TableManager.stringTable.GetString("CHARACTER_POSITION_S_" + _positionType.ToString().ToUpper());
 }
 
 public class Table_String_Hero : Table_String_Base
@@ -57,7 +57,7 @@ public class Table_String_Hero : Table_String_Base
     public string GetName(string _key)
         => TableManager.hero.Get(_key).name;
 
-    public string GetPositionType(HeroPositionType _positionType)
+    public string GetPositionType(PositionType _positionType)
         => _positionType.ToString().ToUpper().Split("_").Last(); //GetString("HERO_POSITION_" + _positionType.ToString().ToUpper());
 
     public string GetClassType(HeroClassType _heroClassType)

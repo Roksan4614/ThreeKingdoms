@@ -17,7 +17,7 @@ namespace Rev9.Pass
                         TeamManager.instance.HasHeroRegion(q.tableData.valueRegion))
                     {
                         isUpdated = true;
-                        q.tableData.count++;
+                        q.tableData.is_country++;
                     }
                 }
             }
