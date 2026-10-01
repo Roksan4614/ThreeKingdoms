@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class InventoryWorker : BaseWorker<InventoryWorker>
 {

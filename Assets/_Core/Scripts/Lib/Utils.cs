@@ -11,12 +11,13 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using System.Runtime.InteropServices;
 
 public static class Utils
 {
 #if !UNITY_EDITOR && UNITY_WEBGL
 		[DllImport("__Internal")]
-		private static extern void OpenURL(string url);
+		public static extern void OpenURL(string url);
 #endif
     public static void OpenUrl(string _url)
     {
