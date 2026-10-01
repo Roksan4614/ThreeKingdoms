@@ -33,29 +33,29 @@ namespace ThreeKingdoms.Shared.Table
         [JsonProperty("phase", NullValueHandling = NullValueHandling.Include)]
         public int Phase { get; set; } = default!;
         /// <summary>
-        /// 유저가 선택한 지역에 따라 등장하는 적 분기 처리 용도 빈칸 = null 1 = 위나라용
+        /// 적 배치가 적용되는 시작 지역 빈칸 = 공통 기본 배치 wei = 위 지역 전용 배치 같은 챕터·스테이지·페이즈에서 유저 시작 지역과 일치하는 행이 있으면 우선 사용하고, 없으면 공통 행을 사용한다. 촉·오는 공통 행을 사용한다.
         /// </summary>
         [JsonProperty("region_type", NullValueHandling = NullValueHandling.Include)]
-        public int RegionType { get; set; } = default!;
+        public global::ThreeKingdoms.Shared.Enums.RegionType? RegionType { get; set; } = default!;
         /// <summary>
         /// 등장하는 NormalWarrior 수
         /// </summary>
-        [JsonProperty("NormalWarrior", NullValueHandling = NullValueHandling.Include)]
-        public int NormalWarrior { get; set; } = default!;
+        [JsonProperty("normal_warrior_count", NullValueHandling = NullValueHandling.Include)]
+        public int NormalWarriorCount { get; set; } = default!;
         /// <summary>
         /// 등장하는 NormalArcher 수
         /// </summary>
-        [JsonProperty("NormalArcher", NullValueHandling = NullValueHandling.Include)]
-        public int NormalArcher { get; set; } = default!;
+        [JsonProperty("normal_archer_count", NullValueHandling = NullValueHandling.Include)]
+        public int NormalArcherCount { get; set; } = default!;
         /// <summary>
         /// 등장하는 NormalStrategist 수
         /// </summary>
-        [JsonProperty("NormalStrategist", NullValueHandling = NullValueHandling.Include)]
-        public int NormalStrategist { get; set; } = default!;
+        [JsonProperty("normal_strategist_count", NullValueHandling = NullValueHandling.Include)]
+        public int NormalStrategistCount { get; set; } = default!;
         /// <summary>
-        /// 보스 key s_character, s_enmey_stat 참조
+        /// 보스 key s_character, s_enemy_stat 참조
         /// </summary>
-        [JsonProperty("Boss_key", NullValueHandling = NullValueHandling.Include)]
+        [JsonProperty("boss_key", NullValueHandling = NullValueHandling.Include)]
         public string BossKey { get; set; } = default!;
         /// <summary>
         /// 적 소속 국가

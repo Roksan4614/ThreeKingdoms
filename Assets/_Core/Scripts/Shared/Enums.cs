@@ -356,6 +356,59 @@ namespace ThreeKingdoms.Shared.Enums
     }
 
     /// <summary>
+    /// 필드의 스테이지 진행 상태
+    /// </summary>
+    public enum FieldMode
+    {
+        /// <summary>
+        /// 스테이지 돌파
+        /// </summary>
+        Breakthrough = 0,
+        /// <summary>
+        /// 스테이지 반복
+        /// </summary>
+        Repeat = 1,
+    }
+
+    /// <summary>
+    /// 보상 개수가 증가하는 방식
+    /// </summary>
+    public enum FieldRewardCountIncreaseType
+    {
+        /// <summary>
+        /// 재화 — 재화별 보상 계수로 증가
+        /// </summary>
+        Currency = 0,
+        /// <summary>
+        /// 아이템 — 개수 배율로 증가
+        /// </summary>
+        Item = 1,
+        /// <summary>
+        /// 고정 — 난이도가 올라도 개수가 변하지 않는다
+        /// </summary>
+        Fixed = 2,
+    }
+
+    /// <summary>
+    /// 필드 보상 풀의 지급 경로
+    /// </summary>
+    public enum FieldRewardPoolType
+    {
+        /// <summary>
+        /// 일반 적 처치 보상
+        /// </summary>
+        KillNormal = 0,
+        /// <summary>
+        /// 보스 적 처치 보상
+        /// </summary>
+        KillBoss = 1,
+        /// <summary>
+        /// 방치 가상 처치 보상
+        /// </summary>
+        Idle = 2,
+    }
+
+    /// <summary>
     /// 계정 생성 및 로그인에 사용한 인증 방식.
     /// </summary>
     public enum GameClientLoginType
@@ -1373,6 +1426,10 @@ namespace ThreeKingdoms.Shared.Enums
     public enum PositionCategory
     {
         /// <summary>
+        /// 없음
+        /// </summary>
+        None = -1,
+        /// <summary>
         /// 수장
         /// </summary>
         Leader = 0,
@@ -1384,6 +1441,7 @@ namespace ThreeKingdoms.Shared.Enums
         /// 칭호
         /// </summary>
         Title = 2,
+        Max = 3,
     }
 
     /// <summary>
