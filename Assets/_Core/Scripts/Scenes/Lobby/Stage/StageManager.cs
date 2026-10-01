@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -201,7 +202,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
                 {
                     var e = phase.GetChild(0).GetComponent<Character_Enemy>();
                     e.gameObject.layer = m_element.indexLayerEnemy;
-                    e.SetHeroData_Stage(e.name);
+                    e.SetHeroData_Stage(e.name.Split("_")[0]);
                     e.transform.SetParent(MapManager.instance.element.pEnemy);
                     e.move.SetFlip(isFlip);
                     e.SetColorParts(Color.white);
@@ -526,7 +527,7 @@ public partial class StageManager : Singleton<StageManager>, IValidatable
 
         public string difficultName
             => TableManager.stringTable
-            .GetString($"GRADE_DIFFICULT_{(GradeType.NONE + Math.Min(level, 5)).ToString().ToUpper()}")
+            .GetString($"GRADE_DIFFICULT_{(GradeType.None + Math.Min(level, 5)).ToString().ToUpper()}")
             + (level > 5 ? $"{(level - 4)}" : "").ToUpper();
 
         public string stageFullName

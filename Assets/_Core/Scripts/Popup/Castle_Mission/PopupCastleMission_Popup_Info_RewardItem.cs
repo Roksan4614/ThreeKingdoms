@@ -47,17 +47,17 @@ public class PopupCastleMission_Popup_Info_RewardItem : MonoBehaviour, IValidata
             item.gameObject.SetActive(true);
 
             ItemData itemData = new();
-            itemData.key = rewardData.reward_key;
+            itemData.key = rewardData.reward_item_key;
             item.SetItemData(itemData);
 
-            bool isLock = _percent < rewardData.unlock_pct;
+            bool isLock = _percent < rewardData.unlockPercent;
             item.SetActiveDimm(isLock);
 
             if (isLock)
                 item.SetCountText(0);
             else
                 //min max 차이가 있으면 range로.. 없으면 걍 max로
-                item.SetCountText(rewardData.reward_max, rewardData.reward_max - rewardData.reward_min > 0);
+                item.SetCountText(rewardData.reward_count_maximum, rewardData.reward_count_maximum - rewardData.reward_count_minimum > 0);
         }
 
         for (; i < m_element.parent.childCount; i++)

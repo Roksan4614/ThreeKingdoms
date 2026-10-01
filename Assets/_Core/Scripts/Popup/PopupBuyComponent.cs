@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using Rev9.ContentsMarket;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,11 @@ public class PopupBuyComponent : BasePopupComponent
         btnMin.onClick.AddListener(() => OnButton_MinMax(true));
         btnMax.onClick.AddListener(() => OnButton_MinMax(false));
 
+        // SETTAB
+        {
+
+        }
+
         //setlocalization
         {
             transform.SetTextTable("Panel/Title/Text", "POPUP_BUY_TITLE");
@@ -54,26 +60,60 @@ public class PopupBuyComponent : BasePopupComponent
 
         Utils.SetActivePunch(m_element.panel, true);
 
-        string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + productData.periodType.ToString().ToUpper());
+        string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + productData.limit_reset_type.ToString().ToUpper());
         m_element.txtLimitCount.text = $"({periodType} {productData.strRemainCount})";
-
-        m_element.txtName.text = productData.itemData.name;
-        m_element.txtDesc.text = productData.itemData.desc;
-        if (m_element.txtDesc.text.StartsWith("DESC_"))
-            m_element.txtDesc.text = "";
-
-        //아이콘
-        SetItemIconAsync().Forget();
 
         //Reward
         {
             var content = m_element.scrollRewards.content;
 
-            // todo 갯수가 여러개 있을 수 있어. 그거 작업해야 해
-            content.GetChild(0).GetComponent<ItemComponent>().SetItemData(productData.itemData);
+            int i = 0;
+            //상점 상품이라면
+            if (productData is TableShopProductData)
+            {
+                var shopProductData = (TableShopProductData)productData;
+
+                foreach (var p in shopProductData.rewards)
+                {
+                    var slot = (i == content.childCount ? Instantiate(content.GetChild(0), content) : content.GetChild(i))
+                        .GetComponent<ItemComponent>();
+
+                    slot.SetItemData(p);
+                    i++;
+                }
+
+                //아이콘
+                SetItemIconAsync(shopProductData).Forget();
+
+                m_element.txtName.text = shopProductData.name;
+                m_element.txtDesc.text = shopProductData.desc;
+                if (m_element.txtDesc.text?.StartsWith("DESC_") ?? false)
+                    m_element.txtDesc.text = "";
+            }
+            //일반 상품이라면
+            else
+            {
+                //아이콘
+                SetItemIconAsync().Forget();
+
+                content.GetChild(0).GetComponent<ItemComponent>().SetItemData(productData.itemData);
+                i++;
+
+                m_element.txtName.text = productData.itemData.name;
+                m_element.txtDesc.text = productData.itemData.desc;
+                if (m_element.txtDesc.text?.StartsWith("DESC_") ?? false)
+                    m_element.txtDesc.text = "";
+            }
+
+            for (; i < content.childCount; i++)
+                content.GetChild(i).gameObject.SetActive(false);
+
+            content.ForceRebuildLayout();
+            content.anchoredPosition = Vector2.zero;
         }
 
-        m_element.txtCurrencyCount.text = TableManager.stringTable.GetStringFormat("UI_MY_AMOUNT", m_myCurrency.AmountKMBT(_isMBT: true));
+        m_element.txtCurrencyCount.text =
+            productData.pay_type == PayType.Cash ? "" : TableManager.stringTable.GetStringFormat("UI_MY_AMOUNT", m_myCurrency.AmountKMBT(_isMBT: true));
     }
 
     void SetCost()
@@ -81,17 +121,18 @@ public class PopupBuyComponent : BasePopupComponent
         m_totalCost = productData.price * buyCount;
         m_element.txtCost.text = m_totalCost.AmountKMBT(_isMBT: true);
 
-        string costType = productData.pay_type.ToString();
-        for (int i = 0; i < m_element.costPanel.childCount; i++)
-        {
-            var obj = m_element.costPanel.GetChild(i).gameObject;
-            obj.SetActive(obj.name.Equals(costType));
-        }
+        m_element.costType.SetCostType(productData.pay_type);
     }
 
-    async UniTask SetItemIconAsync()
+    async UniTask SetItemIconAsync(TableShopProductData _shopProductData = null)
     {
-        string key = productData.itemData.type.ToString();
+        string key = "";
+
+        if (_shopProductData == null)
+            key = productData.itemData.type.ToString();
+        else
+            key = $"Product_{_shopProductData.key}";
+
         for (int i = 0; i < m_element.iconPanel.childCount; i++)
         {
             var obj = m_element.iconPanel.GetChild(i).gameObject;
@@ -108,11 +149,19 @@ public class PopupBuyComponent : BasePopupComponent
         {
             m_element.iconPanel.gameObject.SetActive(false);
             var asset = await AddressableManager.instance.GetItemIconAsync(key);
+
+            bool isDefault = _shopProductData != null && asset == null;
+            if (isDefault == true)
+                asset = await AddressableManager.instance.GetItemIconAsync("Product_Default");
+
             if (asset != null)
             {
                 var icon = Instantiate(asset, m_element.iconPanel);
                 icon.AutoResizeParent(true);
                 icon.name = key;
+
+                if (isDefault == true)
+                    icon.transform.SetText("Text", _shopProductData.name);
             }
         }
 
@@ -179,7 +228,12 @@ public class PopupBuyComponent : BasePopupComponent
 
     public override void Close()
     {
-        Utils.SetActivePunch(m_element.panel, false, _callback: () => gameObject.SetActive(false));
+        Utils.SetActivePunch(m_element.panel, false, _callback: () =>
+        {
+            if (statusType == StatusType.Wait)
+                statusType = StatusType.Cancel;
+            gameObject.SetActive(false);
+        });
     }
 
     public void BaseClose()
@@ -207,7 +261,7 @@ public class PopupBuyComponent : BasePopupComponent
 
         public ButtonHelper btnBuy;
         public Transform iconPanel;
-        public Transform costPanel;
+        public CostTypeHelper costType;
 
         public void Initialize(Transform _transform)
         {
@@ -223,7 +277,7 @@ public class PopupBuyComponent : BasePopupComponent
 
             btnBuy = _transform.GetComponent<ButtonHelper>("Panel/btn_buy");
             iconPanel = _transform.Find("Panel/Icon/Panel");
-            costPanel = _transform.Find("Panel/btn_buy/Count/Text/Icon");
+            costType = _transform.GetComponent<CostTypeHelper>("Panel/btn_buy/Count/Text/Icon");
         }
 
         public Transform panel => txtLimitCount.transform.parent;

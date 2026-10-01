@@ -2,13 +2,14 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Table_Stat : BaseTable<string, TableStatData>
 {
     public Table_Stat(List<TableStatData> _table) : base(_table)
     {
-        m_list.RemoveAt(0);
+        //m_list.RemoveAt(0);
         for (int i = 0; i < m_list.Count; i++)
         {
             var data = m_list[i];
@@ -42,7 +43,6 @@ public class Table_Stat : BaseTable<string, TableStatData>
     }
 }
 
-[Serializable]
 public class TableStatData
 {
     public string key;

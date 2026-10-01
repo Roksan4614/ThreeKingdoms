@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine.Events;
 
 public class Data_DailyDungeon

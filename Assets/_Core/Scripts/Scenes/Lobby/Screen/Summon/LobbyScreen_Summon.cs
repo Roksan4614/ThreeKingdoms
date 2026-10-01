@@ -209,7 +209,7 @@ public class LobbyScreen_Summon : LobbyScreen_Base
     }
 
     void UpdateTicketCount()
-        => m_element.txtTicketCount.text = TableManager.stringTable.GetStringFormat("SUMMON_TICKET_COUNT", InventoryWorker.instance.GetItemCount("normal_gacha_ticket").ToString());
+        => m_element.txtTicketCount.text = TableManager.stringTable.GetStringFormat("SUMMON_TICKET_COUNT", InventoryWorker.instance.GetItemCount(ThreeKingdoms.Shared.Enums.ItemKey.TicketGachaNormal).ToString());
 
 
     #region VALIDATE

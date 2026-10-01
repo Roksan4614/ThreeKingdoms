@@ -66,7 +66,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         //    // 안깬게 있으면 그걸 먼저 보여줄거고, 다 깻으면 그냥 내 국가꺼 보여줄거야.
         //    for (int i = 0; i < m_data.Count; i++)
         //    {
-        //        if (DataManager.storyMode.IsComplete(m_data[i].node_key) == false)
+        //        if (DataManager.storyMode.IsComplete(m_data[i].key) == false)
         //        {
         //            m_curIdx = i;
         //            break;
@@ -82,7 +82,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         {
             for (int i = 0; i < m_data.Count; i++)
             {
-                if (m_data[i].node_key == clearKey)
+                if (m_data[i].key == clearKey)
                 {
                     m_curIdx = i;
                     break;
@@ -122,7 +122,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
         int idxChangeSibling = m_element.objLock.transform.GetSiblingIndex();
         // 조건이 안된다면 ??? 로 표기해주자
-        if (DataManager.storyMode.IsUnlock(data.node_key))
+        if (DataManager.storyMode.IsUnlock(data.key))
         {
             m_element.button.text = data.name;
             m_element.txtDesc.text = data.desc;
@@ -144,7 +144,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
 
         m_element.btnChange.transform.SetSiblingIndex(idxChangeSibling);
 
-        var reqSeq = DataManager.storyMode.GetChoiceSeq(data.node_key, true);
+        var reqSeq = DataManager.storyMode.GetChoiceSeq(data.key, true);
         if (reqSeq.IsActive() == true)
         {
             SetActive_Choice(true);
@@ -153,11 +153,11 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         else
             SetActive_Choice(false);
 
-        bool isComplete = DataManager.storyMode.IsComplete(data.node_key);
+        bool isComplete = DataManager.storyMode.IsComplete(data.key);
         m_element.objBadge.SetActive(isComplete);
         if (isComplete)
         {
-            if (DataManager.storyMode.nodeKeyNewClear == data.node_key)
+            if (DataManager.storyMode.nodeKeyNewClear == data.key)
                 RewardStartAsync().Forget();
         }
     }
@@ -191,7 +191,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
         }
 #endif
 
-        DataManager.storyMode.EnterAsync(m_data[m_curIdx].node_key).Forget();
+        DataManager.storyMode.EnterAsync(m_data[m_curIdx].key).Forget();
     }
 
     void OnButton_Change()
@@ -235,7 +235,7 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                 if (DataManager.userInfo.HasHero(key) == false)
                     DataManager.userInfo.AddHero(key);
                 else
-                    InventoryWorker.AddItem($"dedicated_soul_stone_{Utils.ToSnakeCase(key)}", 10, _isRewardAction: false);
+                    InventoryWorker.AddItem(Enum.Parse<ItemKey>($"SoulStoneDedicated{key}"), 10, _isRewardAction: false);
 
                 newHero.Add(key);
             }
@@ -269,9 +269,9 @@ public class PopupLobbyStoryMode_Slot_Node : MonoBehaviour, IValidatable
                 }
             }
         }
-        else if (storyNode.reward_currency_type.IsActive())
+        else if (storyNode.reward_currency_type >= 0)
         {
-            if (Enum.TryParse(storyNode.reward_currency_type, out ItemDetailType currency))
+            if (Enum.TryParse(storyNode.reward_currency_type.ToString(), out ItemDetailType currency))
             {
                 RewardWorker.instance.AddAsset(currency == ItemDetailType.Gold ?
                     storyNode.rewardCurrencyAmount : 0, currency == ItemDetailType.Rice ? storyNode.rewardCurrencyAmount : 0,

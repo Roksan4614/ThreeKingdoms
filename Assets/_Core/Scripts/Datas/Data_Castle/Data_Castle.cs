@@ -280,7 +280,7 @@ public partial class Data_Castle
     {
         var palace = GetCaslteData(CastleObjectType.Palace);
         var effectData = TableManager.castleEffect[CastleObjectType.Palace].Get(palace.level);
-        _callback(effectData.save_time_time_stone.Value, effectData.save_time_ad.Value);
+        _callback(effectData.save_seconds_per_time_stone.Value, effectData.save_seconds_per_ad.Value);
     }
 
     public void Release()
@@ -350,6 +350,7 @@ public partial class Data_Castle
 
         var probity = GetGateProbityRate();
         var count = (int)(castleData.totalAmount * probity);
+        var itemKey = _objectType == CastleObjectType.Market ? ItemKey.GoldFree : ItemKey.Rice;
         var itemType = _objectType == CastleObjectType.Market ? ItemDetailType.Gold : ItemDetailType.Rice;
 
         castleData.totalAmount = 0;
@@ -368,7 +369,7 @@ public partial class Data_Castle
         DataManager.userInfo.AddAsset(itemType, count, false, false);
 
         RewardWorker.instance.Run(CameraManager.posPointer,
-            itemType.ToString(), count, _isPopup: true, _isStartPunch: false);
+            itemKey, count, _isPopup: true, _isStartPunch: false);
 
         _onComplete(StatusType.Success);
     }

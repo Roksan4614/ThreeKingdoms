@@ -47,7 +47,7 @@ public partial class Data_Castle
                     PopupManager.instance.AlertShow_Table("CASTLE_START_THIEF");
 
                     var gateData = GetCaslteData(CastleObjectType.Gate);
-                    var durationNPCSec = TableManager.castleEffect[CastleObjectType.Gate].Get(gateData.level).npc_duration_sec.Value;
+                    var durationNPCSec = TableManager.castleEffect[CastleObjectType.Gate].Get(gateData.level).npc_duration_seconds.Value;
                     float percentSteel = 0.3f;
 
 #if UNITY_EDITOR

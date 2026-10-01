@@ -48,18 +48,18 @@ public enum CharacterAnimType
     MAX
 }
 
-public enum GradeType
-{
-    NONE = -1,
+//public enum GradeType
+//{
+//    NONE = -1,
 
-    Normal,     //일반
-    Elite,      //정예, 어려움
-    General,    //명장, 지옥
-    Hero,       //영웅, 심연
-    Legend,     //전설
+//    Normal,     //일반
+//    Elite,      //정예, 어려움
+//    General,    //명장, 지옥
+//    Hero,       //영웅, 심연
+//    Legend,     //전설
 
-    MAX
-}
+//    MAX
+//}
 
 public enum HeroClassType
 {

@@ -1,3 +1,4 @@
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Character_Enemy_DailyDungeonBoss : Character_Enemy_Boss

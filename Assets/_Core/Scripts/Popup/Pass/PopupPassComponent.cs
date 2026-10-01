@@ -49,6 +49,12 @@ namespace Rev9.Pass
                 m_element.btnPass.interactable = false;
                 m_element.txtCost.text = TableManager.stringTable.GetString("UI_PASS_RUNNING");
             }
+            else
+            {
+                m_element.btnPass.interactable = true;
+                m_element.txtCost.text = TableManager.shopProduct.GetBattlePass().price.AmountKMBT(_isMBT: true);
+            }
+            m_element.btnPass.onClick.AddListener(() => OnButtonAsync_BuyPass().Forget());
 
             Signal.instance.Pass_UpdateQuest.connect = SlotPassUpdateQuest;
             Signal.instance.Buy_Item.connectLambda = new(this, _product =>
@@ -70,10 +76,42 @@ namespace Rev9.Pass
 
         async UniTask OpenPopupAsync()
         {
+            await UniTask.Yield();
+
             Utils.SetActivePunch(m_element.panel, true);
             SetTab(TabType.Reward);
 
             RefreshLevelXP();
+        }
+
+        async UniTask OnButtonAsync_BuyPass()
+        {
+            await UniTask.Yield();
+
+            var product = TableManager.shopProduct.GetBattlePass();
+
+            // 유료재화가 부족합니다. 구매하시겠습니까?
+            if (product.currencyMyCount < product.price)
+            {
+                var itemName = TableManager.item.GetItemData(ItemKey.GoldPaid).name;
+                //var itemName = TableManager.stringItem.GetString("NAME_" + ItemKey.GoldPaid.ToString().ToUpper());
+                itemName = KoreanHelper.AppendJosa(itemName, KoreanHelper.JosaType.IgA, "[{0}]");
+                var result = await PopupManager.instance.OpenModalAsync(
+                    TableManager.alertString.GetStringFormat("MODAL_BUY_CURRENCY_NOT_ENOUGH", itemName));
+
+                if (result == StatusType.Success)
+                {
+                    Utils.OpenUrl("https://naver.com");
+
+#if SERVICE_DEV
+                    //InventoryWorker.AddItem(_itemData: TableManager.item.GetItemData());
+#endif
+                }
+
+                return;
+            }
+
+
         }
 
         void RefreshLevelXP()

@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Table_GuideQuest : BaseTable<string, Table_GuideQuest.TableGuideQuestData>
@@ -27,7 +28,7 @@ public class Table_GuideQuest : BaseTable<string, Table_GuideQuest.TableGuideQue
         string start_stage;
         int[] m_startStage;
 
-        public string reward_item;
+        public ItemKey reward_item;
         public int reward_count;
 
         public string open_guide_quest;

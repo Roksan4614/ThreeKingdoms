@@ -268,7 +268,7 @@ public partial class Data_UserInfo
     public long GetAssetAmount(ItemDetailType _itemType)
         => _itemType switch { ItemDetailType.Gold => m_element.gold, ItemDetailType.Rice => m_element.rice, _ => -1 };
     public long GetAssetAmount(PayType _payType)
-        => _payType switch { PayType.FreeGold => m_element.gold, PayType.Rice => m_element.rice, _ => -1 };
+        => _payType switch { PayType.GoldFree => m_element.gold, PayType.Rice => m_element.rice, _ => -1 };
 
 
     //public void AddHeroSoul(string _key, int _count)
@@ -462,12 +462,12 @@ public partial class Data_UserInfo
                     filter_class.Add(ct);
 
                 var gt = (GradeType)i;
-                if (gt < GradeType.MAX)
+                if (gt < GradeType.Max)
                     filter_grade.Add(gt);
 
                 if (rt >= RegionType.MAX &&
                     ct >= HeroClassType.MAX &&
-                    gt >= GradeType.MAX)
+                    gt >= GradeType.Max)
                     break;
 
                 i++;
@@ -476,6 +476,6 @@ public partial class Data_UserInfo
 
         public bool isAll_Region => filter_region.Contains(RegionType.MAX);
         public bool isAll_Class => filter_class.Contains(HeroClassType.MAX);
-        public bool isAll_Grade => filter_grade.Contains(GradeType.MAX);
+        public bool isAll_Grade => filter_grade.Contains(GradeType.Max);
     }
 }

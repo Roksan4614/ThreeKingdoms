@@ -12,7 +12,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
         if (gameObject.activeSelf == false)
             return false;
 
-        if (DataManager.storyMode.lastHistory.key == _nodeData.node_key)
+        if (DataManager.storyMode.lastHistory.key == _nodeData.key)
         {
             DataManager.storyMode.lastHistory = default;
             //시간이_어긋나_버렸습니다
@@ -38,7 +38,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
             node.SetStoryNode(new() { nextData });
             idx++;
 
-            if (DataManager.storyMode.IsComplete(nextData.node_key) == false || nextData.next_node_key.IsActive() == false)
+            if (DataManager.storyMode.IsComplete(nextData.key) == false || nextData.next_node_key.IsActive() == false)
                 break;
 
             //node.SetInteractable(false);
@@ -50,14 +50,14 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
 
         slot.ForceRebuildLayout();
 
-        if (nextData.next_node_key.IsActive() == false && nextData.node_key == DataManager.storyMode.lastHistory.key)
+        if (nextData.next_node_key.IsActive() == false && nextData.key == DataManager.storyMode.lastHistory.key)
         {
             //어긋난_시간선의_끝에_도달했습니다.
             PopupManager.instance.AlertShow_Table("STORYMODE_IF_FINISHED");
             DataManager.storyMode.lastHistory = default;
         }
 
-        bool isCompleteLastNode = nextData.next_node_key.IsActive() == false && DataManager.storyMode.IsComplete(nextData.node_key);
+        bool isCompleteLastNode = nextData.next_node_key.IsActive() == false && DataManager.storyMode.IsComplete(nextData.key);
 
         //"시간을_돌려_되돌아갑니다." : "시간이_어긋나_있습니다."
         m_element.txtDesc.text =
@@ -86,7 +86,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
                             Utils.SetActivePunch(m_element.panel, false);
                             Utils.SetActivePunch(transform.parent, true);
 
-                            DataManager.storyMode.ResetIFMode(_nodeData.node_key);
+                            DataManager.storyMode.ResetIFMode(_nodeData.key);
                         }
                         else
                             m_element.btnConfirm.interactable = true;
@@ -100,7 +100,7 @@ public class PopupLobbyStoryMode_IF : MonoBehaviour, IValidatable
                 Utils.SetActivePunch(m_element.panel, false);
                 Utils.SetActivePunch(transform.parent, true);
 
-                DataManager.storyMode.ResetIFMode(_nodeData.node_key);
+                DataManager.storyMode.ResetIFMode(_nodeData.key);
             }
         });
 

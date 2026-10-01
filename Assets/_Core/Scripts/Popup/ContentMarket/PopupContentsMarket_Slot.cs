@@ -18,11 +18,7 @@ namespace Rev9.ContentsMarket
             m_element.txtCost.text = _productData.price.AmountKMBT(_isMBT: true);
             m_element.txtCost.transform.ForceRebuildLayout();
 
-            for (int i = 0; i < m_element.iconCost.childCount; i++)
-            {
-                var icon = m_element.iconCost.GetChild(i).gameObject;
-                icon.SetActive(icon.name == _productData.pay_type.ToString());
-            }
+            m_element.costType.SetCostType(_productData.pay_type);
 
             m_element.item.SetItemData(_productData.itemData);
 
@@ -34,7 +30,7 @@ namespace Rev9.ContentsMarket
 
             if (hasLimit == true)
             {
-                string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + _productData.periodType.ToString().ToUpper());
+                string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + _productData.limit_reset_type.ToString().ToUpper());
                 m_element.txtCount.text = $"{periodType} {_productData.strRemainCount}";
             }
         }
@@ -55,7 +51,7 @@ namespace Rev9.ContentsMarket
 
             public GameObject objClose;
 
-            public Transform iconCost;
+            public CostTypeHelper costType;
 
             public void Initialize(Transform _transform)
             {
@@ -65,7 +61,7 @@ namespace Rev9.ContentsMarket
 
                 objClose = _transform.Find("Close").gameObject;
 
-                iconCost = txtCost.transform.Find("Icon");
+                costType = txtCost.transform.GetComponent<CostTypeHelper>("Icon");
             }
         }
         #endregion VALIDATE

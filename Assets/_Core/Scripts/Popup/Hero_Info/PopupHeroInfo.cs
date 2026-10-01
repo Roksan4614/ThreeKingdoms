@@ -235,7 +235,7 @@ public class PopupHeroInfo : BasePopupComponent
         {
             heroInfoData.grade++;
 
-            if (heroInfoData.grade >= GradeType.MAX)
+            if (heroInfoData.grade >= GradeType.Max)
             {
                 PopupManager.instance.AlertShow_Table("ALREADY_MAX_GRADE");
                 return;

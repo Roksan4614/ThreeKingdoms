@@ -2,10 +2,8 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 using UnityEngine;
 
-public class TimeManager
+public class TimeManager : BaseWorker<TimeManager>
 {
-    public static TimeManager instance { get; private set; } = new();
-
     CancellationTokenSource m_cts;
     public async UniTask InitializeAsync()
     {
@@ -21,9 +19,8 @@ public class TimeManager
         InitializeAsync().Forget();
     }
 
-    public void Release()
+    public override void OnRelease()
     {
-        instance = null;
         m_cts = m_cts.ReleaseCTS();
     }
 }

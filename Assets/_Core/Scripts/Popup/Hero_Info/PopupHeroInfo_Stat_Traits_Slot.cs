@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,7 +13,7 @@ public class PopupHeroInfo_Stat_Traits_Slot : MonoBehaviour, IValidatable
     {
         SetActivePanel(true);
 
-        var grade = TableManager.stringTable.GetString($"GRADE_QUALITY_{_traitData.traitsValueData.grade.ToString().ToUpper()}");
+        var grade = TableManager.stringTable.GetString($"GRADE_QUALITY_{_traitData.traitsValueData.traits_value_grade.ToString().ToUpper()}");
         var msg = TableManager.stringTraits.GetString($"{_traitData.traitsValueData.key.ToUpper()}_TITLE");
         m_element.txtName.text = $"[{grade}] {msg}";
 

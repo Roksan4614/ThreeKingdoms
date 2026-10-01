@@ -153,7 +153,7 @@ public class TableTraitsValueData
 {
     public string key;
     [JsonProperty] string value;
-    public GradeType grade;
+    public GradeType traits_value_grade;
 
     //custom
     TraitsType m_type;

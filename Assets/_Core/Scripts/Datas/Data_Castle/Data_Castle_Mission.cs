@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -34,7 +35,7 @@ public class Data_Castle_Mission
 
             for (int i = 0; i < 3; i++)
             {
-                var grade = GradeType.NONE + 1 + Random.Range(0, 3) * 2;
+                var grade = GradeType.Normal + Random.Range(0, 3) * 2;
                 CastleMissionData newData = new()
                 {
                     idx = m_idxMission++,
@@ -96,7 +97,7 @@ public class Data_Castle_Mission
     {
         var newMission = TableManager.castleMission.GetNewMission(m_data.Select(x => x.key).ToArray());
 
-        var grade = GradeType.NONE + 1 + Random.Range(0, 3) * 2;
+        var grade = GradeType.Normal + Random.Range(0, 3) * 2;
         CastleMissionData newData = new()
         {
             idx = m_idxMission++,
@@ -171,10 +172,10 @@ public class Data_Castle_Mission
         List<ItemData> rewards = new();
         foreach (var m in _missionDatas)
         {
-            var reward = TableManager.castleMissionReward.GetReward(m).Where(x => x.unlock_pct <= m.percentStat).ToList();
+            var reward = TableManager.castleMissionReward.GetReward(m).Where(x => x.unlockPercent <= m.percentStat).ToList();
             foreach (var r in reward)
             {
-                var item = TableManager.item.GetItemData(r.reward_key, Random.Range(r.reward_min, r.reward_max + 1));
+                var item = TableManager.item.GetItemData(r.reward_item_key, Random.Range(r.reward_count_minimum, r.reward_count_maximum + 1));
                 item.isNew = true;
 
                 rewards.Add(item);
@@ -283,7 +284,6 @@ public class Data_Castle_Mission
         string missionName => TableManager.stringMission.GetString(key.ToUpper() + "_TITLE");
         public string missionNameStat => $"[{TableManager.stringTable.GetString($"CORESTAT_{dbData.statType.ToString().ToUpper()}")}] {missionName}";
         public string gradeName => TableManager.stringTable.GetGradeType(grade);
-
         public int coreStatMax => dbGradeData.reqStatValue;
         public int xp => dbGradeData.missionXp;
         public int durationSeconds => dbGradeData.durationSeconds;
@@ -320,7 +320,7 @@ public class Data_Castle_Mission
         {
             if (isDateChanged)
             {
-                mission_count = TableManager.castleEffect[CastleObjectType.Office].Get(level).mission_count.Value;
+                mission_count = TableManager.castleEffect[CastleObjectType.Office].Get(level).mission_count_per_day.Value;
                 tickMission = Utils.GetUTC().Ticks;
             }
         }

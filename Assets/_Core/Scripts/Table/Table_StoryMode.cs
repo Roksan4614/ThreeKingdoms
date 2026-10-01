@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 
 public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.TableStoryModeNodeData>
 {
@@ -48,7 +49,7 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
     }
 
     public TableStoryModeNodeData GetNode(string _nodeKey)
-        => m_list.Find(x => x.node_key == _nodeKey);
+        => m_list.Find(x => x.key == _nodeKey);
     public List<TableStoryModeNodeData> GetNode_OrderNum(int _orderNum)
         => m_list.FindAll(x => x.order_num == _orderNum);
 
@@ -67,30 +68,30 @@ public class Table_StoryMode_Node : BaseTable<string, Table_StoryMode_Node.Table
 
     public class TableStoryModeNodeData
     {
-        public string node_key;
-        public RegionType region_type;
+        public string key;
         public int year;
         public int chapter_key;
         public int stage_key;
-        public int order_num;
-        public string reward_character;
-        public string next_node_key;
-        public string reward_currency_type;
-
-        [JsonProperty] int? reward_currency_amount;
         [JsonProperty] bool? is_conditonal;
         [JsonProperty] int? has_if_story;
+        public ItemKey reward_currency_type;
+        [JsonProperty] int? reward_currency_amount;
+        public string reward_character;
         [JsonProperty] int? required_choice_seq;
         [JsonProperty] bool? is_active;
+        public int order_num;
+        public string next_node_key;
+        public RegionType region_type;
 
-        public bool isActive => node_key.IsActive() && (is_active ?? false);
+
+        public bool isActive => key.IsActive() && (is_active ?? false);
         public bool isConditional => is_conditonal ?? false;
         public int hasIfStory => has_if_story ?? -100;
         public int requiredChoiceSeq => required_choice_seq ?? -1;
         public int rewardCurrencyAmount => reward_currency_amount ?? 0;
 
-        public string name => TableManager.storyString.GetString($"{node_key.ToUpper()}_TITLE");
-        public string desc => TableManager.storyString.GetString($"{node_key.ToUpper()}_DESC");
+        public string name => TableManager.storyString.GetString($"{key.ToUpper()}_TITLE");
+        public string desc => TableManager.storyString.GetString($"{key.ToUpper()}_DESC");
     }
 }
 

@@ -5,19 +5,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class DataManager
+public class DataManager: BaseWorker<DataManager>
 {
-    static DataManager m_instance;
-
-    public static DataManager instance
-    {
-        get
-        {
-            if (m_instance == null)
-                m_instance = new();
-            return m_instance;
-        }
-    }
 
     Data_UserInfo m_userInfo = new();
     Data_Option m_option = new();
@@ -59,15 +48,9 @@ public class DataManager
         await UniTask.WhenAll(tasks.ToArray());
     }
 
-    public static void Release()
+    public override void OnRelease()
     {
-        if (m_instance != null)
-        {
-            m_instance.m_castle.Release();
-
-            m_instance = null;
-        }
-
+        instance.m_castle.Release();
         bossRaid.ReleaseCTS();
     }
 

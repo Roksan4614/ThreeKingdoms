@@ -100,12 +100,12 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         var probity = DataManager.castle.GetGateProbityRate();
 
         SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_PAL_LEVEL_MAX")}",
-            $"{nowData.level_cap ?? -1}", $"{nextData.level_cap ?? -1}");
+            $"{nowData.level}", $"{nextData.level}");
         SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_PAL_TIME_STONE_RATE")}", //" 시간석_개당_단축",
-            $"{(nowData.save_time_time_stone * probity ?? -1):0.##}s",
-            $"{(nextData.save_time_time_stone * probity ?? -1):0.##}s");
+            $"{(nowData.save_seconds_per_time_stone * probity ?? -1):0.##}s",
+            $"{(nextData.save_seconds_per_time_stone * probity ?? -1):0.##}s");
         SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_PAL_AD_MINUS_RATE")}", //" 광고_회당_단축",
-            $"{nowData.save_time_ad ?? -1}s", $"{nextData.save_time_ad ?? -1}s");
+            $"{nowData.save_seconds_per_ad ?? -1}s", $"{nextData.save_seconds_per_ad ?? -1}s");
 
         return i;
     }
@@ -134,8 +134,8 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         var nextLevel = m_castleData.level + 1;
 
         SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_GATE_AD_MINUS_RATE")}",// " 도적_유지_시간",
-            $"{TableManager.castleEffect[m_castleData.type].Get(m_castleData.level).npc_duration_sec}/s",
-            $"{TableManager.castleEffect[m_castleData.type].Get(nextLevel).npc_duration_sec}/s");
+            $"{TableManager.castleEffect[m_castleData.type].Get(m_castleData.level).npc_duration_seconds}/s",
+            $"{TableManager.castleEffect[m_castleData.type].Get(nextLevel).npc_duration_seconds}/s");
         return i;
     }
 
@@ -171,7 +171,7 @@ public class LobbyScreen_Castle_Popup_Setting_UpgradeInfo : MonoBehaviour, IVali
         // 궁성
         {
             var levelPalace = DataManager.castle.GetCaslteData(CastleObjectType.Palace).level;
-            var timeStoneSec = TableManager.castleEffect[CastleObjectType.Palace].Get(levelPalace).save_time_time_stone ?? -1;
+            var timeStoneSec = TableManager.castleEffect[CastleObjectType.Palace].Get(levelPalace).save_seconds_per_time_stone ?? -1;
             SetAddItem(i++, $" {TableManager.stringTable.GetString("CASTLE_SET_PAL_TIME_STONE_RATE")}", //" 시간석_개당_단축",
                 $"{timeStoneSec}s", probity == 1 ? null : $"{(timeStoneSec * probity):0.##}s", false);
         }

@@ -39,7 +39,7 @@ public class Table_CastleRise : BaseTable<string, TableCastleRiseData>
 
 public class TableCastleRiseData
 {
-    public string key;
+    public string building_key;
     public int level;
     [JsonProperty] int req_stat_value_1;        // 요구치
     [JsonProperty] int req_stat_value_2;        // 요구치
@@ -50,7 +50,12 @@ public class TableCastleRiseData
     public CastleObjectType type;
     public void Initialize()
     {
-        type = System.Enum.Parse<CastleObjectType>(key);
+        type = CastleObjectType.NONE;
+        for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
+        {
+            if (building_key.Equals(i.ToString().ToLower()))
+                type = i;
+        }
     }
 
     public int[] maxCoreStat => new[] { value01, value02 };

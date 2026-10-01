@@ -23,7 +23,7 @@ namespace Rev9.Tournament
 
         private void Start()
         {
-            var db = TableManager.tournamentReward.list;
+            var db = TableManager.tournamentTier.list;
 
             var content = m_element.scroll.content;
             for (int i = 1; i < db.Count; i++)

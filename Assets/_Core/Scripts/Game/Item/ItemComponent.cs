@@ -40,7 +40,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
 
         if (_itemData.category == ItemType.SoulStone)
         {
-            if (_itemData.type == ItemDetailType.DedicatedSoulStone)
+            if (_itemData.type == ItemDetailType.SoulStoneDedicated)
             {
                 SetIconAsync(_itemData.value, true, _iconHero =>
                 {
@@ -60,7 +60,7 @@ public class ItemComponent : MonoBehaviour, IValidatable
                     }
                 }).Forget();
             }
-            else if (_itemData.type == ItemDetailType.ClassSoulStone)
+            else if (_itemData.type == ItemDetailType.SoulStoneClass)
                 SetIconAsync($"{_itemData.type}_{_itemData.value}", false).Forget();
             else
                 SetIconAsync(_itemData.type.ToString(), false).Forget();

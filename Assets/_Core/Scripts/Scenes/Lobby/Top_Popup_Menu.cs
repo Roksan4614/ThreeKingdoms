@@ -198,7 +198,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         for (int i = 0; i < db.Count; i++)
         {
             var node = db[i];
-            if (DataManager.storyMode.IsComplete(node.node_key) == false)
+            if (DataManager.storyMode.IsComplete(node.key) == false)
             {
                 // 보상이 영웅이라면
                 if (node.reward_character.IsActive() == true)

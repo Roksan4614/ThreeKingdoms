@@ -10,8 +10,8 @@ public class Table_Castle_Effect : BaseTable<int, TableCastleEffectData>
 
     public float GetAmountPerCeconds(Data_Castle.CastleData _castleData)
         => _castleData.type == CastleObjectType.Farm ?
-        m_dictionary[_castleData.level].rice_per_sec_base ?? 0 :
-        m_dictionary[_castleData.level].gold_per_sec_base ?? 0;
+        m_dictionary[_castleData.level].rice_per_seconds_base ?? 0 :
+        m_dictionary[_castleData.level].gold_per_seconds_base ?? 0;
     public int GetMaxAmount(Data_Castle.CastleData _castleData)
         => _castleData.type == CastleObjectType.Farm ?
         m_dictionary[_castleData.level].rice_storage_base ?? 0 :
@@ -23,23 +23,23 @@ public class TableCastleEffectData
     public int level;
 
     // 궁성
-    public int? level_cap;
-    public int? save_time_time_stone;
-    public int? save_time_ad;
+    //public int? level_cap;
+    public int? save_seconds_per_time_stone;
+    public int? save_seconds_per_ad;
 
     // 농지
-    public float? rice_per_sec_base;
+    public float? rice_per_seconds_base;
     public int? rice_storage_base;
 
     // 상점
-    public float? gold_per_sec_base;
+    public float? gold_per_seconds_base;
     public int? gold_storage_base;
 
     // 관아
-    public int? mission_count;
-    public int? normal_rate;
-    public int? master_rate;
-    public int? legend_rate;
+    public int? mission_count_per_day;
+    public float? normal_rate;
+    public float? general_rate;
+    public float? legend_rate;
 
     // 행상
     public float? discount_rate_base;
@@ -47,5 +47,5 @@ public class TableCastleEffectData
     public int? item_count;
 
     // 성문
-    public int? npc_duration_sec;
+    public int? npc_duration_seconds;
 }

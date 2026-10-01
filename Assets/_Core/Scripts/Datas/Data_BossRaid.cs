@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Data_BossRaid

@@ -4,6 +4,7 @@ using Rev9.Tournament;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -87,7 +88,11 @@ namespace Rev9.ContentsMarket
 
         public override void Close()
         {
-            Destroy(m_popupBuy.gameObject);
+            if (m_popupBuy != null)
+            {
+                Destroy(m_popupBuy.gameObject);
+                m_popupBuy = null;
+            }
             Utils.SetActivePunch(m_element.panel, false, _callback: base.Close);
         }
 
@@ -224,15 +229,15 @@ namespace Rev9.ContentsMarket
             content.ForceRebuildLayout();
             m_element.scrollProduct.velocity = content.anchoredPosition = Vector2.zero;
 
-            m_element.myCurrency.text = products[0].currencyMyCount.AmountKMBT(_isMBT: true);
-
-            string costType = products[0].pay_type.ToString();
-            i = 0;
-            for (; i < m_element.costPanel.childCount; i++)
+            var payType = m_curTab switch
             {
-                var obj = m_element.costPanel.GetChild(i).gameObject;
-                obj.SetActive(obj.name.Equals(costType));
-            }
+                ContentsMarketTabType.Tournament => PayType.PointTournament,
+                ContentsMarketTabType.Raid => PayType.PointRaid,
+                _ => PayType.GoldFree,
+            };
+
+            m_element.costType.SetCostType(payType);
+            m_element.myCurrency.text = products.Find(x => x.pay_type == payType).currencyMyCount.AmountKMBT(_isMBT: true);
         }
 
         PopupBuyComponent m_popupBuy;
@@ -280,7 +285,7 @@ namespace Rev9.ContentsMarket
             public TextMeshProUGUI txtTimer;
 
             public TextMeshProUGUI myCurrency;
-            public Transform costPanel;
+            public CostTypeHelper costType;
 
             //public PopupContentsMarket_Popup_Buy popupBuy;
 
@@ -294,7 +299,7 @@ namespace Rev9.ContentsMarket
                 //popupBuy = _transform.GetComponent<PopupContentsMarket_Popup_Buy>("Popup/Buy");
 
                 myCurrency = _transform.GetComponent<TextMeshProUGUI>("Panel/Asset/txt_amount");
-                costPanel = _transform.Find("Panel/Asset/Icon");
+                costType = _transform.GetComponent<CostTypeHelper>("Panel/Asset/Icon");
             }
 
             public Transform panel => scrollTab.transform.parent;

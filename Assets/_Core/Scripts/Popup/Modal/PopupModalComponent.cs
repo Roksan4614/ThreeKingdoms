@@ -16,6 +16,8 @@ public class PopupModalComponent : BasePopupComponent
     {
         m_element.btnConfirm.onClick.AddListener(() => { statusType = StatusType.Success; Close(); });
         m_element.btnCancel.onClick.AddListener(Close);
+
+        m_element.rt.gameObject.SetActive(false);
     }
 
     protected virtual void Update()
@@ -55,7 +57,7 @@ public class PopupModalComponent : BasePopupComponent
         //IngameLog.Add("CAMERA:POINTER:POS: " + CameraManager.posPointer + $"{Screen.width}/{Screen.height}");
 
         var rateW = 1080f / Screen.width;
-        var rateH =  1920f / Screen.height;
+        var rateH = 1920f / Screen.height;
 
         var hw = m_element.rt.rect.width * 0.5f;
         var anchPos = m_element.rt.anchoredPosition;

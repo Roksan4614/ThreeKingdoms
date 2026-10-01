@@ -1,3 +1,4 @@
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Character_Enemy : CharacterComponent
@@ -20,7 +21,7 @@ public class Character_Enemy : CharacterComponent
                 m_stat = TableManager.statHero.GetStatData(_key, _gradeType, _enchantLevel);
 
             if (m_stat == null)
-                m_stat = TableManager.statEnemy.GetStatData("Enemy", _gradeType, _enchantLevel);
+                m_stat = TableManager.statEnemy.GetStatData("NormalWarrior", _gradeType, _enchantLevel);
         }
         SetFaction(FactionType.Enemy);
 
@@ -67,7 +68,7 @@ public class Character_Enemy : CharacterComponent
             m_stat = TableManager.statEnemy.GetStatData(_key);
 
         if (m_stat == null)
-            m_stat = TableManager.statEnemy.GetStatData("Enemy");
+            m_stat = TableManager.statEnemy.GetStatData("LeaderWarrior");
 
         SetBuffStat(2);
         m_stat.health = m_stat.healthMax = m_stat.healthMax * 2;

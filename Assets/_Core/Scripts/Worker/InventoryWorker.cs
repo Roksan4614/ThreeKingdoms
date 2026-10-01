@@ -4,24 +4,19 @@ using System.Collections.Generic;
 using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
-public class InventoryWorker
+public class InventoryWorker : BaseWorker<InventoryWorker>
 {
-    static InventoryWorker m_instance;
-    public static InventoryWorker instance => m_instance ??= new();
-    public static void Release()
-        => m_instance = null;
-
     List<InventoryItemData> m_data;
     public static List<InventoryItemData> data => instance.m_data;
     const string c_key = "pp_inventory";
 
     List<ItemType> m_sortCategory = new()
         {
-			ItemType.None,
+            ItemType.None,
             ItemType.Currency,
-            ItemType.GachaTicket,
+            ItemType.TicketGacha,
             ItemType.SoulStone,
-			ItemType.Max,
+            ItemType.Max,
         };
     public IReadOnlyList<ItemType> sortCategory => m_sortCategory;
 
@@ -46,13 +41,13 @@ public class InventoryWorker
         PPWorker.Set(c_key, m_data);
     }
 
-    public long GetItemCount(string _key, string _value = null)
+    public long GetItemCount(ItemKey _key, string _value = null)
         => m_data.Find(x => x.key == _key && x.value == _value)?.count ?? 0;
 
     public long GetItemCount(ItemData _itemData)
         => m_data.Find(x => x.key == _itemData.key && x.value == _itemData.value)?.count ?? 0;
 
-    public static void AddItem(string _itemKey, int _count, bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default)
+    public static void AddItem(ItemKey _itemKey, int _count, bool _isUpdate = true, bool _isTween = true, bool _isRewardAction = true, Vector3 _actionPosition = default)
     {
         AddItem(_isUpdate, _isTween, _isRewardAction, _actionPosition, TableManager.item.GetItemData(_itemKey, _count));
     }
@@ -71,7 +66,7 @@ public class InventoryWorker
                         DataManager.userInfo.AddAsset(item.type, item.count, _isUpdate, _isTween);
                         break;
                     default:
-                        var d = data.Find(x => x.key == item.key && x.value == item.value);
+                        var d = data.Find(x => x.type == item.type && x.value == item.value);
 
                         if (d == null)
                         {
@@ -82,10 +77,10 @@ public class InventoryWorker
                             d.count += item.count;
 
                         //// 장수 영혼석인데 보유하지 않았다면
-                        //if (item.key == ItemDetailType.DedicatedSoulStone && DataManager.userInfo.HasHero(d.value) == false)
+                        //if (item.key == ItemDetailType.SoulStoneDedicated && DataManager.userInfo.HasHero(d.value) == false)
                         //{
                         //    var grade = TableManager.hero.GetGradeFromSoulCount(d.count);
-                        //    if (grade > GradeType.NONE)
+                        //    if (grade > GradeType.None)
                         //    {
                         //        DataManager.userInfo.AddHero(d.value, grade);
                         //        d.count -= TableManager.hero.GetNeedSoul(grade);
@@ -109,7 +104,7 @@ public class InventoryWorker
         int result = 0;
 
         // 영혼석
-        if (x.type == ItemDetailType.DedicatedSoulStone && y.type == ItemDetailType.DedicatedSoulStone)
+        if (x.type == ItemDetailType.SoulStoneDedicated && y.type == ItemDetailType.SoulStoneDedicated)
         {
             var heroX = DataManager.userInfo.GetHeroInfoData(x.value);
             var heroY = DataManager.userInfo.GetHeroInfoData(y.value);
@@ -124,7 +119,7 @@ public class InventoryWorker
             if (result != 0) return result;
         }
         // 클래스영혼
-        else if (x.type == ItemDetailType.ClassSoulStone && y.type == ItemDetailType.ClassSoulStone)
+        else if (x.type == ItemDetailType.SoulStoneClass && y.type == ItemDetailType.SoulStoneClass)
         {
             HeroClassType classTypeX = System.Enum.Parse<HeroClassType>(x.value);
             HeroClassType classTypeY = System.Enum.Parse<HeroClassType>(y.value);
@@ -149,7 +144,9 @@ public class InventoryWorker
         return isX ? -1 : 1;
     }
     private int CompareClass(HeroInfoData x, HeroInfoData y) => x.classType.CompareTo(y.classType);
+
 }
+
 
 [JsonObject(MemberSerialization.OptIn)]
 public class ItemData : TableItemData

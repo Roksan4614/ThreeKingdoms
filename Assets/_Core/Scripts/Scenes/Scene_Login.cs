@@ -1,8 +1,10 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Scene_Login : SceneBase
@@ -36,6 +38,11 @@ public class Scene_Login : SceneBase
             List<AddressableLabelType> labelIcon = new() { };
 
             long totalSize = await AddressableManager.instance.GetDownloadSizeAsync(true, AddressableLabelType.L_Start);
+
+            await AddressableManager.instance.DownloadAsync(false, new Progress<float>(_progress =>
+            {
+                IngameLog.Add("DownloadAsync: START: " + _progress);
+            }), AddressableLabelType.L_Start);
 
             IngameLog.AddBuild("TOTAL SIZE: START LABEL: " + Utils.FileSize(totalSize));
 
@@ -97,7 +104,7 @@ public class Scene_Login : SceneBase
     public async UniTask LoadLobbyScreenAsync()
     {
         IngameLog.AddBuild("LoadLobbyScreenAsync: Start");
-        var instantiateScreen = new List<LobbyScreenType>() { LobbyScreenType.Hero, LobbyScreenType.Castle, LobbyScreenType.Shop };
+        var instantiateScreen = new List<LobbyScreenType>() { LobbyScreenType.Hero, LobbyScreenType.Castle, LobbyScreenType.Shop, LobbyScreenType.Summon };
 
         for (int i = 0; i < instantiateScreen.Count; i++)
             await AddressableManager.instance.Load_LobbyScreenAsync(instantiateScreen[i]);

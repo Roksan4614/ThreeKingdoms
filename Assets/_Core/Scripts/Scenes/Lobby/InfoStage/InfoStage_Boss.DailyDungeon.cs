@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public partial class InfoStage_Boss

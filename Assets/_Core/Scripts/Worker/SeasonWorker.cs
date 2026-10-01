@@ -2,13 +2,8 @@ using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 
-public class SeasonWorker
+public class SeasonWorker : BaseWorker<SeasonWorker>
 {
-    static SeasonWorker m_instance;
-    public static SeasonWorker instance => m_instance ??= new();
-    public static void Release()
-        => m_instance = null;
-
     const string c_key = "pp_season_data";
     SeasonData m_data;
 

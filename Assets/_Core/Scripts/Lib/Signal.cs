@@ -38,26 +38,9 @@ public class SignalEntry
     public bool isInactive => isOwner == true && owner == null;
 }
 
-public class Signal
+public class Signal : BaseWorker<Signal>
 {
     #region INITIALIZE
-
-    private static Signal m_instance;
-
-    public static Signal instance
-    {
-        get
-        {
-            if (m_instance == null)
-                m_instance = new Signal();
-            return m_instance;
-        }
-    }
-
-    public static void Release()
-    {
-        m_instance = null;
-    }
 
     public class SignalObject<T0>
     {
@@ -316,7 +299,7 @@ public class Signal
     public SignalObject<ItemData> Inventory_UpdateCount = new();
     public SignalObject<TableShopProductData> Buy_Item = new();
 
-    public SignalObject<QuestType> Pass_UpdateQuest = new(); 
+    public SignalObject<QuestType> Pass_UpdateQuest = new();
     public SignalObject<QuestInfoData> Quest_UpdateStatus = new();
     public SignalObject<QuestCategoryType> Quest_UpdateComplete = new();
 

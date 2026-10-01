@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
-public class Table_Item : BaseTable<string, TableItemData>
+public class Table_Item : BaseTable<ItemKey, TableItemData>
 {
     public Table_Item(List<TableItemData> _table) : base(_table)
     {
         SetDictionary(x => x.key);
     }
 
-    public ItemData GetItemData(string _key, int _count = 0, string _value = null)
+    public ItemData GetItemData(ItemKey _key, int _count = 0, string _value = null)
     {
         var data = Get(_key);
 
         if (data.IsActive() == false)
+        {
+            IngameLog.Add($"GetItemData: FAILED: {_key}/{_value}");
             return null;
+        }
 
         ItemData result = new()
         {
@@ -30,13 +33,12 @@ public class Table_Item : BaseTable<string, TableItemData>
 }
 
 
-[JsonObject(MemberSerialization.OptIn)]
 public class TableItemData
 {
-    [JsonProperty] public string key;
-    [JsonProperty] public ItemDetailType type;
-    [JsonProperty] public string value;
-    [JsonProperty] public ItemType category;
+    public ItemKey key;
+    public ItemDetailType type;
+    public string value;
+    public ItemType category;
 
     public string name
         => TableManager.stringItem.GetItemName(this, true);
@@ -57,7 +59,7 @@ public class Table_String_Item : Table_String_Base
         string key = "";
         switch (_itemData.type)
         {
-            case ItemDetailType.ClassSoulStone:
+            case ItemDetailType.SoulStoneClass:
                 {
                     string lower = _itemData.value.ToLower();
                     for (var i = HeroClassType.NONE + 1; i < HeroClassType.MAX; i++)
@@ -68,19 +70,19 @@ public class Table_String_Item : Table_String_Base
                     }
                 }
                 break;
-            case ItemDetailType.DedicatedSoulStone:
+            case ItemDetailType.SoulStoneDedicated:
                 {
                     return TableManager.stringItem.GetStringFormat($"{(_isName ? "NAME" : "DESC")}_SOUL_STONE"
                         , TableManager.stringHero.GetName(_itemData.value));
                 }
+            case ItemDetailType.Gold:
+                key = $"{(_isName ? "NAME" : "DESC")}_{_itemData.key.ToString().ToUpper()}";
+                break;
             default:
-                key = $"{(_isName ? "NAME" : "DESC")}_{_itemData.key.ToUpper()}";
+                key = $"{(_isName ? "NAME" : "DESC")}_{_itemData.type.ToString().ToUpper()}";
                 break;
         }
 
         return key.IsActive() ? TableManager.stringItem.GetString(key) : "";
     }
-
-    public string GetItemName(string _key)
-        => GetString($"NAME_{_key.ToUpper()}");
 }

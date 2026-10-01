@@ -112,7 +112,7 @@ public class Data_StoryMode
         {
             nodeData = TableManager.storyNode.GetNode(nodeData.next_node_key);
 
-            var idx = m_historyData.FindIndex(x => x.key == nodeData.node_key);
+            var idx = m_historyData.FindIndex(x => x.key == nodeData.key);
             if (idx > -1)
                 m_historyData.RemoveAt(idx);
         }
@@ -125,7 +125,7 @@ public class Data_StoryMode
 
     public void TestSave(Table_StoryMode_Node.TableStoryModeNodeData _storyNode)
     {
-        SaveHistoryData(_storyNode.node_key, 1);
+        SaveHistoryData(_storyNode.key, 1);
         lastHistory = m_historyData.Find(x => x.key == curNodeKey);
 
         m_nextPlayOrderNumber = 0;
@@ -268,7 +268,7 @@ public class Data_StoryMode
 
         var nodeData = TableManager.storyNode.GetNode(_nodeKey);
 
-        string key = $"{nodeData.node_key.ToUpper()}_CHOICE_{historyData.choiceIdx}";
+        string key = $"{nodeData.key.ToUpper()}_CHOICE_{historyData.choiceIdx}";
         if (_isDesc)
             key += "_DESC";
 

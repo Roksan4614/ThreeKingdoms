@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Table_String : Table_String_Base

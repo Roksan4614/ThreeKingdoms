@@ -78,9 +78,9 @@ public class BottomComponent : Singleton<BottomComponent>, IValidatable
         => m_dbScreen[_itemType switch
         {
             ItemDetailType.TicketGachaNormal => LobbyScreenType.Summon,
-            ItemDetailType.DedicatedSoulStone => LobbyScreenType.Hero,
-            ItemDetailType.ClassSoulStone => LobbyScreenType.Hero,
-            ItemDetailType.PublicSoulStone => LobbyScreenType.Hero,
+            ItemDetailType.SoulStoneDedicated => LobbyScreenType.Hero,
+            ItemDetailType.SoulStoneClass => LobbyScreenType.Hero,
+            ItemDetailType.SoulStonePublic => LobbyScreenType.Hero,
             ItemDetailType.TimeStone => LobbyScreenType.Hero,
             _ => LobbyScreenType.Castle
         }].icon;

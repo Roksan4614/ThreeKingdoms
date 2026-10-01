@@ -6,19 +6,19 @@ namespace Rev9.Tournament
 {
     public class PopupTournament_RewardInfo_Slot : MonoBehaviour, IValidatable
     {
-        public void SetRewardData(TableTournamentRewardData _rewardData)
+        public void SetRewardData(TableTournamentTierData _rewardData)
         {
             m_element.txtTier.text = _rewardData.tierName;
             m_element.txtName.text = _rewardData.desc;
 
             var content = m_element.scroll.content;
-            for (int i = 1; i < _rewardData.rewards.Count; i++)
+            for (int i = 1; i < _rewardData.rewards.Length; i++)
                 Instantiate(content.GetChild(0), content);
 
-            for (int i = 0; i < _rewardData.rewards.Count; i++)
+            for (int i = 0; i < _rewardData.rewards.Length; i++)
                 content.GetChild(i).GetComponent<ItemComponent>().SetItemData(_rewardData.rewards[i]);
 
-            m_element.scroll.enabled = _rewardData.rewards.Count > 3;
+            m_element.scroll.enabled = _rewardData.rewards.Length > 3;
         }
 
         private void OnEnable()

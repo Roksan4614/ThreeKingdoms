@@ -8,11 +8,24 @@ public class Table_ShopProduct : BaseTable<string, TableShopProductData>
 {
     public Table_ShopProduct(List<TableShopProductData> _table) : base(_table)
     {
-        m_list = m_list.FindAll(x => x.is_active > 0).SortBy(x => x.display_order);
+        m_list = m_list.FindAll(x => x.isActive).SortBy(x => x.display_order);
     }
 
     public TableShopProductData GetProductData(string _key)
         => m_list.Find(x => x.key.Equals(_key));
+
+    public TableShopProductData GetBattlePass()
+    {
+        foreach (var p in m_list)
+        {
+            if (p.product_type == ShopProductType.Pass)
+                return p;
+        }
+        return null;
+    }
+
+    public List<TableShopProductData> GetProducts(ShopCategoryType _categoryType)
+        => m_list.FindAll(x => x.shop_category_type == _categoryType);
 }
 
 public class Table_ShopProductReward : BaseTable<string, TableShopProductRewardData>
@@ -31,7 +44,7 @@ public class Table_ShopProductReward : BaseTable<string, TableShopProductRewardD
 public class TableShopProductRewardData
 {
     public string shop_product_key;
-    public string reward_item_key;
+    public ItemKey reward_item_key;
     public int reward_count;
 
     ItemData m_itemData;
@@ -48,10 +61,10 @@ public class TableShopProductRewardData
 
 public class TableShopProductData : TableProductData
 {
-    [JsonProperty("key")]
     public string key;
     public ShopCategoryType shop_category_type;
     public ShopProductType product_type;
+
     public string store_product_key;
 
     ItemData[] m_rewards;
@@ -63,7 +76,7 @@ public class TableShopProductData : TableProductData
             {
                 if (product_type == ShopProductType.Package)
                 {
-                    m_rewards = TableManager.shopProductReward.GetProductRewards(reward_item_key).Select(x => x.itemData).ToArray();
+                    m_rewards = TableManager.shopProductReward.GetProductRewards(key).Select(x => x.itemData).ToArray();
                 }
                 else
                 {
@@ -77,35 +90,29 @@ public class TableShopProductData : TableProductData
             return m_rewards;
         }
     }
+
+    public string name
+        => TableManager.stringShop.GetString($"NAME_{key.ToUpper()}");
+    public string desc
+        => TableManager.stringShop.GetString($"DESC_{key.ToUpper()}");
 }
 
-[JsonObject(MemberSerialization.OptIn)]
 public class TableProductData
 {
-    [JsonProperty] public int idx;
-    //[JsonProperty] public string key;
-    [JsonProperty("reward_item_key")]
-    //[JsonProperty]
-    public string reward_item_key;
-    [JsonProperty] public int reward_count;
-    [JsonProperty] public int price;
-    [JsonProperty] public PayType pay_type;
-    [JsonProperty] public LimitResetType limit_reset_type;
+    public int idx;
+    public ItemKey? reward_item_key;
+    public int reward_count;
+    public int price;
+    public PayType pay_type;
+    public LimitResetType limit_reset_type;
 
-    [JsonProperty] public int buy_limit;
-    [JsonProperty] public int display_order;
-    [JsonProperty] public int is_active;
+    public int buy_limit;
+    public int display_order;
+    public int is_active;
 
-    [JsonProperty] public int countBuy;
+    public int countBuy;
 
-
-    PeriodType? period_type;
-    public PeriodType periodType
-    {
-        get => period_type ?? PeriodType.Daily;
-        set => period_type = value;
-    }
-
+    public bool isActive => is_active > 0;
     public bool hasLimit => buy_limit > 0;
     public int remainCount => buy_limit - countBuy;
     public string strRemainCount => $"{remainCount}/{buy_limit}";
@@ -115,8 +122,8 @@ public class TableProductData
     {
         get
         {
-            if (m_itemData == null)
-                m_itemData = TableManager.item.GetItemData(reward_item_key, reward_count);
+            if (m_itemData == null && reward_item_key != null)
+                m_itemData = TableManager.item.GetItemData(reward_item_key.Value, reward_count);
             return m_itemData;
         }
     }
@@ -128,10 +135,16 @@ public class TableProductData
             switch (pay_type)
             {
                 case PayType.Rice:
-                case PayType.FreeGold:
+                case PayType.GoldFree:
                     return DataManager.userInfo.GetAssetAmount(pay_type);
+                case PayType.GoldPaid:
+                    return InventoryWorker.instance.GetItemCount(ItemKey.GoldPaid);
+                case PayType.PointRaid:
+                    return InventoryWorker.instance.GetItemCount(ItemKey.PointRaid);
+                case PayType.PointTournament:
+                    return InventoryWorker.instance.GetItemCount(ItemKey.PointTournament);
                 default:
-                    return InventoryWorker.instance.GetItemCount(itemData);
+                    return 0;
             }
         }
     }

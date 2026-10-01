@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -63,7 +64,7 @@ namespace Rev9.Tournament
             for (int i = 0; i < heroes.Count; i++)
             {
                 var heroInfo = new HeroInfoData(heroes[i].key,
-                    GradeType.Normal + UnityEngine.Random.Range(0, (int)GradeType.MAX),
+                    GradeType.Normal + UnityEngine.Random.Range(0, (int)GradeType.Max),
                     _skin: heroes[i].key, _enchantLevel: UnityEngine.Random.Range(1, 17), _isMine: false);
 
                 if (heroes[i].classType == HeroClassType.Champion)

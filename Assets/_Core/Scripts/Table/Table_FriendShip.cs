@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Table_FriendShip : BaseTable<string, TableFriendShipOriginData>

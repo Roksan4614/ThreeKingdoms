@@ -5,12 +5,8 @@ using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class QuestWorker
+public class QuestWorker : BaseWorker<QuestWorker>
 {
-    static QuestWorker m_instance;
-    public static QuestWorker instance => m_instance ??= new();
-    public static void Release() => m_instance = null;
-
     QuestData m_data;
     const string c_key = "pp_quest_data";
 

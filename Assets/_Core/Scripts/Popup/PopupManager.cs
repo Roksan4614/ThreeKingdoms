@@ -235,12 +235,13 @@ public class PopupManager : MonoSingleton<PopupManager>, IValidatable
 
     public async UniTask<int> OpenTalkSelectAsync(params string[] _questions)
     {
+        var token = m_cts.Token;
         PopupModal_TalkSelectComponent.ModalTalkData talkData = new();
         talkData.options = _questions.ToArray();
 
         var popup = await OpenPopupAndWait<PopupModal_TalkSelectComponent>(PopupType.Modal_TalkSelect, talkData);
 
-        await UniTask.WaitForEndOfFrame(cancellationToken: m_cts.Token);
+        await UniTask.WaitForEndOfFrame(cancellationToken: token);
 
         return popup.selelctOption + 1;
     }

@@ -41,7 +41,7 @@ namespace Rev9.ContentsMarket
             Utils.SetActivePunch(m_elementContentMarket.panel, true);
 
             m_elementContentMarket.rewardItem.SetItemData(_productData.itemData);
-            string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + _productData.periodType.ToString().ToUpper());
+            string periodType = TableManager.stringTable.GetString("PERIOD_TYPE_" + _productData.limit_reset_type.ToString().ToUpper());
             m_elementContentMarket.txtLimitCount.text = $"({periodType} {_productData.strRemainCount})";
 
             OnButton_MinMax(true);

@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 
 public class Data_Stat_FriendShip
 {
@@ -27,12 +28,12 @@ public class Data_Stat_FriendShip
         for (int i = 0; i < m_dbFriendShip.Count; i++)
         {
             var db = m_dbFriendShip[i];
-            db.minGrade = GradeType.MAX;
+            db.minGrade = GradeType.Max;
             db.grade = db.splitHero.Select(x =>
             {
                 var heroInfoData = DataManager.userInfo.GetHeroInfoData(x);
 
-                var result = heroInfoData != null ? heroInfoData.grade : GradeType.NONE;
+                var result = heroInfoData != null ? heroInfoData.grade : GradeType.None;
                 if (db.minGrade > result)
                     db.minGrade = result;
 
@@ -40,7 +41,7 @@ public class Data_Stat_FriendShip
             }).ToList();
             m_dbFriendShip[i] = db;
 
-            var countNone = db.grade.Count(x => x == GradeType.NONE);
+            var countNone = db.grade.Count(x => x == GradeType.None);
             //영웅이 다 있다면
             if (countNone == 0)
             {

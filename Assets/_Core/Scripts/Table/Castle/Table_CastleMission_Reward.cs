@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 public class Table_CastleMission_Reward : BaseTable<string, TableCastleMissionRewardData>
@@ -9,9 +10,9 @@ public class Table_CastleMission_Reward : BaseTable<string, TableCastleMissionRe
 
     public Table_CastleMission_Reward(List<TableCastleMissionRewardData> _data) : base(_data)
     {
-        m_db = _data.GroupBy(x => x.key).ToDictionary(
+        m_db = _data.GroupBy(x => x.office_mission_key).ToDictionary(
             x => x.Key,
-            x => x.GroupBy(g => g.grade).ToDictionary(g => g.Key, g => g.ToList()));
+            x => x.GroupBy(g => g.mission_grade).ToDictionary(g => g.Key, g => g.ToList()));
     }
 
     public IReadOnlyList<TableCastleMissionRewardData> GetReward(Data_Castle_Mission.CastleMissionData _missionData)
@@ -44,13 +45,13 @@ public class Table_CastleMission_Reward : BaseTable<string, TableCastleMissionRe
 
 public class TableCastleMissionRewardData
 {
-    public string key;
-    public GradeType grade;
-    public int unlock_pct;
-    public string reward_key;
-    public int reward_min;
-    public int reward_max;
-    public float drop_rate;
+    public string office_mission_key;
+    public GradeType mission_grade;
+    public float unlock_rate;
+    public ItemKey reward_item_key;
+    public int reward_count_minimum;
+    public int reward_count_maximum;
+    public float reward_get_rate;
 
     string m_keyProper;
     public string keyProper
@@ -58,7 +59,7 @@ public class TableCastleMissionRewardData
         get
         {
             if (m_keyProper.IsActive() == false)
-                m_keyProper = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(key);
+                m_keyProper = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(office_mission_key);
             return m_keyProper;
         }
     }
@@ -69,8 +70,11 @@ public class TableCastleMissionRewardData
         get
         {
             if (m_itemData == null)
-                m_itemData = TableManager.item.GetItemData(reward_key, int.MaxValue);
+                m_itemData = TableManager.item.GetItemData(reward_item_key, int.MaxValue);
             return m_itemData;
         }
     }
+
+    int? m_unlockPercent = null;
+    public int unlockPercent => m_unlockPercent ??= (int)(unlock_rate * 100);
 }

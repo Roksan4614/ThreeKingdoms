@@ -35,9 +35,9 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
         Vector3 posFrom = _fromTarget == null ? CameraManager.posPointer : _fromTarget.position;
 
         if (_gold > 0)
-            Run(posFrom, "gold", _gold, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
+            Run(posFrom, ItemKey.GoldFree, _gold, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
         if (_rice > 0)
-            Run(posFrom, "rice", _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
+            Run(posFrom, ItemKey.Rice, _rice, _isPopup: true, _isStartPunch: _isPunch, _durationWait: UnityEngine.Random.Range(0.5f, 1f));
     }
 
     public void Run(Vector3 _posFrom, bool _isPopup = true, bool _isStartPunch = false, params ItemData[] _itemData)
@@ -74,13 +74,13 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
     /// <param name="_durationWait">기다리는 시간</param>
     /// <param name="_isTargetPunch">방향으로 흐터질거야</param>
     /// <param name="_posTargetPunch">흐터지는 위치</param>
-    public void Run(Vector3 _posFrom, string _itemKey, long _count = 1, bool _isStartPunch = true
+    public void Run(Vector3 _posFrom, ItemKey _itemKey, long _count = 1, bool _isStartPunch = true
         , bool _isFXStart = false, float _distMax = 0
         , bool _isField = false, bool _isScreen = false, bool _isPopup = false,
         float _durationWait = -1, bool _isTargetPunch = false, Vector3 _posTargetPunch = default)
         => RunAsync(_posFrom, _itemKey, _count, _isStartPunch, _isFXStart, _distMax, _isField, _isScreen, _isPopup, _durationWait, _isTargetPunch, _posTargetPunch).Forget();
 
-    public async UniTask RunAsync(Vector3 _posFrom, string _itemKey, long _count = 1, bool _isStartPunch = true
+    public async UniTask RunAsync(Vector3 _posFrom, ItemKey _itemKey, long _count = 1, bool _isStartPunch = true
         , bool _isFXStart = false, float _distMax = 0
         , bool _isField = false, bool _isScreen = false, bool _isPopup = false,
         float _durationWait = -1, bool _isTargetPunch = false, Vector3 _posTargetPunch = default)
@@ -252,7 +252,7 @@ public class RewardWorker : Singleton<RewardWorker>, IValidatable
     {
         public ItemData data;
 
-        public RewardItemData(string _key, long _count = 1)
+        public RewardItemData(ItemKey _key, long _count = 1)
         {
             data = TableManager.item.GetItemData(_key, (int)_count);
         }

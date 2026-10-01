@@ -3,22 +3,17 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 using static Data_Stat_Relic;
 
 namespace Rev9.Tournament
 {
-    public partial class TournamentWorker
+    public partial class TournamentWorker: BaseWorker<TournamentWorker>
     {
-        static TournamentWorker m_instance;
-        public static TournamentWorker instance => m_instance ??= new();
-        public static void Release()
+        public override void OnRelease()
         {
-            if (m_instance != null)
-            {
-                m_instance.m_ctsRefresh = m_instance.m_ctsRefresh.ReleaseCTS();
-                m_instance = null;
-            }
+            m_ctsRefresh.ReleaseCTS();
         }
 
         TournamentData m_data;

@@ -1,22 +1,21 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
-using UnityEngine;
+using ThreeKingdoms.Shared.Enums;
 
 public class Table_CastleMission_Grade : BaseTable<GradeType, TableCastleMissionGradeData>
 {
     public Table_CastleMission_Grade(List<TableCastleMissionGradeData> _data) : base(_data)
     {
-        SetDictionary(x => x.key);
+        SetDictionary(x => x.mission_grade);
     }
 }
 
 public class TableCastleMissionGradeData
 {
-    public GradeType key;
+    public GradeType mission_grade;
 
-    [JsonProperty] int duration_seconds;
-    [JsonProperty] int mission_xp;
-    [JsonProperty] int req_stat_value;
+    int duration_seconds;
+    int mission_xp;
+    int req_stat_value;
 
     public int durationSeconds => duration_seconds;
     public int missionXp => mission_xp;

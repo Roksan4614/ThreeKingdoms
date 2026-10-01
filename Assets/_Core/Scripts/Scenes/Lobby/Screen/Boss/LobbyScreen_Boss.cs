@@ -1,247 +1,246 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LobbyScreen_Boss : LobbyScreen_Base
 {
-    Dictionary<WeekdayType, LobbyScreen_Boss_Tab_Slot> m_dicTabSlot = new();
-    List<ItemComponent> m_rewards = new();
+	Dictionary<WeekdayType, LobbyScreen_Boss_Tab_Slot> m_dicTabSlot = new();
+	List<ItemComponent> m_rewards = new();
 
-    WeekdayType m_curWeekday = WeekdayType.None;
+	WeekdayType m_curWeekday = WeekdayType.None;
 
-    private void Start()
-    {
-        m_element.btnStart.onClick.AddListener(() => EnterAsync(false).Forget());
-        m_element.btnSweep.onClick.AddListener(() => EnterAsync(true).Forget());
-        m_element.btnAD.onClick.AddListener(() => ShowAdsAsync().Forget());
+	private void Start()
+	{
+		m_element.btnStart.onClick.AddListener(() => EnterAsync(false).Forget());
+		m_element.btnSweep.onClick.AddListener(() => EnterAsync(true).Forget());
+		m_element.btnAD.onClick.AddListener(() => ShowAdsAsync().Forget());
 
-        SetCountText();
-        SlotDayChange();
+		SetCountText();
+		SlotDayChange();
 
-        Signal.instance.DayChange.connect = SlotDayChange;
+		Signal.instance.DayChange.connect = SlotDayChange;
 
-        transform.SetText("Panel/Top/txt_title", TableManager.stringTable.GetString("SCREEN_DD_TITLE"));
-        transform.SetText("Panel/Front/Reward/txt_title", TableManager.stringTable.GetString("UI_VALID_REWARD_LIST"));
-        m_element.btnStart.text = TableManager.stringTable.GetString("UI_ENTER");
-        if (DataManager.option.language == LanguageType.English)
-            m_element.btnStart.TMPText.characterSpacing = 0;
-    }
+		transform.SetText("Panel/Top/txt_title", TableManager.stringTable.GetString("SCREEN_DD_TITLE"));
+		transform.SetText("Panel/Front/Reward/txt_title", TableManager.stringTable.GetString("UI_VALID_REWARD_LIST"));
+		m_element.btnStart.text = TableManager.stringTable.GetString("UI_ENTER");
+		if (DataManager.option.language == LanguageType.English)
+			m_element.btnStart.TMPText.characterSpacing = 0;
+	}
 
-    protected override bool IsEscapeloseScreen()
-    {
-        return PopupManager.instance.IsOpenPopup(PopupType.DailyDungeonResult) == false;
-    }
+	protected override bool IsEscapeloseScreen()
+	{
+		return PopupManager.instance.IsOpenPopup(PopupType.DailyDungeonResult) == false;
+	}
 
-    bool m_isRunningEnter = false;
-    async UniTask EnterAsync(bool _isSweep)
-    {
-        if (m_isRunningEnter == true)
-            return;
+	bool m_isRunningEnter = false;
+	async UniTask EnterAsync(bool _isSweep)
+	{
+		if (m_isRunningEnter == true)
+			return;
 
-        m_isRunningEnter = true;
+		m_isRunningEnter = true;
 
-        if (DataManager.dailyDungeon.data.count <= 0)
-        {
-            var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_AD_SHOW");
+		if (DataManager.dailyDungeon.data.count <= 0)
+		{
+			var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_AD_SHOW");
 
-            if (result == StatusType.Success && await ShowAdsAsync() == false)
-                PopupManager.instance.AlertShow_Table("INVALID_ENTER");
-        }
-        else if (_isSweep)
-            await DataManager.dailyDungeon.SweepAsync(m_curWeekday, SetCountText);
-        else
-            await DataManager.dailyDungeon.EnterAsync(m_curWeekday);
+			if (result == StatusType.Success && await ShowAdsAsync() == false)
+				PopupManager.instance.AlertShow_Table("INVALID_ENTER");
+		}
+		else if (_isSweep)
+			await DataManager.dailyDungeon.SweepAsync(m_curWeekday, SetCountText);
+		else
+			await DataManager.dailyDungeon.EnterAsync(m_curWeekday);
 
-        m_isRunningEnter = false;
-    }
+		m_isRunningEnter = false;
+	}
 
-    async UniTask<bool> ShowAdsAsync()
-    {
-        if (await DataManager.dailyDungeon.ShowAdsAsync() == true)
-        {
-            SetCountText();
-            return true;
-        }
+	async UniTask<bool> ShowAdsAsync()
+	{
+		if (await DataManager.dailyDungeon.ShowAdsAsync() == true)
+		{
+			SetCountText();
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    void SetCountText()
-    {
-        m_element.txtCount.text = TableManager.stringTable.GetStringFormat("UI_ENTER_LIMIT_DAILY", DataManager.dailyDungeon.data.count.ToString());
-        m_element.btnAD.text = $"{DataManager.dailyDungeon.data.adCount}/3";
-    }
+	void SetCountText()
+	{
+		m_element.txtCount.text = TableManager.stringTable.GetStringFormat("UI_ENTER_LIMIT_DAILY", DataManager.dailyDungeon.data.count.ToString());
+		m_element.btnAD.text = $"{DataManager.dailyDungeon.data.adCount}/3";
+	}
 
-    public override void Open(LobbyScreenType _prevScreen)
-    {
-        base.Open(_prevScreen);
+	public override void Open(LobbyScreenType _prevScreen)
+	{
+		base.Open(_prevScreen);
 
-        if (m_curWeekday == WeekdayType.None)
-            m_curWeekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
-    }
+		if (m_curWeekday == WeekdayType.None)
+			m_curWeekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
+	}
 
-    public override void Close(bool _isTween = true)
-    {
-        base.Close(_isTween);
-    }
+	public override void Close(bool _isTween = true)
+	{
+		base.Close(_isTween);
+	}
 
-    void OnButton_Tab(TableDailyDungeonBossData _bossData, bool _isForce = false)
-    {
-        if (m_curWeekday == _bossData.weekday && _isForce == false)
-            return;
+	void OnButton_Tab(TableDailyDungeonBossData _bossData, bool _isForce = false)
+	{
+		if (m_curWeekday == _bossData.weekday && _isForce == false)
+			return;
 
-        if (m_dicTabSlot.ContainsKey(m_curWeekday))
-            m_dicTabSlot[m_curWeekday].SetSelect(false);
+		if (m_dicTabSlot.ContainsKey(m_curWeekday))
+			m_dicTabSlot[m_curWeekday].SetSelect(false);
 
-        m_curWeekday = _bossData.weekday;
-        m_dicTabSlot[m_curWeekday].SetSelect(true);
+		m_curWeekday = _bossData.weekday;
+		m_dicTabSlot[m_curWeekday].SetSelect(true);
 
-        SetDungeonInfo(_bossData);
+		SetDungeonInfo(_bossData);
 
-        var gradeType = DataManager.dailyDungeon.GetRecordGradeType(m_curWeekday)?.gradeType ?? GradeType.NONE;
-        if (gradeType > GradeType.Normal != m_element.btnSweep.gameObject.activeSelf)
-        {
-            m_element.btnSweep.gameObject.SetActive(gradeType > GradeType.Normal);
-            if (gradeType > GradeType.Normal)
-                m_element.btnSweep.text = $"[{TableManager.stringTable.GetGradeType(gradeType, true)}]" + TableManager.stringTable.GetString("UI_SWEEP");
-        }
+		var gradeType = DataManager.dailyDungeon.GetRecordGradeType(m_curWeekday)?.gradeType ?? GradeType.None;
+		if (gradeType > GradeType.Normal != m_element.btnSweep.gameObject.activeSelf)
+		{
+			m_element.btnSweep.gameObject.SetActive(gradeType > GradeType.Normal);
+			if (gradeType > GradeType.Normal)
+				m_element.btnSweep.text = $"[{TableManager.stringTable.GetGradeType(gradeType, true)}]" + TableManager.stringTable.GetString("UI_SWEEP");
+		}
 
-        // 탭 현재 위치로
-        int idxWeekday = (int)m_curWeekday;
-        var layout = m_element.scrollTab.content.GetComponent<HorizontalLayoutGroup>();
-        var widthSlot = ((RectTransform)m_element.scrollTab.content.GetChild(0)).rect.width;
-        var posX = m_element.scrollTab.viewport.rect.width * 0.5f - widthSlot * idxWeekday - layout.spacing * idxWeekday + widthSlot * .5f;
-        m_element.scrollTab.content.SetAnchoredPositionX(Mathf.Min(0, posX));
-        m_element.scrollTab.velocity = Vector2.zero;
-    }
+		// 탭 현재 위치로
+		int idxWeekday = (int)m_curWeekday;
+		var layout = m_element.scrollTab.content.GetComponent<HorizontalLayoutGroup>();
+		var widthSlot = ((RectTransform)m_element.scrollTab.content.GetChild(0)).rect.width;
+		var posX = m_element.scrollTab.viewport.rect.width * 0.5f - widthSlot * idxWeekday - layout.spacing * idxWeekday + widthSlot * .5f;
+		m_element.scrollTab.content.SetAnchoredPositionX(Mathf.Min(0, posX));
+		m_element.scrollTab.velocity = Vector2.zero;
+	}
 
-    void SetDungeonInfo(TableDailyDungeonBossData _bossData)
-    {
-        m_element.txtDesc.text = _bossData.desc;
-        m_element.txtName.text = _bossData.name;
-        m_element.txtClass.text = _bossData.className;
+	void SetDungeonInfo(TableDailyDungeonBossData _bossData)
+	{
+		m_element.txtDesc.text = _bossData.desc;
+		m_element.txtName.text = _bossData.name;
+		m_element.txtClass.text = _bossData.className;
 
-        var recordData = DataManager.dailyDungeon.GetRecordGradeType(_bossData.weekday);
+		var recordData = DataManager.dailyDungeon.GetRecordGradeType(_bossData.weekday);
 
-        bool isHasRecord = recordData == null ? false : recordData.gradeType > GradeType.Normal || recordData.percent > 0;
-        m_element.txtRecord.text = $"{TableManager.stringTable.GetString("UI_MOST_RECORD")}: [{(isHasRecord ? TableManager.stringTable.GetGradeType(recordData.gradeType) : TableManager.stringTable.GetString("UI_NONE"))}]";
-        if (isHasRecord)
-            m_element.txtRecord.text += $"<size=90%><color=#555555> ({(recordData.percent * 100):0.#0}%)</color></size>";
-        SetRewardData(_bossData);
+		bool isHasRecord = recordData == null ? false : recordData.gradeType > GradeType.Normal || recordData.percent > 0;
+		m_element.txtRecord.text = $"{TableManager.stringTable.GetString("UI_MOST_RECORD")}: [{(isHasRecord ? TableManager.stringTable.GetGradeType(recordData.gradeType) : TableManager.stringTable.GetString("UI_NONE"))}]";
+		if (isHasRecord)
+			m_element.txtRecord.text += $"<size=90%><color=#555555> ({(recordData.percent * 100):0.#0}%)</color></size>";
+		SetRewardData(_bossData, recordData?.gradeType?? GradeType.Normal);
 
-        // BG
-        for (int i = 0; i < m_element.parentBG.childCount; i++)
-            m_element.parentBG.GetChild(i).gameObject.SetActive(i == (int)_bossData.weekday - 1);
+		// BG
+		for (int i = 0; i < m_element.parentBG.childCount; i++)
+			m_element.parentBG.GetChild(i).gameObject.SetActive(i == (int)_bossData.weekday - 1);
 
-    }
+	}
 
-    void SetRewardData(TableDailyDungeonBossData _bossData)
-    {
-        var rewardData = TableManager.dailyDungeonGrade.list.SortByDescending(x => (int)x.dungeon_boss_grade)[0];
+	void SetRewardData(TableDailyDungeonBossData _bossData, GradeType _recordGrade)
+	{
+		List<ItemData> tableItem = TableManager.dailyDungeonGrade.GetReward(_bossData.key, _recordGrade, 1);
 
-        List<ItemData> tableItem = rewardData.GetReward(_bossData.dungeon_boss_class, false);
+		var parent = m_element.reward;
+		int i = 0;
+		for (; i < tableItem.Count; i++)
+		{
+			var slot = (i == parent.childCount ? Instantiate(parent.GetChild(0), parent) : parent.GetChild(i))
+				.GetComponent<ItemComponent>();
 
-        var parent = m_element.reward;
-        int i = 0;
-        for (; i < tableItem.Count; i++)
-        {
-            var slot = (i == parent.childCount ? Instantiate(parent.GetChild(0), parent) : parent.GetChild(i))
-                .GetComponent<ItemComponent>();
+			slot.SetItemData(tableItem[i]);
+		}
 
-            slot.SetItemData(tableItem[i]);
-        }
+		for (; i < parent.childCount; i++)
+			parent.GetChild(i).gameObject.SetActive(false);
+	}
 
-        for (; i < parent.childCount; i++)
-            parent.GetChild(i).gameObject.SetActive(false);
-    }
+	void SlotDayChange()
+	{
+		var weekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
+		if (weekday == WeekdayType.Sunday)
+			weekday = WeekdayType.Monday;
 
-    void SlotDayChange()
-    {
-        var weekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
-        if (weekday == WeekdayType.Sunday)
-            weekday = WeekdayType.Monday;
+		SetTab(weekday);
+		OnButton_Tab(TableManager.dailyDungeonBoss.Get(weekday), true);
+	}
 
-        SetTab(weekday);
-        OnButton_Tab(TableManager.dailyDungeonBoss.Get(weekday), true);
-    }
+	void SetTab(WeekdayType _weekday)
+	{
+		if (gameObject.activeInHierarchy == false)
+			return;
 
-    void SetTab(WeekdayType _weekday)
-    {
-        if (gameObject.activeInHierarchy == false)
-            return;
+		var weekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
+		var dbDungeon = TableManager.dailyDungeonBoss.list.SortBy(x => (int)x.weekday);
+		var content = m_element.scrollTab.content;
+		for (int i = 0; i < dbDungeon.Count; i++)
+		{
+			var slot = (i == content.childCount ? Instantiate(content.GetChild(0), content) : content.GetChild(i))
+				.GetComponent<LobbyScreen_Boss_Tab_Slot>();
 
-        var weekday = (WeekdayType)Utils.GetUTC().DayOfWeek;
-        var dbDungeon = TableManager.dailyDungeonBoss.list.SortBy(x => (int)x.weekday);
-        var content = m_element.scrollTab.content;
-        for (int i = 0; i < dbDungeon.Count; i++)
-        {
-            var slot = (i == content.childCount ? Instantiate(content.GetChild(0), content) : content.GetChild(i))
-                .GetComponent<LobbyScreen_Boss_Tab_Slot>();
+			slot.SetDungeonData(weekday, dbDungeon[i], _bossData => OnButton_Tab(_bossData));
 
-            slot.SetDungeonData(weekday, dbDungeon[i], _bossData => OnButton_Tab(_bossData));
+			m_dicTabSlot.Add(dbDungeon[i].weekday, slot);
+		}
+	}
 
-            m_dicTabSlot.Add(dbDungeon[i].weekday, slot);
-        }
-    }
-
-    public override void OnManualValidate()
-    {
-        base.OnManualValidate();
-        m_element.Initialize(transform);
-    }
+	public override void OnManualValidate()
+	{
+		base.OnManualValidate();
+		m_element.Initialize(transform);
+	}
 
 
-    [SerializeField, HideInInspector]
-    ElementData m_element;
+	[SerializeField, HideInInspector]
+	ElementData m_element;
 
-    [System.Serializable]
-    struct ElementData
-    {
-        public ScrollRect scrollTab;
+	[System.Serializable]
+	struct ElementData
+	{
+		public ScrollRect scrollTab;
 
-        public TextMeshProUGUI txtDesc;
-        public TextMeshProUGUI txtName;
-        public TextMeshProUGUI txtClass;
-        public TextMeshProUGUI txtRecord;
-        public TextMeshProUGUI txtCount;
+		public TextMeshProUGUI txtDesc;
+		public TextMeshProUGUI txtName;
+		public TextMeshProUGUI txtClass;
+		public TextMeshProUGUI txtRecord;
+		public TextMeshProUGUI txtCount;
 
-        public Transform reward;
+		public Transform reward;
 
-        public ButtonHelper btnStart;
-        public ButtonHelper btnSweep;
-        public ButtonHelper btnAD;
+		public ButtonHelper btnStart;
+		public ButtonHelper btnSweep;
+		public ButtonHelper btnAD;
 
-        public GameObject[] objBG;
+		public GameObject[] objBG;
 
-        public void Initialize(Transform _transform)
-        {
-            scrollTab = _transform.GetComponent<ScrollRect>("Panel/Front/Tab");
+		public void Initialize(Transform _transform)
+		{
+			scrollTab = _transform.GetComponent<ScrollRect>("Panel/Front/Tab");
 
-            var info = _transform.Find("Panel/Front/Info");
-            txtDesc = info.GetComponent<TextMeshProUGUI>("txt_desc");
-            txtName = info.GetComponent<TextMeshProUGUI>("txt_name");
-            txtClass = info.GetComponent<TextMeshProUGUI>("txt_class");
-            txtRecord = info.GetComponent<TextMeshProUGUI>("txt_record");
+			var info = _transform.Find("Panel/Front/Info");
+			txtDesc = info.GetComponent<TextMeshProUGUI>("txt_desc");
+			txtName = info.GetComponent<TextMeshProUGUI>("txt_name");
+			txtClass = info.GetComponent<TextMeshProUGUI>("txt_class");
+			txtRecord = info.GetComponent<TextMeshProUGUI>("txt_record");
 
-            reward = _transform.Find("Panel/Front/Reward/Panel");
+			reward = _transform.Find("Panel/Front/Reward/Panel");
 
-            btnStart = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_start");
-            btnSweep = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_sweep");
-            btnAD = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_ad");
+			btnStart = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_start");
+			btnSweep = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_sweep");
+			btnAD = _transform.GetComponent<ButtonHelper>("Panel/Front/Button/btn_ad");
 
-            txtCount = _transform.GetComponent<TextMeshProUGUI>("Panel/Front/Button/txt_count");
+			txtCount = _transform.GetComponent<TextMeshProUGUI>("Panel/Front/Button/txt_count");
 
-            var bg = _transform.Find("Panel/BG");
-            List<GameObject> lstBG = new();
-            for (int i = 0; i < bg.childCount; i++)
-                lstBG.Add(bg.GetChild(i).gameObject);
-            objBG = lstBG.ToArray();
-        }
+			var bg = _transform.Find("Panel/BG");
+			List<GameObject> lstBG = new();
+			for (int i = 0; i < bg.childCount; i++)
+				lstBG.Add(bg.GetChild(i).gameObject);
+			objBG = lstBG.ToArray();
+		}
 
-        public Transform parentBG => objBG[0].transform.parent;
-    }
+		public Transform parentBG => objBG[0].transform.parent;
+	}
 }
 
 //CameraManager.instance.SetAddPosY(-2, 20);

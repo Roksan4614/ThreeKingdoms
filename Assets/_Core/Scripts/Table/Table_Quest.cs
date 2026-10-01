@@ -60,33 +60,12 @@ public enum QuestCategoryType
     MAX
 }
 
-//public enum QuestType
-//{
-//    NONE = -1,
-
-//    login,                        // 로그인
-//    enemy_kill,                   // 적 처치하기
-//    tournament_play,              // 토너먼트 참여하기
-//    raid_play,                    // 레이드 참여하기
-//    gacha_proceed,                // 연회 진행하기
-//    rice_claim,                   // 군량 수확하기
-//    gold_claim,                   // 금화 수확하기
-//    office_dispatch,              // 관아 파견하기
-//    daily_dungeon_play,           // 요일 던전 플레이하기
-//    stage_boss_kill,              // 스테이지 보스 처치하기
-//    ads_watch,                    // 광고 시청하기
-//    item_buy,                     // 상품 구매하기
-//    item_use,                     // 아이템 사용하기
-
-//    MAX
-//}
-
 public class TableQuestData
 {
     public QuestType key;
     public QuestCategoryType type;
     public int target_value;
-    public string reward_item_key;
+    public ItemKey reward_item_key;
     public int reward_count;
 
     ItemData m_itemData;

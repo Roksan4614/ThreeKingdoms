@@ -1,12 +1,7 @@
 using UnityEngine;
 
-public class AuthWorker
+public class AuthWorker : BaseWorker<AuthWorker>
 {
-    static AuthWorker m_instance;
-    public static AuthWorker instance => m_instance ??= new();
-
-    public static void Release() => m_instance = null;
-
     AuthData m_data = new();
     public static AuthData data => instance.m_data;
 
@@ -18,7 +13,7 @@ public class AuthWorker
 
     public enum AuthType
     {
-        NONE =-1,
+        NONE = -1,
         Google,
         Guest,
         Max

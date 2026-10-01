@@ -106,12 +106,17 @@ namespace Rev9.Pass
             {
                 PopupManager.instance.AlertShow_Table("PASS_CAN_AFTER_PAID");
 
-                var result = await PopupManager.instance.OpenModalAsync_Table("MODAL_BUY");
+                var result = await PopupManager.instance.OpenModalAsync(
+                    TableManager.alertString.GetStringFormat("MODAL_BUY_ITEM",
+                    KoreanHelper.AppendJosa(TableManager.item.GetItemData(ItemKey.PassBattle).name, KoreanHelper.JosaType.EulLeul, "[{0}]")));
 
                 if (result == StatusType.Success)
                 {
-                    TableShopProductData productData = TableManager.shopProduct.GetProductData("battle_pass_season_1");
+                    TableShopProductData productData = TableManager.shopProduct.GetBattlePass();
                     var popup = await PopupManager.instance.OpenPopupAsync<PopupBuyComponent>(PopupType.Buy, productData);
+
+                    await UniTask.WaitUntil(() => popup.statusType != StatusType.Wait);
+
                     popup.BaseClose();
 
                     // 구매를 했다면

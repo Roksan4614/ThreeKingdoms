@@ -121,21 +121,24 @@ public enum HeroPositionType
 {
     NONE = -1,
 
-    prime_minister,                                // 승상
-    grand_general,                                 // 대장군
-    grand_strategist,                              // 군사
-    director_of_the_secretariat,                   // 상서령
-    palace_assistant_inspector,                    // 어사중승
-    general_of_the_vanguard,                       // 전장군
-    general_of_the_left,                           // 좌장군
-    general_of_the_right,                          // 우장군
-    general_of_the_rear,                           // 후장군
-    suppresses_bandits,                            // 탕구장군
-    vanquishes_rebels,                             // 파적장군
-    the_standard,                                  // 아문장군
-    chief_military_adviser,                        // 군사중랑장
-    dragon_fighter,                                // 용의 전사
-
+    prime_minister,                            // 승상
+    grand_general,                             // 대장군
+    grand_strategist,                          // 군사
+    director_of_the_secretariat,               // 상서령
+    palace_assistant_inspector,                // 어사중승
+    general_of_the_vanguard,                   // 전장군
+    general_of_the_left,                       // 좌장군
+    general_of_the_mid,                        // 진군장군
+    general_of_the_right,                      // 우장군
+    general_of_the_rear,                       // 후장군
+    military_sima,                             // 군사마
+    suppresses_bandits,                        // 탕구장군
+    vanquishes_rebels,                         // 파적장군
+    the_standard,                              // 아문장군
+    general_of_the_cavalry,                    // 편장군
+    chief_military_adviser,                    // 군사중랑장
+    dragon_fighter,                            // 용의 전사
+    
     MAX
 }
 

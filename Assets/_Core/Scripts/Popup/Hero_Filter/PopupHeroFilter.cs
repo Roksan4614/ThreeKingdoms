@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -101,13 +102,13 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
             var panel = content.Find("Grade/Content");
             panel.parent.GetComponent<TextMeshProUGUI>("txt_title").text =
                 TableManager.stringTable.GetString("UI_FILTER_GRADE");
-            int max = (int)GradeType.MAX;
+            int max = (int)GradeType.Max;
             int idx = 0;
             for (int i = -1; i < max; i++, idx++)
             {
                 var type = (GradeType)i;
                 var btn = (idx == panel.childCount ? Instantiate(panel.GetChild(0), panel) : panel.GetChild(idx)).GetComponent<ButtonHelper>();
-                btn.text = type == GradeType.NONE ? m_stringAll : TableManager.stringTable.GetString($"GRADE_{type.ToString().ToUpper()}");
+                btn.text = type == GradeType.None ? m_stringAll : TableManager.stringTable.GetString($"GRADE_{type.ToString().ToUpper()}");
                 btn.onClick.AddListener(() => OnButton_Grade(type));
 
                 m_dicGrade.Add(type, btn);
@@ -219,7 +220,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
 
     void OnButton_Grade(GradeType _grade)
     {
-        if (_grade == GradeType.NONE)
+        if (_grade == GradeType.None)
         {
             bool isAll = isAll_Grade == false;
 
@@ -272,7 +273,7 @@ public class PopupHeroFilter : BasePopupComponent, IValidatable
 
     bool isAll_Region => m_filterRegion.Contains(RegionType.NONE);
     bool isAll_Class => m_filterClass.Contains(HeroClassType.NONE);
-    bool isAll_Grade => m_filterGrade.Contains(GradeType.NONE);
+    bool isAll_Grade => m_filterGrade.Contains(GradeType.None);
 
     #region VALIDATE
     public override void OnManualValidate() => m_element.Initialize(transform);

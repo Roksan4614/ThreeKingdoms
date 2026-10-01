@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -188,7 +189,7 @@ public class PopupLobbyBossRaid_PopupRanking : MonoBehaviour, IValidatable
                     var key = dbHero[i].key;
                     userInfo.batchHeroes.Add(new HeroInfoData(
                         key,
-                        _grade: Random.Range(0, (int)GradeType.MAX) + GradeType.NONE + 1,
+                        _grade: Random.Range(0, (int)GradeType.Max) + GradeType.None + 1,
                         _heroPositionType: dbPosition[i],
                         _skin: key,
                         _enchantLevel: Random.Range(10, 17),

@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -79,7 +80,7 @@ public class PopupHeroInfo_Popup_Upgrade : MonoBehaviour, IValidatable
             m_element.txtTitle.text = m_heroInfoData.gradeName;
 
             m_element.btnArrowLeft.gameObject.SetActive(m_heroInfoData.grade > m_prevGrade);
-            m_element.btnArrowRight.gameObject.SetActive(m_heroInfoData.grade < GradeType.MAX - 1);
+            m_element.btnArrowRight.gameObject.SetActive(m_heroInfoData.grade < GradeType.Max - 1);
         }
         else
         {

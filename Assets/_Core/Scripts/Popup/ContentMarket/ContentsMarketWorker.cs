@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ThreeKingdoms.Shared.Enums;
@@ -7,26 +8,10 @@ using UnityEngine;
 
 namespace Rev9.ContentsMarket
 {
-    public class ContentsMarketWorker
+    public class ContentsMarketWorker : BaseWorker<ContentsMarketWorker>
     {
-        static ContentsMarketWorker m_instance;
-        public static ContentsMarketWorker instance
-        {
-            get
-            {
-                if (m_instance == null)
-                    m_instance = new();
-                return m_instance;
-            }
-        }
 
         Dictionary<ContentsMarketTabType, List<TableProductData>> m_db;
-
-        public static void Release()
-        {
-            if (m_instance != null)
-                m_instance = null;
-        }
 
         public async UniTask InitializeAsync()
         {
@@ -41,7 +26,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        reward_item_key = "rice",
+                        reward_item_key = ItemKey.Rice,
                         price = 300,
                         reward_count = 100,
                         buy_limit = 5
@@ -49,7 +34,7 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        reward_item_key = "free_gold",
+                        reward_item_key = ItemKey.GoldFree,
                         price = 600,
                         reward_count = 100,
                         buy_limit = 5
@@ -57,8 +42,8 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        reward_item_key = "rice",
-                        periodType = PeriodType.Week,
+                        reward_item_key = ItemKey.Rice,
+                        limit_reset_type = LimitResetType.Weekly,
                         price = 7000,
                         reward_count = 1000,
                         buy_limit = 3
@@ -66,8 +51,8 @@ namespace Rev9.ContentsMarket
 
                     lstData.Add(new()
                     {
-                        reward_item_key = "free_gold",
-                        periodType = PeriodType.Week,
+                        reward_item_key = ItemKey.GoldFree,
+                        limit_reset_type = LimitResetType.Weekly,
                         price = 7000,
                         reward_count = 1000,
                         buy_limit = 3
@@ -77,14 +62,14 @@ namespace Rev9.ContentsMarket
                     {
                         lstData.Add(new()
                         {
-                            reward_item_key = "time_stone",
+                            reward_item_key = ItemKey.TimeStone,
                             price = 2000,
                             reward_count = 10,
                             buy_limit = 3
                         });
                         lstData.Add(new()
                         {
-                            reward_item_key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
+                            reward_item_key = Enum.Parse<ItemKey>($"SoulStoneDedicated{CharacterName.LiuBei}"),
                             price = 2000,
                             reward_count = 10,
                             buy_limit = 3
@@ -94,8 +79,8 @@ namespace Rev9.ContentsMarket
                     {
                         lstData.Add(new()
                         {
-                            reward_item_key = "tournament_point",
-                            periodType = PeriodType.Week,
+                            reward_item_key = ItemKey.PointTournament,
+                            limit_reset_type = LimitResetType.Weekly,
                             price = 2500,
                             reward_count = 10,
                             buy_limit = 3
@@ -103,8 +88,8 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            reward_item_key = "public_soul_stone",
-                            periodType = PeriodType.Week,
+                            reward_item_key = ItemKey.SoulStonePublic,
+                            limit_reset_type = LimitResetType.Weekly,
                             price = 2500,
                             reward_count = 10,
                             buy_limit = 3
@@ -115,16 +100,16 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            reward_item_key = "public_soul_stone",
-                            periodType = PeriodType.Week,
+                            reward_item_key = ItemKey.SoulStonePublic,
+                            limit_reset_type = LimitResetType.Weekly,
                             price = 3500,
                             reward_count = 10,
                             buy_limit = 3
                         });
                         lstData.Add(new()
                         {
-                            reward_item_key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.LiuBei.ToString())}",
-                            periodType = PeriodType.Season,
+                            reward_item_key = Enum.Parse<ItemKey>($"SoulStoneDedicated{CharacterName.LiuBei}"),
+                            limit_reset_type = LimitResetType.Season,
                             price = 4500,
                             reward_count = 5,
                             buy_limit = 3
@@ -132,16 +117,16 @@ namespace Rev9.ContentsMarket
 
                         lstData.Add(new()
                         {
-                            reward_item_key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.CaoCao.ToString())}",
-                            periodType = PeriodType.Season,
+                            reward_item_key = Enum.Parse<ItemKey>($"SoulStoneDedicated{CharacterName.CaoCao}"),
+                            limit_reset_type = LimitResetType.Season,
                             price = 4500,
                             reward_count = 5,
                             buy_limit = 3
                         });
                         lstData.Add(new()
                         {
-                            reward_item_key = $"dedicated_soul_stone_{Utils.ToSnakeCase(CharacterName.SunQuan.ToString())}",
-                            periodType = PeriodType.Season,
+                            reward_item_key = Enum.Parse<ItemKey>($"SoulStoneDedicated{CharacterName.SunQuan}"),
+                            limit_reset_type = LimitResetType.Season,
                             price = 4500,
                             reward_count = 5,
                             buy_limit = 3
@@ -152,7 +137,7 @@ namespace Rev9.ContentsMarket
                     {
                         var d = lstData[j];
                         d.idx = j;
-                        d.pay_type = i == ContentsMarketTabType.Tournament ? PayType.TournamentPoint : i == ContentsMarketTabType.Raid ? PayType.RaidPoint : PayType.FreeGold;
+                        d.pay_type = i == ContentsMarketTabType.Tournament ? PayType.PointTournament : i == ContentsMarketTabType.Raid ? PayType.PointRaid : PayType.GoldFree;
                         lstData[j] = d;
                     }
 
@@ -187,12 +172,5 @@ namespace Rev9.ContentsMarket
 
             return true;
         }
-    }
-
-    public enum PeriodType
-    {
-        Daily,
-        Week,
-        Season,
     }
 }

@@ -1,9 +1,46 @@
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using ThreeKingdoms.Shared.Enums;
 using UnityEngine;
 
 namespace Rev9.Pass
 {
+    public class Table_Pass : BaseTable<string, TablePassData>
+    {
+        public Table_Pass(List<TablePassData> _table) : base(_table)
+        {
+        }
+    }
+
+    public class TablePassData
+    {
+        public string key;
+        public string shop_product_key;
+
+        [JsonProperty] string season_start_at;
+        [JsonProperty] string season_end_at;
+        [JsonProperty] int is_active;
+
+        DateTime? m_dtStart;
+        DateTime? m_dtEnd;
+
+        DateTime dtStart => m_dtStart ??= DateTime.ParseExact(
+            season_start_at,
+            "yyyy-M-d",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+
+        DateTime dtEnd => m_dtEnd ??= DateTime.ParseExact(
+            season_end_at,
+            "yyyy-M-d",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+
+        public bool isActive => is_active > 0;
+    }
+
 
     public class Table_PassReward : BaseTable<int, TablePassRewardData>
     {
@@ -22,9 +59,9 @@ namespace Rev9.Pass
     public class TablePassRewardData
     {
         public int level;
-        public string reward_key;
+        public ItemKey reward_key;
         public int reward_count;
-        public string paid_reward_key;
+        public ItemKey paid_reward_key;
         public int paid_reward_count;
         public int exp;
 

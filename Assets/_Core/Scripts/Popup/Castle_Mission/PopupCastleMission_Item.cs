@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Linq;
 using System.Threading;
+using ThreeKingdoms.Shared.Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -59,7 +60,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
         {
             int i = 0;
 
-            var rewardList = dbRewards.Where(x => x.unlock_pct == 0).Take(6).ToList();
+            var rewardList = dbRewards.Where(x => x.unlock_rate == 0).Take(6).ToList();
             itemCount = rewardList.Count;
 
             for (; i < rewardList.Count; i++)
@@ -70,7 +71,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
                 itemIcon.transform.parent.gameObject.SetActive(true);
                 itemIcon.SetItemData(rewardList[i].itemData);
-                itemIcon.SetCountText(rewardList[i].reward_max, true);
+                itemIcon.SetCountText(rewardList[i].reward_count_maximum, true);
             }
 
             for (; i < m_element.parentRewardList.childCount; i++)
@@ -81,12 +82,12 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
         // 기타아이템
         {
-            var db = dbRewards.SortByDescending(x => x.unlock_pct)
-                .Where(x => x.unlock_pct > 0);
+            var db = dbRewards.SortByDescending(x => x.unlock_rate)
+                .Where(x => x.unlock_rate > 0);
 
             //진행중이라면
             if (_missionData.tickStart > 0)
-                db = db.Where(x => x.unlock_pct <= _missionData.percentStat).ToList();
+                db = db.Where(x => x.unlockPercent <= _missionData.percentStat).ToList();
 
             var rewardList = db.ToList();
 
@@ -103,7 +104,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
 
                 itemIcon.transform.parent.gameObject.SetActive(true);
                 itemIcon.SetItemData(rewardList[i].itemData);
-                itemIcon.SetCountText(rewardList[i].reward_max, true);
+                itemIcon.SetCountText(rewardList[i].reward_count_maximum, true);
             }
 
             for (; i < m_element.parentRewardList_ETC.childCount; i++)
@@ -128,11 +129,7 @@ public class PopupCastleMission_Item : MonoBehaviour, IValidatable
             m_element.btn_batch.interactable = true;
         }
 
-        m_element.imgOutline.color = Palette.GetGradeOutline(m_missionData.grade switch
-        {
-            GradeType.General => GradeType.Hero,
-            _ => m_missionData.grade
-        });
+        m_element.imgOutline.color = Palette.GetGradeOutline(m_missionData.grade);
     }
 
     public async UniTask TimerAsync()

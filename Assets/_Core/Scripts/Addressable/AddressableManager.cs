@@ -40,18 +40,20 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
 
     private void OnApplicationQuit()
     {
-        Signal.Release();
-        DataManager.Release();
+        WorkerManager.Release();
+
+        //Signal.Release();
+        //DataManager.Release();
         //ScenarioManager.Release();
-        TimeManager.instance.Release();
-        AdsManager.Release();
-        TournamentWorker.Release();
-        ContentsMarketWorker.Release();
-        InventoryWorker.Release();
-        PostWorker.Release();
-        QuestWorker.Release();
-        SeasonWorker.Release();
-        AuthWorker.Release();
+        //TimeManager.instance.Release();
+        //AdsManager.Release();
+        //TournamentWorker.Release();
+        //ContentsMarketWorker.Release();
+        //InventoryWorker.Release();
+        //PostWorker.Release();
+        //QuestWorker.Release();
+        //SeasonWorker.Release();
+        //AuthWorker.Release();
     }
 
     public async UniTask InitializeAsync()
@@ -220,7 +222,7 @@ public partial class AddressableManager : MonoSingleton<AddressableManager>
         //if (isLogSwitch)
         //    IngameLog.Add("Addressable: totalFileSize: " + downloadData.totalFileSize);
 
-        var handle = Addressables.LoadResourceLocationsAsync(_keys.Select(x => x.ToString()).ToList(), _isUnion ? Addressables.MergeMode.Union: Addressables.MergeMode.Intersection);
+        var handle = Addressables.LoadResourceLocationsAsync(_keys.Select(x => x.ToString()).ToList(), _isUnion ? Addressables.MergeMode.Union : Addressables.MergeMode.Intersection);
 
         if (isLogSwitch)
             IngameLog.Add("Addressable: LoadAsset: HANDLE CHECK: " + handle.IsValid());

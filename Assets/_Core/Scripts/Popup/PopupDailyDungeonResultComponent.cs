@@ -56,7 +56,7 @@ public class PopupDailyDungeonResultComponent : BasePopupComponent
     void SetReward()
     {
         m_rewards = TableManager.dailyDungeonGrade.GetReward(
-            TableManager.dailyDungeonBoss.Get(m_resultData.weekday).dungeon_boss_class
+            TableManager.dailyDungeonBoss.Get(m_resultData.weekday).key
             , m_resultData.gradeType
             , m_resultData.percent);
 

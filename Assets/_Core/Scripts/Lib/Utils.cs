@@ -14,6 +14,22 @@ using UnityEngine.UI;
 
 public static class Utils
 {
+#if !UNITY_EDITOR && UNITY_WEBGL
+		[DllImport("__Internal")]
+		private static extern void OpenURL(string url);
+#endif
+    public static void OpenUrl(string _url)
+    {
+        if (string.IsNullOrEmpty(_url))
+            return;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+        OpenURL(_url);
+#else
+        Application.OpenURL(_url);
+#endif
+    }
+
     public static void CopyText(string _text)
     {
         IngameLog.Add("CopytText: " + _text);

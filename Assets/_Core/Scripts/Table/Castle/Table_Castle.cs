@@ -30,18 +30,22 @@ public class TableCastleData
 {
     public string key;
 
-    [JsonProperty] string stat_type_1;
-    [JsonProperty] string stat_type_2;
+    StatType stat_type_1;
+    StatType stat_type_2;
 
     // CUSTOM
     public void Initialize()
     {
         m_coreStat = new[] {
-                    stat_type_1.IsActive() ? Enum.Parse<StatType>(stat_type_1) : StatType.None,
-                    stat_type_2.IsActive() ? Enum.Parse<StatType>(stat_type_2) : StatType.None
+                    stat_type_1,
+                    stat_type_2
                 };
 
-        m_objectType = Enum.Parse<CastleObjectType>(key);
+        for (var i = CastleObjectType.NONE + 1; i < CastleObjectType.MAX; i++)
+        {
+            if (key.Equals(i.ToString().ToLower()))
+                m_objectType = i;
+        }
     }
 
     CastleObjectType m_objectType;

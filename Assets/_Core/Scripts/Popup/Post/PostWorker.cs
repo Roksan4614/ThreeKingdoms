@@ -3,14 +3,8 @@ using System.Collections.Generic;
 
 namespace Rev9.Post
 {
-    public partial class PostWorker
+    public partial class PostWorker : BaseWorker<PostWorker>
     {
-        static PostWorker m_instance;
-        public static PostWorker instance => m_instance ??= new();
-
-        public static void Release()
-            => m_instance = null;
-
         public static bool isRedDot => instance.IsRedDot();
         public static IReadOnlyList<PostInfoData> data => instance.GetData_RefreshTimer();
 

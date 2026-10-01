@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ThreeKingdoms.Shared.Enums;
+using ThreeKingdoms.Shared.Table;
 using UnityEngine;
 
 public class Table_Hero : BaseTable<string, TableHeroData>
@@ -53,11 +54,10 @@ public class Table_Hero : BaseTable<string, TableHeroData>
         if (_count >= 160) return GradeType.General;
         if (_count >= 40) return GradeType.Elite;
         if (_count >= 10) return GradeType.Normal;
-        return GradeType.NONE;
+        return GradeType.None;
     }
 }
 
-[Serializable]
 public class TableHeroData
 {
     public string key;
@@ -68,8 +68,8 @@ public class TableHeroData
     [JsonProperty] RegionType country; public RegionType regionType => country;
 
     [JsonProperty] bool is_lock_summon; public bool isLockSummon => is_lock_summon;
-    [JsonProperty] float percent_start_cooldown;
-    [JsonProperty] float skill_cooltime;
+    float percent_start_cooldown;
+    float skill_cooltime;
 
     [JsonProperty] int LEA;
     [JsonProperty] int STR;

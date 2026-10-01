@@ -1,11 +1,8 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class AdsManager
+public class AdsManager : BaseWorker<AdsManager>
 {
-    static AdsManager m_instance;
-    public static AdsManager instance => m_instance ??= new();
-    public static void Release() => m_instance = null;
 
     public async UniTask<bool> ShowAsync()
     {
