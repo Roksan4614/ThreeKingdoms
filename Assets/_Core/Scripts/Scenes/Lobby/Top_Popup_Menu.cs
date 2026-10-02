@@ -13,12 +13,12 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
     {
         NONE = -1,
 
-        Setting,
         Noti,
-        Inventory,
         Post,
+        Inventory,
         Pass,
         Quest,
+        Setting,
         Rebirth,
 
         MAX
@@ -100,7 +100,7 @@ public class Top_Popup_Menu : MonoBehaviour, IValidatable
         btn.interactable = false;
 
         PopupManager.instance.CloseAll(m_popups.Select(x => x.Value.popupType).ToArray());
-        if (LobbyScreenManager.instance.curScreen != LobbyScreenType.None)
+        if (LobbyScreenManager.instance?.curScreen != LobbyScreenType.None)
             BottomComponent.instance.OnButton_OpenScreen(LobbyScreenManager.instance.curScreen);
 
         switch (_type)

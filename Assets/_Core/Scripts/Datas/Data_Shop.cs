@@ -24,8 +24,6 @@ public class Data_Shop
         await RewardWorker.OpenRewardPopupAsync(_productData.rewards);
 
         InventoryWorker.instance.UseItem(_productData.currencyKey, _productData.price);
-
-        Signal.instance.Buy_Item.Emit(_productData);
         return true;
     }
 }

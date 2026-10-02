@@ -346,7 +346,7 @@ public class Tutorial_START : TutorialBase
         #region 영웅 불러오기
         {
             await UniTask.WaitForEndOfFrame();
-            List<TableHeroData> dbHeroes = TableManager.hero.GetHeroList().Where(x => x.key.Equals(_hostKey) == false && x.isLockSummon == false).ToList();
+            List<TableHeroData> dbHeroes = TableManager.hero.GetHeroList().Where(x => x.key.Equals(_hostKey) == false && x.is_gacha_active == true).ToList();
 
             int i = 0;
 

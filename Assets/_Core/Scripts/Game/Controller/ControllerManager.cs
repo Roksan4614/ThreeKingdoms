@@ -93,7 +93,7 @@ public partial class ControllerManager : Singleton<ControllerManager>, IPointerD
 
     void SlotUpdateTeamPosition()
     {
-        bool isActive = DataManager.userInfo.myHero.Count(x => x.isBatch == true) > 1;
+        bool isActive = DataManager.userInfo.myHero?.Count(x => x.isBatch == true) > 1;
         m_element.btnCall.gameObject.SetActive(isActive);
     }
 

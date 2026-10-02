@@ -80,6 +80,9 @@ public class LobbyScreen_Shop : LobbyScreen_Base
         m_element.txtCurrency.text = m_currencyAmount.AmountKMBT(_isMBT: true);
     }
 
+    bool m_isLockEscape = false;
+    protected override bool IsEscapeloseScreen() => m_isLockEscape == false;
+
     void OnButton_Tab(ShopCategoryType _tabType, bool _isForce = false)
     {
         if (m_curTab == _tabType && _isForce == false)
@@ -194,6 +197,8 @@ public class LobbyScreen_Shop : LobbyScreen_Base
             return;
         }
 
+        m_isLockEscape = true;
+
         if (m_popupBuy == null)
             m_popupBuy = await PopupManager.instance.OpenPopupAsync<PopupBuyComponent>(PopupType.Buy, productData);
         else
@@ -207,8 +212,23 @@ public class LobbyScreen_Shop : LobbyScreen_Base
                 m_popupBuy.SetResult(true);
             }
             else
+            {
+                m_popupBuy.isLockEscape = true;
+                Utils.SetActivePunch(m_element.panel, false);
+                await UniTask.WaitForSeconds(.1f);
                 m_popupBuy.SetResult(await DataManager.shop.API_BuyItemAsync(productData));
+
+                if (productData.product_type == ShopProductType.Pass)
+                    DataManager.pass.SetBuyBattlePass();
+
+                Signal.instance.Buy_Item.Emit(productData);
+
+                Utils.SetActivePunch(m_element.panel, true);
+                m_popupBuy.isLockEscape = false;
+            }
         }
+
+        m_isLockEscape = false;
     }
 
     #region VALIDATE
@@ -233,6 +253,8 @@ public class LobbyScreen_Shop : LobbyScreen_Base
 
             txtCurrency = _transform.GetComponent<TextMeshProUGUI>("Panel/Asset/txt_amount");
         }
+
+        public Transform panel => scroll.transform.parent;
     }
     #endregion VALIDATE
 

@@ -18,7 +18,7 @@ public class PopupBuyComponent : BasePopupComponent
     long m_myCurrency, m_totalCost;
 
     bool isEnoughCurrency => m_myCurrency >= m_totalCost;
-    bool m_isLockEscape = false;
+    public bool isLockEscape { get; set; } = false;
 
     private void Start()
     {
@@ -46,7 +46,7 @@ public class PopupBuyComponent : BasePopupComponent
             m_element.btnBuy.text = TableManager.stringTable.GetString("BUTTON_BUY");
         }
 
-        Utils.WaitEscape(this, () => { if (m_isLockEscape == false) Close(); });
+        Utils.WaitEscape(this, () => { if (isLockEscape == false) Close(); });
     }
 
     public override void OpenPopup(params object[] _args)
