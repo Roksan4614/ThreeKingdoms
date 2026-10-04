@@ -1,6 +1,9 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,30 +17,38 @@ namespace Rev9.Edit.CustomCharacter
             public int index;
         }
 
-        TMP_InputField m_infFildName;
+        [SerializeField] AnimatorController m_baseAnimController;
 
+        TMP_InputField m_infFildName;
         GameObject m_objBaseCharacter;
         GameObject m_objCustomCharacter;
-
         Scene_HeroCustom_PopupDecal m_popupDecal;
+        Scene_HeroCustom_PopupLoad m_popupLoad;
 
         EditCustomPartsType m_curPartsType = EditCustomPartsType.NONE;
         string m_curHeadParts;
+        int m_prevPartsIndex;
 
         List<PartsData> m_dbHeadParts = new();
         Dictionary<EditCustomPartsType, PartsData> m_dbParts = new();
+
+        Transform trnsCharacterParts => m_objCustomCharacter.transform.Find("Character/Panel/Parts");
+        Transform trnsCharacterHeadParts => trnsCharacterParts.Find("Head").GetChild(m_dbParts[EditCustomPartsType.Head].index);
+        Transform trnsCharacterHeadDecal => trnsCharacterHeadParts.Find("Decal");
 
         private void Awake()
         {
             m_infFildName = transform.GetComponent<TMP_InputField>("Canvas/Panel/inf_filename");
             m_popupDecal = transform.GetComponent<Scene_HeroCustom_PopupDecal>("Canvas/Popup/Decal");
             m_popupDecal.gameObject.SetActive(false);
+            m_popupLoad = transform.GetComponent<Scene_HeroCustom_PopupLoad>("Canvas/Popup/Load");
+            m_popupLoad.gameObject.SetActive(false);
+            m_popupLoad.actionLoad = OnButton_ResetCharacter;
 
             m_objBaseCharacter = transform.Find("Character/BASE").gameObject;
             m_objBaseCharacter.SetActive(false);
 
             var parts = m_objBaseCharacter.transform.Find("Character/Panel/Parts");
-            EditWorker_CustomHero.instance.Initialize(parts);
             m_popupDecal.Initialize(parts);
 
             // 파츠 가져오기
@@ -89,12 +100,16 @@ namespace Rev9.Edit.CustomCharacter
                 }
             }
 
-            //m_popupDecal.actionIdx = OnButton_Decal()
+            m_popupDecal.actionItem = OnButton_Decal;
             // BUTTON
-            transform.GetComponent<Button>("Canvas/Panel/Button/btn_reset").onClick.AddListener(() => OnButton_ResetCharacter());
-            transform.GetComponent<Button>("Canvas/Panel/Button/btn_save").onClick.AddListener(OnButton_Save);
+            transform.GetComponent<Button>("Canvas/Panel/Button/btn_reset").onClick.AddListener(()
+                => OnButton_ResetCharacter());
+            transform.GetComponent<Button>("Canvas/Panel/Button/btn_save").onClick.AddListener(()
+                => OnButtonAsync_Save().Forget());
             transform.GetComponent<Button>("Canvas/Panel/Button/btn_random").onClick.AddListener(OnButton_Random);
             transform.GetComponent<Button>("Canvas/Panel/btn_head_decal").onClick.AddListener(() => m_popupDecal.gameObject.SetActive(true));
+            transform.GetComponent<Button>("Canvas/Panel/btn_load").onClick.AddListener(()
+                => m_popupLoad.LoadCharacters(trnsCharacterParts));
 
         }
 
@@ -238,7 +253,7 @@ namespace Rev9.Edit.CustomCharacter
                 else if (m_curPartsType > EditCustomPartsType.NONE)
                 {
                     var btn = m_dbParts[m_curPartsType];
-
+                    m_prevPartsIndex = btn.index;
                     btn.index--;
                     if (btn.index < 0)
                         btn.index = trnsCharacterParts.Find(m_curPartsType.ToString()).childCount - 1;
@@ -268,6 +283,7 @@ namespace Rev9.Edit.CustomCharacter
                 else if (m_curPartsType > EditCustomPartsType.NONE)
                 {
                     var btn = m_dbParts[m_curPartsType];
+                    m_prevPartsIndex = btn.index;
 
                     btn.index++;
                     if (trnsCharacterParts.Find(m_curPartsType.ToString()).childCount == btn.index)
@@ -280,13 +296,62 @@ namespace Rev9.Edit.CustomCharacter
             }
         }
 
-        void OnButton_Save()
+        async UniTask OnButtonAsync_Save()
         {
+            if (EditWorker_CustomHero.instance.HasFileAleady(m_infFildName.text))
+            {
+                var result = await PopupManager.instance.OpenModalAsync("이미 파일이 존재함.\n덮어 씌울꺼??", "확인", "취소");
+                if (result != StatusType.Success)
+                    return;
+            }
 
+            var newCharacter = Instantiate(m_objCustomCharacter, m_objCustomCharacter.transform.parent);
+
+            var pCharacterParts = newCharacter.transform.Find("Character/Panel/Parts");
+            for (int i = 0; i < pCharacterParts.childCount; i++)
+            {
+                var pParts = pCharacterParts.GetChild(i);
+                for (int j = 0; j < pParts.childCount; j++)
+                {
+                    var objParts = pParts.GetChild(j).gameObject;
+                    if (objParts.activeSelf == false)
+                        Destroy(objParts);
+                    else if (objParts.name.Equals("None"))
+                    {
+                        Destroy(pParts.gameObject);
+                        break;
+                    }
+                }
+            }
+
+            var pCharacterHeadParts = pCharacterParts.Find("Head").GetChild(m_dbParts[EditCustomPartsType.Head].index);
+            for (int i = 0; i < pCharacterHeadParts.childCount; i++)
+            {
+                var pParts = pCharacterHeadParts.GetChild(i);
+                for (int j = 0; j < pParts.childCount; j++)
+                {
+                    var objParts = pParts.GetChild(j).gameObject;
+                    if (objParts.activeSelf == false)
+                        Destroy(objParts);
+                    else if (objParts.name.Equals("None"))
+                    {
+                        Destroy(pParts.gameObject);
+                        break;
+                    }
+                }
+            }
+
+            await UniTask.NextFrame();
+
+            pCharacterParts.GetComponent<Animator>().runtimeAnimatorController = m_baseAnimController;
+
+            if (EditWorker_CustomHero.instance.SavePrefab(newCharacter, m_infFildName.text) == true)
+                PopupManager.instance.AlertShow("저장 성공!!");
+            else
+                PopupManager.instance.AlertShow("저장 실패!!");
+
+            Destroy(newCharacter.gameObject);
         }
-
-        Transform trnsCharacterParts => m_objCustomCharacter.transform.Find("Character/Panel/Parts");
-        Transform trnsCharacterHeadParts => trnsCharacterParts.Find("Head").GetChild(m_dbParts[EditCustomPartsType.Head].index);
 
         void SetHeadParts(string _headParts, int _index)
         {
@@ -310,6 +375,12 @@ namespace Rev9.Edit.CustomCharacter
                 int idx = 0;
                 foreach (var b in m_dbHeadParts)
                     SetHeadParts(b.button.name, idxHeadParts[idx++]);
+
+                var pDecal = trnsCharacterHeadDecal;
+                for (int i = 0; i < m_popupDecal.buttons.Count; i++)
+                {
+                    pDecal.GetChild(i).gameObject.SetActive(m_popupDecal.buttons[i].isDrawSelect);
+                }
             }
         }
 
@@ -345,7 +416,7 @@ namespace Rev9.Edit.CustomCharacter
             return result;
         }
 
-        void OnButton_ResetCharacter(string _fileName = null, Dictionary<EditCustomPartsType, int> _dbParts = null, List<int> _idxHeadParts = null)
+        void OnButton_ResetCharacter(string _fileName = null, Dictionary<EditCustomPartsType, int> _dbParts = null, Dictionary<string, int> _dbHeadParts = null, List<int> _idxDecal = null)
         {
             if (m_objCustomCharacter != null)
                 Destroy(m_objCustomCharacter);
@@ -355,10 +426,22 @@ namespace Rev9.Edit.CustomCharacter
             m_objCustomCharacter.GetComponent<CharacterComponent>().SetHeroData_Test();
 
             m_infFildName.text = _fileName ?? "NONE";
-            int idx = 0;
+
+            foreach (var b in m_dbParts)
+            {
+                var btn = b.Value;
+
+                btn.index = _dbParts == null || _dbParts.ContainsKey(b.Key) == false ? 0 : _dbParts[b.Key];
+                btn.button.text = $"{btn.button.name} {trnsCharacterParts.Find(btn.button.name).GetChild(btn.index).name}";
+                btn.button.SetDrawSelect(false);
+
+                SetParts(b.Key, btn.index, true);
+            }
+
             foreach (var btn in m_dbHeadParts)
             {
-                btn.index = _idxHeadParts?[idx++] ?? 0;
+                btn.index = _dbHeadParts == null || _dbHeadParts.ContainsKey(btn.button.name) == false ? 0
+                    : _dbHeadParts[btn.button.name];
                 btn.button.text = $"{btn.button.name.Replace("Grooming_", "G_")} {trnsCharacterHeadParts.Find(btn.button.name).GetChild(btn.index).name}";
                 btn.button.SetDrawSelect(false);
 
@@ -366,15 +449,11 @@ namespace Rev9.Edit.CustomCharacter
                     SetHeadParts(btn.button.name, btn.index);
             }
 
-            foreach (var b in m_dbParts)
+            for (int i = 0; i < trnsCharacterHeadDecal.childCount; i++)
             {
-                var btn = b.Value;
-
-                btn.index = _dbParts?[b.Key] ?? 0;
-                btn.button.text = $"{btn.button.name} {trnsCharacterParts.Find(btn.button.name).GetChild(btn.index).name}";
-                btn.button.SetDrawSelect(false);
-
-                SetParts(b.Key, btn.index, true);
+                bool isActive = _idxDecal?.Contains(i) ?? false;
+                trnsCharacterHeadDecal.GetChild(i).gameObject.SetActive(isActive);
+                m_popupDecal.buttons[i].SetDrawSelect(isActive);
             }
 
             m_curHeadParts = "";
@@ -391,6 +470,11 @@ namespace Rev9.Edit.CustomCharacter
         {
             foreach (var b in m_dbParts)
                 b.Value.button.SetDrawSelect(b.Key == m_curPartsType);
+        }
+
+        void OnButton_Decal(string _itemName, bool _isActive)
+        {
+            trnsCharacterHeadDecal.Find(_itemName).gameObject.SetActive(_isActive);
         }
 
         void OnButton_Random()
@@ -413,6 +497,13 @@ namespace Rev9.Edit.CustomCharacter
                 btn.button.SetDrawSelect(false);
 
                 SetParts(b.Key, btn.index);
+            }
+
+            for (int i = 0; i < trnsCharacterHeadDecal.childCount; i++)
+            {
+                bool isActive = UnityEngine.Random.value < 0.5f;
+                trnsCharacterHeadDecal.GetChild(i).gameObject.SetActive(isActive);
+                m_popupDecal.buttons[i].SetDrawSelect(isActive);
             }
 
             m_curHeadParts = "";
