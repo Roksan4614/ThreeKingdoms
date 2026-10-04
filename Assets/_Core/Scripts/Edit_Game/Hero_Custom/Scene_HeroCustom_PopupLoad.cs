@@ -5,10 +5,18 @@ using UnityEngine.UI;
 
 namespace Rev9.Edit.CustomCharacter
 {
+    public class LoadData
+    {
+        public string fileName;
+        public Dictionary<EditCustomPartsType, int> dbParts;
+        public Dictionary<string, int> dbHeadParts;
+        public List<int> idxDecal;
+        public Color? color;
+    }
 
     public class Scene_HeroCustom_PopupLoad : MonoBehaviour
     {
-        public UnityAction<string, Dictionary<EditCustomPartsType, int>, Dictionary<string, int>, List<int>> actionLoad { get; set; }
+        public UnityAction<LoadData> actionLoad { get; set; }
 
         ScrollRect m_scroll;
         Scene_HeroCustom_PopupLoad_Slot m_baseSlot;
@@ -55,9 +63,21 @@ namespace Rev9.Edit.CustomCharacter
 
         public void OnButton(string _fileName, Transform _parts)
         {
-            Dictionary<EditCustomPartsType, int> dbParts = new();
-            Dictionary<string, int> dbHeadParts = new();
-            List<int> idxDecal = new();
+            LoadData loadData = new();
+            loadData.fileName = _fileName;
+
+            loadData.dbParts = new();
+            loadData.dbHeadParts = new();
+            loadData.idxDecal = new();
+
+            UnityAction<Transform> actionColor = _trns =>
+            {
+                if (loadData.color == null)
+                {
+                    var color = _trns.GetComponent<SpriteRenderer>("Color").color;
+                    loadData.color = color;
+                }
+            };
 
             for (var t = EditCustomPartsType.NONE + 1; t < EditCustomPartsType.MAX; t++)
             {
@@ -68,7 +88,8 @@ namespace Rev9.Edit.CustomCharacter
                 {
                     if (baseParts.GetChild(i).name == partsName)
                     {
-                        dbParts.Add(t, i);
+                        loadData.dbParts.Add(t, i);
+                        actionColor(baseParts.GetChild(i));
                         break;
                     }
                 }
@@ -100,7 +121,8 @@ namespace Rev9.Edit.CustomCharacter
                 {
                     if (ph.GetChild(j).name.Equals(partsName))
                     {
-                        dbHeadParts.Add(pHead.GetChild(i).name, j);
+                        actionColor(pHead.GetChild(i));
+                        loadData.dbHeadParts.Add(pHead.GetChild(i).name, j);
                         break;
                     }
                 }
@@ -116,13 +138,15 @@ namespace Rev9.Edit.CustomCharacter
                 {
                     if (pBaseDecal.GetChild(j).name.Equals(decalName))
                     {
-                        idxDecal.Add(j);
+                        loadData.idxDecal.Add(j);
                         break;
                     }
                 }
             }
 
-            actionLoad(_fileName, dbParts, dbHeadParts, idxDecal);
+            loadData.color ??= Color.white;
+
+            actionLoad(loadData);
             gameObject.SetActive(false);
         }
     }

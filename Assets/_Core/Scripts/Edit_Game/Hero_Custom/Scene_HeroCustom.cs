@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.UI;
@@ -110,6 +111,7 @@ namespace Rev9.Edit.CustomCharacter
             transform.GetComponent<Button>("Canvas/Panel/btn_head_decal").onClick.AddListener(() => m_popupDecal.gameObject.SetActive(true));
             transform.GetComponent<Button>("Canvas/Panel/btn_load").onClick.AddListener(()
                 => m_popupLoad.LoadCharacters(trnsCharacterParts));
+            transform.GetComponent<Button>("Canvas/Panel/btn_color").onClick.AddListener(OnButton_Color);
 
         }
 
@@ -416,7 +418,7 @@ namespace Rev9.Edit.CustomCharacter
             return result;
         }
 
-        void OnButton_ResetCharacter(string _fileName = null, Dictionary<EditCustomPartsType, int> _dbParts = null, Dictionary<string, int> _dbHeadParts = null, List<int> _idxDecal = null)
+        void OnButton_ResetCharacter(LoadData _lodaData = null)
         {
             if (m_objCustomCharacter != null)
                 Destroy(m_objCustomCharacter);
@@ -425,13 +427,13 @@ namespace Rev9.Edit.CustomCharacter
             m_objCustomCharacter.gameObject.SetActive(true);
             m_objCustomCharacter.GetComponent<CharacterComponent>().SetHeroData_Test();
 
-            m_infFildName.text = _fileName ?? "NONE";
+            m_infFildName.text = _lodaData?.fileName ?? "NONE";
 
             foreach (var b in m_dbParts)
             {
                 var btn = b.Value;
 
-                btn.index = _dbParts == null || _dbParts.ContainsKey(b.Key) == false ? 0 : _dbParts[b.Key];
+                btn.index = _lodaData?.dbParts.GetValueOrDefault(b.Key) ?? 0;
                 btn.button.text = $"{btn.button.name} {trnsCharacterParts.Find(btn.button.name).GetChild(btn.index).name}";
                 btn.button.SetDrawSelect(false);
 
@@ -440,24 +442,29 @@ namespace Rev9.Edit.CustomCharacter
 
             foreach (var btn in m_dbHeadParts)
             {
-                btn.index = _dbHeadParts == null || _dbHeadParts.ContainsKey(btn.button.name) == false ? 0
-                    : _dbHeadParts[btn.button.name];
+                btn.index = _lodaData?.dbHeadParts.GetValueOrDefault(btn.button.name) ?? 0;
                 btn.button.text = $"{btn.button.name.Replace("Grooming_", "G_")} {trnsCharacterHeadParts.Find(btn.button.name).GetChild(btn.index).name}";
                 btn.button.SetDrawSelect(false);
 
-                if (_fileName.IsActive())
+                if (_lodaData?.fileName != null)
                     SetHeadParts(btn.button.name, btn.index);
             }
 
             for (int i = 0; i < trnsCharacterHeadDecal.childCount; i++)
             {
-                bool isActive = _idxDecal?.Contains(i) ?? false;
+                bool isActive = _lodaData?.idxDecal?.Contains(i) ?? false;
                 trnsCharacterHeadDecal.GetChild(i).gameObject.SetActive(isActive);
                 m_popupDecal.buttons[i].SetDrawSelect(isActive);
             }
 
             m_curHeadParts = "";
             m_curPartsType = EditCustomPartsType.NONE;
+
+            if(_lodaData?.fileName != null)
+            {
+                m_characterColor = _lodaData?.color ?? Color.white;
+                SetColor();
+            }
         }
 
         void OnButton_HeadParts()
@@ -508,6 +515,45 @@ namespace Rev9.Edit.CustomCharacter
 
             m_curHeadParts = "";
             m_curPartsType = EditCustomPartsType.NONE;
+        }
+
+        Color m_characterColor = Color.white;
+        void OnButton_Color()
+        {
+#if UNITY_EDITOR
+            Editor_ColorPicker.Open((selectedColor) =>
+            {
+                m_characterColor = selectedColor;
+                SetColor();
+            }, m_characterColor);
+#endif
+        }
+
+        void SetColor()
+        {
+            var pParts = trnsCharacterParts;
+            for (var i = 0; i < pParts.childCount; i++)
+            {
+                for (int j = 0; j < pParts.GetChild(i).childCount; j++)
+                {
+                    var pPart = pParts.GetChild(i).GetChild(j);
+                    var imgPart = pPart.GetComponent<SpriteRenderer>("Color");
+                    if (imgPart != null)
+                        imgPart.color = m_characterColor;
+                }
+            }
+
+            var pHeadParts = trnsCharacterHeadParts;
+            for (var i = 0; i < pHeadParts.childCount; i++)
+            {
+                for (int j = 0; j < pHeadParts.GetChild(i).childCount; j++)
+                {
+                    var pPart = pHeadParts.GetChild(i).GetChild(j);
+                    var imgPart = pPart.GetComponent<SpriteRenderer>("Color");
+                    if (imgPart != null)
+                        imgPart.color = m_characterColor;
+                }
+            }
         }
 
         private void OnApplicationQuit()
