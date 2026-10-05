@@ -123,6 +123,9 @@ namespace Rev9.Edit.CustomCharacter
         DateTime dtControll;
         private void Update()
         {
+            if (m_infFildName.isFocused == true)
+                return;
+
             bool isShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
             if (Input.GetKeyDown(KeyCode.R))
@@ -460,7 +463,7 @@ namespace Rev9.Edit.CustomCharacter
             m_curHeadParts = "";
             m_curPartsType = EditCustomPartsType.NONE;
 
-            if(_lodaData?.fileName != null)
+            if (_lodaData?.fileName != null)
             {
                 m_characterColor = _lodaData?.color ?? Color.white;
                 SetColor();
@@ -539,7 +542,11 @@ namespace Rev9.Edit.CustomCharacter
                     var pPart = pParts.GetChild(i).GetChild(j);
                     var imgPart = pPart.GetComponent<SpriteRenderer>("Color");
                     if (imgPart != null)
-                        imgPart.color = m_characterColor;
+                    {
+                        var color = m_characterColor;
+                        color.a = imgPart.color.a;
+                        imgPart.color = color;
+                    }
                 }
             }
 
@@ -551,7 +558,12 @@ namespace Rev9.Edit.CustomCharacter
                     var pPart = pHeadParts.GetChild(i).GetChild(j);
                     var imgPart = pPart.GetComponent<SpriteRenderer>("Color");
                     if (imgPart != null)
-                        imgPart.color = m_characterColor;
+                    {
+
+                        var color = m_characterColor;
+                        color.a = imgPart.color.a;
+                        imgPart.color = color;
+                    }
                 }
             }
         }

@@ -84,12 +84,14 @@ namespace Rev9.Edit.CustomCharacter
                 var partsName = _parts.Find(t.ToString())?.GetChild(0).name;
                 var baseParts = m_baseCharacterParts.Find(t.ToString());
 
+                if (loadData.color == null && partsName.IsActive() == true)
+                    actionColor(_parts.Find(t.ToString())?.GetChild(0));
+
                 for (int i = 0; i < baseParts.childCount; i++)
                 {
                     if (baseParts.GetChild(i).name == partsName)
                     {
                         loadData.dbParts.Add(t, i);
-                        actionColor(baseParts.GetChild(i));
                         break;
                     }
                 }
@@ -116,6 +118,9 @@ namespace Rev9.Edit.CustomCharacter
                 var ph = pBaseHead.Find(p.name);
                 if (ph == null)
                     continue;
+
+                if (loadData.color == null && partsName.IsActive() == true)
+                    actionColor(pHead.GetChild(i).GetChild(0));
 
                 for (var j = 0; j < ph.childCount; j++)
                 {
