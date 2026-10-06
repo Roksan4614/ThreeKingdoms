@@ -93,6 +93,13 @@ public class CharacterComponent : TargetComponent
         SetTalkboxName();
     }
 
+    public virtual void SetHeroData_Test()
+    {
+        m_info = new();
+        m_stat = new();
+        m_stat.health = m_stat.healthMax = 10;
+    }
+
     public void SetHeroData_TournamentOther(HeroInfoData _heroInfo)
     {
         m_info = _heroInfo;

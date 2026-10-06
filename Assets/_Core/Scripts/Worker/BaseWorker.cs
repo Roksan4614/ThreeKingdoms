@@ -14,9 +14,12 @@ public class WorkerManager
 
     public static void Release()
     {
-        for (int i = 0; i < m_instance.m_singleton.Count; i++)
-            m_instance.m_singleton[i].ReleaseWorker();
-        m_instance = null;
+        if (m_instance != null)
+        {
+            for (int i = 0; i < m_instance.m_singleton.Count; i++)
+                m_instance.m_singleton[i].ReleaseWorker();
+            m_instance = null;
+        }
     }
 }
 

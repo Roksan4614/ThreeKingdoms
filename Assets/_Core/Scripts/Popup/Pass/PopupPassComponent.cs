@@ -139,6 +139,8 @@ namespace Rev9.Pass
             if (await m_popupBuy.WaitAsync() == StatusType.Success)
             {
                 m_popupBuy.SetResult(await DataManager.shop.API_BuyItemAsync(productPass));
+                DataManager.pass.SetBuyBattlePass();
+                Signal.instance.Buy_Item.Emit(productPass);
             }
 
             Utils.SetActivePunch(m_element.panel, true);

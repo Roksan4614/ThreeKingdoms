@@ -24,6 +24,8 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
             m_element.btnConfirm.text = TableManager.stringTable.GetString("BUTTON_CONFIRM");
             SetLocalization();
         }
+
+        m_element.panel.gameObject.SetActive(false);
     }
 
     protected virtual void SetLocalization()
@@ -53,6 +55,8 @@ public class PopupUserInfoComponent : BasePopupComponent, IValidatable
         Utils.SetActivePunch(m_element.panel, true);
 
         SetUserInfoAsync(userInfo).Forget();
+
+        m_element.panel.gameObject.SetActive(true);
     }
 
     protected async UniTask SetUserInfoAsync(UserInfoData _userInfo)

@@ -11,7 +11,7 @@ public class Table_Hero : BaseTable<string, TableHeroData>
 {
     public List<TableHeroData> GetHeroList()
     {
-        return m_list.Where(x => x.is_lock_active == false).ToList();
+        return m_list.Where(x => x.is_character_active == true).ToList();
     }
 
     public Table_Hero(List<TableHeroData> _table) : base(_table)
@@ -62,12 +62,12 @@ public class TableHeroData
 {
     public string key;
 
-    public bool is_lock_active;
+    public bool is_character_active;
+    public bool is_gacha_active;
 
     [JsonProperty] HeroClassType character_class; public HeroClassType classType => character_class;
     [JsonProperty] RegionType country; public RegionType regionType => country;
 
-    [JsonProperty] bool is_lock_summon; public bool isLockSummon => is_lock_summon;
     float percent_start_cooldown;
     float skill_cooltime;
 

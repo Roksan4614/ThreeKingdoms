@@ -97,12 +97,12 @@ public class LobbyScreen_Summon_Result : MonoBehaviour, IValidatable
 		{
 			await UniTask.WaitForEndOfFrame();
 			List<TableHeroData> dbHeroes = TableManager.hero.list
-				.Where(x => x.key.Equals(_hostKey) == false && x.isLockSummon == false && x.is_lock_active == false).ToList();
+				.Where(x => x.key.Equals(_hostKey) == false && x.is_gacha_active == true).ToList();
 
 			// 특정 국가면 하나 더 넣자
 			if (_regionType > RegionType.None)
 				dbHeroes.AddRange(TableManager.hero.list
-					.Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false && x.isLockSummon == false && x.is_lock_active == false).ToList());
+					.Where(x => x.regionType == _regionType && x.key.Equals(_hostKey) == false && x.is_gacha_active == true).ToList());
 
 			int i = 0;
 			// 호스트 넣기
