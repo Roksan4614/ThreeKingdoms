@@ -30,8 +30,8 @@ public class TableCastleData
 {
     public string key;
 
-    StatType stat_type_1;
-    StatType stat_type_2;
+    [JsonProperty] StatType stat_type_1;
+    [JsonProperty] StatType stat_type_2;
 
     // CUSTOM
     public void Initialize()

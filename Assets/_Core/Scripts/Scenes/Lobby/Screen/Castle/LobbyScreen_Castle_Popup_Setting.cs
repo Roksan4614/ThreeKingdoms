@@ -456,7 +456,7 @@ public class LobbyScreen_Castle_Popup_Setting : MonoBehaviour, IValidatable
         rtScroll.DOAnchorPosY(0, 0.1f).Forget();
 
         if (m_popupHeroList == null)
-            m_popupHeroList = await PopupManager.instance.OpenPopupAsync<PopupCastleHeroListComponent>(PopupType.Castle_HeroList, m_castleData);
+            m_popupHeroList = await PopupManager.instance.OpenPopupAsync<PopupCastleHeroListComponent>(PopupType.Castle_HeroList, m_castleData.DeepClone());
         else
         {
             m_popupHeroList.gameObject.SetActive(true);

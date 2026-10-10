@@ -16,6 +16,8 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
     CastleObjectType m_objectType;
     public CastleObjectType objectType => m_objectType;
 
+    bool m_isGateSub = false;
+
     ButtonHelper m_button;
     ButtonHelper button
     {
@@ -29,12 +31,20 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
 
     private void Start()
     {
+        if (m_objectType == CastleObjectType.Gate && name.Contains("Castle_Sub"))
+            m_isGateSub = true;
+
         Signal.instance.CompleteCaslteBuildingUpgrade.connectLambda = new(this, _castleData =>
         {
             if (gameObject.activeInHierarchy == false || _castleData.type != m_objectType)
                 return;
 
-            FinishUpgrade();
+            // 이전 레벨이 2,3,4 면 2로 가기위해 1_End를 실행해줘야해
+            // 5 6 7 8 이면 3으로 가기 위해 2_End를..
+            // 9여야 마지막 4를 가기 위해 3_End ㄱㄱ
+            var prevLevel = _castleData.level - 1;
+            var prevAniIdx = prevLevel < 4 ? 1 : prevLevel < 9 ? 2 : 3;
+            FinishUpgrade(prevAniIdx);
         });
 
         Signal.instance.StartCaslteBuildingUpgrade.connectLambda = new(this, _castleData =>
@@ -43,9 +53,9 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
                 return;
 
             if (_castleData.remainUpgradeSeconds > 0)
-                LoopUpgrade();
+                LoopUpgrade(_castleData.aniIdxUpgrade);
             else
-                StartUpgrade();
+                StartUpgrade(_castleData.aniIdxUpgrade);
         });
 
         Signal.instance.StopCaslteBuildingUpgrade.connectLambda = new(this, _castleData =>
@@ -53,7 +63,7 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
             if (gameObject.activeInHierarchy == false || _castleData.type != m_objectType)
                 return;
 
-            StopUpgrade();
+            StopUpgrade(_castleData.aniIdxUpgrade);
 
             var castleData = DataManager.castle.GetCaslteData(m_objectType);
             button.text = $"{castleData.name}";
@@ -72,9 +82,9 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
         if (castleData.isDoingUpgrade)
         {
             if (castleData.isValidUpgrade)
-                LoopUpgrade();
+                LoopUpgrade(castleData.aniIdxUpgrade);
             else
-                StopUpgrade();
+                StopUpgrade(castleData.aniIdxUpgrade);
 
             if (castleData.remainUpgradeSeconds > 0)
                 button.text = $"{castleData.name}";
@@ -86,32 +96,38 @@ public class LobbyScreen_Castle_Building : MonoBehaviour, IValidatable
         }
         else
         {
-            m_element.anim.Play($"Castle_BuildFX_{m_objectType}_None");
+            m_element.anim.Play($"Lv{castleData.aniIdxUpgrade:0#}_Idle");
             button.text = $"{castleData.name}";
         }
         button.transform.ForceRebuildLayout();
     }
 
-    public void StartUpgrade()
+    public void StartUpgrade(int _aniIdx)
     {
-        m_element.anim.Play($"Castle_BuildFX_{m_objectType}_Act");
+        if (m_isGateSub)
+            return;
+        m_element.anim.Play($"Lv{_aniIdx:0#}_Start");
     }
-    public void StopUpgrade()
+    public void StopUpgrade(int _aniIdx)
     {
-        m_element.anim.Play($"Castle_BuildFX_{m_objectType}_LoopStop");
+        if (m_isGateSub)
+            return;
+        m_element.anim.Play($"Lv{_aniIdx:0#}_Loop");
     }
-    public void FinishUpgrade()
+    public void FinishUpgrade(int _aniIdx)
     {
-        m_element.anim.Play($"Castle_BuildFX_{m_objectType}_End");
+        m_element.anim.Play($"Lv{_aniIdx:0#}_End");
 
         var castleData = DataManager.castle.GetCaslteData(m_objectType);
         button.text = $"{castleData.name}";
         button.transform.ForceRebuildLayout();
         m_timeStepType = TimerStepType.Wait;
     }
-    public void LoopUpgrade()
+    public void LoopUpgrade(int _aniIdx)
     {
-        m_element.anim.Play($"Castle_BuildFX_{m_objectType}_Loop");
+        if (m_isGateSub)
+            return;
+        m_element.anim.Play($"Lv{_aniIdx:0#}_Loop");
     }
 
     void SlotUpdateCaslteBuildingUpgrade(Data_Castle_Building.CastleBuildingUpgradeData _updateData)

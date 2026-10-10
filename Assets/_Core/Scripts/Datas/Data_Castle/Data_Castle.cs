@@ -460,6 +460,10 @@ public partial class Data_Castle
                 tickClaim = Utils.GetUTC().Ticks;
             }
         }
+
+        // 4까지는 소도시, 9까지 중도시, 10은 대도시
+        public int aniIdxUpgrade
+            => Mathf.Min(4, level == 1 ? 1 : level <= 4 ? 2 : level <= 9 ? 3 : 4);
     }
 }
 

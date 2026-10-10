@@ -2,9 +2,10 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor;
+
+#if UNITY_EDITOR
 using UnityEditor.Animations;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +19,9 @@ namespace Rev9.Edit.CustomCharacter
             public int index;
         }
 
+#if UNITY_EDITOR
         [SerializeField] AnimatorController m_baseAnimController;
+#endif
 
         TMP_InputField m_infFildName;
         GameObject m_objBaseCharacter;
@@ -348,8 +351,9 @@ namespace Rev9.Edit.CustomCharacter
 
             await UniTask.NextFrame();
 
+#if UNITY_EDITOR
             pCharacterParts.GetComponent<Animator>().runtimeAnimatorController = m_baseAnimController;
-
+#endif
             if (EditWorker_CustomHero.instance.SavePrefab(newCharacter, m_infFildName.text) == true)
                 PopupManager.instance.AlertShow("저장 성공!!");
             else

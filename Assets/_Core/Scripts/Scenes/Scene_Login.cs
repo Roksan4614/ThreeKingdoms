@@ -46,7 +46,8 @@ public class Scene_Login : SceneBase
 
             IngameLog.AddBuild("TOTAL SIZE: START LABEL: " + Utils.FileSize(totalSize));
 
-            var keys = TableManager.hero.list.Select(x => x.key).ToArray();
+            var keys = TableManager.hero.list.Where(x => x.is_character_active == true).Select(x => x.key).ToArray();
+
             IngameLog.AddBuild("Load_HeroIconAsync");
             tasks.Add(AddressableManager.instance.Load_HeroIconAsync(keys));
             IngameLog.AddBuild("Load_HeroCharacterAsync");
@@ -62,8 +63,6 @@ public class Scene_Login : SceneBase
                 tierKey[i] = $"Tier_{i + 1}";
             tasks.Add(AddressableManager.instance.Load_ItemIconAsync(tierKey));
         }
-
-        IngameLog.AddBuild("LOGIN START");
 
         if (AuthWorker.data.isActive == false)
         {

@@ -50,6 +50,12 @@ public class CameraManager : MonoSingleton<CameraManager>
             //var mousePos = Input.touchCount > 1 ? (Vector3)Input.GetTouch(Input.touchCount - 1).position : Input.mousePosition;
             var mousePos = Input.mousePosition;
             mousePos.z = -m_camera.transform.position.z;
+
+#if UNITY_EDITOR
+            if (float.IsInfinity(mousePos.x))
+                mousePos = Vector2.zero;
+#endif
+
             var pos = m_camera.ScreenToWorldPoint(mousePos);
             pos.z = 0;
 
