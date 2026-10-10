@@ -79,6 +79,9 @@ public class PopupCastleHeroListComponent : BasePopupComponent
 
         m_maxBatchSlot = m_castleData.dbRise.character_slot_max;
         m_element.txtBatchCount.text = $"({m_castleData.heroes.Count}/{m_maxBatchSlot})";
+
+        m_element.scroll.velocity =
+            m_element.scroll.content.anchoredPosition = Vector2.zero;
     }
 
     void RefreshHeroesData(bool _isInit)
